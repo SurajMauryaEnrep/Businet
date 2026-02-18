@@ -4959,6 +4959,29 @@ namespace EnRepMobileWeb.Areas.Common.Controllers.Common
             }
         }
 
+        [HttpPost]
+        public JsonResult Cmn_getSchemeFocDetail_test(string item_id, string cust_id, string order_qty, string order_value, string ord_dt)/* Created by Suraj Maurya on 12-01-2026 */
+        {
+            //Created for test
+            try
+            {
+
+                JsonResult DataRows;
+                string compId = Session["compid"]?.ToString() ?? string.Empty;
+                string BrchID = Session["BranchId"]?.ToString() ?? string.Empty;
+                DataSet result = _Common_IServices.Cmn_getSchemeFocDetail(
+                    compId, BrchID, item_id, cust_id, order_qty, order_value, ord_dt
+                );
+                DataRows = Json(JsonConvert.SerializeObject(result), JsonRequestBehavior.AllowGet);
+                return DataRows;
+            }
+            catch (Exception ex)
+            {
+                string path = Server.MapPath("~");
+                Errorlog.LogError(path, ex);
+                return Json("ErrorPage");
+            }
+        }
 
 
 
