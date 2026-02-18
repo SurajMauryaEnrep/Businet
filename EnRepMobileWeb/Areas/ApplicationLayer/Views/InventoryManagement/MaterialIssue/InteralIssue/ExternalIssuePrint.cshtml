@@ -1,0 +1,372 @@
+﻿@using System.Data;
+@{
+    decimal TotalAmount = 0;
+    string ValDigit = "0.";
+    var VD = Convert.ToInt32(Session["ValDigit"].ToString());
+    for (var i = 0; i < VD; i++)
+    {
+        ValDigit += "0";
+    }
+    string doc_status = "";
+    string BackGroundImgUrl = "";
+    if (ViewBag.DocStatus != null)
+    {
+        doc_status = ViewBag.DocStatus;
+    }
+    if (doc_status == "D" || doc_status == "F")
+    {
+        BackGroundImgUrl = Server.MapPath("~/Content/Images/draft.png");
+    }
+    else if(doc_status == "C" )
+    {
+        BackGroundImgUrl = Server.MapPath("~/Content/Images/cancelled.png");
+    }
+    DataTable dt = new DataTable();
+    DataView data = new DataView();
+    if (ViewBag.Details != null)
+    {
+        dt = ViewBag.Details.Tables[1];
+    }
+    var srno = 1;
+}
+<style>
+    #dtlTable, #dtlTable td, #dtlTable th {
+        border: 0.5px solid black;
+    }
+
+    #sub, #sub td, #sub th {
+        border: 0px;
+    }
+
+    .suppInfo td {
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 11px;
+        font-weight: normal;
+    }
+    /*.tabl_data {
+        border-bottom: solid 1px #000000; border-right: solid 1px #000000; paddingbottom: 5px; paddingtop: 5px; paddingleft: 5px;
+    }*/
+</style>
+
+<div style='background: url(@BackGroundImgUrl) no-repeat; backgroundposition: center center;'>
+    @Html.Partial("~/Areas/Common/Views/Cmn_PrintHeaderWithAddrSampleIssue.cshtml")
+    <table cellpadding="0" cellspacing="0" width='100%' style="vertical-align: top;">
+        <tr>
+            <td style="vertical-align: top;">
+                <table cellpadding="0" cellspacing="0" style='width:800px;vertical-align:top;'>
+                    @*<tr>
+                            <td style='width:10px;'></td>
+                            <td style="font-size: 12px;text-align:center;font-weight: bold; paddingbottom:10px">DELIVERY CHALLAN </td>
+                            <td style='width:10px;'></td>
+                        </tr>*@
+                    <tr>
+                        <td style='width:10px;'></td>
+                        <td style="border:solid 1px #000000;">
+                            <table cellpadding="0" cellspacing="0" style='width:100%;'>
+                                <tr>
+                                    <td style='width: 50%; border-right: solid 1px #000000; vertical-align:top; '>
+                                        <table cellpadding="0" cellspacing="0" class="suppInfo" style=' width:100%;'>
+                                            <tr>
+                                                <td style='border-bottom: solid 1px #000000; '>
+                                                    <table border="0" cellpadding="0" cellspacing="0" class="suppInfo" style=' width:100%;'>
+                                                        <tr>
+                                                            <td width="100%" style="paddingleft:10px;">Issued By </td>
+
+                                                        </tr>
+                                                        <tr>
+                                                            <td width="100%" style="paddingleft: 10px; paddingtop: 5px; paddingbottom: 5px; "><strong> @ViewBag.Details.Tables[0].Rows[0]["comp_nm"].ToString() </strong></td>
+
+                                                        </tr>
+
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style='border-bottom: solid 1px #000000; paddingleft: 5px;'>
+                                                    <table cellpadding="0" cellspacing="0" class="suppInfo" style=' width:100%;'>
+
+                                                        <tr>
+                                                            <td width="20%" style="vertical-align:top;"><strong> Address </strong></td>
+                                                            <td width="75%" style="vertical-align:top;">: @ViewBag.Details.Tables[0].Rows[0]["Comp_Add"].ToString() </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td width="20%" style="paddingtop: 2px; paddingbottom: 2px;"><strong> State  </strong></td>
+                                                            <td width="75%">: @ViewBag.Details.Tables[0].Rows[0]["state_name"].ToString()</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td width="20%" style="paddingtop: 2px; paddingbottom: 2px;"><strong> Country  </strong> </td>
+                                                            <td width="75%">: @ViewBag.Details.Tables[0].Rows[0]["country_name"].ToString()</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td width="20%" style="paddingtop: 2px; paddingbottom: 2px;"><strong> Phone </strong></td>
+                                                            <td width="75%">: @ViewBag.Details.Tables[0].Rows[0]["contact_no"].ToString()</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td width="20%" style="paddingtop: 2px; paddingbottom: 2px;"><strong> Email </strong></td>
+                                                            <td width="75%">: @ViewBag.Details.Tables[0].Rows[0]["email_id1"].ToString()</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td width="20%" style="paddingtop: 2px; paddingbottom: 2px;"><strong> Website </strong></td>
+                                                            <td width="75%">: @ViewBag.Details.Tables[0].Rows[0]["comp_website"].ToString()</td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td width="20%" style="paddingtop: 2px; paddingbottom: 2px;"><strong> GSTIN/UIN </strong></td>
+                                                            <td width="75%">: @ViewBag.Details.Tables[0].Rows[0]["gst_no"].ToString()</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td width="20%" style="paddingtop: 2px; paddingbottom: 5px;"><strong> PAN  </strong> </td>
+                                                            <td width="75%">: @ViewBag.Details.Tables[0].Rows[0]["pan_no"].ToString()</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="paddingleft: 5px;">
+                                                    <table cellpadding="0" cellspacing="0" class="suppInfo" style=''>
+                                                        <tr>
+                                                            <td width="100%" style="paddingtop: 5px; ">Issued To </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td width="100%" style="paddingtop: 5px;">
+                                                                <strong>
+                                                                    @ViewBag.Details.Tables[1].Rows[0]["issue_to"].ToString()
+                                                                </strong>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="paddingleft: 5px;">
+                                                    <table cellpadding="0" cellspacing="0" class="suppInfo">
+                                                        <tr>
+                                                            <td width="25%" style="vertical-align:top;"><strong> Address</strong></td>
+                                                            <td width="65%" style="paddingright:5%">: @ViewBag.Details.Tables[1].Rows[0]["IssuedAddress"].ToString() </td>
+                                                        </tr>
+                                                        @{ /*Added By NItesh 26032025 For Not Symbole in Employee Case*/
+                                                            var Symbole = "";
+                                                            if (@ViewBag.Details.Tables[1].Rows[0]["entity_type"].ToString() != "E")
+                                                            {
+                                                                Symbole = "/";
+                                                            }
+                                                        }
+                                                        <tr>
+                                                            <td width="25%" style="paddingtop: 2px; paddingbottom: 2px;"><strong> Pin Code </strong></td>
+                                                            <td width="65%"> : @ViewBag.Details.Tables[1].Rows[0]["PinCode"].ToString()</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td width="25%" style="paddingtop: 2px; paddingbottom: 2px;"><strong> State / Code </strong></td>
+                                                            <td width="65%"> : @ViewBag.Details.Tables[1].Rows[0]["IssuedStateName"].ToString() @Symbole @ViewBag.Details.Tables[1].Rows[0]["IssuedStateCode"].ToString()</td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td width="25%" style="paddingtop: 2px; paddingbottom: 2px;"><strong> Country </strong> </td>
+                                                            <td width="65%"> : @ViewBag.Details.Tables[1].Rows[0]["IssuedCountryName"].ToString()</td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td width="25%" style="paddingtop: 2px; paddingbottom: 2px;"><strong> GSTIN/UIN  </strong></td>
+                                                            <td width="65%"> : @ViewBag.Details.Tables[1].Rows[0]["IssuedGstNo"].ToString()</td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td width="25%" style="paddingtop: 2px; paddingbottom: 5px;"><strong> Place of Supply  </strong></td>
+                                                            <td width="65%"> :  @ViewBag.Details.Tables[1].Rows[0]["IssuedStateName"].ToString()</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td style='width: 50%; vertical-align:top; '>
+                                        <table class="suppInfo" width="100%" cellpadding="0" cellspacing="0">
+                                            <tr>
+                                                <td width="50%" style='border-bottom: solid 1px #000000; border-right: solid 1px #000000; paddingbottom: 5px; paddingtop: 5px; paddingleft: 5px; '>
+                                                    Delivery Note No. <br />
+                                                    <strong>@ViewBag.Details.Tables[1].Rows[0]["issue_no"].ToString()</strong>
+                                                </td>
+                                                <td width="50%" style='border-bottom: solid 1px #000000; paddingbottom: 5px; paddingtop: 5px; paddingleft: 5px; '>
+                                                    Dated <br />
+                                                    <strong>@ViewBag.Details.Tables[1].Rows[0]["issue_date"].ToString()</strong>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style='border-bottom: solid 1px #000000; border-right: solid 1px #000000; paddingbottom: 5px; paddingtop: 5px; paddingleft: 5px; '>&nbsp;</td>
+                                                <td style='border-bottom: solid 1px #000000; paddingbottom: 5px; paddingtop: 5px; paddingleft: 5px; '>
+                                                    Mode/Terms of Payment
+                                                    <br />
+                                                    <strong>&nbsp;</strong>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style='border-bottom: solid 1px #000000; border-right: solid 1px #000000; paddingbottom: 5px; paddingtop: 5px; paddingleft: 5px; '>
+                                                    Reference No. & Date.
+                                                    <br />
+                                                    <strong>&nbsp;</strong>
+                                                </td>
+                                                <td style='border-bottom: solid 1px #000000; paddingbottom: 5px; paddingtop: 5px; paddingleft: 5px; '>
+                                                    Other References
+                                                    <br />
+                                                    <strong>&nbsp;</strong>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style='border-bottom: solid 1px #000000; border-right: solid 1px #000000; paddingbottom: 5px; paddingtop: 5px; paddingleft: 5px; '>
+                                                    Buyer’s Order No.
+                                                    <br />
+                                                    <strong>&nbsp;</strong>
+                                                </td>
+                                                <td style='border-bottom: solid 1px #000000;  paddingbottom: 5px; paddingtop: 5px; paddingleft: 5px; '>
+                                                    Dated
+                                                    <br />
+                                                    <strong>&nbsp;</strong>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style='border-bottom: solid 1px #000000; border-right: solid 1px #000000; paddingbottom: 5px; paddingtop: 5px; paddingleft: 5px; '>
+                                                    Dispatch Doc No.
+                                                    <br />
+                                                    <strong>&nbsp;</strong>
+                                                </td>
+                                                <td style='border-bottom: solid 1px #000000; paddingbottom: 5px; paddingtop: 5px; paddingleft: 5px; '>&nbsp;</td>
+                                            </tr>
+                                            <tr>
+                                                <td style='border-bottom: solid 1px #000000; border-right: solid 1px #000000; paddingbottom: 5px; paddingtop: 5px; paddingleft: 5px; '>
+                                                    Dispatched through <br />
+                                                    @ViewBag.Details.Tables[1].Rows[0]["disp_through"].ToString()
+                                                </td>
+                                                <td style='border-bottom: solid 1px #000000; paddingbottom: 5px; paddingtop: 5px; paddingleft: 5px; '>
+                                                    Destination
+                                                    <br />
+                                                    <strong>&nbsp;</strong>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style='border-bottom: solid 1px #000000; border-right: solid 1px #000000; paddingbottom: 5px; paddingtop: 5px; paddingleft: 5px; '>Bill of Lading/LR-RR No.</td>
+                                                <td style='border-bottom: solid 1px #000000; paddingbottom: 5px; paddingtop: 5px; paddingleft: 5px; '>
+                                                    Motor Vehicle No. <br />
+                                                    @ViewBag.Details.Tables[1].Rows[0]["VehicleNo"].ToString()
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2" style='paddingbottom: 5px; paddingtop: 5px; paddingleft: 5px; '>
+                                                    Terms of Delivery
+                                                    <br />
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td style='width:10px;'></td>
+                    </tr>
+                    <tr>
+                        <td style='width:10px;'></td>
+                        <td style="paddingbottom:10px;">
+                            <table id="dtlTable" cellspacing="0" cellpadding="0" style=" width:100%; font-size: 12px; font-weight:normal; vertical-align:top; ">
+
+                                <thead>
+                                    <tr>
+                                        <th width="5%" align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'><strong> S.NO.</strong></th>
+                                        <th width="30%" align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'><strong> Description of Goods</strong></th>
+                                        <th width="13%" align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'><strong> HSN/SAC</strong></th>
+                                        <th width="13%" align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'><strong> Quantity</strong></th>
+                                        <th width="13%" align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'><strong> Rate</strong></th>
+                                        <th width="13%" align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'><strong> UOM</strong></th>
+                                        <th width="13%" align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'><strong> Amount</strong></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    @*<tr>
+                                            <td style="border-bottom: solid 1px #000000; border-right: solid 1px #000000; paddingbottom: 5px; paddingtop: 5px; paddingleft: 5px;">1</td>
+                                            <td style="border-bottom: solid 1px #000000; border-right: solid 1px #000000; paddingbottom: 5px; paddingtop: 5px; paddingleft: 5px;">Ecare Pallet</td>
+                                            <td style="border-bottom: solid 1px #000000; border-right: solid 1px #000000; paddingbottom: 5px; paddingtop: 5px; paddingleft: 5px;">39269099</td>
+                                            <td style="border-bottom: solid 1px #000000; border-right: solid 1px #000000; paddingbottom: 5px; paddingtop: 5px; paddingleft: 5px;">7NOS</td>
+                                            <td style="text-align:right; paddingright: 5px; paddingtop:5px; paddingbottom:5px;">3,000.00 </td>
+                                            <td style="border-bottom: solid 1px #000000; border-right: solid 1px #000000; paddingbottom: 5px; paddingtop: 5px; paddingleft: 5px;"> NOS</td>
+                                            <td style="text-align:right; paddingright: 5px; paddingtop:5px; paddingbottom:5px;">21,000.00</td>
+                                        </tr>*@
+                                    @foreach (DataRow dr in dt.Rows)
+                                    {
+                                        <tr>
+                                            <td style='text-align: center; paddingtop: 5px; paddingbottom: 3px; width: 5%;'>@srno</td>
+                                            <td style='text-align: left; paddingleft:5px;paddingtop:5px;paddingbottom:3px; vertical-align:top;'>
+                                                @dr["item_name"].ToString()
+
+
+                                                @if (ViewBag.Details.Tables[4].Rows.Count > 0)
+                                                {
+                                                    data = ViewBag.Details.Tables[4].DefaultView;
+                                                    DataTable NewDT1 = new DataTable();
+                                                    data.RowFilter = "item_id='" + dr["item_id"].ToString() + "'";
+                                                    NewDT1 = data.ToTable();
+                                                    <table cellpadding="0" cellspacing="0" width="100%" style="font-size: 11px; paddingtop:3px;" id="sub">
+                                                        <tr>
+                                                            <td colspan="3"></td>
+                                                        </tr>
+                                                        @foreach (System.Data.DataRow drsubitm in NewDT1.Rows)
+                                                        {
+                                                            if (dr["item_id"].ToString() == drsubitm["item_id"].ToString())
+                                                            {
+                                                                <tr>
+                                                                    <td width="10%" style="paddingtop: 0px;paddingbottom:0px;"></td>
+                                                                    <td width="45%" style="paddingtop: 0px; paddingbottom: 0px;">@drsubitm["sub_item_name"] </td>
+                                                                    <td width="45%" style="text-align: right; paddingtop: 0px; paddingbottom: 0px; paddingright: 5px;"> @drsubitm["issue_qty"]</td>
+                                                                </tr>
+                                                            }
+                                                        }
+                                                    </table>
+                                                }
+                                                <div style="width:95%; float:left; paddingtop:20px; padding-right:5%;"> @dr["it_remarks"].ToString()@*/*Add by Hina on 09-04-2025*/*@</div>
+
+                                            </td>
+                                            <td style="border-bottom: solid 1px #000000; border-right: solid 1px #000000; paddingbottom: 5px; paddingtop: 5px; paddingleft: 5px;">@dr["HSN_code"]</td>
+                                            <td style="border-bottom: solid 1px #000000; border-right: solid 1px #000000; paddingbottom: 5px; paddingtop: 5px; paddingright: 5px; text-align: right;">@dr["issue_qty"]</td>
+                                            <td style="text-align:right; paddingright: 5px; paddingtop:5px; paddingbottom:5px;">@dr["Rate"]</td>
+                                            <td style="border-bottom: solid 1px #000000; border-right: solid 1px #000000; paddingbottom: 5px; paddingtop: 5px; paddingleft: 5px;">@dr["uom_alias"]</td>
+                                            <td style="text-align:right; paddingright: 5px; paddingtop:5px; paddingbottom:5px;">@dr["Amount"]</td>
+                                        </tr>
+                                        //TotalAmount = TotalAmount + Convert.ToDecimal(dr["Amount"]);
+                                        srno = srno + 1;
+                                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td style="border-bottom: solid 1px #000000; border-right: solid 1px #000000; paddingbottom: 5px; paddingtop: 5px; paddingleft: 5px;">&nbsp;</td>
+                                        <td style="border-bottom: solid 1px #000000; border-right: solid 1px #000000; paddingbottom: 5px; paddingtop: 5px; paddingright: 5px; text-align:right">Total</td>
+                                        <td style="border-bottom: solid 1px #000000; border-right: solid 1px #000000; paddingbottom: 5px; paddingtop: 5px; paddingleft: 5px;">&nbsp;</td>
+                                        <td style="border-bottom: solid 1px #000000; border-right: solid 1px #000000; paddingbottom: 5px; paddingtop: 5px; paddingleft: 5px;">&nsub;</td>
+                                        <td style="border-bottom: solid 1px #000000; border-right: solid 1px #000000; paddingbottom: 5px; paddingtop: 5px; paddingleft: 5px;">&nbsp;</td>
+                                        <td style="border-bottom: solid 1px #000000; border-right: solid 1px #000000; paddingbottom: 5px; paddingtop: 5px; paddingleft: 5px;"> &nbsp;</td>
+                                        @*<td style="border-bottom: solid 1px #000000; border-right: solid 1px #000000; paddingbottom: 5px; paddingtop: 5px; paddingleft: 5px; paddingright: 5px; text-align: right;">@TotalAmount.ToString(ValDigit)</td>*@
+                                        <td style="border-bottom: solid 1px #000000; border-right: solid 1px #000000; paddingbottom: 5px; paddingtop: 5px; paddingleft: 5px; paddingright: 5px; text-align: right;">@ViewBag.Details.Tables[1].Rows[0]["TotalAmount"].ToString()</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="7" style="border-bottom: solid 1px #000000; border-right: solid 1px #000000; paddingbottom: 5px; paddingtop: 5px; paddingleft: 5px;">
+                                            Amount Chargeable (in words) <br />
+                                            <strong>@ViewBag.Details.Tables[1].Rows[0]["Total_Amount_inwords"].ToString()</strong>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="7" style="paddingbottom: 5px; paddingtop: 5px; paddingleft: 5px;">
+                                            <strong>Remarks</strong> <br />
+                                            @*<strong>*@
+                                            @ViewBag.Details.Tables[1].Rows[0]["issue_rem"].ToString()
+                                            @*</strong>*@
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </td>
+                        <td style='width:10px;'></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+    @Html.Partial("~/Areas/Common/Views/Cmn_SampleIssue_PrintFooter.cshtml")
+    @*@Html.Partial("~/Areas/Common/Views/Cmn_PrintFooter.cshtml")*@
+</div>

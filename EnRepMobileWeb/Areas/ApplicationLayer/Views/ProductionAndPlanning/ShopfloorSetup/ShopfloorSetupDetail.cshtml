@@ -1,0 +1,770 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.ProductionAndPlanning.ShopfloorSetup.ShopfloorSetupModel
+
+@using EnRepMobileWeb.Resources;
+@using System.Data
+@if (Session["UserId"] == null)
+{
+    Response.Redirect("~/Login");
+}
+
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+
+<script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+<script src="~/Content/Css/build/js/sweetalert.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/ProductionAndPlanning/ShopfloorSetup/ShopfloorSetupDetail.js"></script>
+@*/*start Add by Hina on 19-02-2024 to chk Financial year exist or not*/*@
+@{
+    if (TempData["Message"] != null)
+    {
+        if (TempData["Message"] == "Financial Year not Exist")
+        {
+            <script type="text/javascript">
+                swal("", $("#FinancialYearDoesNotExistTransactionCanNotBeDone").text(), "warning");
+            </script>
+        }
+
+    }
+}
+@*/*End to chk Financial year exist or not*/*@
+@{
+    var Disable = true;
+    string Accshowhide = "";
+    if (Model.TransType == "Update")
+    {
+        if (Model.Command == "Edit")
+        {
+            Disable = false;
+        }
+        else
+        {
+            Disable = true;
+        }
+    }
+    else
+    {
+        Disable = false;
+    }
+
+    if (Model.TransType == "Refresh" || Model.Command == "Refresh")
+    {
+        Disable = true;
+    }
+    if (Model.TransType == "Save")
+    {
+        if (Model.Command == "Add")
+        {
+            Disable = false;
+        }
+        else
+        {
+            Disable = true;
+        }
+    }
+    if (Model.Message != null)
+    {
+        if (Model.Message == "Duplicate")
+        {
+            Disable = false;
+
+        }
+    }
+}
+@{ if (Model.Message != null)
+    {
+        Model.hdnsaveApprovebtn = null;
+        if (Model.Message == "Save")
+        {
+            <script type="text/javascript">
+                swal("", $("#savemsg").text(), "success");
+            </script>
+        }
+        if (Model.Message == "Deleted")
+        {
+            <script type="text/javascript">
+                swal("", $("#deletemsg").text(), "success");
+            </script>
+        }
+        if (Model.Message == "Used")
+        {
+            <script type="text/javascript">
+                swal("", $("#DependencyExist").text(), "warning");
+            </script>
+        }
+        if (Model.Message == "Duplicate")
+        {
+            <script type="text/javascript">
+                $(document).ready(function () {
+                    document.getElementById("vmshfl_name").innerHTML = $("#valueduplicate").text();
+                    $("#shfl_name").css("border-color", "red");
+                });
+            </script>
+        }
+        Model.Message = null;
+    }
+}
+
+<title>@Model.Title</title>
+@using (Html.BeginForm("ShopfloorSave", "ShopfloorSetup", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    {
+        <div class="row">
+            <div class="col-md-12 col-sm-12 ">
+                <div class="x_panel mar_pad1 ">
+                    <div class="x_content mar_pad1">
+                        <h2 class="col-md-7 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                        <div id="" class="col-md-5 col-sm-12 work_flow heading_right_padding">
+
+                            @{
+                                //var btnName = Session["BtnName"].ToString();
+                                var btnName = Model.BtnName;
+                                switch (btnName)
+                                {
+
+                                    case "BtnAddNew":
+                                        <ul>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "105105101001")
+                                                    {
+                                                        <li>
+                                                            <button class="add" data-placement="top"
+                                                                    title="@Resource.AddNew" disabled style="filter: grayscale(100%)" type="submit" id="btn_add" name="Command" value="Add"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "105105101002")
+                                                    {
+                                                        <li>
+                                                            <button class="edit" data-placement="top"
+                                                                    title="@Resource.Edit" disabled style="filter: grayscale(100%)" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "105105101004")
+                                                    {
+                                                        <li>
+                                                            <button class="delete" data-placement="top"
+                                                                    title="@Resource.Delete" disabled style="filter: grayscale(100%)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                        </li>
+                                                    }
+                                                }
+                                            }
+
+
+
+                                            <li>
+                                                <button class="save" data-placement="top"
+                                                        title="@Resource.Save" onclick="return  validateSFDetailInsert();" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                            </li>
+                                            <li>
+                                                <button class="refresh" data-placement="top"
+                                                        title="@Resource.Refresh" type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                                            </li>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "105105101005")
+                                                    {
+                                                        <li>
+                                                            <button class="print" data-placement="top"
+                                                                    title="@Resource.Print" disabled style="filter: grayscale(100%)" type="submit" id="btn_print" name="Command" value="Print"></button>
+                                                        </li>
+                                                    }
+                                                }
+                                            }
+
+                                            <li>
+                                                <button class="back" data-placement="top"
+                                                        title="@Resource.Back" disabled style="filter: grayscale(100%)" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                                            </li>
+                                        </ul>
+                                        break;
+                                    case "BtnSave":
+                                        <ul>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "105105101001")
+                                                    {
+                                                        <li>
+                                                            <button class="add" data-placement="top" title="@Resource.AddNew" type="submit" id="btn_add" name="Command" value="Add"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "105105101002")
+                                                    {
+                                                        <li>
+                                                            <button class="edit" data-placement="top" title="@Resource.Edit" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "105105101004")
+                                                    {
+                                                        <li>
+                                                            <button class="delete" data-placement="top" onclick="return functionConfirm(this);" title="@Resource.Delete" type="submit" id="btn_del" name="Command" value="Delete"></button>
+
+                                                        </li>
+                                                        @Html.HiddenFor(m => m.DeleteCommand, new { @id = "HdDeleteCommand" })
+                                                    }
+                                                }
+                                            }
+
+
+
+                                            <li>
+                                                <button class="save" data-placement="top"
+                                                        title="@Resource.Save" disabled style="filter: grayscale(100%)" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                            </li>
+                                            <li>
+                                                <button class="refresh" data-placement="top"
+                                                        title="@Resource.Refresh" type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                                            </li>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "105105101005")
+                                                    {
+                                                        <li>
+                                                            <button class="print" data-placement="top"
+                                                                    title="@Resource.Print" disabled style="filter: grayscale(100%)" type="submit" id="btn_print" name="Command" value="Print"></button>
+                                                        </li>
+                                                    }
+                                                }
+                                            }
+
+                                            <li>
+                                                <button class="back" data-placement="top"
+                                                        title="@Resource.Back" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                                            </li>
+                                        </ul>
+                                        break;
+                                    case "BtnEdit":
+                                        <ul>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "105105101001")
+                                                    {
+                                                        <li>
+                                                            <button class="add" data-placement="top"
+                                                                    title="@Resource.AddNew" type="submit" id="btn_add" name="Command" value="Add"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "105105101002")
+                                                    {
+                                                        <li>
+                                                            <button class="edit" data-placement="top"
+                                                                    title="@Resource.Edit" type="submit" id="btn_edit" onclick="return enableProductionCap(this);" name="Command" value="Edit"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "105105101004")
+                                                    {
+                                                        <li>
+                                                            <button class="delete" data-placement="top"
+                                                                    title="@Resource.Delete" onclick="return functionConfirm(this);" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                        </li>
+                                                        @Html.HiddenFor(model => model.DeleteCommand, new { @id = "HdDeleteCommand" })
+                                                    }
+                                                }
+                                            }
+
+
+
+                                            <li>
+                                                <button class="save" data-placement="top"
+                                                        title="@Resource.Save" disabled style="filter: grayscale(100%)" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                                @*<button class="save"  data-placement="top"
+                                                    title="@Resource.Save" onclick="return  InsertItemGroupDetail();" type="submit" id="btn_save" name="Command" value="Save"></button>*@
+                                            </li>
+                                            <li>
+                                                <button class="refresh" data-placement="top"
+                                                        title="@Resource.Refresh" type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                                            </li>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "105105101005")
+                                                    {
+                                                        <li>
+                                                            <button class="print" data-placement="top"
+                                                                    title="@Resource.Print" disabled style="filter: grayscale(100%)" type="submit" id="btn_print" name="Command" value="Print"></button>
+                                                        </li>
+                                                    }
+                                                }
+                                            }
+
+                                            <li>
+                                                <button class="back" data-placement="top"
+                                                        title="@Resource.Back" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                                            </li>
+                                        </ul>
+                                        break;
+                                    case "BtnRefresh":
+                                        <ul>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "105105101001")
+                                                    {
+                                                        <li>
+                                                            <button class="add" data-placement="top"
+                                                                    title="@Resource.AddNew" type="submit" id="btn_add" name="Command" value="Add"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "105105101002")
+                                                    {
+                                                        <li>
+                                                            <button class="edit" data-placement="top"
+                                                                    title="@Resource.Edit" disabled style="filter: grayscale(100%)" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "105105101004")
+                                                    {
+                                                        <li>
+                                                            <button class="delete" data-placement="top"
+                                                                    title="@Resource.Delete" disabled style="filter: grayscale(100%)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                        </li>
+                                                    }
+                                                }
+                                            }
+
+
+
+                                            <li>
+                                                <button class="save" data-placement="top"
+                                                        title="@Resource.Save" disabled style="filter: grayscale(100%)" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                            </li>
+                                            <li>
+                                                <button class="refresh" data-placement="top"
+                                                        title="@Resource.Refresh" disabled style="filter: grayscale(100%)" type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                                            </li>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "105105101005")
+                                                    {
+                                                        <li>
+                                                            <button class="print" data-placement="top"
+                                                                    title="@Resource.Print" disabled style="filter: grayscale(100%)" type="submit" id="btn_print" name="Command" value="Print"></button>
+                                                        </li>
+                                                    }
+                                                }
+                                            }
+
+                                            <li>
+                                                <button class="back" data-placement="top"
+                                                        title="@Resource.Back" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                                            </li>
+                                        </ul>
+                                        break;
+                                    case "BtnDelete":
+                                        <ul>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "105105101001")
+                                                    {
+                                                        <li>
+                                                            <button class="add" data-placement="top"
+                                                                    title="@Resource.AddNew" type="submit" id="btn_add" name="Command" value="Add"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "105105101002")
+                                                    {
+                                                        <li>
+                                                            <button class="edit" data-placement="top"
+                                                                    title="@Resource.Edit" disabled style="filter: grayscale(100%)" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "105105101004")
+                                                    {
+                                                        <li>
+                                                            <button class="delete" data-placement="top"
+                                                                    title="@Resource.Delete" disabled style="filter: grayscale(100%)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                        </li>
+                                                    }
+                                                }
+                                            }
+
+
+
+
+                                            <li>
+                                                <button class="save" data-placement="top"
+                                                        title="@Resource.Save" disabled style="filter: grayscale(100%)" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                            </li>
+                                            <li>
+                                                <button class="refresh" data-placement="top"
+                                                        title="@Resource.Refresh" disabled style="filter: grayscale(100%)" type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                                            </li>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "105105101005")
+                                                    {
+                                                        <li>
+                                                            <button class="print" data-placement="top"
+                                                                    title="@Resource.Print" disabled style="filter: grayscale(100%)" type="submit" id="btn_print" name="Command" value="Print"></button>
+                                                        </li>
+                                                    }
+                                                }
+                                            }
+
+                                            <li>
+                                                <button class="back" data-placement="top"
+                                                        title="@Resource.Back" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                                            </li>
+                                        </ul>
+                                        break;
+                                }
+                            }
+
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="x_title pad_mar ">
+                            <div class="col-md-12 col-sm-12 icon_tool ">
+                                <!--<span>Collapsible / Accordion </span>-->
+                                <div class="approved_by">
+                                    <ul>
+                                        <li>
+                                            <span>
+                                                @Resource.CreatedBy <br><b>@Html.DisplayFor(model => model.create_id)</b>
+
+                                            </span>
+                                        </li>
+                                        <li>
+                                            <span>
+                                                @Resource.Createdon<br>
+                                                <b>@Html.DisplayFor(model => model.create_dt)</b>
+                                            </span>
+                                        </li>
+                                        <li>
+                                            <span>@Resource.AmendedBy<br> <b>@Html.DisplayFor(model => model.mod_id)</b></span>
+                                        </li>
+                                        <li>
+                                            <span>@Resource.AmendedOn<br> <b>@Html.DisplayFor(model => model.mod_dt)</b></span>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @Html.HiddenFor(model => model.TransType, new { @id = "hdn_TransType" })
+            @Html.HiddenFor(model => model.Title, new { @id = "hdn_title" })
+            @Html.HiddenFor(model => model.hdnsaveApprovebtn, new { @id = "hdnsavebtn" })
+
+            <div class="col-md-12 col-sm-12 ">
+                <div class="x_panel mar_pad1 ">
+                    <div class="x_content mar_pad1">
+                        <article class="panel-group bs-accordion" id="accordion" role="tablist" aria-multiselectable="true" style="margin-top:10px;">
+                            <section class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="headingOne">
+                                    <h4 class="panel-title">  <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne"> @Resource.ShopFloorDetail<span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a></h4>
+                                </div>
+                                <div id="collapseOne" class="panel-collapse in collapse show" role="tabpanel" aria-labelledby="headingOne" style="">
+                                    <!--<form class="accordian_form_bg" action="" method="post" novalidate>-->
+                                    <div class="panel-body">
+                                        <div class="col-md-3 col-sm-12">
+                                            <label class="col-form-label label-align">@Resource.ShopfloorName <span class="required">*</span> </label>
+                                            @if (Disable)
+                                            {
+                                                @Html.TextBoxFor(model => model.shfl_name, new { @id = "shfl_name", @class = "form-control", @placeholder = "Shopfloor Name", @maxlength = "25", autocomplete = "off", onchange = "OnChangeopname()", onInput = "OnChangeopname()", disabled = "disabled" })
+                                                @Html.ValidationMessageFor(model => model.shfl_name, String.Empty, new { @style = "color:red;!important", @id = "vmshfl_name" })
+                                            }
+                                            else
+                                            {
+                                                @Html.TextBoxFor(model => model.shfl_name, new { @id = "shfl_name", @class = "form-control", @placeholder = "Shopfloor Name", @maxlength = "25", autocomplete = "off", onchange = "OnChangeopname()", onInput = "OnChangeopname()" })
+                                                @Html.ValidationMessageFor(model => model.shfl_name, String.Empty, new { @style = "color:red;!important", @id = "vmshfl_name" })
+                                            }
+                                            <span id="spanShopfloorName" class="error_message"></span>
+                                            @*<input id="ShopfloorName" class="form-control" autocomplete="off" maxlength="25" type="text" name="ShopfloorName"  placeholder="Shopfloor Name"  onblur="this.placeholder='ShopfloorName'">*@
+
+                                        </div>
+                                        <div class="col-md-3 col-sm-12">
+                                            <label class="col-form-label label-align">@Resource.Location </label>
+                                            @if (Disable)
+                                            {
+                                                @Html.TextBoxFor(model => model.shfl_loc, new { @id = "shfl_loc", @class = "form-control", @placeholder = "Location", @maxlength = "100", autocomplete = "off", disabled = "disabled" })
+                                                @*@Html.ValidationMessageFor(model => model.shfl_loc, String.Empty, new { @style = "color:red;!important", @id = "vmshfl_loc" })*@
+                                            }
+                                            else
+                                            {
+                                                @Html.TextBoxFor(model => model.shfl_loc, new { @id = "shfl_loc", @class = "form-control", @placeholder = "Location", @maxlength = "100", autocomplete = "off" })
+                                                @*@Html.ValidationMessageFor(model => model.shfl_name, String.Empty, new { @style = "color:red;!important", @id = "vmshfl_name" })*@
+                                            }
+                                            @*<input id="Location" class="form-control" autocomplete="off" maxlength="25" type="text" name="Location"  placeholder="Location"  onblur="this.placeholder='Location'">*@
+
+                                        </div>
+                                        <div class="col-md-3 col-sm-12">
+                                            <label class="col-form-label label-align">@Resource.remarks</label>
+                                            @if (Disable)
+                                            {
+                                                @Html.TextAreaFor(model => model.shfl_remarks, new { @id = "shfl_remarks", @class = "form-control remarksmessage", @maxlength = "100", @placeholder = Resource.remarks, @readonly = "readonly", })
+                                            }
+                                            else
+                                            {
+                                                @Html.TextAreaFor(model => model.shfl_remarks, new { @id = "shfl_remarks", @class = "form-control remarksmessage", @maxlength = "100", @placeholder = "Remarks" })
+                                            }
+                                            @*<textarea class="form-control" cols="20" id="dn_rem" name="dn_rem" placeholder="@Resource.remarks" rows="2" style="height:26px;"></textarea>*@
+                                        </div>
+                                        @Html.HiddenFor(model => model.shfl_id, new { @id = "hdnshfl_id" })
+
+                                        <div class="clear"></div>
+                                    </div>
+                                    <!--</form>-->
+                                </div>
+                            </section>
+                            <section class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="headingTwo">
+                                    <h4 class="panel-title"> <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo"> @Resource.ProductionCapacity <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a> </h4>
+                                </div>
+
+                                @if (Disable == false)
+                                {
+                                    Accshowhide = "show";
+                                }
+
+                                <div id="collapseTwo" class="panel-collapse collapse @Accshowhide" role="tabpanel" aria-labelledby="headingTwo">
+
+
+                                    <div class="panel-body">
+                                        <div class="col-md-55 col-sm-12">
+                                            <label class="col-form-label label-align">@Resource.ItemName <span class="required">*</span></label>
+                                            @if (Disable)
+                                            {
+                                                <select class="form-control" id="ddl_ItemName" name="Status" onchange="ddl_ItemName_onchange()" disabled>
+                                                </select>
+                                            }
+                                            else
+                                            {
+                                                <select class="form-control" id="ddl_ItemName" name="Status" onchange="ddl_ItemName_onchange()">
+                                                </select>
+                                            }
+                                            <span id="spanddl_ItemName" class="error_message"></span>
+                                        </div>
+                                        <div class="col-md-2 col-sm-12">
+                                            <label class="col-form-label label-align" title="Base Unit Of Measure">UOM</label>
+                                            <input id="UOM" class="form-control" autocomplete="off" type="text" name="UOM" value="" required="required" placeholder="@Resource.UOM" disabled>
+                                            <input id="UOMID" value='' type="hidden" />
+                                            <span id="spanUom" class="error_message"></span>
+                                        </div>
+                                        <div class="col-md-55 col-sm-12">
+                                            <label class="col-form-label label-align">@Resource.OptimumQuantity <span class="required">*</span></label>
+                                            @if (Disable)
+                                            {
+                                                <input id="OptimumQuantity" class="form-control num_right" onpaste="return CopyPasteData(event);" autocomplete="off" maxlength="25" type="text" name="OptimumQuantity" onInput="onchangeOptimumQuantity(this,event)" placeholder="0000.00" disabled>
+                                            }
+                                            else
+                                            {
+                                                <input id="OptimumQuantity" class="form-control num_right" autocomplete="off" onkeypress="return AmtFloatQtyonly(this, event)" type="text" name="OptimumQuantity" onpaste="return CopyPasteData(event);" onchange="OnclickReqQty(event)" @*onInput="onchangeOptimumQuantity(this,event)"*@ onkeypress="return AmtFloatQtyonly(this,event)" placeholder="0000.00">
+                                            }
+                                            <span id="spanOptmQty" class="error_message"></span>
+                                        </div>
+                                        <div class="col-md-55 col-sm-12">
+                                            <label class="col-form-label label-align">@Resource.PerUnit <span class="required">*</span></label>
+                                            @*<input id="PerUnit" class="form-control" autocomplete="off" maxlength="25" type="text" name="PerUnit"  placeholder="PerUnit"  onblur="this.placeholder='PerUnit'">*@
+                                            @if (Disable)
+                                            {
+                                                <select class="form-control" id="PerUnit" name="Status" onchange="onchangePerUnit(this)" disabled>
+                                                    <option value="0">---Select---</option>
+                                                    <option value="M">Monthly</option>
+                                                    <option value="Q">Quarterly</option>
+                                                    <option value="Y">Yearly</option>
+                                                </select>
+                                            }
+                                            else
+                                            {
+                                                <select class="form-control" id="PerUnit" name="Status" onchange="onchangePerUnit(this)">
+                                                    <option value="0">---Select---</option>
+                                                    <option value="M">Monthly</option>
+                                                    <option value="Q">Quarterly</option>
+                                                    <option value="Y">Yearly</option>
+                                                </select>
+                                            }
+                                            <span id="spanPerUnit" class="error_message"></span>
+                                        </div>
+                                        @if (Disable)
+                                        {
+                                            <div class="col-md-1 col-sm-12" id="divAddNew" style="display:none">
+                                                <a href="#">
+                                                    <div class="plus_icon2"> <i class="fa fa-plus" id="ParaNewAddBtn" onclick="AddNewRow()" title=" @Resource.AddNew"></i> </div>
+                                                </a>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="col-md-1 col-sm-12" id="divAddNew">
+                                                <a href="#">
+                                                    <div class="plus_icon2"> <i class="fa fa-plus" id="ParaNewAddBtn" onclick="AddNewRow()" title=" @Resource.AddNew"></i> </div>
+                                                </a>
+                                            </div>
+                                        }
+                                        <div class="col-md-1 col-sm-12" id="divUpdate">
+                                            <a href="#" style="color:#ffffff;">
+                                                <div class="plus_icon2"> <i class="fa fa-refresh ref" id="ParaItemUpdateBtn" onclick="OnClickParaItemUpdateBtn(this)" title="" data-original-title="Update"></i> </div>
+                                                <input type="hidden" id="hdnUpdateInTable" />
+                                            </a>
+                                        </div>
+                                        @Html.HiddenFor(model => model.shopfloorattrdetails, new { @id = "hdnshopfloorattrdetailsList" })
+                                        <div class="card-box table-responsive dy_table">
+                                            <div class="sticky-table sticky-ltr-cells sb-container container-example1" style="max-height:200px;">
+                                                <div class="col-md-12 col-sm-12 margin20">
+
+                                                    <table class="table table-striped jambo_table bulk_action rowhighlighttbl" id="tblProdCap" style="width:100%">
+                                                        <thead>
+                                                            <tr class="headings">
+                                                                <th class="column-title" width="3%"></th>
+                                                                <th class="column-title" width="3%"></th>
+                                                                <th width="2%">@Resource.SrNo</th>
+                                                                <th width="32%">@Resource.ItemName</th>
+                                                                <th width="20%">@Resource.UOM</th>
+                                                                <th width="20%">@Resource.OptimumQuantity</th>
+                                                                <th width="20%">@Resource.PerUnit</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @if (Model != null && Model.ProductionCapacityList != null)
+                                                            {
+
+                                                                Int32 count = 0;
+
+                                                                foreach (var item in Model.ProductionCapacityList)
+                                                                {
+                                                                    count++;
+                                                                    <tr>
+                                                                        @if (Disable)
+                                                                        {
+                                                                            <td class="red center"> <i class="fa fa-trash" aria-hidden="true" id="delBtnIcon" title="@Resource.Delete" disabled style="filter: grayscale(100%)"></i></td>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td class="red center"> <i class="fa fa-trash" aria-hidden="true" id="delBtnIcon" &nbsp;title="@Resource.Delete" onclick="deleteRow(this,event)"></i></td>
+                                                                        }
+                                                                        @if (Disable)
+                                                                        {
+                                                                            <td class="center edit_icon"> <i class="fa fa-edit editshopfloor" aria-hidden="true" id="editBtnIcon" title="@Resource.Edit" disabled style="filter: grayscale(100%)"></i></td>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td class="center edit_icon"> <i class="fa fa-edit editshopfloor" aria-hidden="true" id="editBtnIcon" title="@Resource.Edit" onclick="editRow(this,event)"></i></td>
+                                                                        }
+                                                                        <td id="count">@count</td>
+                                                                        <td style="display: none;"><input type="hidden" id="SNohf" value="@count" /></td>
+                                                                        <td id="item_name">@item.item_name</td>
+                                                                        <td style="display: none;"><input type="hidden" id="tbl_hdn_Itm_ID" name="tbl_hdn_Itm_ID" value="@item.item_id" /></td>
+                                                                        <td id="uom_alias">@item.uom_alias</td>
+                                                                        <td style="display: none;"><input type="hidden" id="tbl_hdn_UOM_ID" value="@item.uom_id" /></td>
+                                                                        <td id="optm_qty" class="num_right">@item.optm_qty</td>
+                                                                        <td id="per_units">@item.per_unit</td>
+                                                                        <td style="display: none;"><input type="hidden" id="tbl_hdn_PerUnit_Val" value="@item.per_unit_val" /></td>
+                                                                        <td style="display: none;"><input type="hidden" id="tbl_hdn_sno" value="@count" /></td>
+                                                                        <td id="item_id" class=" " hidden="hidden">@item.item_id</td>
+                                                                        <td id="uom_id" class=" " hidden="hidden">@item.uom_id</td>
+                                                                        @*<td id="per_unit_val" class=" " hidden="hidden">@item.per_unit_val</td>*@
+                                                                    </tr>
+                                                                }
+                                                            }
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                            <section class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="headingThree">
+                                    <h4 class="panel-title"> <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree"> @Resource.ProductionHistory <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a> </h4>
+                                </div>
+                                <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+                                    <div class="panel-body">
+                                        <div class="card-box table-responsive dy_table">
+                                            <div class="sticky-table sticky-ltr-cells sb-container container-example1 " style="max-height:200px;">
+
+
+                                                <table id="tblProdHis" class="table table-bordered rowhighlighttbl">
+                                                    <thead>
+                                                        <tr class="headings">
+                                                            <th width="2%">@Resource.SrNo</th>
+                                                            <th width="10%">@Resource.ProductionDate</th>
+                                                            <th width="10%">@Resource.ItemName</th>
+                                                            <th width="10%">@Resource.UOM</th>
+                                                            <th width="7%">@Resource.QuantityProduced</th>
+                                                            <th width="9%">@Resource.QuantityRejected</th>
+                                                            @*<th width="9%">@Resource.SupervisorName</th>*@
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @if (Model != null && Model.ProductionHistoryList != null)
+                                                        {
+
+                                                            Int32 count = 0;
+
+                                                            foreach (var row in Model.ProductionHistoryList)
+                                                            {
+                                                                count++;
+                                                                <tr>
+
+                                                                    <td id="count">@count</td>
+                                                                    <td style="display: none;"><input type="hidden" id="sr_no" value="@count" /></td>
+                                                                    <td>@row.cnf_dt</td>
+                                                                    <td id="itm">@row.item_name</td>
+                                                                    <td style="display: none;"><input type="hidden" id="itmid" name="tbl_hdn_Itm_ID" value="@row.item_id" /></td>
+                                                                    <td id="">@row.uom_alias</td>
+                                                                    <td style="display: none;"><input type="hidden" id="uomid" value="@row.uom_id" /></td>
+                                                                    <td id="prod_qty" class="num_right">@row.prod_qty</td>
+                                                                    <td>@row.reject_qty</td>
+                                                                </tr>
+                                                            }
+                                                        }
+                                                        @*<tr>
+                                                                <td>01 </td>
+                                                                <td>10-02-2021 </td>
+                                                                <td>Item1 </td>
+                                                                <td>Pcs </td>
+                                                                <td class="num_right">240 </td>
+                                                                <td class="num_right">10 </td>
+                                                                <td>Mr Ashish Singh </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>02 </td>
+                                                                <td>15-02-2021 </td>
+                                                                <td>Item2 </td>
+                                                                <td>Pcs </td>
+                                                                <td class="num_right">450 </td>
+                                                                <td class="num_right">0 </td>
+                                                                <td>Mr Amit Tyagi </td>
+                                                            </tr>*@
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                            @{
+                                ViewBag.Disable = Disable;
+                            }
+                            @*@Html.Partial("~/Areas/Common/Views/Comn_PartialAttatchmentDetail.cshtml")
+                                @Html.HiddenFor(model => model.attatchmentdetail, new { @id = "hdn_Attatchment_details" })*@
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}

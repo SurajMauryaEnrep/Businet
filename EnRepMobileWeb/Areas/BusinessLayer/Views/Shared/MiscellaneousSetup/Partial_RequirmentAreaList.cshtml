@@ -1,0 +1,77 @@
+﻿@using EnRepMobileWeb.Resources;
+@{
+    var EditFlag = "N";
+    var DeleteFlag = "N";
+    if (ViewBag.VBRoleList != null)
+    {
+        foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+        {
+            if (Row["feature_id"].ToString() == "103205112002")
+            {
+                EditFlag = "Y";
+            }
+            if (Row["feature_id"].ToString() == "103205112004")
+            {
+                DeleteFlag = "Y";
+            }
+        }
+    }
+}
+<table id="datatable-buttons8" class="table table-bordered data_table_full_width rowhighlighttbl">
+    <thead>
+        <tr class="sticky-header">
+            <th class="wi">@Resource.SrNo</th>
+            <th> @Resource.RequirementAreaName</th>
+            <th> @Resource.Shopfloor</th>
+            <th hidden="hidden"></th>
+            <th hidden="hidden"></th>
+            <th class="wi"> &nbsp;</th>
+            <th class="wi"> &nbsp;</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            var i = 0;
+        }
+        @if (ViewBag.RequirmentAreaList != null)
+        {
+            foreach (System.Data.DataRow dr in ViewBag.RequirmentAreaList.Rows)
+            {
+                i = i + 1;
+
+                <tr role="row" class="odd">
+                    <td class="sorting_1">@i</td>
+                    <td id="setupvalReqArea">@dr["setup_val"].ToString()</td>
+                    <td hidden="hidden" id="settypeReqArea">@dr["setup_type_id"].ToString()</td>
+                    <td hidden="hidden" id="setupidReqArea">@dr["setup_id"].ToString()</td>
+                    <td class="center">
+                        @if (@dr["setup_flag"].ToString() == "Y")
+                        {
+                            <i class="fa fa-check text-success"></i>
+                        }
+                        else
+                        {
+                            <i class="fa fa-times-circle text-danger"></i>
+                        }
+                        <span hidden="hidden" id="Hdn_ShopFloor">@dr["setup_flag"].ToString()</span>
+                    </td>
+                    <td class="center">
+                        @if (EditFlag == "Y")
+                        {
+                            <i type="submit" class="fa fa-edit" onclick="EditRequirmentArea(event)" aria-hidden="true" title="@Resource.Edit"></i>
+                        }
+                    </td>
+                    <td class="center">
+                        @if (DeleteFlag == "Y")
+                        {
+                            <i class="fa fa-trash red" aria-hidden="true" title="@Resource.Delete" onclick="return functionConfirm(event,'ReqArea')"></i>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+
+

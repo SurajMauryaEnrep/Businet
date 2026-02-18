@@ -1,0 +1,57 @@
+﻿@model EnRepMobileWeb.MODELS.BusinessLayer.TaxTemplate.TaxTemplate_Model
+@using EnRepMobileWeb.Resources;
+@using System.Data
+@if (Session["UserId"] == null)
+{
+    Response.Redirect("~/Login");
+}
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+<script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+<title>@Model.Title</title>
+<div class="clearfix"></div>
+<div class="row">
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <h2 class="col-md-9 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+
+                <div id="" class="col-md-3 col-sm-12 heading_right_padding">
+                    @if (ViewBag.VBRoleList != null)
+                    {
+                        foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                        {
+                            if (Row["feature_id"].ToString() == "103157001")
+                            {
+                                <ul>
+                                    <li>
+                                        <a class="tooltip-test"
+                                           title="@Resource.AddNew" href="@Url.Action("TaxTemplateDetail","TaxTemplate")"><img src="~/Content/Images/addgreen.png" width="32" id="Btn_AddNewSI" height="32" alt="Add"></a>
+                                    </li>
+                                </ul>
+                            }
+                        }
+                    }
+
+                </div>
+                <div class="x_title pad_mar ">
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12 ">
+        <div id="Itm_Details_List" class="x_panel margin_top_zero">
+            <div class="x_content">
+                <div class="card-box table-responsive dy_table">
+                    <div id="tbodySIList" class="sticky-table sticky-ltr-cells sb-container container-example1">
+                        @Html.Partial("~/Areas/BusinessLayer/Views/Shared/PartialTaxTemplateList.cshtml")
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- page content end -->

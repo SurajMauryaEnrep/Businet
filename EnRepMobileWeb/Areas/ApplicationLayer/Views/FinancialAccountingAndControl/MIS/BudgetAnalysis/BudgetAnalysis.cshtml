@@ -1,0 +1,157 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.FinancialAccountingAndControl.MIS.BudgetAnalysis.BudgetAnalysisModel
+@using EnRepMobileWeb.Resources;
+@using System.Data
+@*@if (Session["UserId"] == null)
+    {
+        Response.Redirect("~/Login");
+    }*@
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+<script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/FinancialAccountingAndControl/MIS/BudgetAnalysis/BudgetAnalysisJS.js"></script>
+<script>
+    $(document).ready(function () {
+        onchangeShowAs();
+    });
+    function onchangeShowAs() {
+        var showAs = $("#DdlShowAs").val();
+        if (showAs == "Y") {
+            $("#BudgetAnalysisYearly").css("display", "block")
+            $("#BudgetAnalysisQuarterly").css("display", "none")
+            $("#BudgetAnalysisMonthly").css("display", "none")
+        } else if (showAs == "Q") {
+            $("#BudgetAnalysisYearly").css("display", "none")
+            $("#BudgetAnalysisQuarterly").css("display", "block")
+            $("#BudgetAnalysisMonthly").css("display", "none")
+        } else if (showAs == "M") {
+            $("#BudgetAnalysisYearly").css("display", "none")
+            $("#BudgetAnalysisQuarterly").css("display", "none")
+            $("#BudgetAnalysisMonthly").css("display", "block")
+        }
+    }
+</script>
+<title>@Model.Title</title>
+@using (Html.BeginForm("BudgetAnalysisDetail", "BudgetAnalysis", FormMethod.Post))
+{
+<div class="row">
+    <!--MIS Quarterly Allocation -->
+    <div id="QuarterlyAllocation" class="modal fade" role="dialog">
+        <div class="modal-dialog" style=" max-width:700px;" id="PopupQuarterlyAllocation">
+            @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialMISQuarterlyAllocation.cshtml")
+        </div>
+    </div>
+
+    <!-- MIS Monthly Allocation -->
+    <div id="MonthlyAllocation" class="modal fade" role="dialog">
+        <div class="modal-dialog" style=" max-width:700px;" id="popupMonthlyAllocation">
+            @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialMISMonthlyAllocation.cshtml")
+        </div>
+    </div>
+    <!-- Cost Center Detail -->
+    <div id="CostCenterAllocation" class="modal fade" role="dialog">
+        <div class="modal-dialog" style=" max-width:800px;" id="popupCostCenterAllocation">
+            @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialMISCostCenterAllocation.cshtml")
+        </div>
+    </div>
+    <!-- MIS Expense Detail -->
+    <div id="ExpenseDetail" class="modal fade" role="dialog">
+        <div class="modal-dialog" id="popupExpenseDetail" style=" max-width:800px;">
+            @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialMISExpenseDetail.cshtml")
+        </div>
+    </div>
+    @Html.HiddenFor(model => model.searchValue, new { @id = "searchValue" })
+    @Html.HiddenFor(model => model.hdnCSVPrint, new { @id = "hdnCSVPrint" })
+    @Html.HiddenFor(model => model.BudgetAnalysisData, new { @id = "hdnBudgetAnalysisData" })
+
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <h2 class="col-md-12 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                <input type="hidden" id="DocumentMenuId" value="@ViewBag.DocumentMenuId" />@*/*Add by Hina sharma on 19-11-2024 to loader*/*@
+                <div class="x_title pad_mar ">
+                    <div class="col-md-12 col-sm-12 icon_tool padding_zero">
+                        <form class="available_stock pad_mar" action="" method="post" novalidate="">
+                            <div class="col-md-12 col-sm-12 no-padding ">
+                                <div class="col-md-2 col-sm-12 pb-2">
+                                    <label class="col-form-label label-align">@Resource.GLAccount </label>
+                                    @Html.DropDownListFor(model => model.glAccId, new SelectList(Model.GlAccList, "acc_id", "acc_name"), new { @class = "form-control", @id = "ddlGlAccList", onchange = "OnChangeGlAcc()" })
+                                </div>
+                                <div class="col-md-2 col-sm-12 pl-0 pb-2">
+                                    <label class="col-form-label label-align">@Resource.FinancialYear<span class="required"> *</span></label>
+                                    @Html.DropDownListFor(model => model.FinYear, new SelectList(Model.FinYearList, "Key", "Value"), new { @class = "form-control", @id = "ddlFYList", onchange = "validateFY();OnChangeFY();OnChangeQtr();GetBudgerAnalysisReport();" })
+                                    <span id="reqFY" style="display:none; color:red;"></span>
+                                    @Html.ValidationMessageFor(model => model.FinYear, String.Empty, new { @style = "color:red;!important", @id = "valid_FinYear" })
+
+                                </div>
+                                <div class="col-md-2 col-sm-12 pl-0 pb-2">
+                                    <label class="col-form-label label-align">@Resource.Period</label>
+                                    @if (Model.PeriodDashBoad != null)
+                                    {
+                                        <input class="form-control" id="txtPeriod" name="Period" onchange="" value="@Model.PeriodDashBoad " type="text" disabled placeholder="@Resource.Period">
+                                    }
+                                    else
+                                    {
+                                        <input class="form-control" id="txtPeriod" name="Period" onchange="" type="text" disabled placeholder="@Resource.Period">
+                                    }
+
+                                </div>
+                                <div id="divQuarter" class="col-md-2 col-sm-12 pl-0 pb-2">
+                                    <label class="col-form-label label-align">@Resource.Quarter</label>
+                                    @Html.DropDownListFor(model => model.Quarter, new SelectList(Model.FYQuarterList, "Key", "Value"), new { @class = "form-control", @id = "ddlQuarterList", onchange = "OnChangeQtr();GetBudgerAnalysisReport();" })
+                                </div>
+                                <div id="divMonth" class="col-md-2 col-sm-12 pl-0 pb-2">
+                                    <label class="col-form-label label-align">@Resource.Month</label>
+                                    @Html.DropDownListFor(model => model.Month, new SelectList(Model.FyMonthslist, "Key", "Value"), new { @class = "form-control", @id = "ddlMonthsList", onchange = "GetBudgerAnalysisReport();" })
+                                </div>
+                                <div class="col-md-2 col-sm-12 pl-0 pb-2">
+                                    <div class="col-md-12 col-sm-12 pl-0">
+                                        <div class="row">
+                                            <div class="col-md-9">
+                                                <label class="col-form-label label-align">@Resource.ShowAs</label>
+                                                <select class="form-control" id="DdlShowAs" onchange="validateFY(); onchangeShowAs(); GetBudgerAnalysisReport();" name="Status">
+                                                    @*<option value="0"> ---Select---</option>*@
+                                                    <option value="Y">Yearly</option>
+                                                    <option value="Q">Quarterly</option>
+                                                    <option value="M">Monthly</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="col-md-3 col-sm-12 pl-0">
+                                                <button type="button" class="btn btn-primary btn-sm margintop20" onclick="validateFY();GetBudgerAnalysisReport();" id="BtnSearch"> <i class="fa fa-search" aria-hidden="true"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <div class="card-box table-responsive dy_table">
+                    <div class="sticky-table sticky-ltr-cells sb-container container-example1" id="" style="height:64vh;">
+                        <div id="BudgetAnalysisYearly">
+                            @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialMIS_BudgetAnalysisYearly.cshtml")
+                        </div>
+                        <div id="BudgetAnalysisQuarterly" style="display:none">
+                            @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialMIS_BudgetAnalysisQuarterly.cshtml")
+                        </div>
+                        <div id="BudgetAnalysisMonthly" style="display:none">
+                            @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialMIS_BudgetAnalysisMonthly.cshtml")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+}
+
+<!-- page content end -->

@@ -1,0 +1,637 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.InventoryManagement.MIS.StockDetailConsolidated.StockDetailConsolidated_Model
+@using EnRepMobileWeb.Resources;
+@{
+    var rowId = 1;
+}
+@{
+    string ShowValue = "NotShowValue";
+    string colSpanH1 = "5";
+    string colSpanH2 = "7";
+    if (ViewBag.VBRoleList != null)
+    {
+        foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+        {
+            if (Row["feature_id"].ToString() == "105102180104003")
+            {
+                //<input hidden="hidden" id="showData" value="ShowValue" />
+                ShowValue = "ShowValue";
+                colSpanH1 = "6";
+                colSpanH2 = "7";
+            }
+        }
+    }
+}
+<style>
+    #datatable-buttons5_wrapper .btn-group a:nth-child(3) {
+        display: inline-block;
+        position: absolute;
+    }
+
+    .hidden {
+        display: none;
+    }
+</style>
+
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<table id="Tbl_DataTableStkDtlConsolidated" class="table table-striped width3200 itmfrz" cellspacing="0" width="100%">
+    <thead>
+        <tr class="sticky-header">
+            <th width="3%">&nbsp;</th>
+            <th width="12%" class="itmStick">&nbsp;</th>
+            <th hidden="hidden">&nbsp;</th>
+            <th width="5%">&nbsp;</th>
+            <th width="4%"> &nbsp;</th>
+            <th width="10%">&nbsp;</th>
+            <th colspan="@colSpanH1" class="light_cream_colour">@Resource.Warehouse @Resource.Stock @Resource.Detail </th>
+            <th colspan="@colSpanH1" class="light_blue_colour">@Resource.Shopfloor @Resource.Stock @Resource.Detail </th>
+            <th colspan="@colSpanH2" class="light_blue1_colour">@Resource.Consolidated @Resource.Stock @Resource.Detail </th>
+        </tr>
+        <tr class="sticky-header">
+            <th width="3%">@Resource.SrNo</th>
+            <th width="12%" class="itmStick">@Resource.ItemName</th>
+            <th hidden="hidden"></th>
+            <th hidden="hidden"></th>
+            <th width="5%">@Resource.HSNCode</th>
+            <th width="4%" title="@Resource.UnitOfMeasure"> @Resource.UOM</th>
+            <th width="10%"> @Resource.ItemGroup</th>
+            <th class="light_cream_colour">@Resource.Available <br />  @Resource.Stock</th>
+            <th class="light_cream_colour">@Resource.Reserved <br />  @Resource.Stock</th>
+            <th class="light_cream_colour">@Resource.Rejected <br />  @Resource.Stock</th>
+            <th class="light_cream_colour">@Resource.Rework <br />  @Resource.Stock</th>
+            <th class="light_cream_colour">@Resource.Total @Resource.Stock </th>
+            @if (ShowValue == "ShowValue")
+            {
+                <th class="light_cream_colour">@Resource.Total <br />@Resource.Stock @Resource.Value</th>
+            }
+            else
+            {
+                <th class="light_cream_colour" hidden>@Resource.Total <br />@Resource.Stock @Resource.Value</th>
+            }
+            <th class="light_blue_colour">@Resource.Available <br />  @Resource.Stock</th>
+            <th class="light_blue_colour">@Resource.Rejected <br />  @Resource.Stock</th>
+            <th class="light_blue_colour">@Resource.Rework <br />  @Resource.Stock</th>
+            <th class="light_blue_colour">@Resource.WIP <br />  @Resource.Stock</th>
+            <th class="light_blue_colour">@Resource.Total @Resource.Stock </th>
+            @if (ShowValue == "ShowValue")
+            {
+                <th class="light_blue_colour">@Resource.Total <br /> @Resource.Stock @Resource.Value</th>
+            }
+            else
+            {
+                <th class="light_blue_colour" hidden>@Resource.Total <br /> @Resource.Stock @Resource.Value</th>
+            }
+            <th class="light_blue1_colour">@Resource.Available <br />  @Resource.Stock</th>
+            <th class="light_blue1_colour">@Resource.Reserved <br />  @Resource.Stock</th>
+            <th class="light_blue1_colour">@Resource.Rejected <br />  @Resource.Stock</th>
+            <th class="light_blue1_colour">@Resource.Rework <br />  @Resource.Stock</th>
+            <th class="light_blue1_colour">@Resource.WIP <br />  @Resource.Stock</th>
+            <th class="light_blue1_colour">@Resource.Total @Resource.Stock </th>
+            @if (ShowValue == "ShowValue")
+            {
+                <th class="light_blue1_colour">@Resource.Total <br />  @Resource.Stock @Resource.Value</th>
+            }
+            else
+            {
+                <th class="light_blue1_colour" hidden>@Resource.Total <br />  @Resource.Stock @Resource.Value</th>
+            }
+
+        </tr>
+    </thead>
+    <tbody id="">
+        @{
+            //@if (ViewBag.StkTrfConsData != null)
+            //{
+            //    foreach (System.Data.DataRow data in ViewBag.StkTrfConsData.Rows)
+            //    {
+            //        var subitmDisable = "";
+            //        if (data["sub_item"].ToString() != "Y")
+            //        {
+            //            subitmDisable = "disabled";
+            //        }
+            //        <tr>
+            //            <td id="SNohiddenfiled">@rowId</td>
+            //            <td id="tditem" class="ItmNameBreak itmStick tditemfrz">
+            //                @*<input type="hidden" id="hfItemID" value="@data["itemid"].ToString()" />*@
+            //                <div class="col-sm-11 no-padding"><span id="ItmNameSpan"> @data["itemname"].ToString()</span></div>
+            //                <div class="col-sm-1 i_Icon">
+            //                    <button type="button" id="ItmInfoBtnIcon" class="calculator" onclick="OnClickIconBtn(event);" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="Item Information">  </button>
+            //                </div>
+            //            </td>
+            //            <td id="hfItemID" hidden="hidden">@data["itemid"].ToString()</td>
+            //            <td id="tdItemName" hidden="hidden">@data["itemname"].ToString()</td>
+            //            <td>@data["hsncode"].ToString()</td>
+            //            <td id="tdUomName">@data["uom"].ToString()</td>
+            //            <td>@data["itemgroup"].ToString()</td>
+            //            <td class="num_right light_cream_colour">
+            //                <div class=" col-sm-8 no-padding" id="WhAvlStk">
+            //                    @data["WhAvlStk"].ToString()
+            //                </div> <div class="col-sm-2 i_Icon">
+            //                    <button type="button" class="calculator" onclick="GetStockDetailsOnClickIbtn(event,'WH')" data-toggle="modal" data-target="#StockDetailConsolidated" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Stock @Resource.Detail">   </button>
+            //                </div>
+            //                <div class="col-sm-2 i_Icon no-padding" id="div_SubItemQty">
+            //                    <input hidden type="text" id="sub_item" value="@data["sub_item"]" />
+            //                    <button type="button" id="SubItemQTQty" class="calculator subItmImg" @subitmDisable onclick="return SubItemDetailsPopUp('Wh_AvlStkQty',event)" data-toggle="modal" data-target="#SubItemStock" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+            //                </div>
+            //            </td>
+            //            <td class="num_right light_cream_colour">
+            //                <div class=" col-sm-8 no-padding" id="WhReservedStk">
+            //                    @data["WhReservedStk"].ToString()
+            //                </div> <div class="col-sm-2 i_Icon">
+            //                    <button type="button" class="calculator" onclick="GetStockDetailsOnClickIbtn(event,'WH')" data-toggle="modal" data-target="#StockDetailConsolidated" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Stock @Resource.Detail">   </button>
+            //                </div>
+            //                <div class="col-sm-2 i_Icon no-padding" id="div_SubItemQty">
+            //                    <input hidden type="text" id="sub_item" value="@data["sub_item"]" />
+            //                    <button type="button" id="SubItemQTQty" class="calculator subItmImg" @subitmDisable onclick="return SubItemDetailsPopUp('Wh_ResrvStkQty',event)" data-toggle="modal" data-target="#SubItemStock" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+            //                </div>
+            //            </td>
+            //            <td class="num_right light_cream_colour">
+            //                <div class=" col-sm-8 no-padding" id="WhRejectStk">
+            //                    @data["WhRejectStk"].ToString()
+            //                </div> <div class="col-sm-2 i_Icon">
+            //                    <button type="button" class="calculator" onclick="GetStockDetailsOnClickIbtn(event,'WH')" data-toggle="modal" data-target="#StockDetailConsolidated" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Stock @Resource.Detail">   </button>
+            //                </div>
+            //                <div class="col-sm-2 i_Icon no-padding" id="div_SubItemQty">
+            //                    <input hidden type="text" id="sub_item" value="@data["sub_item"]" />
+            //                    <button type="button" id="SubItemQTQty" class="calculator subItmImg" @subitmDisable onclick="return SubItemDetailsPopUp('Wh_RejStkQty',event)" data-toggle="modal" data-target="#SubItemStock" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+            //                </div>
+            //            </td>
+            //            <td class="num_right light_cream_colour">
+            //                <div class=" col-sm-8 no-padding" id="WhReworkStk">
+            //                    @data["WhReworkStk"].ToString()
+            //                </div> <div class="col-sm-2 i_Icon">
+            //                    <button type="button" class="calculator" onclick="GetStockDetailsOnClickIbtn(event,'WH')" data-toggle="modal" data-target="#StockDetailConsolidated" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Stock @Resource.Detail">   </button>
+            //                </div>
+            //                <div class="col-sm-2 i_Icon no-padding" id="div_SubItemQty">
+            //                    <input hidden type="text" id="sub_item" value="@data["sub_item"]" />
+            //                    <button type="button" id="SubItemQTQty" class="calculator subItmImg" @subitmDisable onclick="return SubItemDetailsPopUp('Wh_RewrkStkQty',event)" data-toggle="modal" data-target="#SubItemStock" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+            //                </div>
+            //            </td>
+            //            <td class="num_right light_cream_colour">
+            //                <div class=" col-sm-8 no-padding" id="WhTotalStk">
+            //                    @data["WhTotalStk"].ToString()
+            //                </div> <div class="col-sm-2 i_Icon">
+            //                    <button type="button" class="calculator" onclick="GetStockDetailsOnClickIbtn(event,'WH')" data-toggle="modal" data-target="#StockDetailConsolidated" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Stock @Resource.Detail">   </button>
+            //                </div>
+            //                <div class="col-sm-2 i_Icon no-padding" id="div_SubItemQty">
+            //                    <input hidden type="text" id="sub_item" value="@data["sub_item"]" />
+            //                    <button type="button" id="SubItemQTQty" class="calculator subItmImg" @subitmDisable onclick="return SubItemDetailsPopUp('Wh_TotalStkQty',event)" data-toggle="modal" data-target="#SubItemStock" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+            //                </div>
+            //            </td>
+            //            @if (ShowValue == "ShowValue")
+            //            {
+            //                <td class="num_right light_cream_colour">@data["WhTotalStkVal"].ToString()</td>
+            //            }
+            //            else
+            //            {
+            //                <td class="num_right light_cream_colour" hidden>@data["WhTotalStkVal"].ToString()</td>
+            //            }
+            //            <td class="num_right light_blue_colour">
+            //                <div class=" col-sm-8 no-padding" id="ShflAvlStk">
+            //                    @data["ShflAvlStk"].ToString()
+            //                </div> <div class="col-sm-2 i_Icon">
+            //                    <button type="button" class="calculator" onclick="GetStockDetailsOnClickIbtn(event,'SHFL')" data-toggle="modal" data-target="#StockDetailConsolidated" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Stock @Resource.Detail">   </button>
+            //                </div>
+            //                <div class="col-sm-2 i_Icon no-padding" id="div_SubItemQty">
+            //                    <input hidden type="text" id="sub_item" value="@data["sub_item"]" />
+            //                    <button type="button" id="SubItemQTQty" class="calculator subItmImg" @subitmDisable onclick="return SubItemDetailsPopUp('Sf_AvlStkQty',event)" data-toggle="modal" data-target="#SubItemStock" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+            //                </div>
+            //            </td>
+            //            <td class="num_right light_blue_colour">
+            //                <div class=" col-sm-8 no-padding" id="ShflRejectStk">
+            //                    @data["ShflRejectStk"].ToString()
+            //                </div> <div class="col-sm-2 i_Icon">
+            //                    <button type="button" class="calculator" onclick="GetStockDetailsOnClickIbtn(event,'SHFL')" data-toggle="modal" data-target="#StockDetailConsolidated" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Stock @Resource.Detail">   </button>
+            //                </div>
+            //                <div class="col-sm-2 i_Icon no-padding" id="div_SubItemQty">
+            //                    <input hidden type="text" id="sub_item" value="@data["sub_item"]" />
+            //                    <button type="button" id="SubItemQTQty" class="calculator subItmImg" @subitmDisable onclick="return SubItemDetailsPopUp('Sf_RejStkQty',event)" data-toggle="modal" data-target="#SubItemStock" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+            //                </div>
+            //            </td>
+            //            <td class="num_right light_blue_colour">
+            //                <div class=" col-sm-8 no-padding" id="ShflReworkStk">
+            //                    @data["ShflReworkStk"].ToString()
+            //                </div> <div class="col-sm-2 i_Icon">
+            //                    <button type="button" class="calculator" onclick="GetStockDetailsOnClickIbtn(event,'SHFL')" data-toggle="modal" data-target="#StockDetailConsolidated" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Stock @Resource.Detail"></button>
+            //                </div>
+            //                <div class="col-sm-2 i_Icon no-padding" id="div_SubItemQty">
+            //                    <input hidden type="text" id="sub_item" value="@data["sub_item"]" />
+            //                    <button type="button" id="SubItemQTQty" class="calculator subItmImg" @subitmDisable onclick="return SubItemDetailsPopUp('Sf_RewrkStkQty',event)" data-toggle="modal" data-target="#SubItemStock" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+            //                </div>
+            //            </td>
+            //            <td class="num_right light_blue_colour">
+            //                <div class=" col-sm-8 no-padding" id="WIPStock">
+            //                    @data["WIPStock"].ToString()
+            //                </div>
+            //                <div class="col-sm-2 i_Icon">
+            //                    <button type="button" class="calculator" onclick="GetStockDetailsOnClickIbtn(event,'WIPDetail')" data-toggle="modal" data-target="#WIPDetail" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.WIP @Resource.Detail"></button>
+            //                </div>
+            //                <div class="col-sm-2 i_Icon no-padding" id="div_SubItemQty">
+            //                    <input hidden type="text" id="sub_item" value="@data["sub_item"]" />
+            //                    <button type="button" id="SubItemQTQty" class="calculator subItmImg" @subitmDisable onclick="return SubItemDetailsPopUp('Sf_WIPStkQty',event)" data-toggle="modal" data-target="#SubItemStock" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+            //                </div>
+            //                @*<div class="col-sm-2 i_Icon">
+            //                    <button type="button" class="calculator" onclick="GetStockDetailsOnClickIbtn(event,'SHFL')" data-toggle="modal" data-target="#StockDetailConsolidated" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Stock @Resource.Detail"></button>
+            //                </div>*@
+            //            </td>
+            //            <td class="num_right light_blue_colour">
+            //                <div class=" col-sm-8 no-padding" id="ShflTotalStk">
+            //                    @data["ShflTotalStk"].ToString()
+            //                </div> <div class="col-sm-2 i_Icon">
+            //                    <button type="button" class="calculator" onclick="GetStockDetailsOnClickIbtn(event,'SHFL')" data-toggle="modal" data-target="#StockDetailConsolidated" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Stock @Resource.Detail"></button>
+            //                </div>
+            //                <div class="col-sm-2 i_Icon no-padding" id="div_SubItemQty">
+            //                    <input hidden type="text" id="sub_item" value="@data["sub_item"]" />
+            //                    <button type="button" id="SubItemQTQty" class="calculator subItmImg" @subitmDisable onclick="return SubItemDetailsPopUp('Sf_TotalStkQty',event)" data-toggle="modal" data-target="#SubItemStock" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+            //                </div>
+            //            </td>
+            //            @if (ShowValue == "ShowValue")
+            //            {
+            //                <td class="num_right light_blue_colour">@data["ShflTotalStkVal"].ToString()</td>
+            //            }
+            //            else
+            //            {
+            //                <td class="num_right light_blue_colour" hidden>@data["ShflTotalStkVal"].ToString()</td>
+            //            }
+            //            <td class="num_right light_blue1_colour">
+            //                <div class=" col-sm-8 no-padding" id="ConsTotalAvlStk">
+            //                    @data["TotalAvlStk"].ToString()
+            //                </div><div class="col-sm-2 i_Icon">
+            //                    <button type="button" class="calculator" onclick="GetStockDetailsOnClickIbtn(event,'WHSHFL')" data-toggle="modal" data-target="#StockDetailConsolidated" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Stock @Resource.Detail"></button>
+            //                </div>
+            //                <div class="col-sm-2 i_Icon no-padding" id="div_SubItemQty">
+            //                    <input hidden type="text" id="sub_item" value="@data["sub_item"]" />
+            //                    <button type="button" id="SubItemQTQty" class="calculator subItmImg" @subitmDisable onclick="return SubItemDetailsPopUp('Cons_AvlStkQty',event)" data-toggle="modal" data-target="#SubItemStock" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+            //                </div>
+            //            </td>
+            //            <td class="num_right light_blue1_colour">
+            //                <div class=" col-sm-8 no-padding" id="ConsTotalResrvStk">
+            //                    @data["TotalReservedStk"].ToString()
+            //                </div><div class="col-sm-2 i_Icon">
+            //                    <button type="button" class="calculator" onclick="GetStockDetailsOnClickIbtn(event,'WHSHFL')" data-toggle="modal" data-target="#StockDetailConsolidated" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Stock @Resource.Detail"></button>
+            //                </div>
+            //                <div class="col-sm-2 i_Icon no-padding" id="div_SubItemQty">
+            //                    <input hidden type="text" id="sub_item" value="@data["sub_item"]" />
+            //                    <button type="button" id="SubItemQTQty" class="calculator subItmImg" @subitmDisable onclick="return SubItemDetailsPopUp('Cons_ResrvStkQty',event)" data-toggle="modal" data-target="#SubItemStock" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+            //                </div>
+            //            </td>
+            //            <td class="num_right light_blue1_colour">
+            //                <div class=" col-sm-8 no-padding" id="ConsTotalRejctStk">
+            //                    @data["TotalRejectStk"].ToString()
+            //                </div> <div class="col-sm-2 i_Icon">
+            //                    <button type="button" class="calculator" onclick="GetStockDetailsOnClickIbtn(event,'WHSHFL')" data-toggle="modal" data-target="#StockDetailConsolidated" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Stock @Resource.Detail"></button>
+            //                </div>
+            //                <div class="col-sm-2 i_Icon no-padding" id="div_SubItemQty">
+            //                    <input hidden type="text" id="sub_item" value="@data["sub_item"]" />
+            //                    <button type="button" id="SubItemQTQty" class="calculator subItmImg" @subitmDisable onclick="return SubItemDetailsPopUp('Cons_RejStkQty',event)" data-toggle="modal" data-target="#SubItemStock" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+            //                </div>
+            //            </td>
+            //            <td class="num_right light_blue1_colour">
+            //                <div class=" col-sm-8 no-padding" id="ConsTotalRewrkStk">
+            //                    @data["TotalReworkStk"].ToString()
+            //                </div> <div class="col-sm-2 i_Icon">
+            //                    <button type="button" class="calculator" onclick="GetStockDetailsOnClickIbtn(event,'WHSHFL')" data-toggle="modal" data-target="#StockDetailConsolidated" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Stock @Resource.Detail"></button>
+            //                </div>
+            //                <div class="col-sm-2 i_Icon no-padding" id="div_SubItemQty">
+            //                    <input hidden type="text" id="sub_item" value="@data["sub_item"]" />
+            //                    <button type="button" id="SubItemQTQty" class="calculator subItmImg" @subitmDisable onclick="return SubItemDetailsPopUp('Cons_RewrkStkQty',event)" data-toggle="modal" data-target="#SubItemStock" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+            //                </div>
+            //            </td>
+            //            <td class="num_right light_blue1_colour">
+            //                <div class=" col-sm-8 no-padding" id="ConsTotalWIPStk">
+            //                    @data["WIPStock"].ToString()
+            //                </div>
+            //                <div class="col-sm-2 i_Icon">
+            //                    <button type="button" class="calculator" onclick="GetStockDetailsOnClickIbtn(event,'WIPDetail')" data-toggle="modal" data-target="#WIPDetail" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.WIP @Resource.Detail"></button>
+            //                </div>
+            //                <div class="col-sm-2 i_Icon no-padding" id="div_SubItemQty">
+            //                    <input hidden type="text" id="sub_item" value="@data["sub_item"]" />
+            //                    <button type="button" id="SubItemQTQty" class="calculator subItmImg" @subitmDisable onclick="return SubItemDetailsPopUp('Cons_WIPStkQty',event)" data-toggle="modal" data-target="#SubItemStock" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+            //                </div>
+            //                @*<div class="col-sm-2 i_Icon">
+            //                    <button type="button" class="calculator" onclick="GetStockDetailsOnClickIbtn(event,'SHFL')" data-toggle="modal" data-target="#StockDetailConsolidated" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Stock @Resource.Detail"></button>
+            //                </div>*@
+            //            </td>
+            //            <td class="num_right light_blue1_colour">
+            //                <div class=" col-sm-8 no-padding" id="ConsTotalStk">
+            //                    @data["TotalStk"].ToString()
+            //                </div> <div class="col-sm-2 i_Icon">
+            //                    <button type="button" class="calculator" onclick="GetStockDetailsOnClickIbtn(event,'WHSHFL')" data-toggle="modal" data-target="#StockDetailConsolidated" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Stock @Resource.Detail"></button>
+            //                </div>
+            //                <div class="col-sm-2 i_Icon no-padding" id="div_SubItemQty">
+            //                    <input hidden type="text" id="sub_item" value="@data["sub_item"]" />
+            //                    <button type="button" id="SubItemQTQty" class="calculator subItmImg" @subitmDisable onclick="return SubItemDetailsPopUp('Cons_TotalStkQty',event)" data-toggle="modal" data-target="#SubItemStock" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+            //                </div>
+            //            </td>
+            //            @if (ShowValue == "ShowValue")
+            //            {
+            //                <td class="num_right light_blue1_colour">@data["TotalStkVal"].ToString()</td>
+            //            }
+            //            else
+            //            {
+            //                <td class="num_right light_blue1_colour" hidden>@data["TotalStkVal"].ToString()</td>
+            //            }
+            //        </tr>
+            //        rowId = rowId + 1;
+            //    }
+            //}
+        }
+
+    </tbody>
+</table>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        StkDtlConsolidatedList();
+    });
+    function StkDtlConsolidatedList() {
+        var itemId = $('#ddlItemList').val();
+       // var itemGroupId = $('#ddlItemGroupList').val();
+        var itemGroupId = cmn_getddldataasstring('#ddlItemGroupList');
+        var asonDate = $('#txtAsOnDate').val();
+
+        //var filters = itemId + "," + itemGroupId + "," + asonDate + ",SUMMARY";
+        var filterArray = [
+            itemId, itemGroupId, asonDate,"SUMMARY"
+        ];
+        var filters = filterArray.map(x => `[${x}]`).join('_');
+
+        $("#Tbl_DataTableStkDtlConsolidated").DataTable().destroy();
+        $("#Tbl_DataTableStkDtlConsolidated").DataTable({
+            "pageLength": 50,
+            "processing": true, // for show progress bar
+            "serverSide": true, // for process server side
+            "filter": true, // this is for disable filter (search box)
+            "orderMulti": false, // for disable multiple column at once
+            "ajax": {
+                "url": "/ApplicationLayer/StockDetailConsolidated/LoadStockDetailConsolidatedData",
+                "data": {
+                    ItemListFilter: filters,
+                },
+                "type": "POST",
+                "datatype": "json",
+            },
+            "columns": StkDtldataColumns(),
+            columnDefs: StkDtlDataColumnRenders(),
+        });
+        Cmn_ApplySearchBtnOnDataTable("Tbl_DataTableStkDtlConsolidated");
+        var exportbtn = `<button type="submit" class="btn btn-default buttons-csv buttons-html5 btn-sm" id='' tabindex="0" aria-controls="datatable-buttons"
+                name="Command" value="CSV">
+                <span>CSV</span></button>`;
+        //$("#export").remove();
+        $("#hdnFiltersData").val(filters);
+        $("#Tbl_DataTableStkDtlConsolidated_length").append(exportbtn);
+        //Export();
+    }
+    
+    function StkDtldataColumns() {
+        var Array = [];
+        Array = [
+            { "data": "SrNo", "name": "SrNo", "autoWidth": true },
+            { "data": "itemname", "name": "itemname", "autoWidth": true, className: "ItmNameBreak itmStick tditemfrz" },
+            { "data": "itemid", "name": "itemid", "autoWidth": true },
+            { "data": "itemname", "name": "itemname", "autoWidth": true },
+            //{ "data": "sub_item", "name": "sub_item", "autoWidth": true,className: "" },
+            { "data": "hsncode", "name": "hsncode", "autoWidth": true},
+            { "data": "uom", "name": "uom", "autoWidth": true },
+            //{ "data": "uomid", "name": "uomid", "autoWidth": true },
+            //{ "data": "itemgrpid", "name": "itemgrpid", "autoWidth": true, className: "center" },
+            { "data": "itemgroup", "name": "itemgroup", "autoWidth": true },
+            { "data": "WhAvlStk", "name": "WhAvlStk", "autoWidth": true, className:"num_right light_cream_colour" },
+            { "data": "WhReservedStk", "name": "WhReservedStk", "autoWidth": true, className:"num_right light_cream_colour" },
+            { "data": "WhRejectStk", "name": "WhRejectStk", "autoWidth": true, className:"num_right light_cream_colour"},
+            { "data": "WhReworkStk", "name": "WhReworkStk", "autoWidth": true, className:"num_right light_cream_colour" },
+            { "data": "WhTotalStk", "name": "WhTotalStk", "autoWidth": true, className:"num_right light_cream_colour"},
+            { "data": "WhTotalStkVal", "name": "WhTotalStkVal", "autoWidth": true, className:"num_right light_cream_colour" },
+            { "data": "ShflAvlStk", "name": "ShflAvlStk", "autoWidth": true, className: "num_right light_blue_colour" },
+            { "data": "ShflRejectStk", "name": "ShflRejectStk", "autoWidth": true, className: "num_right light_blue_colour" },
+            { "data": "ShflReworkStk", "name": "ShflReworkStk", "autoWidth": true, className: "num_right light_blue_colour" },
+            { "data": "WIPStock", "name": "WIPStock", "autoWidth": true, className: "num_right light_blue_colour" },
+            { "data": "ShflTotalStk", "name": "ShflTotalStk", "autoWidth": true, className: "num_right light_blue_colour" },
+            { "data": "ShflTotalStkVal", "name": "ShflTotalStkVal", "autoWidth": true, className: "num_right light_blue_colour" },
+            { "data": "TotalAvlStk", "name": "TotalAvlStk", "autoWidth": true, className: "num_right light_blue1_colour" },
+            { "data": "TotalReservedStk", "name": "TotalReservedStk", "autoWidth": true, className: "num_right light_blue1_colour" },
+            { "data": "TotalRejectStk", "name": "TotalRejectStk", "autoWidth": true, className: "num_right light_blue1_colour" },
+            { "data": "TotalReworkStk", "name": "TotalReworkStk", "autoWidth": true, className: "num_right light_blue1_colour" },
+            { "data": "WIPStock", "name": "WIPStock", "autoWidth": true, className: "num_right light_blue1_colour" },
+            { "data": "TotalStk", "name": "TotalStk", "autoWidth": true, className: "num_right light_blue1_colour" },
+            { "data": "TotalStkVal", "name": "TotalStkVal", "autoWidth": true, className: "light_blue1_colour" }
+        ]
+        return Array;
+    }
+    function StkDtlDataColumnRenders() {
+        debugger;
+        var array = [];
+        array = [
+            {
+                'targets': 0,//SrNo
+                'createdCell': function (td, cellData, rowData, row, col) {
+                    $(td).attr('id', 'SNohiddenfiled');
+                }
+            },
+            {
+                'createdCell': function (td, cellData, rowData, row, col) {
+                    $(td).attr('id', 'tditem');
+                },
+                render: (data, type, row) => `<div class="col-sm-11 no-padding"><span id="ItmNameSpan">${data}</span></div>
+                        <div class="col-sm-1 i_Icon">
+                            <button type="button" id="ItmInfoBtnIcon" class="calculator" onclick="OnClickIconBtn(event);" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.ItemInformation">  </button>
+                        </div>`,
+                targets: 1//supp_name
+            },
+            {
+                'createdCell': function (td, cellData, rowData, row, col) {
+                    $(td).attr('id', 'hfItemID');
+                    $(td).attr('hidden', 'hidden');
+                },
+                targets: 2
+            },
+            {
+                'createdCell': function (td, cellData, rowData, row, col) {
+                    $(td).attr('id', 'tdItemName');
+                    $(td).attr('hidden', 'hidden');
+                },
+                targets: 3
+            },
+            {
+                'createdCell': function (td, cellData, rowData, row, col) {
+                    $(td).attr('id', 'tdUomName');
+                },
+                targets: 5 //UOM
+            },
+            {
+                render: (data, type, row) => `<div class=" col-sm-8 no-padding" id="WhAvlStk">${data}</div>
+                        <div class="col-sm-2 i_Icon">
+                            <button type="button" class="calculator" onclick="GetStockDetailsOnClickIbtn(event,'WH')" data-toggle="modal" data-target="#StockDetailConsolidated" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.StockDetail">   </button>
+                        </div>
+                        <div class="col-sm-2 i_Icon no-padding" id="div_SubItemQty">
+                            <input hidden type="text" id="sub_item" value="${row.sub_item}">
+                            <button type="button" id="SubItemQTQty" class="calculator subItmImg" ${row.sub_item=="Y"?"":"disabled"} onclick="return SubItemDetailsPopUp('Wh_AvlStkQty',event)" data-toggle="modal" data-target="#SubItemStock" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+                        </div>`,
+                targets: 7 //warehouse Available Stock
+            },
+            {
+                render: (data, type, row) => `<div class=" col-sm-8 no-padding" id="WhReservedStk">${data}</div>
+                        <div class="col-sm-2 i_Icon">
+                            <button type="button" class="calculator" onclick="GetStockDetailsOnClickIbtn(event,'WH')" data-toggle="modal" data-target="#StockDetailConsolidated" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.StockDetail"></button>
+                        </div>
+                        <div class="col-sm-2 i_Icon no-padding" id="div_SubItemQty">
+                            <button type="button" id="SubItemQTQty" class="calculator subItmImg" ${row.sub_item == "Y" ? "" : "disabled"} onclick="return SubItemDetailsPopUp('Wh_ResrvStkQty',event)" data-toggle="modal" data-target="#SubItemStock" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+                        </div>`,
+                targets: 8 //warehouse Reserved Stock
+            },
+            {
+                render: (data, type, row) => `<div class=" col-sm-8 no-padding" id="WhRejectStk">${data}</div>
+                        <div class="col-sm-2 i_Icon">
+                            <button type="button" class="calculator" onclick="GetStockDetailsOnClickIbtn(event,'WH')" data-toggle="modal" data-target="#StockDetailConsolidated" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.StockDetail">   </button>
+                        </div>
+                       <div class="col-sm-2 i_Icon no-padding" id="div_SubItemQty">
+                            <button type="button" id="SubItemQTQty" class="calculator subItmImg" ${row.sub_item == "Y" ? "" : "disabled"} onclick="return SubItemDetailsPopUp('Wh_RejStkQty',event)" data-toggle="modal" data-target="#SubItemStock" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+                        </div>`,
+                targets: 9 //warehouse Rejected Stock
+            },
+            {
+                render: (data, type, row) => `<div class=" col-sm-8 no-padding" id="WhReworkStk">${data}</div>
+                        <div class="col-sm-2 i_Icon">
+                            <button type="button" class="calculator" onclick="GetStockDetailsOnClickIbtn(event,'WH')" data-toggle="modal" data-target="#StockDetailConsolidated" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.StockDetail">   </button>
+                        </div>
+                       <div class="col-sm-2 i_Icon no-padding" id="div_SubItemQty">
+                            <button type="button" id="SubItemQTQty" class="calculator subItmImg" ${row.sub_item == "Y" ? "" : "disabled"} onclick="return SubItemDetailsPopUp('Wh_RewrkStkQty',event)" data-toggle="modal" data-target="#SubItemStock" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+                        </div>`,
+                targets: 10 //warehouse Rework Stock
+            },
+            {
+                render: (data, type, row) => `<div class=" col-sm-8 no-padding" id="WhTotalStk">${data}</div>
+                        <div class="col-sm-2 i_Icon">
+                            <button type="button" class="calculator" onclick="GetStockDetailsOnClickIbtn(event,'WH')" data-toggle="modal" data-target="#StockDetailConsolidated" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.StockDetail">   </button>
+                        </div>
+                       <div class="col-sm-2 i_Icon no-padding" id="div_SubItemQty">
+                            <button type="button" id="SubItemQTQty" class="calculator subItmImg" ${row.sub_item == "Y" ? "" : "disabled"} onclick="return SubItemDetailsPopUp('Wh_TotalStkQty',event)" data-toggle="modal" data-target="#SubItemStock" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+                        </div>`,
+                targets: 11 //warehouse Total Stock
+            },
+            {
+                render: (data, type, row) => `<div class=" col-sm-8 no-padding" id="ShflAvlStk">${data}</div>
+                        <div class="col-sm-2 i_Icon">
+                            <button type="button" class="calculator" onclick="GetStockDetailsOnClickIbtn(event,'SHFL')" data-toggle="modal" data-target="#StockDetailConsolidated" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.StockDetail">   </button>
+                        </div>
+                       <div class="col-sm-2 i_Icon no-padding" id="div_SubItemQty">
+                            <button type="button" id="SubItemQTQty" class="calculator subItmImg" ${row.sub_item == "Y" ? "" : "disabled"} onclick="return SubItemDetailsPopUp('Sf_AvlStkQty',event)" data-toggle="modal" data-target="#SubItemStock" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+                        </div>`,
+                targets: 13 //shopfloor available stock
+            },
+            {
+                render: (data, type, row) => `<div class=" col-sm-8 no-padding" id="ShflRejectStk">${data}</div>
+                        <div class="col-sm-2 i_Icon">
+                            <button type="button" class="calculator" onclick="GetStockDetailsOnClickIbtn(event,'SHFL')" data-toggle="modal" data-target="#StockDetailConsolidated" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.StockDetail">   </button>
+                        </div>
+                       <div class="col-sm-2 i_Icon no-padding" id="div_SubItemQty">
+                            <button type="button" id="SubItemQTQty" class="calculator subItmImg" onclick="return SubItemDetailsPopUp('Sf_RejStkQty',event)" data-toggle="modal" data-target="#SubItemStock" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+                        </div>`,
+                targets: 14 //shopfloor Rejected stock
+            },
+            {
+                render: (data, type, row) => `<div class=" col-sm-8 no-padding" id="ShflReworkStk">${data}</div>
+                        <div class="col-sm-2 i_Icon">
+                            <button type="button" class="calculator" onclick="GetStockDetailsOnClickIbtn(event,'SHFL')" data-toggle="modal" data-target="#StockDetailConsolidated" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.StockDetail"></button>
+                        </div>
+                       <div class="col-sm-2 i_Icon no-padding" id="div_SubItemQty">
+                            <button type="button" id="SubItemQTQty" class="calculator subItmImg" ${row.sub_item == "Y" ? "" : "disabled"} onclick="return SubItemDetailsPopUp('Sf_RewrkStkQty',event)" data-toggle="modal" data-target="#SubItemStock" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+                        </div>`,
+                targets: 15 //shopfloor Rework stock
+            },
+            {
+                render: (data, type, row) => `<div class=" col-sm-8 no-padding" id="WIPStock">${data}</div>
+                        <div class="col-sm-2 i_Icon">
+                            <button type="button" class="calculator" onclick="GetStockDetailsOnClickIbtn(event,'WIPDetail')" data-toggle="modal" data-target="#WIPDetail" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.WIP @Resource.Detail"></button>
+                        </div>
+                       <div class="col-sm-2 i_Icon no-padding" id="div_SubItemQty">
+                            <button type="button" id="SubItemQTQty" class="calculator subItmImg" ${row.sub_item == "Y" ? "" : "disabled"} onclick="return SubItemDetailsPopUp('Sf_WIPStkQty',event)" data-toggle="modal" data-target="#SubItemStock" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+                        </div>`,
+                targets: 16 //shopfloor WIP stock
+            },
+            {
+                render: (data, type, row) => `<div class=" col-sm-8 no-padding" id="ShflTotalStk">${data}</div>
+                        <div class="col-sm-2 i_Icon">
+                            <button type="button" class="calculator" onclick="GetStockDetailsOnClickIbtn(event,'SHFL')" data-toggle="modal" data-target="#StockDetailConsolidated" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.StockDetail"></button>
+                        </div>
+                       <div class="col-sm-2 i_Icon no-padding" id="div_SubItemQty">
+                            <button type="button" id="SubItemQTQty" class="calculator subItmImg" ${row.sub_item == "Y" ? "" : "disabled"} onclick="return SubItemDetailsPopUp('Sf_TotalStkQty',event)" data-toggle="modal" data-target="#SubItemStock" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+                        </div>`,
+                targets: 17 //shopfloor Total stock
+            },
+            {
+                render: (data, type, row) => `<div class=" col-sm-8 no-padding" id="ConsTotalAvlStk">${data}</div>
+                        <div class="col-sm-2 i_Icon">
+                            <button type="button" class="calculator" onclick="GetStockDetailsOnClickIbtn(event,'WHSHFL')" data-toggle="modal" data-target="#StockDetailConsolidated" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.StockDetail"></button>
+                        </div>
+                       <div class="col-sm-2 i_Icon no-padding" id="div_SubItemQty">
+                            <button type="button" id="SubItemQTQty" class="calculator subItmImg" ${row.sub_item == "Y" ? "" : "disabled"} onclick="return SubItemDetailsPopUp('Cons_AvlStkQty',event)" data-toggle="modal" data-target="#SubItemStock" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+                        </div>`,
+                targets: 19 //Consolidated Total Available stock 
+            },
+            {
+                render: (data, type, row) => `<div class=" col-sm-8 no-padding" id="ConsTotalResrvStk">${data}</div>
+                        <div class="col-sm-2 i_Icon">
+                            <button type="button" class="calculator" onclick="GetStockDetailsOnClickIbtn(event,'WHSHFL')" data-toggle="modal" data-target="#StockDetailConsolidated" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.StockDetail"></button>
+                        </div>
+                       <div class="col-sm-2 i_Icon no-padding" id="div_SubItemQty">
+                            <button type="button" id="SubItemQTQty" class="calculator subItmImg" ${row.sub_item == "Y" ? "" : "disabled"} onclick="return SubItemDetailsPopUp('Cons_ResrvStkQty',event)" data-toggle="modal" data-target="#SubItemStock" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+                        </div>`,
+                targets: 20 //Consolidated Total Reserve stock 
+            },
+            {
+                render: (data, type, row) => `<div class=" col-sm-8 no-padding" id="ConsTotalRejctStk">${data}</div>
+                       <div class="col-sm-2 i_Icon">
+                            <button type="button" class="calculator" onclick="GetStockDetailsOnClickIbtn(event,'WHSHFL')" data-toggle="modal" data-target="#StockDetailConsolidated" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.StockDetail"></button>
+                        </div>
+                       <div class="col-sm-2 i_Icon no-padding" id="div_SubItemQty">
+                            <button type="button" id="SubItemQTQty" class="calculator subItmImg" ${row.sub_item == "Y" ? "" : "disabled"} onclick="return SubItemDetailsPopUp('Cons_RejStkQty',event)" data-toggle="modal" data-target="#SubItemStock" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+                        </div>`,
+                targets: 21 //Consolidated Total Rejected stock 
+            },
+            {
+                render: (data, type, row) => `<div class=" col-sm-8 no-padding" id="ConsTotalRewrkStk">${data}</div>
+                       <div class="col-sm-2 i_Icon">
+                            <button type="button" class="calculator" onclick="GetStockDetailsOnClickIbtn(event,'WHSHFL')" data-toggle="modal" data-target="#StockDetailConsolidated" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.StockDetail"></button>
+                        </div>
+                       <div class="col-sm-2 i_Icon no-padding" id="div_SubItemQty">
+                            <button type="button" id="SubItemQTQty" class="calculator subItmImg" ${row.sub_item == "Y" ? "" : "disabled"} onclick="return SubItemDetailsPopUp('Cons_RewrkStkQty',event)" data-toggle="modal" data-target="#SubItemStock" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+                        </div>`,
+                targets: 22 //Consolidated Total Reworkable stock 
+            },
+            {
+                render: (data, type, row) => `<div class=" col-sm-8 no-padding" id="ConsTotalWIPStk">${data}</div>
+                       <div class="col-sm-2 i_Icon">
+                            <button type="button" class="calculator" onclick="GetStockDetailsOnClickIbtn(event,'WIPDetail')" data-toggle="modal" data-target="#WIPDetail" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.WIP @Resource.Detail"></button>
+                        </div>
+                       <div class="col-sm-2 i_Icon no-padding" id="div_SubItemQty">
+                            <button type="button" id="SubItemQTQty" class="calculator subItmImg" ${row.sub_item == "Y" ? "" : "disabled"} onclick="return SubItemDetailsPopUp('Cons_WIPStkQty',event)" data-toggle="modal" data-target="#SubItemStock" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+                        </div>`,
+                targets: 23 //Consolidated Total WIP stock 
+            },
+            {
+                render: (data, type, row) => `<div class=" col-sm-8 no-padding" id="ConsTotalStk">${data}</div>
+                       <div class="col-sm-2 i_Icon">
+                            <button type="button" class="calculator" onclick="GetStockDetailsOnClickIbtn(event,'WHSHFL')" data-toggle="modal" data-target="#StockDetailConsolidated" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.StockDetail"></button>
+                        </div>
+                       <div class="col-sm-2 i_Icon no-padding" id="div_SubItemQty">
+                            <button type="button" id="SubItemQTQty" class="calculator subItmImg" ${row.sub_item == "Y" ? "" : "disabled"} onclick="return SubItemDetailsPopUp('Cons_TotalStkQty',event)" data-toggle="modal" data-target="#SubItemStock" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+                        </div>`,
+                targets: 24 //Consolidated Total stock 
+            }
+        ]
+        return array;
+    }
+</script>
+@*@{
+        if (Model.SearchStatus != null)
+        {
+            if (Model.SearchStatus == "Searched")
+            {
+                @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+                @Scripts.Render("~/Content/Scripts/DatatablesJs")
+                Model.SearchStatus = null;
+            }
+        }
+    }*@

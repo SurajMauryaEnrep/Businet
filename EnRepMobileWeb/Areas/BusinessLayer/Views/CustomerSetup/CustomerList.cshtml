@@ -1,0 +1,255 @@
+﻿@model EnRepMobileWeb.MODELS.BusinessLayer.CustomerDetails.CustomerDetails
+@using EnRepMobileWeb.Resources;
+@using System.Data
+
+@if (Session["UserId"] == null)
+{
+    Response.Redirect("~/Login");
+}
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+@*<style>
+        #datatable-buttons_filter {
+            margin-top: 0px;
+        }
+
+    </style>*@
+<script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+<script src="~/Content/Scripts/BusinessLayer/CustomerSetup/CustomerList.js"></script>
+<title>@Model.Title</title>
+<!--Partial Import Customer Data Start-->
+<div id="PartialImportCustomerData" class="modal fade" role="dialog">
+    <div class="modal-dialog" style="min-width:1200px;">
+        <!-- Modal content-->
+        @Html.Partial("~/Areas/BusinessLayer/Views/Shared/Partial_Import_CustomerData.cshtml")
+    </div>
+</div>
+<!--Partial Import Customer Data End-->
+<!--Partial Customer Address Detail Start-->
+<div id="PartialCustomerAddressDetail" class="modal fade" role="dialog">
+    <div class="modal-dialog" style="max-width:1000px;">
+        <!-- Modal content-->
+        @Html.Partial("~/Areas/BusinessLayer/Views/Shared/PartialCustomerAddressDetail.cshtml")
+    </div>
+</div>
+<!--Partial Customer Address Detail End-->
+<!-- Error Detail -->
+<div id="ErrorDetail" class="modal fade show" role="dialog" aria-modal="true">
+    <div class="modal-dialog" id="divErrorDetail" style="min-width:600px;">
+        <!-- Modal content-->
+        @Html.Partial("~/Areas/Common/Views/Cmn_PartialExportErrorDetail.cshtml")
+    </div>
+</div>
+<!-- Error Detail End -->
+<!-- Branch Mapping Start -->
+<div id="BranchMapping" class="modal fade" role="dialog">
+    <div class="modal-dialog" id="" style=" max-width:800px;">
+        <!-- Modal content-->
+        @Html.Partial("~/Areas/Common/Views/Cmn_PartialBranchMapping.cshtml")
+
+    </div>
+</div>
+<!-- Branch Mapping End -->
+<div class="row">
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <h2 class="col-md-8 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+
+                @Html.HiddenFor(m => m.ListFilterData, new { @id = "ListFilterData" })
+
+                @if (ViewBag.VBRoleList != null)
+                {
+                    foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                    {
+                        if (Row["feature_id"].ToString() == "103125001")
+                        {
+                            <div id="" class="col-md-4 col-sm-12 heading_right_padding">
+                                <ul>
+                                    <li>
+                                        <a class="tooltip-test"
+                                           title="@Resource.Download @Resource.Template" href="@Url.Action("DownloadFile","CustomerSetup")"><img src="~/Content/Images/export_icon.png" width="32" id="" onclick="" height="32" alt="Download Data Template"></a>
+
+                                    </li>
+                                    <li>
+                                        <a class="tooltip-test"
+                                           title="@Resource.Import @Resource.Data" data-toggle="modal" data-target="#PartialImportCustomerData" data-backdrop="static" data-keyboard="false"><img src="~/Content/Images/import_icon.png" width="32" id="ImportData" height="32" alt="Import Data"></a>
+                                    </li>
+                                    <li>
+                                        <a class="tooltip-test"
+                                           title=" @Resource.AddNew" href="@Url.Action("AddNewCustomer","CustomerSetup")"><img src="~/Content/Images/addgreen.png" width="32" height="32" id="Btn_AddCust" alt="Add"></a>
+                                    </li>
+
+                                </ul>
+
+                            </div>
+                        }
+                    }
+                }
+                <div class="x_title pad_mar ">
+                    <div class="col-md-12 col-sm-12 icon_tool ">
+
+                        <form class="available_stock pad_mar" action="" method="post" novalidate>
+                            <div class="col-md-12 col-sm-12">
+                                <div class="col-md-3 col-sm-12">
+                                    <label class="col-form-label label-align">
+                                        @Resource.CustomerName
+                                    </label>
+                                    @Html.DropDownListFor(model => model.cust_name, new SelectList(Model.custList, "cust_id", "cust_name"), new { @class = "form-control", @id = "custnamelist", onchange = "OnChangeCustName()" })
+                                    @*@Html.DropDownListFor(model => model.cust_name, new SelectList { @id = "custnamelist", @class = "form-control", maxlength = "50", @placeholder = "Customer Name", autocomplete = "off", @onchange = "OnChangeCustName()", @onkeypress = "OnChangeCustName()" })*@
+                                    @*<select class="form-control" id="custnamelist">
+                <option value="0">ALL</option>
+            </select>*@
+                                    @*<input type="hidden" id="CustListName" value='@Url.Action("GetAutoCompleteCustList", "CustomerSetup")' />*@
+                                </div>
+                                <div class="col-md-2 col-sm-12">
+                                    <label class="col-form-label label-align">
+                                        @Resource.Type
+                                    </label>
+
+                                    @Html.DropDownListFor(model => model._item_cust_type, new SelectList(new List<SelectListItem> {
+                                                                                          new SelectListItem {Text="ALL",Value="0" },
+                                                                                          new SelectListItem {Text="Domestic",Value="D" },
+                                                                                          new SelectListItem {Text="Export",Value="E" },
+                                                                                          }, "Value", "Text"
+                                           ), new { @class = "form-control", @id = "cust_type", @name = "_item_cust_type" })
+                                    @*<select class="form-control" id="cust_type">
+                <option>ALL</option>
+                <option>Domestic</option>
+                <option>Export</option>
+            </select>*@
+                                </div>
+                                <div class="col-md-2 col-sm-12">
+                                    <label class="col-form-label label-align">@Resource.GLReportingGroup </label>
+                                    @Html.DropDownListFor(model => model.GlRepoting_Group, new SelectList(Model.GlReportingGroupList, "Gl_rpt_id", "Gl_rpt_Name"), new { @id = "ID_GlRepoting_Group", @class = "form-control", onchange = "OnChangeGlrptfrp()" })
+
+                                    @Html.HiddenFor(model => model.GlRepoting_Group_ID, new { @id = "hdn_GlRepoting_Group" })
+                                    @Html.HiddenFor(model => model.GlRepoting_Group_Name, new { @id = "hdn_GlRepoting_GroupName" })
+                                </div>
+                                <div class="col-md-2 col-sm-12">
+                                    <label class="col-form-label label-align">
+                                        @Resource.Category
+                                    </label>
+                                    @Html.DropDownListFor(model => model.cust_categ, new SelectList(Model.CategoryList, "setup_id", "setup_val"), new { @class = "form-control", @id = "custcat", onchange = "OnChangeCustName()" })
+                                    @*<select class="form-control" id="custcat">
+                <option>ALL</option>
+            </select>*@
+                                </div>
+                                <div class="col-md-2 col-sm-12">
+                                    <label class="col-form-label label-align">
+                                        @Resource.Portfolio
+                                    </label>
+                                    @Html.DropDownListFor(model => model.cust_ports, new SelectList(Model.PortFolioList, "setup_id", "setup_val"), new { @id = "custport", @class = "form-control", @onchange = "OnChangePort()" })
+                                    @*<select class="form-control" id="custport">
+                <option>ALL</option>
+            </select>*@
+                                </div>
+                                <div class="col-md-3 col-sm-12 no-padding">
+                                    <div class="col-md-5 col-sm-12">
+                                        <label class="col-form-label label-align">
+                                            @Resource.Active <span class="required">*</span>
+                                        </label>
+                                        @Html.DropDownListFor(model => model.item_ActStatus, new SelectList(new List<SelectListItem> {
+                                                                                          new SelectListItem {Text="ALL",Value="0" },
+                                                                                          new SelectListItem {Text="Yes",Value="Y" },
+                                                                                          new SelectListItem {Text="No",Value="N" },
+                                                                                          }, "Value", "Text"
+                                           ), new { @class = "form-control", @id = "cust_act", @name = "item_ActStatus" })
+                                        @*<select class="form-control" id="cust_act">
+                    <option>ALL</option>
+                    <option>Yes</option>
+                    <option>No</option>
+                </select>*@
+                                    </div>
+                                    <div class="col-md-5 col-sm-12">
+                                        <label class="col-form-label label-align">
+                                            @Resource.Status <span class="required">*</span>
+                                        </label>
+                                        @Html.DropDownListFor(model => model.Status, new SelectList(Model.StatusList, "status_id", "status_name"), new { @class = "form-control", id = "cust_status" })
+                                    </div>
+                                    <div class="col-md-2 col-sm-12">
+                                        <button type="button" class="btn btn-primary btn-sm margintop20" id="BtnSearch" onclick="FilterListCust()"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </form>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <div class="col-md-10 col-sm-12 heading_left_padding ">
+                    <div class="x_panel margin_top_zero">
+                        <div class="x_content">
+                            <div class="row">
+                                <div class="card-box table-responsive dy_table">
+                                    <div id="CustListBody" class="sticky-table sticky-ltr-cells sb-container container-example1">
+                                        @Html.Partial("~/Areas/BusinessLayer/Views/Shared/PartialCutomerList.cshtml")
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @if (ViewBag.VBRoleList != null)
+                {
+                    foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                    {
+                        if (Row["feature_id"].ToString() == "103125005")
+                        {
+                            <div class="col-md-2 col-sm-12 heading_right_padding ">
+                                <div class="x_panel">
+                                    <div class="x_content">
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <form id="available_stock" class="available_stock form-horizontal form-label-left" data-parsley-validate>
+                                                    <div class="item form-group">
+                                                        <div class="col-md-12 col-sm-12 available_right num_right_label">
+                                                            <label class="col-form-label label-align" for="first-name">@Resource.LedgerBalance</label>
+                                                            <input type="text" id="txtLedgerBalance" required class="form-control item_list_value num_right" placeholder="0000.00" disabled>
+                                                            
+                                                        </div>
+                                                    </div>
+                                                    <div class="item form-group">
+                                                        <div class="col-md-12 col-sm-12 available_right ">
+                                                            <label class="col-form-label label-align num_right_label" for="first-name num_right_label">@Resource.OrderValue</label>
+                                                            <input type="text" id="txtOrderValue" required class="form-control item_list_value num_right" placeholder="0000.00" disabled>
+                                                        </div>
+                                                    </div>
+                                                    <div class="item form-group">
+                                                        <div class="col-md-12 col-sm-12 available_right ">
+                                                            <label class="col-form-label label-align num_right_label" for="first-name num_right_label">@Resource.InvoiceValue</label>
+                                                            <input type="text" id="txtInvoiceValue" required class="form-control item_list_value num_right" placeholder="0000.00" disabled>
+                                                        </div>
+                                                    </div>
+                                                    <div class="item form-group">
+                                                        <div class="col-md-12 col-sm-12 available_right ">
+                                                            <label class="col-form-label label-align num_right_label" for="first-name num_right_label">@Resource.SaleReturn</label>
+                                                            <input type="text" id="txtSaleReturn" required class="form-control item_list_value num_right" placeholder="0000.00" disabled>
+                                                        </div>
+                                                    </div>
+                                                    @*<div class="item form-group">
+                                                        <div class="col-md-12 col-sm-12 available_right ">
+                                                            <label class="col-form-label label-align num_right_label" for="first-name">@Resource.GrossProfitEarned</label>
+                                                            <input type="text" id="first-name" required class="form-control item_list_value num_right" placeholder="0000.00" disabled>
+                                                        </div>
+                                                    </div>*@
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,84 @@
+﻿@using EnRepMobileWeb.Resources;
+@using System.Data
+@if (Session["UserId"] == null)
+{
+    Response.Redirect("~/Login");
+}
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+<script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+@*<title>@Model.Title</title>*@
+<div class="row">
+    <div class="col-md-12 col-sm-12">
+        <div class="x_panel mar_pad1">
+            <div class="x_content mar_pad1">               
+                <h2 class="col-md-5 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>                
+                <div id="wizard" class="form_wizard wizard_horizontal col-md-3 col-sm-12 work_flow"></div>               
+                            <div id="" class="col-md-4 col-sm-12 work_flow heading_right_padding">
+                                <ul>
+                                    <li>
+                                        <a class="tooltip-test" href="@Url.Action("AddMaterialReturnSCDetail", "MaterialReturnSC")" title="@Resource.AddNew">
+                                            <img src="~/Content/Images/addgreen.png" width="28" id="Btn_AddNewPO" height="28" alt="Add">
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>                       
+                <div class="x_title pad_mar ">
+                    <div class="col-md-12 col-sm-12 icon_tool padding_zero">
+                        <form class="available_stock pad_mar" action="" method="post" novalidate>
+                            <div class="col-md-12 col-sm-12 padding_zero">
+                                <div class="col-md-3 col-sm-12">
+                                    <label class="col-form-label label-align">@Resource.Material @Resource.Return @Resource.Number</label>
+                                    <select class="form-control" id="ddlStatus" name="Status">
+                                        <option value="">All</option>
+                                        <option value="">Material</option>
+                                        <option value="">Material</option>
+                                        <option value="">Material</option>
+                                        <option value="">Material</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2 col-sm-12 pl-0">
+                                    <label class="col-form-label label-align">@Resource.FromDate</label>
+                                    <input class="form-control" id="txtFromdate" max="2023-04-28" name="FromDate" onchange="FromToDateValidation()" type="date" value="2023-04-01">
+                                </div>
+                                <div class="col-md-2 col-sm-12 pl-0">
+                                    <label class="col-form-label label-align">@Resource.ToDate</label>
+                                    <input value="2023-04-28" class="form-control" id="txtTodate" max="2023-04-28" name="ToDate" onchange="FromToDateValidation()" placeholder="dd-MM-yyyy" type="date">
+                                </div>
+                                <div class="col-md-2 col-sm-12 no-padding">
+                                    <div class="col-md-9 col-sm-12 pl-0">
+                                        <label class="col-form-label label-align">@Resource.Status</label>
+                                        <select class="form-control" id="ddlStatus" name="Status">
+                                            <option value="0">All</option>
+                                            <option value="A">Approved</option>
+                                            <option value="C">Cancelled</option>
+                                            <option value="D">Drafted</option>
+                                            <option value="F">Forwarded</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3 col-sm-12 pl-0">
+                                        <button type="button" class="btn btn-primary btn-sm margintop20" id="Btn_Search"  onclick="BtnSearch()"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12">
+        <div id="Itm_Details_List" class="x_panel margin_top_zero">
+            <div class="x_content">
+                <div class="card-box table-responsive dy_table">
+                    <div id="tbodyGRNSCList" class="sticky-table sticky-ltr-cells sb-container container-example1">
+                        @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialMaterialReturnSCList.cshtml")
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- page content end -->

@@ -1,0 +1,664 @@
+﻿@using EnRepMobileWeb.Resources;
+@using System.Data;
+@{
+    //string ValDigit = "0.";
+    //var VD = Convert.ToInt32(Session["ValDigit"].ToString());
+    //for (var i = 0; i < VD; i++)
+    //{
+    //    ValDigit += "0";
+    //}
+    //string QtyDigit = "0.";
+    //var QD = Convert.ToInt32(Session["QtyDigit"].ToString());
+    //for (var i = 0; i < QD; i++)
+    //{
+    //    QtyDigit += "0";
+    //}
+    //string RateDigit = "0.";
+    //var RD = Convert.ToInt32(Session["ValDigit"].ToString());
+    //for (var i = 0; i < RD; i++)
+    //{
+    //    RateDigit += "0";
+    //}
+    //decimal total = 0;
+}
+<style>
+    #datatable-buttons2_wrapper .btn-group a:nth-child(3) {
+        display: inline-block;
+        position: absolute;
+    }
+    #DataTable_ItemWiseSummery_wrapper .dt-buttons {
+        position: absolute;
+        margin-left: 15%;
+    }
+
+    #DataTable_ItemWiseSummery_filter {
+        position: absolute;
+        right: 5px;
+        top: 0px;
+    }
+
+    #DataTable_ItemWiseSummery_wrapper {
+        padding-left: 2px !important;
+    }
+</style>
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<input hidden="hidden" id="SumDetItemWiseFlag" value="@ViewBag.flag" />
+@if (ViewBag.flag == "ItemWiseSummery")
+{
+    <table id="DataTable_ItemWiseSummery" class="table table-striped width2200 rowhighlighttbl itmfrz" cellspacing="0" width="100%">
+        <thead>
+            <tr class="sticky-header">
+                <th width="3%">@Resource.SrNo</th>
+                <th width="10%" class="itmStick">@Resource.ItemName</th>
+                <th width="4%">@Resource.UOM</th>
+                <th width="4%">@Resource.HSNCode</th>
+                <th width="5%">@Resource.Currency</th>
+                <th width="6%">@Resource.Quantity</th>
+                <th width="8%">@Resource.AverageCost @Resource.Price <br /> @Resource.InSpecific</th>
+                <th width="8%">@Resource.AverageCost @Resource.Price <br /> @Resource.InBase</th>
+                <th width="7%">@Resource.PurchaseAmount <br /> @Resource.InSpecific</th>
+                <th width="7%">@Resource.PurchaseAmount <br /> @Resource.InBase</th>
+                <th width="6%">@Resource.TaxAmount <br /> @Resource.InSpecific</th>
+                <th width="6%">@Resource.TaxAmount <br /> @Resource.InBase</th>
+                <th width="6%">@Resource.OtherCharges <br /> @Resource.InSpecific</th>
+                <th width="6%">@Resource.OtherCharges <br /> @Resource.InBase</th>
+                <th width="7%">@Resource.InvoiceAmount  <br /> @Resource.InSpecific </th>
+                <th width="7%">@Resource.InvoiceAmount  <br /> @Resource.InBase </th>
+
+            </tr>
+        </thead>
+        <tbody id="">
+            @*@if (ViewBag.PrcItemWiseDetail != null)
+                {
+                    var srno = 1;
+                    foreach (DataRow dr in ViewBag.PrcItemWiseDetail.Rows)
+                    {
+                        <tr>
+                            <td>@srno</td>
+                            <td class="ItmNameBreak itmStick tditemfrz">
+                                <div class="col-sm-11 i_Icon" id="item_name">@dr["item_name"].ToString()</div>
+                                <div class="col-sm-1 i_Icon">
+                                    <input id="Hdn_item_id" hidden="hidden" value="@dr["item_id"].ToString()" />
+                                    <button type="button" id="" class="calculator iButton" onclick="OnClickIconBtn(event)" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false">  <img src="~/Content/Images/iIcon1.png" alt="" title="@Resource.InvoiceDetail" /> </button>
+                                </div>
+                            </td>
+                            <td id="uom_alias" class="center">@dr["uom_alias"].ToString()</td>
+                            <td>@dr["HSN_code"].ToString()</td>
+                            <td class="center" id="curr_symbol">@dr["curr_symbol"].ToString()</td>
+                            <td class="num_right" id="item_qty">@dr["item_qty"].ToString()</td>
+                            <td class="num_right">@dr["avg_item_rate_spec"].ToString()</td>
+                            <td class="num_right">@dr["avg_item_rate_bs"].ToString()</td>
+                            <td class="num_right" id="txt_PurchaseAmtSpec">@dr["purchase_amount_spec"].ToString()</td>
+                            <td class="num_right" id="txt_PurchaseAmt">@dr["purchase_amount_bs"].ToString()</td>
+                            <td class="num_right" id="txt_TaxAmtSpec">@dr["tax_amt_spec"].ToString()</td>
+                            <td class="num_right" id="txt_TaxAmt">@dr["tax_amt_bs"].ToString()</td>
+                            <td class="num_right" id="txt_OcAmtSpec">@dr["oc_amt_spec"].ToString()</td>
+                            <td class="num_right" id="txt_OcAmt">@dr["oc_amt_bs"].ToString()</td>
+                            <td class="num_right" id="txt_InvoiceAmtSpec">
+                                <div class="col-sm-11" id="">@dr["invoice_amt_spec"].ToString()</div>
+                                <div class="col-sm-1 i_Icon">
+                                    <button type="button" id="" class="calculator iButton" onclick="OnClickIWSummeryInvAmt(event)" data-toggle="modal" data-target="#ProcurementItemWiseInvoiceDetail" data-backdrop="static" data-keyboard="false">  <img src="~/Content/Images/iIcon1.png" alt="" title="@Resource.InvoiceDetail" /> </button>
+                                </div>
+                            </td>
+                            <td class="num_right" id="txt_InvoiceAmt">
+                                <div class="col-sm-11" id="">@dr["invoice_amt_bs"].ToString()</div>
+                                <div class="col-sm-1 i_Icon">
+                                    <button type="button" id="" class="calculator iButton" onclick="OnClickIWSummeryInvAmt(event)" data-toggle="modal" data-target="#ProcurementItemWiseInvoiceDetail" data-backdrop="static" data-keyboard="false">  <img src="~/Content/Images/iIcon1.png" alt="" title="@Resource.InvoiceDetail" /> </button>
+                                </div>
+                            </td>
+                        </tr>
+                        srno++;
+                    }
+                }*@
+
+        </tbody>
+        <tfoot id="DataTable_ItemWiseSummery_footer"></tfoot>
+    </table>
+}
+else
+{
+    <table id="DataTable_ItemWiseSummery" class="table table-striped width3000 rowhighlighttbl itmfrz" cellspacing="0" width="100%">
+        <thead>
+            <tr class="sticky-header">
+                <th width="3%">@Resource.SrNo</th>
+                <th width="10%" class="itmStick">@Resource.ItemName</th>
+                <th width="3%">@Resource.UOM</th>
+                <th width="3%">@Resource.HSNCode</th>
+                <th width="5%">@Resource.Currency</th>
+                <th width="5%">@Resource.Invoice @Resource.Number</th>
+                <th width="4%">@Resource.Invoice @Resource.Date</th>
+                <th width="7%">@Resource.SupplierName</th>
+                <th width="4%">@Resource.Quantity</th>
+                <th width="5%">@Resource.CostPrice <br /> @Resource.InSpecific</th>
+                <th width="5%">@Resource.CostPrice <br /> @Resource.InBase</th>
+                <th width="6%">@Resource.PurchaseAmount <br /> @Resource.InSpecific</th>
+                <th width="6%">@Resource.PurchaseAmount <br /> @Resource.InBase</th>
+                <th width="5%">@Resource.TaxAmount <br /> @Resource.InSpecific</th>
+                <th width="5%">@Resource.TaxAmount <br /> @Resource.InBase</th>
+                <th width="5%">@Resource.OtherCharges <br /> @Resource.InSpecific </th>
+                <th width="5%">@Resource.OtherCharges <br /> @Resource.InBase </th>
+                <th width="6%">@Resource.InvoiceAmount <br /> @Resource.InSpecific</th>
+                <th width="6%">@Resource.InvoiceAmount <br /> @Resource.InBase</th>
+                <th width="5%">@Resource.ApprovedOn</th>
+            </tr>
+        </thead>
+        <tbody id="">
+            @*@if (ViewBag.PrcItemWiseDetail != null)
+                {
+                    var srno = 1;
+                    foreach (DataRow dr in ViewBag.PrcItemWiseDetail.Rows)
+                    {
+                <tr>
+                    <td>@srno</td>
+                    <td class="ItmNameBreak itmStick tditemfrz">
+                        <div class="col-sm-11 i_Icon" id="item_name">@dr["item_name"].ToString()</div>
+                        <div class="col-sm-1 i_Icon">
+                            <input id="Hdn_item_id" hidden="hidden" value="@dr["item_id"].ToString()" />
+                            <button type="button" id="" class="calculator iButton" onclick="OnClickIconBtn(event)" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false">  <img src="~/Content/Images/iIcon1.png" alt="" title="@Resource.InvoiceDetail" /> </button>
+                        </div>
+                    </td>
+                    <td id="uom_alias">@dr["uom_alias"].ToString()</td>
+                    <td>@dr["HSN_code"].ToString()</td>
+                    <td class="center" id="curr_symbol">@dr["curr_symbol"].ToString()</td>
+                    <td>@dr["inv_no"].ToString()</td>
+                    <td>@dr["inv_dt1"].ToString()</td>
+                    <td>@dr["supp_name"].ToString()</td>
+                    <td class="num_right" id="txt_mr_qty">@dr["mr_qty"].ToString()</td>
+                    <td class="num_right" id="txt_item_rate_spec">@dr["item_rate_spec"].ToString()</td>
+                    <td class="num_right" id="txt_item_rate_bs">@dr["item_rate_bs"].ToString()</td>
+                    <td class="num_right" id="txt_PurchaseAmtSpec">@dr["purchase_amount_spec"].ToString()</td>
+                    <td class="num_right" id="txt_PurchaseAmt">@dr["purchase_amount_bs"].ToString()</td>
+                    <td class="num_right" id="txt_TaxAmtSpec">@dr["tax_amt_spec"].ToString()</td>
+                    <td class="num_right" id="txt_TaxAmt">@dr["tax_amt_bs"].ToString()</td>
+                    <td class="num_right" id="txt_OcAmtSpec">@dr["oc_amt_spec"].ToString()</td>
+                    <td class="num_right" id="txt_OcAmt">@dr["oc_amt_bs"].ToString()</td>
+                    <td class="num_right" id="txt_InvoiceAmtSpec">@dr["invoice_amt_spec"].ToString()</td>
+                    <td class="num_right" id="txt_InvoiceAmt">@dr["invoice_amt_bs"].ToString()</td>
+                    <td class="num_right">@dr["app_dt"].ToString()</td>
+                </tr>
+                        srno++;
+                    }
+                }*@
+
+        </tbody>
+        <tfoot id="DataTable_ItemWiseSummery_footer"></tfoot>
+    </table>
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        PrecurmentDetailItemWiseData_dttbl()
+    });
+    function PrecurmentDetailItemWiseData_dttbl() {
+        var HSN_code = "";
+        var PurchaseBy = $("#ddl_Purchase_by").val();
+        var brid_list = cmn_getddldataasstring("#ddl_branch");
+        var ShowAs;
+        if ($("#ProcurementMISOrderSummary").is(":checked")) {
+            ShowAs = "S";
+        }
+        if ($("#ProcurementMISOrderDetail").is(":checked")) {
+            ShowAs = "D";
+        }
+        var flag = "";
+        if (PurchaseBy == "I") {
+            if (ShowAs == "S") {
+                flag = "Summary";
+            }
+            else {
+                flag = "Detail";
+            }
+            //replaceDatatablesIds("dttbl0");
+        }
+        else if (PurchaseBy == "S") {
+            if (ShowAs == "S") {
+                flag = "SupplierWiseSummery";
+            }
+            else {
+                flag = "SupplierWiseDetail";
+            }
+            //replaceDatatablesIds("dttbl1");
+        }
+        else if (PurchaseBy == "T") {
+            if (ShowAs == "S") {
+                flag = "ItemWiseSummery";
+            }
+            else {
+                flag = "ItemWiseDetail";
+            }
+            HSN_code = $("#HSN_cd").val();
+            //replaceDatatablesIds("dttbl2");
+        }
+        else if (PurchaseBy == "G") {
+            if (ShowAs == "S") {
+                flag = "ItemGroupWiseSummery";
+            }
+            else {
+                flag = "ItemGroupWiseDetail";
+            }
+            //replaceDatatablesIds("dttbl3");
+        }
+        debugger;
+        var search_prm = {
+            Supp_id: $("#hdn_MultiselectSuppName").val(),
+            //Inv_type: $("#ddl_PurchaseType").val(),
+            Inv_type: Cmn_formatSelectedValues($("#ddl_PurchaseType").val()),
+            category: $("#hdn_MultiselectSuppCatgry").val(),
+            portFolio: $("#hdn_MultiselectPortfolio").val(),
+            Group: $("#hdn_MultiselectItmGrpName").val(),
+            Item_PortFolio: $("#hdn_MultiselectItmportfolio").val(),
+            From_dt: $("#txtFromdate").val(),
+            To_dt: $("#txtTodate").val(),
+            flag: flag,
+            //HSN_code: HSN_code
+            HSN_code: Cmn_formatSelectedValues($("#HSN_cd").val()),
+            brid_list: brid_list,
+        }
+        var model = {
+            "search_prm": search_prm
+        }
+        $("#DataTable_ItemWiseSummery").DataTable().destroy();
+        $("#DataTable_ItemWiseSummery").DataTable({
+            dom: "Blfrtip",
+            "pageLength": 50,
+            "processing": true, // for show progress bar
+            "serverSide": true, // for process server side
+            "filter": true, // this is for disable filter (search box)
+            "orderMulti": false, // for disable multiple column at once
+            "ajax": {
+                "url": "/ApplicationLayer/ProcurementDetail/LoadPrcDetailsDataTable",
+                "data": { model, PurchaseBy, ShowAs },
+                "type": "POST",
+                "datatype": "json",
+                "dataSrc": function (json) {
+                    footerData = json.footer; // Save for later use in footerCallback
+                    return json.data;
+                }
+            },
+            "columns": StkDtldataColumns(),
+            columnDefs: StkDtlDataColumnRenders(),
+            "footerCallback": function (row, data, start, end, display) {
+                if (!footerData) return;
+
+                var colspan = 8;
+                let SumDetFlag = $("#SumDetItemWiseFlag").val();
+                if (SumDetFlag == "ItemWiseSummery") {
+                    colspan = 8;
+                } else {
+                    colspan = 10;
+                }
+                // Update footer
+                var td = "";
+                var td1 = "";
+                var ValDigit = $("#ValDigit").text();
+                var flag = $("#SumDetItemWiseFlag").val();
+                if (flag == "ItemWiseDetail") {
+                    td = "<td colspan='1' align='right'></td>";
+                }
+                var txt_mr_qty = 0;
+                var txt_item_rate_spec = 0;
+                var txt_item_rate_bs = 0;
+                var PurchaseAmtSpec = 0;
+                var PurchaseAmt = 0;
+                var TaxAmtSpec = 0;
+                var TaxAmt = 0;
+                var OcAmtSpec = 0;
+                var OcAmt = 0;
+                var InvAmtBs = 0;
+                var InvAmtSpcs = 0;
+                footerData.map((val, index) => {
+                    //txt_mr_qty = parseFloat(txt_mr_qty) + parseFloat(cmn_ReplaceCommas(val.mr_qty));
+                    //txt_item_rate_spec = parseFloat(txt_item_rate_spec) + parseFloat(cmn_ReplaceCommas(val.item_rate_spec));
+                    //txt_item_rate_bs = parseFloat(txt_item_rate_bs) + parseFloat(cmn_ReplaceCommas(val.item_rate_bs));
+                    PurchaseAmtSpec = parseFloat(PurchaseAmtSpec) + parseFloat(cmn_ReplaceCommas(val.purchase_amount_spec));
+                    PurchaseAmt = parseFloat(PurchaseAmt) + parseFloat(cmn_ReplaceCommas(val.purchase_amount_bs));
+                    TaxAmtSpec = parseFloat(TaxAmtSpec) + parseFloat(cmn_ReplaceCommas(val.tax_amt_spec));
+                    TaxAmt = parseFloat(TaxAmt) + parseFloat(cmn_ReplaceCommas(val.tax_amt_bs));
+                    OcAmtSpec = parseFloat(OcAmtSpec) + parseFloat(cmn_ReplaceCommas(val.oc_amt_spec));
+                    OcAmt = parseFloat(OcAmt) + parseFloat(cmn_ReplaceCommas(val.oc_amt_bs));
+                    InvAmtBs = parseFloat(InvAmtBs) + parseFloat(cmn_ReplaceCommas(val.invoice_amt_spec));
+                    InvAmtSpcs = parseFloat(InvAmtSpcs) + parseFloat(cmn_ReplaceCommas(val.invoice_amt_bs));
+
+                });
+                if (SumDetFlag == "ItemWiseSummery") {
+                    td = ``;
+
+                } else {
+                    td1 = `<td colspan='1' align='right'></td>`;
+                }
+
+                $("#DataTable_ItemWiseSummery_footer").html(`
+<tr class="total">
+
+                <td colspan="${colspan}" align="right"><strong>${$("#span_Total").text()}</strong></td>
+ ${td}
+                <td class="num_right"><strong>${cmn_addCommas(parseFloat(PurchaseAmtSpec).toFixed(ValDigit))}</strong></td>
+                <td class="num_right"><strong>${cmn_addCommas(parseFloat(PurchaseAmt).toFixed(ValDigit))}</strong></td>
+                <td class="num_right"><strong>${cmn_addCommas(parseFloat(TaxAmtSpec).toFixed(ValDigit))}</strong></td>
+                <td class="num_right"><strong>${cmn_addCommas(parseFloat(TaxAmt).toFixed(ValDigit))}</strong></td>
+                <td class="num_right"><strong>${cmn_addCommas(parseFloat(OcAmtSpec).toFixed(ValDigit))}</strong></td>
+                <td class="num_right"><strong>${cmn_addCommas(parseFloat(OcAmt).toFixed(ValDigit))}</strong></td>
+                <td class="num_right"><strong>${cmn_addCommas(parseFloat(InvAmtSpcs).toFixed(ValDigit))}</strong></td>
+                <td class="num_right"><strong>${cmn_addCommas(parseFloat(InvAmtBs).toFixed(ValDigit))}</strong></td>
+                ${td1}
+            </tr>
+`);
+            },
+            buttons: [
+                {
+                    extend: "csv",
+                    className: "btn-sm",
+                    action: function (e, dt, button, config) {
+                        var csvUrl = "/ApplicationLayer/ProcurementDetail/ExportCsv";
+                        let CsvName = $("title").text() + "_" + moment().format('YYYYMMDDhhmmss');
+                        Cmn_importDataToCSV(e, dt, button, config, csvUrl, CsvName);
+
+                    }
+
+                }],
+
+        });
+        //var exportbtn = `<button type="submit" class="btn btn-default buttons-csv buttons-html5 btn-sm" id='' tabindex="0" aria-controls="datatable-buttons"
+        //        name="Command" value="CsvPrint" onclick="GetInvoiceWiseCSV()">
+        //        <span>CSV</span></button>`;
+        //$("#DataTable_ItemWiseSummery_length").append(exportbtn);
+    }
+    function StkDtldataColumns() {
+        var Array = [];
+        let SumDetFlag = $("#SumDetItemWiseFlag").val();
+        if (SumDetFlag == "ItemWiseSummery") {
+            Array = [
+                { "data": "SrNo", "name": "SrNo", "autoWidth": true },
+                { "data": "item_name", "name": "item_name", "autoWidth": true, className: "ItmNameBreak itmStick tditemfrz" },
+                //{ "data": "item_id", "name": "item_id", "autoWidth": true },
+                { "data": "uom_alias", "name": "uom_alias", "autoWidth": true, className: "center" },
+                { "data": "HSN_code", "name": "HSN_code", "autoWidth": true, className: "" },
+                { "data": "curr_symbol", "name": "curr_symbol", "autoWidth": true, className: "center" },
+                { "data": "mr_qty", "name": "mr_qty", "autoWidth": true, className: "num_right" },
+                { "data": "item_rate_spec", "name": "item_rate_spec", "autoWidth": true, className: "num_right" },
+                { "data": "item_rate_bs", "name": "item_rate_bs", "autoWidth": true, className: "num_right" },
+                { "data": "purchase_amount_spec", "name": "purchase_amount_spec", "autoWidth": true, className: "num_right" },
+                { "data": "purchase_amount_bs", "name": "purchase_amount_bs", "autoWidth": true, className: "num_right" },
+                { "data": "tax_amt_spec", "name": "tax_amt_spec", "autoWidth": true, className: "num_right" },
+                { "data": "tax_amt_bs", "name": "tax_amt_bs", "autoWidth": true, className: "num_right" },
+                { "data": "oc_amt_spec", "name": "oc_amt_spec", "autoWidth": true, className: "num_right" },
+                { "data": "oc_amt_bs", "name": "oc_amt_bs", "autoWidth": true, className: "num_right" },
+                { "data": "invoice_amt_spec", "name": "invoice_amt_spec", "autoWidth": true, className: "num_right" },
+                { "data": "invoice_amt_bs", "name": "invoice_amt_bs", "autoWidth": true, className: "num_right" }
+            ]
+
+        }
+        else {
+
+            Array = [
+                { "data": "SrNo", "name": "SrNo", "autoWidth": true },
+                { "data": "item_name", "name": "item_name", "autoWidth": true, className: "ItmNameBreak itmStick tditemfrz" },
+                //{ "data": "item_id", "name": "item_id", "autoWidth": true },
+                { "data": "uom_alias", "name": "uom_alias", "autoWidth": true, className: "center" },
+                { "data": "HSN_code", "name": "HSN_code", "autoWidth": true, className: "" },
+                { "data": "curr_symbol", "name": "curr_symbol", "autoWidth": true, className: "center" },
+                { "data": "inv_no", "name": "inv_no", "autoWidth": true, className: "" },
+                { "data": "inv_dt1", "name": "inv_dt1", "autoWidth": true, className: "" },
+                //{ "data": "inv_dt", "name": "inv_dt", "autoWidth": true, className: "" },
+                { "data": "supp_name", "name": "supp_name", "autoWidth": true, className: "" },
+                { "data": "mr_qty", "name": "mr_qty", "autoWidth": true, className: "num_right" },
+                { "data": "item_rate_spec", "name": "item_rate_spec", "autoWidth": true, className: "num_right" },
+                { "data": "item_rate_bs", "name": "item_rate_bs", "autoWidth": true, className: "num_right" },
+                { "data": "purchase_amount_spec", "name": "purchase_amount_spec", "autoWidth": true, className: "num_right" },
+                { "data": "purchase_amount_bs", "name": "purchase_amount_bs", "autoWidth": true, className: "num_right" },
+                { "data": "tax_amt_spec", "name": "tax_amt_spec", "autoWidth": true, className: "num_right" },
+                { "data": "tax_amt_bs", "name": "tax_amt_bs", "autoWidth": true, className: "num_right" },
+                { "data": "oc_amt_spec", "name": "oc_amt_spec", "autoWidth": true, className: "num_right" },
+                { "data": "oc_amt_bs", "name": "oc_amt_bs", "autoWidth": true, className: "num_right" },
+                { "data": "invoice_amt_spec", "name": "invoice_amt_spec", "autoWidth": true, className: "num_right" },
+                { "data": "invoice_amt_bs", "name": "invoice_amt_bs", "autoWidth": true, className: "num_right" },
+                { "data": "app_dt", "name": "app_dt", "autoWidth": true, className: "" }
+            ]
+        }
+        return Array;
+    }
+    function StkDtlDataColumnRenders() {
+        debugger;
+        var array = [];
+        let SumDetFlag = $("#SumDetItemWiseFlag").val();
+        if (SumDetFlag == "ItemWiseSummery") {
+            array = [
+                {
+                    'createdCell': function (td, cellData, rowData, row, col) {
+                        $(td).attr('id', 'supp_name');
+                    },
+                    render: (data, type, row) => {
+                        return `<div class="col-sm-11 i_Icon" id="item_name">${data}</div>
+                            <div class="col-sm-1 i_Icon">
+                                <input id="Hdn_item_id" hidden="hidden" value="${row.item_id}">
+                                <button type="button" id="" class="calculator iButton" onclick="OnClickIconBtn(event)" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false">  <img src="/Content/Images/iIcon1.png" alt="" title="Invoice Detail"> </button>
+                            </div>`
+                    },
+                    targets: 1//supp_name
+                },
+
+                {
+                    'createdCell': function (td, cellData, rowData, row, col) {
+                        $(td).attr('id', 'uom_alias');
+                    },
+                    targets: 2
+                },
+                {
+                    'createdCell': function (td, cellData, rowData, row, col) {
+                        $(td).attr('id', 'curr_symbol');
+                    },
+                    targets:4 
+                },
+                {
+                    'createdCell': function (td, cellData, rowData, row, col) {
+                        $(td).attr('id', 'item_qty');
+                    },
+                    targets: 5
+                },
+                {
+                    'createdCell': function (td, cellData, rowData, row, col) {
+                        $(td).attr('id', 'txt_PurchaseAmtSpec');
+                    },
+                    targets: 8
+                },
+                {
+                    'createdCell': function (td, cellData, rowData, row, col) {
+                        $(td).attr('id', 'txt_PurchaseAmt');
+                    },
+                    targets: 9
+                },
+                {
+                    'createdCell': function (td, cellData, rowData, row, col) {
+                        $(td).attr('id', 'txt_TaxAmtSpec');
+                    },
+                    targets: 10
+                },
+                {
+                    'createdCell': function (td, cellData, rowData, row, col) {
+                        $(td).attr('id', 'txt_TaxAmt');
+                    },
+                    targets: 11
+                },
+                {
+                    'createdCell': function (td, cellData, rowData, row, col) {
+                        $(td).attr('id', 'txt_OcAmtSpec');
+                    },
+                    targets: 12
+                },
+                {
+                    'createdCell': function (td, cellData, rowData, row, col) {
+                        $(td).attr('id', 'txt_OcAmt');
+                    },
+                    targets: 13
+                },
+                {
+                    'createdCell': function (td, cellData, rowData, row, col) {
+                        $(td).attr('id', 'txt_InvoiceAmtSpec');
+                    },
+                    render: (data, type, row) => {
+                        return `<div class="col-sm-11" id="">${data}</div>
+                            <div class="col-sm-1 i_Icon">
+                                <button type="button" id="" class="calculator iButton" onclick="OnClickIWSummeryInvAmt(event)" data-toggle="modal" data-target="#ProcurementItemWiseInvoiceDetail" data-backdrop="static" data-keyboard="false">  <img src="/Content/Images/iIcon1.png" alt="" title="Invoice Detail"> </button>
+                            </div>`
+                    },
+                    targets: 14
+                },
+                {
+                    'createdCell': function (td, cellData, rowData, row, col) {
+                        $(td).attr('id', 'txt_InvoiceAmt');
+                    },
+                    render: (data, type, row) => {
+                        return `<div class="col-sm-11" id="">${data}</div>
+                            <div class="col-sm-1 i_Icon">
+                                <button type="button" id="" class="calculator iButton" onclick="OnClickIWSummeryInvAmt(event)" data-toggle="modal" data-target="#ProcurementItemWiseInvoiceDetail" data-backdrop="static" data-keyboard="false">  <img src="/Content/Images/iIcon1.png" alt="" title="Invoice Detail"> </button>
+                            </div>`;
+                    },
+                    targets: 15
+                },
+            ]
+
+        }
+        else {
+            array = [
+                {
+                    'createdCell': function (td, cellData, rowData, row, col) {
+                        $(td).attr('id', 'supp_name');
+                    },
+                    render: (data, type, row) => {
+                        return `<div class="col-sm-11 i_Icon" id="item_name">${data}</div>
+                    <div class="col-sm-1 i_Icon">
+                        <input id="Hdn_item_id" hidden="hidden" value="${row.item_id}">
+                        <button type="button" id="" class="calculator iButton" onclick="OnClickIconBtn(event)" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false">  <img src="/Content/Images/iIcon1.png" alt="" title="Invoice Detail"> </button>
+                    </div>`;
+                    },
+                    targets: 1
+                },
+                {
+                    'createdCell': function (td, cellData, rowData, row, col) {
+                        $(td).attr('id', 'uom_alias');
+                    },
+                    targets: 2
+                },
+                {
+                    'createdCell': function (td, cellData, rowData, row, col) {
+                        $(td).attr('id', 'curr_symbol');
+                    },
+                    targets: 4
+                },
+                {
+                    'createdCell': function (td, cellData, rowData, row, col) {
+                        $(td).attr('id', 'inv_no');
+                    },
+                    targets: 5
+                },
+                {
+                    'createdCell': function (td, cellData, rowData, row, col) {
+                        $(td).attr('id', 'txt_mr_qty');
+                    },
+                    targets: 8
+                },
+                {
+                    'createdCell': function (td, cellData, rowData, row, col) {
+                        $(td).attr('id', 'txt_item_rate_spec');
+                    },
+                    targets: 9
+                },
+                {
+                    'createdCell': function (td, cellData, rowData, row, col) {
+                        $(td).attr('id', 'txt_item_rate_bs');
+                    },
+                    targets: 10
+                },
+                {
+                    'createdCell': function (td, cellData, rowData, row, col) {
+                        $(td).attr('id', 'txt_PurchaseAmtSpec');
+                    },
+                    targets: 11
+                },
+                {
+                    'createdCell': function (td, cellData, rowData, row, col) {
+                        $(td).attr('id', 'txt_PurchaseAmt');
+                    },
+                    targets: 12
+                },
+                {
+                    'createdCell': function (td, cellData, rowData, row, col) {
+                        $(td).attr('id', 'txt_TaxAmtSpec');
+                    },
+                    targets: 13
+                },
+                {
+                    'createdCell': function (td, cellData, rowData, row, col) {
+                        $(td).attr('id', 'txt_TaxAmt');
+                    },
+                    targets: 14
+                },
+                {
+                    'createdCell': function (td, cellData, rowData, row, col) {
+                        $(td).attr('id', 'txt_OcAmtSpec');
+                    },
+                    targets: 15
+                },
+                {
+                    'createdCell': function (td, cellData, rowData, row, col) {
+                        $(td).attr('id', 'txt_OcAmt');
+                    },
+                    targets: 16
+                },
+                {
+                    'createdCell': function (td, cellData, rowData, row, col) {
+                        $(td).attr('id', 'txt_InvoiceAmtSpec');
+                    },
+                    //render: (data, type, row) => {
+                    //    return `<div class="col-sm-11" id="">${data}</div>
+                    //        <div class="col-sm-1 i_Icon">
+                    //            <button type="button" id="" class="calculator iButton" onclick="OnClickSWInvoiceInvAmt(event)" data-toggle="modal" data-target="#ProcurementSupplierWiseInvoiceDetail" data-backdrop="static" data-keyboard="false">  <img src="/Content/Images/iIcon1.png" alt="" title="Invoice Detail"> </button>
+                    //        </div>`
+                    //},
+                    targets: 17
+                },
+                {
+                    'createdCell': function (td, cellData, rowData, row, col) {
+                        $(td).attr('id', 'txt_InvoiceAmt');
+                    },
+                    //render: (data, type, row) => {
+                    //    return `<div class="col-sm-11" id="">${data}</div>
+                    //        <div class="col-sm-1 i_Icon">
+                    //            <button type="button" id="" class="calculator iButton" onclick="OnClickSWInvoiceInvAmt(event)" data-toggle="modal" data-target="#ProcurementSupplierWiseInvoiceDetail" data-backdrop="static" data-keyboard="false">  <img src="/Content/Images/iIcon1.png" alt="" title="Invoice Detail"> </button>
+                    //        </div>`;
+                    //},
+                    targets: 18
+                },
+            ]
+
+        }
+        return array;
+    }
+</script>
+
+@*@{
+        if (TempData["SDFilter"] != null)
+        {
+            if (TempData["SDFilter"].ToString() == "SDFilter")
+            {
+                @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+                @Scripts.Render("~/Content/Scripts/DatatablesJs")
+                <script>
+                    $(document).ready(function () {
+
+                        var flag = $("#SumDetItemWiseFlag").val();
+                        if (flag == "ItemWiseDetail") {
+                            $(".dataTables_filter input").attr('onkeyup', 'CalculateAmtOnSearchInputDetail("datatable-buttons2",7)');
+                            $(".dataTables_filter input").attr('onmouseout', 'CalculateAmtOnSearchInputDetail("datatable-buttons2",7)');
+                            CalculateAmtOnSearchInputDetail("datatable-buttons2", 8)
+                        }
+                        else {
+                            $(".dataTables_filter input").attr('onkeyup', 'CalculateAmtOnSearchInput("datatable-buttons2",7)');
+                            $(".dataTables_filter input").attr('onmouseout', 'CalculateAmtOnSearchInput("datatable-buttons2",7)');
+                            CalculateAmtOnSearchInput("datatable-buttons2", 8);
+                        }
+                    });
+                </script>
+            }
+        }
+    }*@

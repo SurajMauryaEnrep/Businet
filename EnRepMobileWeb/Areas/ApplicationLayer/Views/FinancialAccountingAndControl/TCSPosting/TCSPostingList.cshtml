@@ -1,0 +1,137 @@
+﻿@*@model EnRepMobileWeb.MODELS.ApplicationLayer.SalesAndDistribution.DomesticSaleInvoice.SI_ListModel*@
+@*@model EnRepMobileWeb.MODELS.ApplicationLayer.FinancialAccountingAndControl.OpeningBalance.OpeningBalanceModel*@
+@using EnRepMobileWeb.Resources;
+@using System.Data
+@if (Session["UserId"] == null)
+{
+    Response.Redirect("~/Login");
+}
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+<script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+@*<title>@Model.Title</title>*@
+<div class="row">
+    <!-- Workflow Information -->
+    <div id="WorkflowInformation" class="modal fade" role="dialog">
+        <div class="modal-dialog" style="max-width:700px;">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/Common/Views/_WorkFlow.cshtml")
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <h2 class="col-md-5 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                <!-- Smart Wizard -->
+                <div id="wizard" class="form_wizard wizard_horizontal col-md-3 col-sm-12 work_flow"> &nbsp;</div>
+                <div id="" class="col-md-4 col-sm-12 heading_right_padding">
+                    <ul>
+                        <li>
+                            <a class="tooltip-test"
+                               title="@Resource.AddNew" href="@Url.Action("AddTCSPostingDetail", "TCSPosting")"><img src="~/Content/Images/addgreen.png" width="32" id="btn_add" height="32" alt="Add"></a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="x_title pad_mar ">
+                    <div class="col-md-12 col-sm-12 icon_tool ">
+                        <div class="col-md-3 col-sm-12">
+                            <label class="col-form-label label-align">@Resource.Month </label>
+                            <select class="form-control" id="" name="">
+                                <option value="">Select</option>
+                                <option value="">January</option>
+                                <option value="">February</option>
+                                <option value="">March</option>
+                                <option value="">April</option>
+                                <option value="">May</option>
+                                <option value="">June</option>
+                                <option value="">July</option>
+                                <option value="">August</option>
+                                <option value="">September</option>
+                                <option value="">October</option>
+                                <option value="">November</option>
+                                <option value="">December</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 col-sm-12">
+                            <label class="col-form-label label-align">@Resource.Year </label>
+                            <select class="form-control" id="" name="">
+                                <option value="">Select</option>
+                                <option value="">2023</option>
+                                <option value="">2024</option>
+                                <option value="">2025</option>
+                                <option value="">2026</option>
+                                <option value="">2027</option>
+                                <option value="">2028</option>
+                                <option value="">2029</option>
+                                <option value="">2030</option>
+                                <option value="">2031</option>
+                                <option value="">2032</option>
+                                <option value="">2033</option>
+                                <option value="">2034</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 col-sm-12">
+                            <label class="col-form-label label-align">
+                                Status
+                            </label>
+                            <select class="form-control" id="ddlStatus" name="Status">
+                                <option value="0">All</option>
+                                <option value="A">Approved</option>
+                                <option value="C">Cancelled</option>
+                                <option value="D">Drafted</option>
+                                <option value="F">Forwarded</option>
+                                <option value="GR">Goods Received</option>
+                                <option value="QP">QC Pending</option>
+                            </select>
+                        </div>
+                        @*<div class="col-md-2 col-sm-12">
+                                <labe class="col-form-label label-align" style="float:left;">
+                                    @Resource.Period
+                                </labe>
+                                <input class="form-control" id="" name="" readonly="readonly" type="date" value="2023-08-01 - 2023-08-04">
+                            </div>
+                            <div class="col-md-3 col-sm-12">
+                                <label class="col-form-label label-align">@Resource.TDS @Resource.GLAccount </label>
+                                <select class="form-control" id="" name="">
+                                    <option value="">Select</option>
+                                    <option value="">TDS Payable</option>
+                                    <option value="">TDS Payable 1</option>
+                                    <option value="">TDS Payable 2</option>
+                                    <option value="">TDS Payable 3</option>
+                                    <option value="">TDS Payable 4</option>
+                                    <option value="">TDS Payable 5</option>
+                                    <option value="">TDS Payable 6</option>
+                                    <option value="">TDS Payable 7</option>
+                                    <option value="">TDS Payable 8</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 col-sm-12">
+                                <label class="col-form-label label-align">@Resource.Calculate @Resource.On </label>
+                                <select class="form-control" id="" name="">
+                                    <option value="">Select</option>
+                                    <option value="">Purchase Value</option>
+                                    <option value="">Payments</option>
+                                </select>
+                            </div>*@
+                        <div class="col-md-1 col-sm-12">
+                            <button type="button" class="btn btn-primary btn-sm margintop20" id="BtnSearch" onclick=""><i class="fa fa-search" aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12">
+        <div class="x_panel margin_top_zero">
+            <div class="x_content">
+                <div class="card-box table-responsive dy_table">
+                    <div id="DeliveryNoteListTbBody" class="sticky-table sticky-ltr-cells sb-container container-example1">
+                        @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialTCSPosting.cshtml")
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

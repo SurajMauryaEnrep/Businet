@@ -1,0 +1,89 @@
+﻿@using EnRepMobileWeb.Resources;
+@{
+    var Disable = true;
+    if (ViewBag.Disable != null)
+    {
+        if (ViewBag.Disable == true)
+        {
+            Disable = true;
+        }
+        else
+        {
+            Disable = false;
+        }
+    }
+    int TotalFileCount = 5;
+
+    if (ViewBag.DocumentMenuId== "105101145" ||ViewBag.DocumentMenuId== "105101152" || ViewBag.DocumentMenuId== "105101154"
+        || ViewBag.DocumentMenuId== "105101150" || ViewBag.DocumentMenuId== "105101147" || ViewBag.DocumentMenuId== "105101140125"
+        || ViewBag.DocumentMenuId == "105103125")/* Added by Suraj Maurya on 27-05-2025 to increase file limit */
+    {
+        TotalFileCount = 20;
+    }
+}
+<section class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingFive">
+        <h4 class="panel-title"> <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive"> @Resource.Attachment<span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a> </h4>
+    </div>
+    <div id="collapseFive" class="panel-collapse collapse hide" role="tabpanel" aria-labelledby="headingFive">
+        <div class="panel-body">
+            <div id="PartialImageBind">
+                @Html.Partial("~/Areas/Common/Views/cmn_imagebind.cshtml")
+            </div>
+            @{
+                var CountAttch = 0;
+                if (ViewBag.AttechmentDetails != null)
+                {
+                    CountAttch = ViewBag.AttechmentDetails.Rows.Count;
+                }
+            }
+            @if (CountAttch >= TotalFileCount)
+            {
+                <div class="form-group" id="FilesUpload" style="display:none;">
+                    <div class="file-loading">
+                        @if (!Disable)
+                        {
+                            <div class="file-loading" @*id="FilesUpload"*@>
+                                <input id="file-1" type="file" multiple class="file" data-overwrite-initial="false" data-min-file-count="1" name="ItemFiles">
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="form-group" id="FilesUpload">
+                    @if (!Disable)
+                    {
+                        <div class="file-loading" @*id="FilesUpload"*@>
+                            <input id="file-1" type="file" multiple class="file" data-overwrite-initial="false" data-min-file-count="1" name="ItemFiles">
+                        </div>
+                    }
+                </div>
+            }
+            @if (ViewBag.DocumentMenuId != null)
+            {
+                if (ViewBag.DocumentMenuId == "105101140130")
+                {
+                    @*<button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" id="SubItemDiscardAndExitBtn" onclick="">@Resource.DiscardAndExit</button>*@
+                    if (ViewBag.FlagHideSaveCloseBtn == "View")
+                    {
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" id="" onclick="">Close</button>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" id="AttachmentSaveAndExitBtn" onclick="TempSaveAndExitAttch('N')" @*onclick="Cmn_SaveAndExitSubItem          ('@Model.Flag')"*@>@Resource.SaveAndExit</button>
+                            <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" id="" onclick="">Close</button>
+                        </div>
+                    }
+
+
+                }
+            }
+
+        </div>
+    </div>
+</section>

@@ -1,0 +1,107 @@
+﻿@using System.Data;
+@{
+    string doc_status = "";
+    string BackGroundImgUrl = "";
+    if (ViewBag.DocStatus != null)
+    {
+        doc_status = ViewBag.DocStatus;
+    }
+    if (doc_status == "D" || doc_status == "F")
+    {
+        BackGroundImgUrl = Server.MapPath("~/Content/Images/draft.png");
+    }
+    DataTable dt = new DataTable();
+
+    if (ViewBag.Details != null)
+    {
+
+        dt = ViewBag.Details.Tables[2];
+
+      
+    }
+
+    var srno = 1;
+
+
+}
+
+    <style>
+        #dtlTable, #dtlTable td, #dtlTable th {
+            border: 0.5px solid black;
+        }
+    </style>
+    <div style='background: url(@BackGroundImgUrl) no-repeat ; height:800px; backgroundposition: center center;'>
+        @Html.Partial("~/Areas/Common/Views/Cmn_PrintHeaderWithAddrSampleIssue.cshtml")
+
+        <table width='100%' style="verticalalign:top;">
+            <tr>
+                <td style="verticalalign:top;">
+                    <table style='width:100%;verticalalign:top;'>
+                        <tr>
+                            <td style='width:10px;'></td>
+                            <td style="verticalalign:top;">
+                                <table style='width:100%;border:solid 1px #000000;'>
+                                    <tr>
+                                        <td style='width: 50%; border-right: solid 1px #000000; verticalalign:top; padding: 0px; '>
+                                            <table class="suppInfo" style=''>
+                                                <tr><td style=""><strong> Branch : </strong> @ViewBag.Details.Tables[0].Rows[0]["br_name"].ToString() </td></tr>
+                                                <tr><td><strong> Requisition Number : </strong>@ViewBag.Details.Tables[1].Rows[0]["trf_no"].ToString()</td></tr>
+                                                <tr><td><strong> Requisition Date : </strong>@ViewBag.Details.Tables[1].Rows[0]["issue_date"].ToString()</td></tr>
+                                            </table>
+                                        </td>
+                                        <td style='width:50%; verticalalign:top; padding:0px;'>
+                                            <table style='font-size:12px;font-weight:normal;padding:0px 0px 0px 5px;'>
+                                                <tr><td><strong> Source Branch  : </strong>@ViewBag.Details.Tables[1].Rows[0]["src_br"].ToString()</td></tr>
+                                                <tr><td><strong> Source Warehouse :  </strong> @ViewBag.Details.Tables[1].Rows[0]["src_wh"].ToString()</td></tr>
+                                                <tr><td><strong> Destination Branch  : </strong> @ViewBag.Details.Tables[1].Rows[0]["dstn_br"].ToString()</td></tr>
+                                                <tr><td><strong> Destination Warehouse  : </strong> @ViewBag.Details.Tables[1].Rows[0]["dstn_wh"].ToString()</td></tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td style='width:10px;'></td>
+                        </tr>
+
+                        <tr>
+                            <td style='width:10px;'></td>
+                            <td>
+                                <table id="dtlTable" cellspacing="0" cellpadding="0" style=" width:100%; font-size: 12px; font-weight:normal;padding: 0px 0px;  font-weight:normal; verticalalign:top; border: solid 1px #000000;">
+                                    <thead>
+                                        <tr>
+                                            <th width="6%" align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:2px;'><strong> S.NO.</strong></th>
+                                            <th width="30%" align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:2px;'><strong> Item Name</strong></th>
+                                            <th width="17%" align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:2px;'><strong> UOM</strong></th>
+                                            <th width="17%" align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:2px;'><strong> Requisition Quantity</strong></th>
+                                            @*<th width="15%" align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:2px;'><strong> Issued Quantity</strong></th>*@
+                                            <th width="30%" align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:2px;'><strong> Remarks</strong></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (DataRow dr in dt.Rows)
+                                        {
+                                            <tr>
+                                                <td style='text-align:center; width:6%;'>@srno</td>
+                                                <td width="30%" style='text-align: left; paddingleft:5px;paddingtop:5px;paddingbottom:2px;'>@dr["item_name"]</td>
+
+                                                <td width="17%" style='text-align: left; paddingleft:5px; paddingtop:4px; paddingbottom:2px; text-align: center;'>@dr["uom_alias"]</td>
+                                                <td width="17%" style='text-align: left; paddingleft:5px; paddingtop:4px; paddingbottom:2px;'>@dr["req_qty"]</td>
+                                                @*<td width="15%" style='text-align: left; paddingleft:5px; paddingtop:4px; paddingbottom:2px; text-align:center;'>@dr["issue_qty"]</td>*@
+                                                <td width="30%" style='text-align: left; paddingleft:5px; paddingtop:4px; paddingbottom:2px;'>@dr["it_remarks"]</td>
+
+                                            </tr>
+                                            srno = srno + 1;
+                                        }
+                                    </tbody>
+                                </table>
+                            </td>
+                            <td style='width:10px;'></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        @Html.Partial("~/Areas/Common/Views/Cmn_SampleIssue_PrintFooter.cshtml")
+    </div>
+
+

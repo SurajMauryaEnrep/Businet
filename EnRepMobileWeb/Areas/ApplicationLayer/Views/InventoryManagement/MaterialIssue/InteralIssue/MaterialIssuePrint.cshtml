@@ -1,0 +1,457 @@
+﻿@using System.Data;
+@{
+    string doc_status = "";
+    string BackGroundImgUrl = "";
+    if (ViewBag.DocStatus != null)
+    {
+        doc_status = ViewBag.DocStatus;
+    }
+    if (doc_status == "D" || doc_status == "F")
+    {
+        BackGroundImgUrl = Server.MapPath("~/Content/Images/draft.png");
+    }
+    else if (doc_status == "C")
+    {
+        BackGroundImgUrl = Server.MapPath("~/Content/Images/cancelled.png");
+    }
+    DataTable dt = new DataTable();
+    DataView data = new DataView();
+    if (ViewBag.Details != null)
+    {
+        dt = ViewBag.Details.Tables[1];
+    }
+    var srno = 1;
+}
+<style>
+    #dtlTable, #dtlTable td, #dtlTable th {
+        border: 0.5px solid black;
+    }
+    #sub, #sub td, #sub th {
+        border: 0px;
+    }
+</style>
+
+<div style='background: url(@BackGroundImgUrl) no-repeat; backgroundposition: center center;'>
+    @Html.Partial("~/Areas/Common/Views/Cmn_PrintHeaderWithAddrSampleIssue.cshtml")
+
+    <table width='100%' style="vertical-align: top;">
+        <tr>
+            <td style="vertical-align: top;">
+                <table style='width:100%;vertical-align:top;'>
+                    <tr>
+                        <td style='width:10px;'></td>
+                        <td style="vertical-align: top;">
+                            <table style='width:100%;border:solid 1px #000000;'>
+                                <tr>
+                                    <td style='width: 50%; border-right: solid 1px #000000; vertical-align: top; padding: 0px; '>
+                                        <table class="suppInfo" style=''>
+                                            @if (ViewBag.DocumentMenuId == "105102130101")
+                                            {
+                                                <tr><td style=""><strong> Branch : </strong> @ViewBag.Details.Tables[0].Rows[0]["br_name"].ToString() </td></tr>
+                                                <tr><td><strong> Issue Number : </strong> @ViewBag.Details.Tables[1].Rows[0]["issue_no"].ToString()</td></tr>
+                                                <tr><td><strong> Issue Date : </strong> @ViewBag.Details.Tables[1].Rows[0]["issue_date"].ToString()</td></tr>
+                                                <tr><td><strong> Requirement Area : </strong>@ViewBag.Details.Tables[1].Rows[0]["Req_area"].ToString()</td></tr>
+                                            }
+                                            else if (ViewBag.DocumentMenuId == "105102130105")
+                                            {
+                                                <tr><td style=""><strong> Branch : </strong> @ViewBag.Details.Tables[0].Rows[0]["br_name"].ToString() </td></tr>
+                                                <tr><td><strong> Issue Number : </strong> @ViewBag.Details.Tables[1].Rows[0]["issue_no"].ToString()</td></tr>
+                                                <tr><td><strong> Issue Date : </strong> @ViewBag.Details.Tables[1].Rows[0]["issue_date"].ToString()</td></tr>
+                                                <tr><td><strong> Requirement Area : </strong>@ViewBag.Details.Tables[1].Rows[0]["Req_area"].ToString()</td></tr>
+                                            }
+                                            else
+                                            {
+                                                <tr><td style=""><strong> Address : </strong> @ViewBag.Details.Tables[0].Rows[0]["Comp_Add"].ToString() </td></tr>
+                                                <tr><td><strong> State : </strong> @ViewBag.Details.Tables[0].Rows[0]["state_name"].ToString()</td></tr>
+                                                <tr><td><strong> Country : </strong> @ViewBag.Details.Tables[0].Rows[0]["country_name"].ToString()</td></tr>
+                                                <tr><td><strong> Phone : </strong>@ViewBag.Details.Tables[0].Rows[0]["contact_no"].ToString()</td></tr>
+                                                <tr><td><strong> GSTIN/UIN :  </strong> @ViewBag.Details.Tables[0].Rows[0]["gst_no"].ToString()</td></tr>
+                                                <tr><td><strong> PAN : </strong> @ViewBag.Details.Tables[0].Rows[0]["pan_no"].ToString()</td></tr>
+                                            }
+                                        </table>
+                                    </td>
+                                    <td style='width:50%; vertical-align:top; padding:0px;'>
+                                        <table style='font-size:12px;font-weight:normal;padding:0px 0px 0px 5px;'>
+                                            @if (ViewBag.DocumentMenuId == "105102130101")
+                                            {
+                                                <tr><td><strong> Requisition Number : </strong>@ViewBag.Details.Tables[1].Rows[0]["mrs_no"].ToString()</td></tr>
+                                                <tr><td><strong> Requisition Date :  </strong> @ViewBag.Details.Tables[1].Rows[0]["mrs_dt"].ToString()</td></tr>
+                                                <tr><td><strong> Issued To : </strong> @ViewBag.Details.Tables[1].Rows[0]["issue_to"].ToString()</td></tr>
+                                            }
+                                            else if (ViewBag.DocumentMenuId == "105102130105")
+                                            {
+                                                <tr><td><strong> Requisition Number : </strong>@ViewBag.Details.Tables[1].Rows[0]["mrs_no"].ToString()</td></tr>
+                                                <tr><td><strong> Requisition Date :  </strong> @ViewBag.Details.Tables[1].Rows[0]["mrs_dt"].ToString()</td></tr>
+                                                <tr><td><strong> Issued To : </strong> @ViewBag.Details.Tables[1].Rows[0]["issue_to"].ToString()</td></tr>
+                                            }
+                                            else
+                                            {
+                                                <tr>
+                                                    <td style='font-size:12px;font-weight:bold; text-decoration:underline;'> ISSUED FOR: </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style='font-size:12px;font-weight:normal;'>  @ViewBag.Details.Tables[1].Rows[0]["issue_to"].ToString()</td>
+                                                </tr>
+                                            }
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td style='width:10px;'></td>
+                    </tr>
+                    @if (ViewBag.DocumentMenuId == "105102130108")
+                    {
+                        <tr>
+                            <td style='width:10px;'></td>
+                            <td style="vertical-align: top;">
+                                <table style='width:100%;border:solid 1px #000000;vertical-align:top;'>
+                                    <tr>
+                                        <td style='width:50%;vertical-align:top;'>
+                                            <table style='font-size:12px;font-weight:normal;padding:0px 0px 0px 5px;vertical-align:top;'>
+                                                <tr><td><strong>GATE PASS NO.> ALS: : </strong> @ViewBag.Details.Tables[1].Rows[0]["issue_no"]</td></tr>
+                                            </table>
+                                        </td>
+                                        <td style='width:50%; vertical-align:top;'>
+                                            <table style='font-size:12px;font-weight:normal;padding:0px 0px 0px 0px;vertical-align:top;'>
+                                                <tr><td><strong>DATED : </strong>@ViewBag.Details.Tables[1].Rows[0]["issue_date"].ToString()</td></tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td style='width:10px;'></td>
+                        </tr>
+                    }
+                    <tr>
+                        <td style='width:10px;'></td>
+                        <td>
+                            <table id="dtlTable" cellspacing="0" cellpadding="0" style=" width:100%; font-size: 12px; font-weight:normal;padding: 0px 0px; line-height:18px; font-weight:normal; vertical-align:top; border: solid 1px #000000;">
+                                @if (ViewBag.DocumentMenuId == "105102130101")
+                                {
+                                    <thead>
+                                        <tr>
+                                            <th width="5%" align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'><strong> S.NO.</strong></th>
+                                            <th width="20%" align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'><strong> Item Name</strong></th>
+                                            <th width="6%" align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'><strong> UOM</strong></th>
+                                            <th width="12%" align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'><strong> Requisition <br /> Quantity</strong></th>
+                                            <th width="19%" align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'><strong> Issued <br /> Quantity</strong></th>
+                                            <th width="19%" align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'><strong> Warehouse</strong></th>
+                                            <th width="19%" align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'><strong> Remarks</strong></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (DataRow dr in dt.Rows)
+                                        {
+                                            <tr>
+                                                <td style='text-align:center;'>@srno</td>
+                                                <td style='text-align:left; paddingleft:5px;paddingtop:5px;paddingbottom:3px;'>
+                                                    @dr["item_name"].ToString()
+                                                    @if (ViewBag.Details.Tables[4].Rows.Count > 0)
+                                                    {
+                                                        data = ViewBag.Details.Tables[4].DefaultView;
+                                                        DataTable NewDT1 = new DataTable();
+                                                        data.RowFilter = "item_id='" + dr["item_id"].ToString() + "'";
+                                                        NewDT1 = data.ToTable();
+                                                        <table width="100%" style="font-size: 11px; paddingtop:3px;" id="sub">
+                                                            <tr>
+                                                                <td colspan="3"></td>
+                                                            </tr>
+                                                            @foreach (System.Data.DataRow drsubitm in NewDT1.Rows)
+                                                            {
+                                                                if (dr["item_id"].ToString() == drsubitm["item_id"].ToString())
+                                                                {
+                                                                    <tr>
+                                                                        <td width="10%" style="paddingtop: 0px;paddingbottom:0px;"></td>
+                                                                        <td width="45%" style="paddingtop: 0px; paddingbottom: 0px;">@drsubitm["sub_item_name"] </td>
+                                                                        <td width="45%" style="text-align: right; paddingtop: 0px; paddingbottom: 0px; paddingright: 5px;"> @drsubitm["issue_qty"]</td>
+                                                                    </tr>
+                                                                }
+                                                            }
+                                                        </table>
+                                                    }
+                                                </td>
+                                                <td style='text-align:left; paddingleft:5px; paddingtop:5px; paddingbottom: 3px; text-align: center;'>@dr["uom_alias"]</td>
+                                                <td style='text-align:center; paddingtop:5px; paddingbottom: 3px;'>@dr["mrs_qty"]</td>
+                                                <td style='text-align: center; paddingtop: 5px; paddingbottom: 3px;'>
+                                                    @*@dr["issue_qty"]*@
+                                                    @if (ViewBag.Details.Tables[5].Rows.Count > 0)
+                                                    {
+                                                        data = ViewBag.Details.Tables[5].DefaultView;
+                                                        DataTable NewDT2 = new DataTable();
+                                                        data.RowFilter = "item_id='" + dr["item_id"].ToString() + "'";
+                                                        NewDT2 = data.ToTable();
+                                                        <table width="100%" style="font-size: 11px; paddingtop:3px;" id="sub">
+                                                            <tr>
+                                                                <td colspan="3"></td>
+                                                            </tr>
+                                                            @foreach (System.Data.DataRow drbatchitm in NewDT2.Rows)
+                                                            {
+                                                                if (dr["item_id"].ToString() == drbatchitm["item_id"].ToString())
+                                                                {
+                                                                    <tr>
+                                                                        <td width="10%" style="paddingtop: 0px;paddingbottom:0px;"></td>
+                                                                        <td width="45%" style="paddingtop: 0px; paddingbottom: 0px;">@drbatchitm["batch_no"] </td>
+                                                                        <td width="45%" style="text-align: right; paddingtop: 0px; paddingbottom: 0px; paddingright: 5px;"> @drbatchitm["batch_issue_qty"]</td>
+                                                                    </tr>
+                                                                }
+                                                            }
+                                                            @if (NewDT2.Rows.Count == 0)
+                                                            {
+                                                                <tr>
+                                                                    <td>@dr["issue_qty"].ToString()</td>
+                                                                </tr>
+                                                            }
+                                                        </table>
+                                                    }
+                                                    else
+                                                    {
+                                                        @dr["issue_qty"].ToString()
+                                                    }
+                                                </td>
+                                                <td style='text-align:left; paddingleft:5px; paddingtop:5px; paddingbottom: 3px;'>@dr["wh_name"]</td>
+                                                <td style='text-align:left; paddingleft:5px; paddingtop:5px; paddingbottom: 3px;'>@dr["it_remarks"]</td>
+
+                                            </tr>
+                                            srno = srno + 1;
+                                        }
+                                    </tbody>
+                                }
+                                else if (ViewBag.DocumentMenuId == "105102130105")
+                                {
+                                    <thead>
+                                        <tr>
+                                            <th width="5%" align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'><strong> S.NO.</strong></th>
+                                            <th width="24%" align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'><strong> Item Name</strong></th>
+                                            <th width="10%" align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'><strong> UOM</strong></th>
+                                            <th width="15%" align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'><strong> Requisition <br /> Quantity</strong></th>
+                                            <th width="20%" align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'><strong> Issued <br />Quantity</strong></th>
+                                            <th width="18%" align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'><strong> Warehouse</strong></th>
+                                            <th width="18%" align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'><strong> Remarks</strong></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (DataRow dr in dt.Rows)
+                                        {
+                                            <tr>
+                                                <td style='text-align:center; width:5%;'>@srno</td>
+                                                <td style='text-align: left; paddingleft:5px;paddingtop:5px;paddingbottom:3px;'>
+                                                    @dr["item_name"].ToString()
+                                                    @if (ViewBag.Details.Tables[4].Rows.Count > 0)
+                                                    {
+                                                        data = ViewBag.Details.Tables[4].DefaultView;
+                                                        DataTable NewDT1 = new DataTable();
+                                                        data.RowFilter = "item_id='" + dr["item_id"].ToString() + "'";
+                                                        NewDT1 = data.ToTable();
+                                                        <table width="100%" style="font-size: 11px; paddingtop:3px;" id="sub">
+                                                            <tr>
+                                                                <td colspan="3"></td>
+                                                            </tr>
+                                                            @foreach (System.Data.DataRow drsubitm in NewDT1.Rows)
+                                                            {
+                                                                if (dr["item_id"].ToString() == drsubitm["item_id"].ToString())
+                                                                {
+                                                                    <tr>
+                                                                        <td width="10%" style="paddingtop: 0px;paddingbottom:0px;"></td>
+                                                                        <td width="45%" style="paddingtop: 0px; paddingbottom: 0px;">@drsubitm["sub_item_name"] </td>
+                                                                        <td width="45%" style="text-align: right; paddingtop: 0px; paddingbottom: 0px; paddingright: 5px;"> @drsubitm["issue_qty"]</td>
+                                                                    </tr>
+                                                                }
+                                                            }
+                                                        </table>
+                                                    }
+                                                </td>
+                                                <td style='text-align: left; paddingleft:5px; paddingtop:5px; paddingbottom: 3px; text-align: center;'>@dr["uom_alias"]</td>
+                                                <td style='text-align: center;  paddingtop:5px; paddingbottom: 3px;'>@dr["mrs_qty"]</td>
+                                                <td style='text-align: center;  paddingtop:5px; paddingbottom: 3px;'>
+                                                    @*@dr["issue_qty"]*@
+                                                    @if (ViewBag.Details.Tables[5].Rows.Count > 0)
+                                                    {
+                                                        data = ViewBag.Details.Tables[5].DefaultView;
+                                                        DataTable NewDT2 = new DataTable();
+                                                        data.RowFilter = "item_id='" + dr["item_id"].ToString() + "'";
+                                                        NewDT2 = data.ToTable();
+                                                        <table width="100%" style="font-size: 11px; paddingtop:3px;" id="sub">
+                                                            <tr>
+                                                                <td colspan="3"></td>
+                                                            </tr>
+                                                            @foreach (System.Data.DataRow drbatchitm in NewDT2.Rows)
+                                                            {
+                                                                if (dr["item_id"].ToString() == drbatchitm["item_id"].ToString())
+                                                                {
+                                                                    <tr>
+                                                                        <td width="10%" style="paddingtop: 0px;paddingbottom:0px;"></td>
+                                                                        <td width="45%" style="paddingtop: 0px; paddingbottom: 0px;">@drbatchitm["batch_no"] </td>
+                                                                        <td width="45%" style="text-align: right; paddingtop: 0px; paddingbottom: 0px; paddingright: 5px;"> @drbatchitm["batch_issue_qty"]</td>
+                                                                    </tr>
+                                                                }
+                                                            }
+                                                            @if (NewDT2.Rows.Count == 0)
+                                                            {
+                                                                <tr>
+                                                                    <td>@dr["issue_qty"].ToString()</td>
+                                                                </tr>
+                                                            }
+                                                        </table>
+                                                    }
+                                                    else
+                                                    {
+                                                        @dr["issue_qty"].ToString()
+                                                    }
+                                                </td>
+                                                <td style='text-align: left; paddingleft:5px; paddingtop:5px; paddingbottom: 3px;'>@dr["wh_name"]</td>
+                                                <td style='text-align: left; paddingleft:5px; paddingtop:5px; paddingbottom: 3px;'>@dr["it_remarks"]</td>
+
+                                            </tr>
+                                            srno = srno + 1;
+                                        }
+                                    </tbody>
+                                }
+                                else
+                                {
+                                    <thead>
+                                        <tr>
+                                            @*<th width="5%" align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'><strong> S.NO.</strong></th>*@
+                                            <th width="25%" align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'><strong> Sample No.</strong></th>
+                                            <th width="35%" align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'><strong> Quantity</strong></th>
+                                            <th width="10%" align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'><strong> Unit</strong></th>
+                                            <th width="30%" align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'><strong> Other Details</strong></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (DataRow dr in dt.Rows)
+                                        {
+                                            <tr>
+                                                @*<td style='text-align:center; width:5%;'>@srno</td>*@
+                                                <td style='text-align: left; paddingleft:5px;paddingtop:5px;paddingbottom:3px;'>
+                                                    @dr["item_name"].ToString()
+                                                    @if (ViewBag.Details.Tables[4].Rows.Count > 0)
+                                                    {
+                                                        data = ViewBag.Details.Tables[4].DefaultView;
+                                                        DataTable NewDT1 = new DataTable();
+                                                        data.RowFilter = "item_id='" + dr["item_id"].ToString() + "'";
+                                                        NewDT1 = data.ToTable();
+                                                        <table width="100%" style="font-size: 11px; paddingtop:3px;" id="sub">
+                                                            <tr>
+                                                                <td colspan="3"></td>
+                                                            </tr>
+                                                            @foreach (System.Data.DataRow drsubitm in NewDT1.Rows)
+                                                            {
+                                                                if (dr["item_id"].ToString() == drsubitm["item_id"].ToString())
+                                                                {
+                                                                    <tr>
+                                                                        <td width="10%" style="paddingtop: 0px;paddingbottom:0px;"></td>
+                                                                        <td width="45%" style="paddingtop: 0px; paddingbottom: 0px;">@drsubitm["sub_item_name"] </td>
+                                                                        <td width="45%" style="text-align: right; paddingtop: 0px; paddingbottom: 0px; paddingright: 5px;"> @drsubitm["issue_qty"]</td>
+                                                                    </tr>
+                                                                }
+                                                            }
+                                                        </table>
+                                                    }
+                                                </td>
+                                                <td style='text-align: center;  paddingtop: 5px; paddingbottom: 3px;'>
+                                                    @*@dr["issue_qty"]*@
+                                                    @if (ViewBag.Details.Tables[5].Rows.Count > 0)
+                                                    {
+                                                        data = ViewBag.Details.Tables[5].DefaultView;
+                                                        DataTable NewDT2 = new DataTable();
+                                                        data.RowFilter = "item_id='" + dr["item_id"].ToString() + "'";
+                                                        NewDT2 = data.ToTable();
+                                                        <table width="100%" style="font-size: 11px; paddingtop:3px;" id="sub">
+                                                            <tr>
+                                                                <td colspan="3"></td>
+                                                            </tr>
+                                                            @foreach (System.Data.DataRow drbatchitm in NewDT2.Rows)
+                                                            {
+                                                                if (dr["item_id"].ToString() == drbatchitm["item_id"].ToString())
+                                                                {
+                                                                    <tr>
+                                                                        <td width="10%" style="paddingtop: 0px;paddingbottom:0px;"></td>
+                                                                        <td width="45%" style="paddingtop: 0px; paddingbottom: 0px;">@drbatchitm["batch_no"] </td>
+                                                                        <td width="45%" style="text-align: right; paddingtop: 0px; paddingbottom: 0px; paddingright: 5px;"> @drbatchitm["batch_issue_qty"]</td>
+                                                                    </tr>
+                                                                }
+                                                            }
+                                                            @if (NewDT2.Rows.Count == 0)
+                                                            {
+                                                                <tr>
+                                                                    <td>@dr["issue_qty"].ToString()</td>
+                                                                </tr>
+                                                            }
+                                                        </table>
+                                                    }
+                                                    else
+                                                    {
+                                                        @dr["issue_qty"].ToString()
+                                                    }
+                                                </td>
+                                                <td style='text-align: left; paddingleft: 5px; paddingtop: 5px; paddingbottom: 3px; text-align: center;'>@dr["uom_alias"]</td>
+                                                <td style='text-align: left; paddingleft: 5px; paddingtop: 5px; paddingbottom: 3px;'>@dr["other_dtl"]</td>
+
+                                            </tr>
+                                        }
+                                    </tbody>
+                                }
+                            </table>
+                        </td>
+                        <td style='width:10px;'></td>
+                    </tr>
+                    @if (ViewBag.DocumentMenuId == "105102130108")
+                    {
+                        <tr>
+                            <td style='width: 10px;'></td>
+                            <td>
+                                <table cellspacing="0" cellpadding="0" style=" width: 100%; font-size: 12px; font-weight: normal; padding: 0px 0px; margin-top:5px; font-weight: normal; vertical-align: top; border: solid 1px #000000;">
+                                    <tr>
+                                        <td style="paddingleft:5px;vertical-align:top;border-top: solid 1px #000000;border-right: solid 1px #000000;">@ViewBag.Details.Tables[1].Rows[0]["issue_rem"].ToString()</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td style='width:10px;'></td>
+                        </tr>
+                    }
+                </table>
+            </td>
+        </tr>
+
+    </table>
+
+
+    @if (ViewBag.DocumentMenuId == "105102130108")
+    {
+        <table style="paddingleft:8px; paddingright:9px; vertical-align:top;">
+            <tr>
+
+                <td width="100%" style="vertical-align:top;">
+                    <table style="vertical-align:top;">
+                        <tr>
+                            <td style="font-size: 12px; font-weight:bold;vertical-align:top; text-align:left; width:35%;">
+                                For @ViewBag.Details.Tables[0].Rows[0]["comp_nm"]
+
+                            </td>
+                            <td style="font-size: 12px; font-weight: bold; vertical-align: top; text-align: right; width: 10%;">
+                                Through :
+                            </td>
+                            <td style="font-size: 12px; font-weight: normal; vertical-align: top; text-align: left; width: 18%; paddingleft:0px;">
+                               
+                                @ViewBag.Details.Tables[1].Rows[0]["issued_by"]
+                            </td>
+                            <td style="font-size: 12px; font-weight: bold; vertical-align: top; text-align: right; width: 35%; paddingright:25px;">
+                                Receiver's Signature
+                            </td>
+                        </tr>                     
+                        <tr>
+                            <td style="font-size: 12px; font-weight:bold;padding: 30px 15px 0px 0px; vertical-align:top; text-align:left;">Authorised Signatory</td>
+                        </tr>
+
+                    </table>
+                </td>
+            </tr>
+        </table>
+        @Html.Partial("~/Areas/Common/Views/Cmn_SampleIssue_AnotherTable.cshtml")
+    }
+    else
+    {
+        @Html.Partial("~/Areas/Common/Views/Cmn_SampleIssue_PrintFooter.cshtml")
+    }
+</div>

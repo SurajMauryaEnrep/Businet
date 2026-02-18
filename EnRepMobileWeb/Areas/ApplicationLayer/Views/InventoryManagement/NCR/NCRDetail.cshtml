@@ -1,0 +1,152 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.InventoryManagement.NCR.NCR_Model
+@using EnRepMobileWeb.Resources;
+@using System.Data
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+<style>
+    table.dataTable tbody td.ncr {
+        padding: 0px 0px !important;
+    }
+</style>
+<script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+<script src="~/Content/Css/build/js/sweetalert.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/InventoryManagement/NCR/NCR.js"></script>
+<title>@Model.Title</title>
+<div class="row">
+
+    <!-- Acknowledgement -->
+    <div id="Acknowledgement" class="modal fade" role="dialog">
+        <div class="modal-dialog" id="PopupAcknowledgement" style="min-width:700px;">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialNCRAcknowledgement.cshtml")
+        </div>
+    </div>
+    <!-- Item Information -->
+    <div id="ItemInfo" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/Common/Views/_ItemInfomation.cshtml")
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <h2 class="col-md-4 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                <!-- Smart Wizard -->
+                <div id="wizard" class="form_wizard wizard_horizontal col-md-3 col-sm-12 work_flow"></div>
+                <div id="" class="col-md-5 col-sm-12 work_flow heading_right_padding">
+                    @*<ul>
+                            <li>
+                                <button class="edit" title="@Resource.Edit" type="submit" onclick="" id="btn_edit" name="Command" value="Edit"></button>
+                            </li>
+                            <li>
+                                <button class="save" title="@Resource.Save" type="submit" onclick="" id="btn_save" name="Command" value="Save"></button>
+                            </li>
+                            <li>
+                                <button class="print" title="@Resource.Print" type="submit" id="btn_print" name="Command" value="Print"></button>
+                            </li>
+                            <li>
+                                <button class="back" title="@Resource.Back" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                            </li>
+                        </ul>*@
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <div class="col-md-12 no-padding">
+                    <div class="po col-md-2 col-sm-12">
+                        <label class="col-form-label label-align">
+                            @Resource.FromDate
+                        </label>
+                        @Html.TextBoxFor(m => m.FromDt, new { @class = "form-control", @id = "txtFromdate", @type = "date" })
+                    </div>
+                    <div class="col-md-2 col-sm-12">
+                        <label class="col-form-label label-align">
+                            @Resource.ToDate
+                        </label>
+                        @Html.TextBoxFor(m => m.Todt, new { @class = "form-control", @id = "txtTodate", @type = "date" })
+                    </div>
+                    <div class="col-md-2 col-sm-12">
+                        <label class="col-form-label label-align">
+                            @Resource.Source @Resource.Document
+                        </label>
+                        @Html.DropDownListFor(model => model.SrcDoc, new SelectList(Model.srcDocLists, "SrcDocId", "SrcDocVal"), new { @class = "form-control", id = "ddlSrcDocNo" })
+                    </div>
+                    <div class="col-md-2 col-sm-12">
+                        <label class="col-form-label label-align">@Resource.Status</label>
+                        @Html.DropDownListFor(model => model.Status, new SelectList(Model.statusList, "id", "text"), new { @class = "form-control", id = "ddlStatus" })
+                    </div>
+                    <div class="col-md-1 col-sm-12">
+                        <button type="button" class="btn btn-primary btn-sm margintop20" id="BtnSearch" onclick="GetNcrDetailsOnSerch()"><i class="fa fa-search" aria-hidden="true"></i></button>
+                    </div>
+                </div>
+
+                <div class="col-md-12 col-sm-12">
+                    <div class="x_panel margin_top_zero ">
+                        <div class="x_content">
+                            <div class="card-box table-responsive dy_table">
+                                <div id="TableNcrData" class="sticky-table sticky-ltr-cells sb-container container-example1 ">
+
+                                    @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialNCRDetails.cshtml")
+                                    @*<table id="datatable-buttons" class="table table-bordered width2200">
+                                            <thead>
+                                                <tr class="headings">
+                                                    <th width="5%">@Resource.SrNo</th>
+                                                    <th width="10%">@Resource.Item <br /> @Resource.Description</th>
+                                                    <th width="5%" title="@Resource.UnitOfMeasure"> @Resource.UOM</th>
+                                                    <th width="7%">@Resource.Source <br /> @Resource.Document</th>
+                                                    <th width="7%">@Resource.Document <br /> @Resource.Number</th>
+                                                    <th width="7%">@Resource.Document <br /> @Resource.Date</th>
+                                                    <th width="7%">@Resource.Entity <br /> @Resource.Name</th>
+                                                    <th width="7%">@Resource.Rejected <br /> @Resource.Quantity </th>
+                                                    <th width="7%">@Resource.Rework <br /> @Resource.Quantity </th>
+                                                    <th width="7%">@Resource.Short <br /> @Resource.Quantity </th>
+                                                    <th width="7%">@Resource.Sample <br /> @Resource.Quantity </th>
+                                                    <th width="7%">@Resource.ReasonForNCR</th>
+                                                    <th width="7%">@Resource.Acknowledgement</th>
+                                                    <th width="10%">@Resource.Status <br /> @Resource.PendingAcknowledged</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @if (ViewBag.NcrDetails != null)
+                                                {
+                                                    var i = 1;
+                                                    foreach (DataRow dr in ViewBag.NcrDetails.Rows)
+                                                    {
+                                                        <tr>
+                                                            <td>@i</td>
+                                                            <td>@dr["item_name"]</td>
+                                                            <td>@dr["uom_alias"]</td>
+                                                            <td>@dr["src_type"]</td>
+                                                            <td>@dr["doc_no"]</td>
+                                                            <td>@dr["doc_dt"]</td>
+                                                            <td>@dr["entity_name"]</td>
+
+                                                            <td class="num_right">@dr["rej_qty"]</td>
+                                                            <td class="num_right">@dr["rwk_qty"]</td>
+                                                            <td class="num_right">@dr["short_qty"]</td>
+                                                            <td class="num_right">@dr["simp_qty"]</td>
+                                                            <td>&nbsp;</td>
+                                                            <td class="center">
+                                                                <button type="button" id="Acknowledgement" onclick="" class="calculator " data-toggle="modal" data-target="#Acknowledgement" data-backdrop="static" data-keyboard="false"><i class="fa fa-eye" aria-hidden="true" data-toggle="" title="@Resource.Acknowledgement"></i></button>
+                                                            </td>
+                                                            <td>@dr["status_name"]</td>
+                                                        </tr>
+                                                        i = i + 1;
+                                                    }
+                                                }
+                                            </tbody>
+                                        </table>*@
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

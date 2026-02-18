@@ -1,0 +1,73 @@
+﻿@using EnRepMobileWeb.Resources;
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<script src="~/Content/Scripts/BusinessLayer/WarehouseSetup/WarehouseSetup.js"></script>
+@{
+    var i = 0;
+}
+<table id="datatable-buttons" class="table table-striped dataTable no-footer rowhighlighttbl" cellspacing="0" width="100%" role="grid" aria-describedby="datatable-buttons_info" style="width: 100%;">
+    <thead>
+        <tr class="sticky-header" role="row">
+            <th width="1%">@Resource.SrNo</th>
+            <th width="10%" style="display:none;">@Resource.WarehouseID</th>
+            <th width="17%">@Resource.WarehouseName</th>
+            <th width="12%">@Resource.WarehouseType</th>
+            <th width="10%">@Resource.RejectionWarehouse</th>
+            <th width="10%">@Resource.ReworkWarehouse</th>
+            <th width="10%">@Resource.CreatedBy</th>
+            <th width="10%">@Resource.Createdon</th>
+            <th width="10%">@Resource.AmendedBy</th>
+            <th width="10%">@Resource.AmendedOn</th>
+            @*<th width="15%">&nbsp;</th>*@
+        </tr>
+    </thead>
+    <tbody>
+        @*@if (ViewBag.WhList != null)*@
+        @if (Model.WhList != null)
+        {
+            foreach (System.Data.DataRow item in Model.WhList.Rows)
+            {
+                i = i + 1;
+                var id = @item["wh_id"].ToString();
+
+
+        <tr role="row" class="odd">
+
+            <td class="sorting_1">@i</td>
+
+            <td id="whid" style="display:none;">@item["wh_id"].ToString()</td>
+            <td>@item["wh_name"].ToString()</td>
+            <td>@item["wh_type"].ToString()</td>
+            @if (@item["Reject"].ToString() == "N")
+            {
+                <td class="center"><i class="fa fa-times-circle text-danger" aria-hidden="true"></i></td>
+            }
+            else
+            {
+                <td class="center"><i class="fa fa-check text-success " aria-hidden="true"></i></td>
+            }
+            @if (@item["Rework"].ToString() == "N")
+            {
+                <td class="center"><i class="fa fa-times-circle text-danger" aria-hidden="true"></i></td>
+            }
+            else
+            {
+                <td class="center"><i class="fa fa-check text-success " aria-hidden="true"></i></td>
+            }
+            <td>@item["create_by"].ToString()</td>
+            <td>@item["create_dt"].ToString()</td>
+            <td>@item["mod_by"].ToString()</td>
+            <td>@item["mod_dt"].ToString()</td>
+        </tr>
+            }
+        }
+    </tbody>
+</table>
+@if (Model.WHSearch != null)
+{
+    if (Model.WHSearch.ToString() == "WH_Search")
+    {
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+        @Scripts.Render("~/Content/Scripts/DatatablesJs")
+    }
+}
+

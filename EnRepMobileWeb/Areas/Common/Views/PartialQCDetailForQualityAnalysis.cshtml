@@ -1,0 +1,149 @@
+﻿@using EnRepMobileWeb.Resources;
+@using System.Data;
+@{
+    string ValDigit = "0.";
+    var VD = Convert.ToInt32(Session["ValDigit"].ToString());
+    for (var j = 0; j < VD; j++)
+    {
+        ValDigit += "0";
+    }
+    string src_type = "";
+}
+<div class="modal-content">
+    <div class="modal-header">
+        <h2>@Resource.QCDetail</h2>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body" style="padding-top:0px;">
+
+        @if (@ViewBag.QualityAnalysisDetail != null)
+        {
+            if (ViewBag.QualityAnalysisDetail.Rows.Count > 0)
+            {
+                <div class="col-md-3 col-sm-12 pl-0 pr-0">
+                    <label class="col-form-label label-align">@Resource.ProductName</label>
+                    <input id="ProductName" class="form-control" value="@ViewBag.QualityAnalysisDetail.Rows[0]["item_name"]" autocomplete="off" type="text" name="ProductName" placeholder="@Resource.ProductName" onblur="this.placeholder = '@Resource.ProductName'" disabled="">
+                </div>
+                <div class="col-md-9 pl-0">
+                    <div class="col-md-3">
+                        <div class="col-md-5 col-sm-12 pl-0">
+                            <label class="col-form-label label-align">@Resource.UOM</label>
+                            <input id="UOM" class="form-control" value="@ViewBag.QualityAnalysisDetail.Rows[0]["uom_alias"]" autocomplete="off" type="text" name="UOM" placeholder="@Resource.UOM" onblur="this.placeholder = '@Resource.UOM'" disabled="">
+                        </div>
+                        <div class="col-md-7 col-sm-12 pl-0 pr-0">
+                            <label class="col-form-label label-align">@Resource.SourceType</label>
+                            <input id="UOM" class="form-control" value="@ViewBag.QualityAnalysisDetail.Rows[0]["SourceType"]" autocomplete="off" type="text" name="UOM" placeholder="@Resource.SourceType" onblur="this.placeholder = '@Resource.UOM'" disabled="">
+                        </div>
+                    </div>
+                    <div class="col-md-5 col-sm-12 pl-0">
+                        <label class="col-form-label label-align">@Resource.ShopfloorName</label>
+                        <input id="ProductName" class="form-control" value="@ViewBag.QualityAnalysisDetail.Rows[0]["shfl_name"]" autocomplete="off" type="text" name="shopfloorname" placeholder="@Resource.ShopfloorName" onblur="this.placeholder = '@Resource.ProductName'" disabled="">
+                    </div>
+
+                    <div class="col-md-4 col-sm-12 pl-0 pr-0">
+                        <label class="col-form-label label-align">@Resource.OperationName</label>
+                        <input id="ProductName" class="form-control" value="@ViewBag.QualityAnalysisDetail.Rows[0]["op_name"]" autocomplete="off" type="text" name="operationname" placeholder="@Resource.OperationName" onblur="this.placeholder = '@Resource.ProductName'" disabled="">
+                    </div>
+                </div>
+                src_type = ViewBag.QualityAnalysisDetail.Rows[0]["SourceType"].ToString();
+            }
+
+        }
+        else
+        {
+            <div class="col-md-4" style="padding-left:0px;">
+                <div class="col-md-6 col-sm-12" style="padding-left:0px;">
+                    <label class="col-form-label label-align">@Resource.ProductName</label>
+                    <input id="ProductName" class="form-control" autocomplete="off" type="text" name="ProductName" placeholder="@Resource.ProductName" onblur="this.placeholder = '@Resource.ProductName'" disabled="">
+                </div>
+                <div class="col-md-6 col-sm-12" style="padding-left:0px;">
+                    <label class="col-form-label label-align">@Resource.SourceType</label>
+                    <input id="ProductName" class="form-control" autocomplete="off" type="text" name="ProductName" placeholder="@Resource.SourceType" onblur="this.placeholder = '@Resource.ProductName'" disabled="">
+                </div>
+            </div>
+            <div class="col-md-2 col-sm-12" style="padding-left:0px;">
+                <label class="col-form-label label-align">@Resource.UOM</label>
+                <input id="UOM" class="form-control" autocomplete="off" type="text" name="UOM" placeholder="@Resource.UOM" onblur="this.placeholder = '@Resource.UOM'" disabled="">
+            </div>
+            <div class="col-md-3 col-sm-12" style="padding-left:0px;">
+                <label class="col-form-label label-align">@Resource.ShopfloorName</label>
+                <input id="ProductName" class="form-control" autocomplete="off" type="text" name="ProductName" placeholder="@Resource.ShopfloorName" onblur="this.placeholder = '@Resource.ProductName'" disabled="">
+            </div>
+            <div class="col-md-3 col-sm-12" style="padding-left:0px;">
+                <label class="col-form-label label-align">@Resource.OperationName</label>
+                <input id="ProductName" class="form-control" autocomplete="off" type="text" name="ProductName" placeholder="@Resource.OperationName" onblur="this.placeholder = '@Resource.ProductName'" disabled="">
+            </div>
+        }
+        @*<div class="col-md-3 col-sm-12" style="padding-left:0px;">
+                <label class="col-form-label label-align">@Resource.MaterialType</label>
+                <input id="MaterialType" class="form-control" autocomplete="off" type="text" name="MaterialType" placeholder="@Resource.MaterialType"  onblur="this.placeholder = '@Resource.MaterialType'" disabled="">
+            </div>*@
+
+        <div class="clearfix"></div>
+        @*<div class="tableFixHead height30VH margin10">
+            <table id="" class="table table-striped " cellspacing="0" width="100%">
+                <thead>
+                    <tr class="sticky-header">*@
+        <div class="card-box table-responsive dy_table margin10">
+            <div id="" class="sticky-table sticky-ltr-cells sb-container container-example1 OrderHistory height30VH">
+                <table id="tblqcDetails" data-order="" class="table table-striped table-bordered rowhighlighttbl" style="width:100%">
+                    <thead>
+                        <tr class="sticky-header">
+                            <th width="2%"> @Resource.SrNo</th>
+                            @if (src_type != "Random QC")
+                            {
+                                <th>@Resource.Source @Resource.Document <br /> @Resource.NumberAndDate</th>
+                            }
+
+                            <th>@Resource.QC <br /> @Resource.NumberAndDate</th>
+                            @*<th>@Resource.Source <br /> @Resource.Type</th>*@
+                            <th>@Resource.Batch <br /> @Resource.Number</th>
+                            @*<th>@Resource.Shopfloor</th>
+        <th>@Resource.Operation</th>*@
+                            <th width="10%">@Resource.ReceivedQuantity</th>
+                            <th>@Resource.QC <br /> @Resource.Accepted</th>
+                            <th>@Resource.QC <br /> @Resource.Reworkable</th>
+                            <th>@Resource.QC <br /> @Resource.Rejected</th>
+                            <th>@Resource.Efficiency <br /> @Resource.InPercentage</th>
+
+                        </tr>
+                    </thead>
+                    <tbody id="">
+                        @if (ViewBag.QualityAnalysisDetail != null)
+                        {
+                            var srno = 0;
+                            foreach (DataRow dr in ViewBag.QualityAnalysisDetail.Rows)
+                            {
+                        <tr role="row" class="odd">
+                            <td width="3%">@dr["SerialNo"].ToString()</td>
+                            @if (src_type != "Random QC")
+                            {
+                                <td>@dr["ProdNumAndDate"].ToString()</td>
+                            }
+                            <td>@dr["QcNumAndDate"].ToString()</td>
+                            @*<td>@dr["SourceType"].ToString()</td>*@
+                            <td>@dr["batch_no"].ToString()</td>
+                            @*<td>@dr["shfl_name"].ToString()</td>
+        <td>@dr["op_name"].ToString()</td>*@
+                            <td class="num_right">@Convert.ToDecimal(dr["recd_qty"]).ToString(ValDigit)</td>
+                            <td class="num_right">@Convert.ToDecimal(dr["accept_qty"]).ToString(ValDigit)</td>
+                            <td class="num_right">@Convert.ToDecimal(dr["rework_qty"]).ToString(ValDigit)</td>
+                            <td class="num_right">@Convert.ToDecimal(dr["reject_qty"]).ToString(ValDigit)</td>
+                            <td class="num_right">@dr["efficiency"].ToString()</td>
+                        </tr>
+                            }
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" id="" onclick="OnClickSerialDiscardAndExit()">@Resource.Close</button>
+    </div>
+</div>
+
+
+

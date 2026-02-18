@@ -1,0 +1,366 @@
+﻿@*//***Created by Mukesh Sharma on 17-01-2023 ***//*@
+@model EnRepMobileWeb.MODELS.BusinessLayer.GSTSetup.TaxStructure.TaxStructureModel
+@using EnRepMobileWeb.Resources;
+@using System.Data
+
+
+@if (Session["UserId"] == null)
+{
+    Response.Redirect("~/Login");
+}
+<title>@Model.Title</title>
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+<script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+<script src="~/Content/Css/build/js/sweetalert.js"></script>
+<script src="~/Content/Scripts/BusinessLayer/GSTSetup/GSTSetup.js"></script>
+
+
+@{
+    var Disable = true;
+    if (Model.TransType != null)
+    {
+        if (Model.TransType.ToString() == "Update")
+        {
+            if (Model.Command != null)
+            {
+                if (Model.Command.ToString() == "Edit")
+                {
+                    Disable = false;
+                }
+                else
+                {
+                    Disable = true;
+                }
+            }
+        }
+        else
+        {
+            Disable = false;
+        }
+        if (Model.TransType == "Save")
+        {
+            if (Model.Command != null)
+            {
+                if (Model.Command == "Add")
+                {
+                    Disable = false;
+                }
+                else
+                {
+                    Disable = true;
+                }
+            }
+
+        }
+    }
+
+}
+@{
+
+    if (Model.Message != null)
+    {
+        var str = Model.Message.ToString();
+        if (str == "Save")
+        {
+            <script type="text/javascript">
+                $("#hdnSavebtn").val(null);
+                swal("", $("#savemsg").text(), "success");
+            </script>
+        }
+        if (str == "Deleted")
+        {
+            <script type="text/javascript">
+                $("#hdnSavebtn").val(null);
+                swal("", $("#deletemsg").text(), "success");
+            </script>
+        }
+
+        str = null;
+        Model.Message = "";
+    }
+        var AddNew = "N";
+        var EditFlag = "N";
+        var DeleteFlag = "N";
+        if (ViewBag.VBRoleList != null)
+        {
+            foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+            {
+                if (Row["feature_id"].ToString() == "103156005001")
+                {
+                    AddNew = "Y";
+                }
+                if (Row["feature_id"].ToString() == "103156005002")
+                {
+                    EditFlag = "Y";
+                }
+                if (Row["feature_id"].ToString() == "103156005004")
+                {
+                    DeleteFlag = "Y";
+                }
+            }
+        }
+        <input hidden="hidden" id="AddNewData" value="@AddNew" />
+        @Html.HiddenFor(m=>m.EditData,new { @id= "EditData",@value=Model.EditData })
+}
+@using (Html.BeginForm("SaveTaxStructure", "TaxStructure", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    {
+        <div class="row">
+            <div class="col-md-12 col-sm-12 ">
+                <div class="x_panel mar_pad1 ">
+                    <div class="x_content mar_pad1">
+                        <h2 class="col-md-12 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                    </div>
+                </div>
+            </div>
+            @Html.HiddenFor(m => m.hdnSavebtn, new { @id = "hdnSavebtn" })
+            <div class="col-md-12 col-sm-12 ">
+                <div class="x_panel mar_pad1 ">
+                    <div class="x_content mar_pad1">
+                        <article class="panel-group bs-accordion" id="accordion" role="tablist" aria-multiselectable="true">
+                            <section class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="headingOne">
+                                    <h4 class="panel-title"><a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne"> @Resource.Tax @Resource.Detail<span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a></h4>
+                                </div>
+
+                                <div id="collapseOne" class="panel-collapse in collapse show" role="tabpanel" aria-labelledby="headingOne">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <div class="col-md-12 col-sm-12 ">
+                                                <div class="col-md-8 col-sm-12 no-padding ">
+                                                    <div class="col-md-12 col-sm-12 no-padding  ">
+                                                        <div class="col-md-2 col-sm-12">
+                                                            <label class="col-form-label label-align">@Resource.TaxPercentage <span class="required">*</span></label>
+                                                            @*<input autocomplete="off" class="form-control optional" id="" maxlength="25" name="" placeholder="@Resource.TaxPercentage" type="text" value="" disabled>*@
+                                                            @Html.HiddenFor(model => model.DeleteCommand, new { @id = "hdnAction" })
+                                                            @Html.HiddenFor(model => model.TransType, new { @id = "hdnTranstype" })
+                                                            @if (Disable || AddNew=="N")
+                                                            {
+                                                                @Html.DropDownListFor(model => model.igst_tax_perc, new SelectList(Model.TaxPercList, "tax_id", "tax_perc"), new { @id = "igst_tax_perc", @class = "form-control", disabled = "disabled" })
+
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.DropDownListFor(model => model.igst_tax_perc, new SelectList(Model.TaxPercList, "tax_id", "tax_perc"), new { @id = "igst_tax_perc", @class = "form-control", onchange = "OnChangeTaxPerc()" })
+
+                                                            }
+                                                            @Html.ValidationMessageFor(model => model.igst_tax_perc, String.Empty, new { @style = "color:red;!important", @id = "vmigst_tax_perc" })
+                                                            @Html.HiddenFor(model => model.TaxCode, new { @id = "hdnigsttaxperc" })
+                                                            <span id="spanacctype" class="error_message"></span>
+                                                        </div>
+
+                                                        <div class="col-md-4 col-sm-12 ">
+                                                            <label class="col-form-label label-align">@Resource.IntegratedTax <span class="required">*</span></label>
+
+                                                            @if (Disable || AddNew == "N")
+                                                            {
+                                                                @Html.DropDownListFor(model => model.igst_tax_id, new SelectList(Model.TaxList, "tax_id", "tax_name"), new { @id = "igst_tax_id", @class = "form-control", disabled = "disabled" })
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.DropDownListFor(model => model.igst_tax_id, new SelectList(Model.TaxList, "tax_id", "tax_name"), new { @id = "igst_tax_id", @class = "form-control", @onchange = "OnChangeIgstTax()" })
+
+                                                            }
+                                                            @Html.ValidationMessageFor(model => model.igst_tax_id, String.Empty, new { @style = "color:red;!important", @id = "vmigst_tax_id" })
+                                                            <span id="spanacctype" class="error_message"></span>
+                                                        </div>
+
+                                                        <div class="col-md-4 col-sm-12 ">
+                                                            <label class="col-form-label label-align">@Resource.RCM @Resource.IntegratedTax <span class="required">*</span></label>
+                                                            @if (Disable || AddNew == "N")
+                                                            {
+                                                                @Html.DropDownListFor(model => model.rcm_igst_tax_id, new SelectList(Model.TaxList, "tax_id", "tax_name"), new { @id = "rcm_igst_tax_id", @class = "form-control", disabled = "disabled" })
+
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.DropDownListFor(model => model.rcm_igst_tax_id, new SelectList(Model.TaxList, "tax_id", "tax_name"), new { @id = "rcm_igst_tax_id", @class = "form-control", onchange = "OnChangeRCMIgstTax()" })
+
+                                                            }
+                                                            @Html.ValidationMessageFor(model => model.rcm_igst_tax_id, String.Empty, new { @style = "color:red;!important", @id = "vmrcm_igst_tax_id" })
+
+                                                            <span id="spanacctype" class="error_message"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-12 col-sm-12 no-padding  ">
+                                                        <div class="col-md-2 col-sm-12">
+                                                            <label class="col-form-label label-align">@Resource.TaxPercentage </label>
+                                                            @*<input autocomplete="off" class="form-control optional" id="" maxlength="25" name="" placeholder="@Resource.TaxPercentage" type="text" value="" disabled>*@
+
+                                                            @Html.TextBoxFor(model => model.sgst_tax_perc, new { @id = "sgst_tax_perc", @class = "form-control num_right", @placeholder = "0000.00", @readonly = "readonly" })
+
+                                                            @Html.ValidationMessageFor(model => model.sgst_tax_perc, String.Empty, new { @style = "color:red;!important", @id = "vmAccid" })
+                                                            @Html.HiddenFor(model => model.sgst_tax_perc, new { @id = "hdnsgsttaxperc" })
+                                                            <span id="spanacctype" class="error_message"></span>
+                                                        </div>
+                                                        <div class="col-md-4 col-sm-12">
+                                                            <label class="col-form-label label-align">@Resource.StateTax <span class="required">*</span></label>
+                                                            @if (Disable || AddNew == "N")
+                                                            {
+                                                                @Html.DropDownListFor(model => model.sgst_tax_id, new SelectList(Model.TaxList, "tax_id", "tax_name"), new { @id = "sgst_tax_id", @class = "form-control", disabled = "disabled" })
+
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.DropDownListFor(model => model.sgst_tax_id, new SelectList(Model.TaxList, "tax_id", "tax_name"), new { @id = "sgst_tax_id", @class = "form-control", onchange = "OnChangeSgstTax()" })
+
+                                                            }
+                                                            @Html.ValidationMessageFor(model => model.sgst_tax_id, String.Empty, new { @style = "color:red;!important", @id = "vmsgst_tax_id" })
+
+                                                            <span id="spanacctype" class="error_message"></span>
+                                                        </div>
+                                                        <div class="col-md-4 col-sm-12">
+                                                            <label class="col-form-label label-align">@Resource.RCM @Resource.StateTax <span class="required">*</span></label>
+                                                            @if (Disable || AddNew == "N")
+                                                            {
+                                                                @Html.DropDownListFor(model => model.rcm_sgst_tax_id, new SelectList(Model.TaxList, "tax_id", "tax_name"), new { @id = "rcm_sgst_tax_id", @class = "form-control", disabled = "disabled" })
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.DropDownListFor(model => model.rcm_sgst_tax_id, new SelectList(Model.TaxList, "tax_id", "tax_name"), new { @id = "rcm_sgst_tax_id", @class = "form-control", onchange = "OnChangeRCMSgstTax()" })
+                                                            }
+                                                            @Html.ValidationMessageFor(model => model.rcm_sgst_tax_id, String.Empty, new { @style = "color:red;!important", @id = "vmrcm_sgst_tax_id" })
+
+                                                            <span id="spanacctype" class="error_message"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-12 col-sm-12 no-padding ">
+                                                        <div class="col-md-2 col-sm-12">
+                                                            <label class="col-form-label label-align">@Resource.TaxPercentage </label>
+                                                            @*<input autocomplete="off" class="form-control optional" id="" maxlength="25" name="" placeholder="@Resource.TaxPercentage" type="text" value="" disabled>*@
+
+                                                            @Html.TextBoxFor(model => model.cgst_tax_perc, new { @id = "cgst_tax_perc", @class = "form-control num_right", @placeholder = "0000.00", @readonly = "readonly" })
+
+
+                                                            @Html.ValidationMessageFor(model => model.cgst_tax_perc, String.Empty, new { @style = "color:red;!important", @id = "vmAccid" })
+
+                                                            <span id="spanacctype" class="error_message"></span>
+                                                        </div>
+                                                        <div class="col-md-4 col-sm-12">
+                                                            <label class="col-form-label label-align">@Resource.CentralTax <span class="required">*</span></label>
+                                                            @if (Disable || AddNew == "N")
+                                                            {
+                                                                @Html.DropDownListFor(model => model.cgst_tax_id, new SelectList(Model.TaxList, "tax_id", "tax_name"), new { @id = "cgst_tax_id", @class = "form-control", disabled = "disabled" })
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.DropDownListFor(model => model.cgst_tax_id, new SelectList(Model.TaxList, "tax_id", "tax_name"), new { @id = "cgst_tax_id", @class = "form-control", onchange = "OnChangeCgstTax()" })
+                                                            }
+                                                            @Html.ValidationMessageFor(model => model.cgst_tax_id, String.Empty, new { @style = "color:red;!important", @id = "vmcgst_tax_id" })
+
+                                                            <span id="spanacctype" class="error_message"></span>
+                                                        </div>
+                                                        <div class="col-md-4 col-sm-12">
+                                                            <label class="col-form-label label-align">@Resource.RCM @Resource.CentralTax <span class="required">*</span></label>
+                                                            @if (Disable || AddNew == "N")
+                                                            {
+                                                                @Html.DropDownListFor(model => model.rcm_cgst_tax_id, new SelectList(Model.TaxList, "tax_id", "tax_name"), new { @id = "rcm_cgst_tax_id", @class = "form-control", disabled = "disabled" })
+
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.DropDownListFor(model => model.rcm_cgst_tax_id, new SelectList(Model.TaxList, "tax_id", "tax_name"), new { @id = "rcm_cgst_tax_id", @class = "form-control", onchange = "OnChangeRCMCgstTax()" })
+
+                                                            }
+                                                            @Html.ValidationMessageFor(model => model.rcm_cgst_tax_id, String.Empty, new { @style = "color:red;!important", @id = "vmrcm_cgst_tax_id" })
+
+                                                            <span id="spanacctype" class="error_message"></span>
+                                                        </div>
+                                                        <div class="col-md-2 col-sm-12">
+                                                            @if (AddNew == "Y")
+                                                            {
+                                                                <button class="margin22 address_save"
+                                                                        title="@Resource.Save" type="submit" onclick="return CheckValidation();" id="btn_save" name="Command" value="Save"></button>
+                                                            }
+                                                            else
+                                                            {
+                                                        <div id="SaveBtnEnable" style="display:none">
+                                                            <button class="margin22 address_save"
+                                                                    title="@Resource.Save" type="submit" onclick="return CheckValidation();" id="btn_save" name="Command" value="Save"></button>
+                                                        </div>
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                </div>
+                                                <div class="col-md-12 col-sm-12">
+                                                    <div class="x_panel margin10">
+                                                        <div class="x_content">
+                                                            <div class="card-box table-responsive dy_table">
+                                                                <div class="sticky-table sticky-ltr-cells sb-container container-example1 height45VH" id="GSTdetailTBody">
+                                                                    <table id="datatable-buttons" class="table table-bordered rowhighlighttbl">
+                                                                        <thead>
+                                                                            <tr class="sticky-header">
+                                                                                <th> &nbsp;</th>
+                                                                                <th> &nbsp;</th>
+                                                                                <th class="wi">@Resource.SrNo</th>
+                                                                                <th> @Resource.IntegratedTax </th>
+                                                                                <th> @Resource.TaxPercentage </th>
+                                                                                <th hidden> @Resource.TaxID </th>
+                                                                                <th> @Resource.RCM @Resource.IntegratedTax </th>
+                                                                                <th> @Resource.StateTax </th>
+                                                                                <th> @Resource.TaxPercentage </th>
+                                                                                <th> @Resource.RCM @Resource.StateTax </th>
+                                                                                <th> @Resource.CentralTax </th>
+                                                                                <th> @Resource.TaxPercentage </th>
+                                                                                <th> @Resource.RCM @Resource.CentralTax </th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody id="GstBody">
+                                                                            @if (ViewBag.TaxStructureList != null)
+                                                                            {
+                                                                                var rowId = 0;
+                                                                                foreach (System.Data.DataRow dr in ViewBag.TaxStructureList.Rows)
+                                                                                {
+                                                                                    rowId = rowId + 1;
+
+
+
+<tr>
+    <td class="red center">
+        @if (DeleteFlag == "Y")
+        {
+            <i class="fa fa-trash" onclick="return functionConfirm(this)" aria-hidden="true" title="@Resource.Delete"></i>
+        }
+    </td>
+                                                                                        <td class="center">
+                                                                                            @if (EditFlag == "Y")
+                                                                                            {
+                                                                                                <i class="fa fa-pencil" id="EditGst" onclick="OnClickEditButton();" aria-hidden="true" title="@Resource.Edit"></i>
+                                                                                            }
+                                                                                        </td>
+                                                                                        <td>@rowId</td>
+                                                                                        <td>@dr["Itax_name"]</td>
+                                                                                        <td class="center">@dr["igst_tax_per"] %</td>
+                                                                                        <td class="center" hidden id="igsttaxperc">@dr["igst_tax_per"]</td>
+                                                                                        <td>@dr["Rcm_Igst"]</td>
+                                                                                        <td>@dr["Stax_name"]</td>
+                                                                                        <td class="center">@dr["sgst_tax_per"] %</td>
+                                                                                        <td>@dr["Rcm_Sgst"]</td>
+                                                                                        <td>@dr["Ctax_name"]</td>
+                                                                                        <td class="center">@dr["cgst_tax_per"] %</td>
+                                                                                        <td>@dr["Rcm_Cgst"]</td>
+                                                                                    </tr>
+                                                                                }
+                                                                            }
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}

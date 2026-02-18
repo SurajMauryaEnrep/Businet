@@ -1,0 +1,204 @@
+﻿@using EnRepMobileWeb.Resources;
+@using System.Data;
+<style>
+    .custom-switch {
+        margin-bottom:0px !important;
+    }
+</style>
+@{ 
+
+    DataTable dtTable = new DataTable();
+    string mr_no="", mr_dt="", dn_no="", dn_dt="";
+    if (ViewBag.VarienceDetail != null)
+    {
+        dtTable = ViewBag.VarienceDetail as DataTable;
+        if (dtTable.Rows.Count > 0)
+        {
+            DataRow dr = dtTable.Rows[0];
+            dn_no = dr["dn_no"].ToString();
+            dn_dt = dr["dn_date"].ToString();
+            mr_no = dr["mr_no"].ToString();
+            mr_dt = dr["mr_date"].ToString();
+
+        }
+    }
+}
+<div class="modal-content">
+    <div class="modal-header">
+        <h2 id="Heading">@Resource.Variance @Resource.Quantity @Resource.Detail</h2>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body pop_top ">
+        <div class="col-md-6 col-sm-12" style="padding-left:0px;">
+            <label class="col-form-label label-align">
+                @Resource.Item @Resource.Name
+            </label>
+            <input id="VQD_ItemName" class="form-control" autocomplete="off" type="text" name="ProductName" 
+                   placeholder="@Resource.Product @Resource.Name" disabled="" >
+            <input id="VQD_ItemId" hidden>
+        </div>
+        <div class="col-md-2 col-sm-12 pl-0">
+            <label class="col-form-label label-align">
+                @Resource.UOM
+            </label>
+            <input id="VQD_Uom" class="form-control" autocomplete="off" type="text" name="serialUOM" placeholder="UOM" onblur="this.placeholder='UOM'" disabled="">
+        </div>
+        <div class="clear"></div>
+        <div class="col-md-3 col-sm-12 pl-0">
+            <label class="col-form-label label-align" for="">@Resource.DeliveryNote @Resource.Number</label>
+            <input type="text" id="VQD_DnNo" class="form-control" value="@dn_no" readonly="">
+        </div>
+        <div class="col-md-3 col-sm-12 pl-0">
+            <label class="col-form-label label-align" for="">@Resource.DeliveryNote @Resource.Date</label>
+            <input type="date" id="VQD_DnDate" class="form-control" value="@dn_dt" readonly="">
+        </div>
+        <div class="col-md-3 col-sm-12 pl-0">
+            <label class="col-form-label label-align" for="">@Resource.GRNNumber</label>
+            <input type="text" id="VQD_GRNNumber" class="form-control" value="@mr_no"  readonly="">
+        </div>
+        <div class="col-md-3 col-sm-12 pl-0">
+            <label class="col-form-label label-align" for="">@Resource.GRNDate</label>
+            <input type="date" id="VQD_GRNDate" class="form-control" value="@mr_dt" readonly="">
+        </div>
+
+        <div class="card-box table-responsive dy_table">
+            <table id="Table_VarianceQuantityDetail" class="table table-striped table-bordered rowhighlighttbl mt-1" style="width:100%;">
+                <thead>
+                    <tr class="table-striped">
+                        <th width="28%">@Resource.Variance @Resource.Type</th>
+                        <th width="12%">@Resource.Variance @Resource.Quantity</th>
+                        <th width="12%">@Resource.Cost @Resource.Rate</th>
+                        <th width="12%">@Resource.Value</th>
+                        <th width="12%">@Resource.TaxAmount</th>
+                        <th width="12%">@Resource.NetAmount</th>
+                        <th width="12%">@Resource.DebitNote @Resource.Amount</th>
+                        <th width="12%">@Resource.Include</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (dtTable.Rows.Count > 0)
+                    {
+
+                        foreach (DataRow drow in dtTable.Rows)
+                        {
+                            <tr class="">
+                                <td class="">@drow["var_type_desc"]<span hidden id="vqd_var_type">@drow["var_type"]</span></td>
+                                <td class="num_right"><span id="vqd_qty">@drow["qty"]</span></td>
+                                <td class="num_right"><span id="vqd_item_rate">@drow["price"]</span></td>
+                                <td class="num_right"><span id="vqd_value">@drow["value"]</span></td>
+                                <td>
+                                    <div class="col-sm-10 num_right no-padding">
+                                        <span id="vqd_item_tax">@drow["tax"]</span>
+                                    </div><div class=" col-sm-2 num_right no-padding">
+                                        <button type="button" class="calculator item_pop" id="BtnTxtCalculation" data-toggle="modal" onclick="ShowVarianceTaxDetails(event,'@drow["var_type"]')" data-target="#ItemCalculate" data-backdrop="static" data-keyboard="false"><i class="fa fa-calculator" aria-hidden="true" title="@Resource.TaxCalculator"></i></button>
+                                    </div>
+                                </td>
+                                <td class="num_right"><span id="vqd_net_amount">@drow["net_amt"]</span></td>
+                                <td class="num_right"><span id="vqd_dn_amount">@drow["dn_amt"]</span></td>
+                                <td>
+                                    <div class="custom-control custom-switch sample_issue">
+                                        <input type="checkbox" @(drow["include"].ToString()=="Y"?"checked":"") @(ViewBag.Disabled == "Y"?"disabled":"") class="custom-control-input  margin-switch" onclick="OnClickIncludeVQD(event,'@drow["var_type"]')" id="vqd_Include">
+                                        <label class="custom-control-label" disabled="" for="" style="padding: 3px 0px;"> </label>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+
+                    }
+                    @*@if (dtTable.Rows.Count > 0)
+                    {
+                        DataRow dr = dtTable.Rows[0];
+                        <tr class="">
+                            <td class="">@Resource.ShortReceivedInGateEntry<span hidden id="vqd_var_type">SRGE</span></td>
+                            <td class="num_right"><span id="vqd_qty">@dr["short_recd"]</span></td>
+                            <td class="num_right"><span id="vqd_item_rate">@dr["price"]</span></td>
+                            <td class="num_right"><span id="vqd_value">@dr["short_recd_val"]</span></td>
+                            <td>
+                                <div class="col-sm-10 num_right no-padding">
+                                    <span id="vqd_item_tax">@dr["short_recd_val_tax"]</span>
+                                </div><div class=" col-sm-2 num_right no-padding">
+                                    <button type="button" class="calculator item_pop" id="BtnTxtCalculation" data-toggle="modal" onclick="ShowVarianceTaxDetails(event,'SRGE')" data-target="#ItemCalculate" data-backdrop="static" data-keyboard="false"><i class="fa fa-calculator" aria-hidden="true" title="Tax Calculator"></i></button>
+                                </div>
+                            </td>
+                            <td class="num_right"><span id="vqd_net_amount">@dr["net_short_recd_val"]</span></td>
+                            <td class="num_right"><span id="vqd_dn_amount">@dr["net_short_recd_val"]</span></td>
+                            <td>
+                                <div class="custom-control custom-switch sample_issue">
+                                    <input type="checkbox" checked="" class="custom-control-input  margin-switch" onclick="OnClickIncludeVQD(event,'SRGE')" id="vqd_Include">
+                                    <label class="custom-control-label" disabled="" for="" style="padding: 3px 0px;"> </label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="">
+
+                            <td class="">@Resource.ShortCountedInQC<span hidden id="vqd_var_type">SCQC</span></td>
+                            <td class="num_right"><span id="vqd_qty">@dr["short_qty"]</span></td>
+                            <td class="num_right"><span id="vqd_item_rate">@dr["price"]</span></td>
+                            <td class="num_right"><span id="vqd_value">@dr["short_val"]</span></td>
+                            <td>
+                                <div class=" col-sm-10 num_right no-padding">
+                                    <span id="vqd_item_tax">@dr["short_val_tax"]</span>
+                                </div><div class=" col-sm-2 num_right no-padding">
+                                    <button type="button" class="calculator item_pop" id="BtnTxtCalculation" data-toggle="modal" onclick="ShowVarianceTaxDetails(event,'SCQC')" data-target="#ItemCalculate" data-backdrop="static" data-keyboard="false"><i class="fa fa-calculator" aria-hidden="true" title="Tax Calculator"></i></button>
+                                </div>
+                            </td>
+                            <td class="num_right"><span id="vqd_net_amount">@dr["net_short_val"]</span></td>
+                            <td class="num_right"><span id="vqd_dn_amount">@dr["net_short_val"]</span></td>
+                            <td>
+                                <div class="custom-control custom-switch sample_issue">
+                                    <input type="checkbox" checked="" class="custom-control-input  margin-switch" onclick="OnClickIncludeVQD(event,'SCQC')" id="vqd_Include">
+                                    <label class="custom-control-label" disabled="" for="" style="padding: 3px 0px;"> </label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="sticky-header">
+
+                            <td class="">@Resource.SampleReserveQuantity<span hidden id="vqd_var_type">SQTY</span></td>
+                            <td class="num_right"><span id="vqd_qty">@dr["sample_qty"]</span></td>
+                            <td class="num_right"><span id="vqd_item_rate">@dr["price"]</span></td>
+                            <td class="num_right"><span id="vqd_value">@dr["sample_val"]</span></td>
+                            <td>
+                                <div class=" col-sm-10 num_right no-padding">
+                                    <span id="vqd_item_tax">@dr["sample_val_tax"]</span>
+                                </div><div class=" col-sm-2 num_right no-padding">
+                                    <button type="button" class="calculator item_pop" id="BtnTxtCalculation" data-toggle="modal" onclick="ShowVarianceTaxDetails(event,'SQTY')" data-target="#ItemCalculate" data-backdrop="static" data-keyboard="false"><i class="fa fa-calculator" aria-hidden="true" title="Tax Calculator"></i></button>
+                                </div>
+                            </td>
+                            <td class="num_right"><span id="vqd_net_amount">@dr["net_sample_val"]</span></td>
+                            <td class="num_right"><span id="vqd_dn_amount">@dr["net_sample_val"]</span></td>
+                            <td>
+                                <div class="custom-control custom-switch sample_issue">
+                                    <input type="checkbox" checked="" class="custom-control-input  margin-switch" onclick="OnClickIncludeVQD(event,'SQTY')" id="vqd_Include">
+                                    <label class="custom-control-label" disabled="" for="" style="padding: 3px 0px;"> </label>
+                                </div>
+                            </td>
+                        </tr>
+                    }*@
+                    
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3" class="num_right"><strong>@Resource.Total</strong></td>
+                        <td class="num_right pr-1"><strong id="vqd_total_value"></strong></td>                       
+                        <td class="num_right pr-1"><strong id="vqd_total_tax_amount"></strong></td>                       
+                        <td class="num_right pr-1"><strong id="vqd_total_net_amount"></strong></td>                       
+                        <td class="num_right pr-1"><strong id="vqd_total_dn_amount"></strong></td>                       
+                        <td>&nbsp;</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+    </div>
+    <div class="modal-footer">
+        @if (ViewBag.Disabled == "Y")
+        {
+            <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" id="VQD_btnClose" onclick="">@Resource.Close</button>
+        }
+        else
+        {
+            <button type="button" class="btn btn-primary btn-sm" id="VQD_btnSaveAndExit" onclick="onClick_VQD_SaveAndExit()">@Resource.SaveAndExit</button>
+            <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" id="VQD_btnDiscardAndExit" onclick="">@Resource.DiscardAndExit</button>
+        }
+    </div>
+</div>

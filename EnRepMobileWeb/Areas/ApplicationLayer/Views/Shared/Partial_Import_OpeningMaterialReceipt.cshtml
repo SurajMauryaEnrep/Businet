@@ -1,0 +1,126 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.InventoryManagement.MaterialReceipt.OpeningMaterialReceipt.OpeningMaterialReceiptModel
+@using EnRepMobileWeb.Resources;
+@using EnRepMobileWeb.Resources;
+@{ var Disable = true;
+    if (Model.TransType == "Update")
+    {
+        var v = Model.DocumentStatus;
+        if (Model.Command == "Edit")
+        {
+            Disable = false;
+        }
+        else
+        {
+            Disable = true;
+        }
+    }
+    else
+    {
+        if (Model.Command == "Refresh")
+        {
+            Disable = true;
+        }
+        else
+        {
+            Disable = false;
+        }
+    }
+
+    if (@Model.fy_count > 1)
+    {
+        Disable = true;
+    }
+}
+<div class="modal-content" id="tbody_ItemHistory">
+    <div class="modal-header">
+        <h2> @Resource.Import @Resource.Data</h2>
+        <button type="button" class="close" onclick="Closemodal()" data-dismiss="modal">&times;</button>
+    </div>
+    
+    <div class="modal-body pop_top">        
+        <div class="row">            
+            <div class="col-md-12 col-sm-12">
+                <div class="col-md-3 col-sm-12 pl-0">
+                    <div class="file-upload">
+                        <div class="file-select mt-4">
+                            <input type="file" name="OPRfile" id="OPRfile">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2 col-sm-12 pl-0">
+                    <label class="col-form-label label-align">@Resource.Warehouse <span class="required">*</span></label>
+                    @if (Model.DocumentStatus.Trim() != "D" || Disable)
+                    {
+                       
+                            var uniqueWarehouseList = Model.WarehouseList
+                                .GroupBy(w => w.wh_id) 
+                                .Select(g => g.First()) 
+                                .ToList();
+                        
+                        @Html.DropDownListFor(
+                            model => model.Importwhid,
+                            new SelectList(uniqueWarehouseList, "wh_id", "wh_name"),
+                            new { @class = "form-control", onchange = "OnChangeImportWarehouse()", id = "importwhid" }
+                        )
+
+                        @*@Html.DropDownListFor(model => model.Importwhid, new SelectList(Model.WarehouseList, "wh_id", "wh_name"), new { @class = "form-control", onchange = "OnChangeImportWarehouse()", id = "importwhid" })*@
+                        @Html.ValidationMessageFor(model => model.Importwhid, String.Empty, new { @style = "color:red;!important", @id = "vmimportwhid_RequiredArea" })
+
+                    }
+                    else
+                    {
+                        if (Model.wh_id == null)
+                        {
+                            @Html.DropDownListFor(model => model.Importwhid, new SelectList(Model.WarehouseList, "wh_id", "wh_name"), new { @class = "form-control", onchange = "OnChangeImportWarehouse()", id = "importwhid" })
+                            @Html.ValidationMessageFor(model => model.Importwhid, String.Empty, new { @style = "color:red;!important", @id = "vmimportwhid_RequiredArea" })
+                        }
+                        else
+                        {
+                            @Html.DropDownListFor(model => model.Importwhid, new SelectList(Model.WarehouseList, "wh_id", "wh_name"), new { @class = "form-control", disabled = "disabled", id = "importwhid" })
+                            @Html.ValidationMessageFor(model => model.Importwhid, String.Empty, new { @style = "color:red;!important", @id = "vmimportwhid_RequiredArea" })
+                        }
+                    }
+                    @*@Html.HiddenFor(model => model.Importwhid, new { @id = "hdImportRequiredArea" })*@
+
+                    <span id="wh_Error" class="error_message"></span>
+                </div>
+                <div class="col-md-6 col-sm-12 no-padding">
+                    <div class="col-md-3 col-sm-12 no-padding">
+                        <div class="col-md-12 mt-12 no-padding">
+                            <button type="button" class="btn btn-primary btn-sm margintop20" onclick="FetchOpeningMaterialData()">@Resource.FetchDetail</button>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 col-sm-12 pl-0">
+                        <label class="col-form-label label-align">
+                            @Resource.Upload @Resource.Status
+                        </label>
+                        <select class="form-control" id="OMRitem_Status" name="OMRitem_Status">
+                            <option value="0">All</option>
+                            <option value="Ok">Ok</option>
+                            <option value="Not Ok">Not Ok</option>
+                        </select>
+
+                    </div>
+                    <div class="col-md-2 col-sm-12 width5 pl-0">
+                        <button type="button" class="btn btn-primary btn-sm margintop20" id="BtnSearch" onclick="SearchByUploadStatus();"><i class="fa fa-search" aria-hidden="true"></i></button>
+                    </div>
+                </div>
+
+
+
+
+            </div>
+            
+        </div>
+        <div id="PartialImportOPRDetail" class="card-box table-responsive dy_table margin10">
+            @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialImportOpeningMaterialReceiptDetail.cshtml")
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button id="btnOPRImportData" type="button" style="background-color:#D3D3D3" class="btn btn-primary btn-sm" onclick="ImportOMRDataFromExcel();" disabled>Import Data</button>
+        <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal" onclick="Closemodal()">Close</button>
+    </div>
+</div>
+
+

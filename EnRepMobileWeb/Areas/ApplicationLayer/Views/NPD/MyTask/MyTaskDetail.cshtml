@@ -1,0 +1,326 @@
+﻿@using EnRepMobileWeb.MODELS.Common;
+@using EnRepMobileWeb.Resources;
+
+@if (Session["UserId"] == null)
+{
+    Response.Redirect("~/Login");
+}
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+
+<script>
+    $(document).ready(function () {
+
+        $('#SourceDocument').multiselect({
+            includeSelectAllOption: true,
+            enableFiltering: true,
+            enableCaseInsensitiveFiltering: true,
+            buttonWidth: '100%',
+            nonSelectedText: "---All---",
+            numberDisplayed: 1
+        });
+
+    });
+</script>
+<style>
+    button.multiselect {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    table#KickOffAttributes th, table#datatable-buttons1 th, table#parts th {
+        background-color: #ffffff;
+    }
+
+    textarea.form-control {
+        max-height: 26px !important;
+    }
+    .PartNumber {
+        background-color: #e6f2ff;
+    }
+    .custom-switch {
+        padding-left: 55px !important;
+        margin-bottom: 4px;
+        /* margin-bottom: 10px; */
+    }
+</style>
+<div class="row">
+    <!-- Description Information Start-->
+    <div class="modal fade" id="textareaModal" tabindex="-1">
+        <div class="modal-dialog" style="max-width:600px;">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/Common/Views/Comn_PartialDescription.cshtml")
+
+        </div>
+    </div>
+    <!-- Description Information End-->
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <h2 class="col-md-5 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                <div id="" class="col-md-7 col-sm-12 work_flow heading_right_padding">
+                    <ul>
+                        <li>
+                            <button class="add"
+                                    title="@Resource.AddNew" disabled type="submit" id="btn_add" name="Command" value="AddNew" onclick="RemoveSessionData()"></button>
+                        </li>
+                        <li>
+                            <button class="edit"
+                                    title="@Resource.Edit" disabled type="submit" id="btn_edit" name="Command" value="Edit" onclick="EnableEditkBtn()"></button>
+                        </li>
+                        <li>
+                            <button class="delete"
+                                    title="@Resource.Delete" disabled type="submit" id="btn_del" name="Command" value="Delete"></button>
+                        </li>
+                        <li>
+                            <button class="save"
+                                    title="@Resource.Save" type="submit" onclick="" id="btn_save" name="Command" value="Save"></button>
+                        </li>
+
+                        <li>
+                            <button class="approve"
+                                    title="@Resource.Approve" type="submit" id="btn_approve" name="Command" value="Approve"></button>
+                        </li>
+
+                        <li>
+                            <button class="refresh"
+                                    title="@Resource.Refresh" type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                        </li>
+                        <li>
+                            <button class="print"
+                                    title="@Resource.Print" type="submit" id="btn_print" name="Command" value="Print"></button>
+                        </li>
+                        <li>
+                            <a class="back" href="/ApplicationLayer/MyTask/MyTask"
+                                    title="@Resource.Back" type="submit" id="btn_back" name="Command" value="BacktoList"></a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="clearfix"></div>
+                <div class="x_title pad_mar ">
+                    <div class="col-md-12 col-sm-12 icon_tool ">
+                        <div class="approved_by">
+                            <ul>
+                                <li>
+                                    <span>@Resource.CreatedBy<br><b>Neeraj</b></span>
+                                </li>
+                                <li>
+                                    <span>@Resource.Createdon<br><b>10-12-2025 15:43</b></span>
+                                </li>
+                                <li>
+                                    <span>@Resource.ApprovedBy<br><b>Surendar Singh</b></span>
+                                </li>
+                                <li>
+                                    <span>@Resource.ApprovedOn<br><b></b></span>
+                                </li>
+                                <li>
+                                    <span>@Resource.AmendedBy<br><b>12-12-2025 13:50</b></span>
+                                </li>
+                                <li>
+                                    <span>@Resource.AmendedOn<br><b></b></span>
+                                </li>
+                                <li>
+                                    <span>@Resource.Status<br /><b>Approved</b></span>
+                                </li>
+
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <div class="col-md-12 col-sm-12 pl-0 pr-0">
+                    <div class="col-md-55 col-sm-12">
+                        <label class="col-form-label label-align">Activity Sequence Number</label>
+                        <input value="" class="form-control num_right" id="ActivitySequenceNumber" maxlength="20" name="ActivitySequenceNumber" placeholder="1" type="number" disabled="disabled">
+                    </div>
+                    <div class="col-md-55 col-sm-12 pl-0">
+                        <label class="col-form-label label-align">Activity Name</label>
+                        <input value="" class="form-control" id="ActivityName" maxlength="20" name="ActivityName" placeholder="VIO" type="text" disabled="disabled">
+                    </div>
+                    <div class="col-md-55 col-sm-12 pl-0">
+                        <label class="col-form-label label-align">Execution Type</label>
+                        <input value="" class="form-control" id="ExecutionType" maxlength="20" name="ExecutionType" placeholder="Sequencial" type="text" disabled="disabled">
+                    </div>
+                    <div class="col-md-55 col-sm-12 pl-0">
+                        <label class="col-form-label label-align">Sub-Activity Name</label>
+                        <input value="" class="form-control" id="SubActivityName" maxlength="20" name="SubActivityName" placeholder="US VIO" type="text" disabled="disabled">
+                    </div>
+                    <div class="col-md-55 col-sm-12 pl-0">
+                        <label class="col-form-label label-align">Sub-Activity Sequence Number</label>
+                        <input value="" class="form-control num_right" id="SubActivitySequenceNumber" maxlength="20" name="SubActivitySequenceNumber" placeholder="1.1" type="text" disabled="disabled">
+                    </div>
+                    <div class="col-md-1 col-sm-12 margin28" style="display:none;">
+                        <a href="#">
+                            <div class="plus_icon1"> <i class="fa fa-plus" id="BtnAttribute" onclick="OnClickAddButton()" title="Populate Item Detail" data-original-title=""></i> </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="clear"></div>
+                <div class="card-box table-responsive dy_table ">
+                    <div class="">
+                        <div class=" col-sm-12 mt-3">
+                            <div class="tableFixHead height60VH">
+                                <table id="parts" class="table table-bordered rowhighlighttbl">
+                                    <thead>
+                                        <tr class="headings">
+                                            <th width="32%">Part Number</th>
+                                            <th width="17%">Image</th>
+                                            <th width="17%">Complete</th>
+                                            <th width="17%">Comment</th>
+                                            <th width="17%">Attachment</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="PartNumber">Main</td>
+                                            <td class="PartNumber center"><img src="~/Content/Images/qc_setup_image.png " height="80" /></td>
+                                            <td class="center">
+                                                <div class="col-md-12 col-sm-12 pl-0">
+                                                    <div class="custom-control custom-switch">
+                                                        <input class="custom-control-input margin-switch" data-val="true" data-val-required="" id="Complete" name="Complete" type="checkbox" value="true" checked><input name="Complete" type="hidden" value="false"><label class="custom-control-label " for="Complete"> </label>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>977745</td>
+                                            <td class="center">
+                                                <img src="~/Content/Images/pdf.png" />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="PartNumber">SG-9799HY</td>
+                                            <td class="PartNumber center"><img src="~/Content/Images/qc_setup_image1.png" height="80" /></td>
+                                            <td class="center">
+                                                <div class="col-md-12 col-sm-12 pl-0">
+                                                    <div class="custom-control custom-switch">
+                                                        <input class="custom-control-input margin-switch" data-val="true" data-val-required="" id="Complete1" name="Complete1" type="checkbox" value="true" checked><input name="Complete1" type="hidden" value="false"><label class="custom-control-label " for="Complete1"> </label>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>256874</td>
+                                            <td class="center">
+                                                <img src="~/Content/Images/pdf.png" />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="PartNumber">SG-3213</td>
+                                            <td class="PartNumber center"><img src="~/Content/Images/qc_setup_image2.png" height="80" /></td>
+                                            <td class="center">
+                                                <div class="col-md-12 col-sm-12 pl-0">
+                                                    <div class="custom-control custom-switch">
+                                                        <input class="custom-control-input margin-switch" data-val="true" data-val-required="" id="Complete2" name="Complete2" type="checkbox" value="true" checked><input name="Complete2" type="hidden" value="false"><label class="custom-control-label " for="Complete2"> </label>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>539342</td>
+                                            <td class="center">
+                                                <img src="~/Content/Images/pdf.png" />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="PartNumber">SG-3368</td>
+                                            <td class="PartNumber center"><img src="~/Content/Images/qc_setup_image3.png" height="80" /></td>
+                                            <td class="center">
+                                                <div class="col-md-12 col-sm-12 pl-0">
+                                                    <div class="custom-control custom-switch">
+                                                        <input class="custom-control-input margin-switch" data-val="true" data-val-required="" id="Complete3" name="Complete3" type="checkbox" value="true" checked><input name="Complete3" type="hidden" value="false"><label class="custom-control-label " for="Complete3"> </label>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>844402</td>
+                                            <td class="center">
+                                                <img src="~/Content/Images/pdf.png" />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="PartNumber">SG-9959</td>
+                                            <td class="PartNumber center"><img src="~/Content/Images/qc_setup_image4.png" height="80" /></td>
+                                            <td class="center">
+                                                <div class="col-md-12 col-sm-12 pl-0">
+                                                    <div class="custom-control custom-switch">
+                                                        <input class="custom-control-input margin-switch" data-val="true" data-val-required="" id="Complete4" name="Complete4" type="checkbox" value="true" checked><input name="Complete4" type="hidden" value="false"><label class="custom-control-label " for="Complete4"> </label>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>353550</td>
+                                            <td class="center">
+                                                <img src="~/Content/Images/pdf.png" />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="PartNumber">SG-3200</td>
+                                            <td class="PartNumber center"><img src="~/Content/Images/qc_setup_image5.png" height="80" /></td>
+                                            <td class="center">
+                                                <div class="col-md-12 col-sm-12 pl-0">
+                                                    <div class="custom-control custom-switch">
+                                                        <input class="custom-control-input margin-switch" data-val="true" data-val-required="" id="Complete5" name="Complete5" type="checkbox" value="true" checked><input name="Complete5" type="hidden" value="false"><label class="custom-control-label " for="Complete5"> </label>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>602481</td>
+                                            <td class="center">
+                                                <img src="~/Content/Images/pdf.png" />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="PartNumber">SG-3233</td>
+                                            <td class="PartNumber center"><img src="~/Content/Images/qc_setup_image6.png" height="80" /></td>
+                                            <td class="center">
+                                                <div class="col-md-12 col-sm-12 pl-0">
+                                                    <div class="custom-control custom-switch">
+                                                        <input class="custom-control-input margin-switch" data-val="true" data-val-required="" id="Complete6" name="Complete6" type="checkbox" value="true" checked><input name="Complete6" type="hidden" value="false"><label class="custom-control-label " for="Complete6"> </label>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>443896</td>
+                                            <td class="center">
+                                                <img src="~/Content/Images/pdf.png" />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function open_popupdes(id) {
+        debugger;
+        const myModal = new bootstrap.Modal(document.getElementById("textareaModal"));
+        $("#hdn_txtdes").val(id);
+        var des = $("#" + id).val();
+        document.getElementById("modalTextarea").value = des;
+        myModal.show();
+    }
+    // Open modal when clicking the main textarea
+
+    function onclick_save_close() {
+        debugger
+        var id = $("#hdn_txtdes").val();
+        document.getElementById(id).value = document.getElementById("modalTextarea").value;
+    }
+</script>
+<script>
+    document.getElementById('imageUpload').addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (event) {
+            const img = document.getElementById('preview');
+            img.src = event.target.result;
+            img.classList.remove('d-none');
+        };
+        reader.readAsDataURL(file);
+    });
+</script>

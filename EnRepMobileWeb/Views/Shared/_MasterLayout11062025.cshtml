@@ -1,0 +1,677 @@
+﻿@using EnRepMobileWeb.Resources;
+<!DOCTYPE html>
+<html lang="en">
+@{
+    string Host = System.Web.HttpContext.Current.Request.Url.Host.ToLower();
+    string LocalServerURL = "";
+    string localsysip = System.Configuration.ConfigurationManager.AppSettings["LocalServerip"];
+    if (Host == localsysip)
+    {
+        LocalServerURL = System.Configuration.ConfigurationManager.AppSettings["LocalServerURL"];
+    }
+
+    else if (Host == "localhost")
+    {
+        LocalServerURL = System.Configuration.ConfigurationManager.AppSettings["LocalServerURL"];
+    }
+    else
+    {
+        LocalServerURL = System.Configuration.ConfigurationManager.AppSettings["LiveServerURL"];
+    }
+
+    if (Session["User_Img"].ToString() != null && Session["User_Img"].ToString() != "")
+    {
+        Session["User_Img1"] = LocalServerURL + Session["User_Img"].ToString();
+    }
+    else
+    {
+        Session["User_Img1"] = "/Content/Images/user.jpg";
+    }
+}
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    @*<title>::::: EnReP Business Solutions :::::</title>*@
+    @Styles.Render("~/Content/Images")
+    @Styles.Render("~/Content/Common")
+    @Styles.Render("~/Content/DatatablesCSS")
+    <!-- Bootstrap -->
+</head>
+<body class="nav-md" @*oncontextmenu="return false"*@>
+    <div class="loader" id="loader">
+        <img src="~/Content/Images/loader.gif" width="100" height="100" />
+    </div>
+    @*---------------------------Messages----------------------------*@
+    <input type="hidden" id="hdnLocalServer" value="@LocalServerURL" />
+    <span id="savemsg" style="display:none">@Resource.MSG00001</span>
+    <span id="DependencyExist" style="display:none">@Resource.MSG00002</span>
+    <span id="OpeningBalMismatch" style="display:none">@Resource.MSG00003</span>
+    <span id="NoGLAccountSelected" style="display:none">@Resource.MSG00004</span>
+    <span id="LotBatchDetailsNotFound" style="display:none">@Resource.MSG00005</span>
+    <span id="SubItemQuantityMismatchWithAvailableStock" style="display:none">@Resource.MSG00007</span>
+    <span id="span_TaxReceivableAccountNotFoundUnableToCreateCustomInvoice" style="display:none">@Resource.MSG00008</span>
+    <span id="span_PleaseselectAtleastOnePrintOption" style="display:none">@Resource.MSG00010</span>
+    <span id="ConsumableInvoiceCreatedCanNotBeModified" style="display:none">@Resource.MSG00011</span>
+    <span id="RoundoffaccnotdefRoundingoffamtcannotbeperformed" style="display:none">@Resource.MSG00012</span>
+    <span id="TransporterDetailNotFound" style="display:none">@Resource.MSG00013</span>
+    <span id="UpdateTransportDetail" style="display:none">@Resource.MSG00014</span>
+    <span id="span_CostingCompletedandStockUpdated" style="display:none">@Resource.MSG00015</span>
+    <span id="ResstkDetailsnotfound" style="display:none">@Resource.MSG00016</span>
+    <span id="MismatchWithNumberOfPackages" style="display:none">@Resource.MSG00017</span>
+    <span id="ExceedingPackages" style="display:none">@Resource.MSG00018</span>
+    <span id="span_CostingDetailsNotFound" style="display:none">@Resource.MSG00019</span>
+    <span id="span_BatchSerialQuantityDoesNotMatchWithShortSurplusQty" style="display:none">@Resource.MSG00020</span>
+    <span id="JobInvoiceHasBeenProcessedCanNotBeModified" style="display:none">@Resource.MSG00022</span>
+    <span id="ProductionPlanIsUnderProcessOrderCannotBeCancelledOrForceClosed" style="display:none">@Resource.MSG00023</span>
+    <span id="ProductionPlanIsUnderProcessSalesForecastCannotBeCancelled" style="display:none">@Resource.MSG00024</span>
+    <span id="ConsumptionQuantityOfAtLeastOneMaterialIsRequiredDocumentCannotBeSaved" style="display:none">@Resource.MSG00025</span>
+    <span id="FinancialYearDoesNotExistTransactionCanNotBeDone" style="display:none">@Resource.MSG00026</span>
+    <span id="UnresstkDetailsnotfound" style="display:none">@Resource.MSG00027</span>
+    <span id="BatchQtydoesnotmatchwithInvoiceQty" style="display:none">@Resource.MSG00028</span>
+    <span id="BooksAreClosedEntryCanNotBeMadeInThisFinancialYear" style="display:none">@Resource.MSG00029</span>
+    <span id="SampleReceiptHasBeenAlreadyCancelledDocumentCanNotBeCancelled" style="display:none">@Resource.MSG00030</span>
+    <span id="AtLeastOneShippingAndBillingAddressShouldBeSetAsDefault" style="display:none">@Resource.MSG00032</span>
+    <span id="IssuedQtyisGreaterthanTotalAvlQty" style="display:none">@Resource.MSG00033</span>
+    <span id="Unreserveqtyshouldbegreaterthanzero" style="display:none">@Resource.MSG00034</span>
+    <span id="IssuedqtyshouldnotbegreaterthanTotalAvlqty" style="display:none">@Resource.MSG00035</span>
+    <span id="AtLeastOneBillingAddressShouldBeSetAsDefault" style="display:none">@Resource.MSG00036</span>
+    <span id="DebtCredtAmntMismatch" style="display:none">@Resource.MSG00037</span>
+    <span id="BatchIssueQtydoesnotMatchwithResIssueQty" style="display:none">@Resource.MSG00038</span>
+    <span id="DeliveryScheduleQuantityDoesNotMatchWithItemQuantityFor" style="display:none">@Resource.MSG00039</span>
+    <span id="SaleVoucherPassAgainstInv" style="display:none">@Resource.MSG00040</span>
+    <span id="GLAccountisnotLinked" style="display:none">@Resource.MSG00041</span>
+    <span id="CreditNotePassAgainstInv" style="display:none">@Resource.MSG00042</span>
+    <span id="DebitNoteRaisedAgainstInv" style="display:none">@Resource.MSG00043</span>
+    <span id="PurchaseVoucherRaisedAgainstInv" style="display:none">@Resource.MSG00044</span>
+    <span id="StockOfSomeItemsIsReservedAgainstThisOrderOrderCannotBeCancelledOrForcedClosed" style="display:none">@Resource.MSG00045</span>
+    <span id="DebitNoteRaisedAgainstPurRet" style="display:none">@Resource.MSG00046</span>
+    <span id="PurchaseVoucherRaisedAgainstPurRet" style="display:none">@Resource.MSG00047</span>
+    <span id="VoucherDateCannotGrthenCurrDate" style="display:none">@Resource.MSG00048</span>
+    <span id="PleaseSelectDefaultImage" style="display:none">@Resource.MSG00049</span>
+    <span id="CreditNoteRaisedAgainstSalRet" style="display:none">@Resource.MSG00050</span>
+    <span id="SalesVoucherRaisedAgainstSalRet" style="display:none">@Resource.MSG00051</span>
+    <span id="GLPostingNotFound" style="display:none">@Resource.MSG00052</span>
+    <span id="JVRaisedAgainstShipment" style="display:none">@Resource.MSG00053</span>
+    <span id="JVRaisedAgainstMR" style="display:none">@Resource.MSG00054</span>
+    <span id="JVRaisedAgainstProdCnf" style="display:none">@Resource.MSG00055</span>
+    <span id="AutoGeneratedVoucherCannotModified" style="display:none">@Resource.MSG00056</span>
+    <span id="InvalidRange" style="display:none">@Resource.MSG00057</span>
+    <span id="DiscountCanNotBeGreaterThan99" style="display:none">@Resource.MSG00058</span>
+    <span id="PaymentsHasBeenAdjustedAgainstThisInvoiceItCanNotBeModified" style="display:none">@Resource.MSG00059</span>
+    <span id="DocumentCanNotBeSavedGrossOrAssessableValueIsLessOrEqualToZero" style="display:none">@Resource.MSG00060</span>
+    <span id="OpeningcannotModifiedBillAdjusted" style="display:none">@Resource.MSG00061</span>
+    <span id="AdjustmentMadeVouchercannotbemodified" style="display:none">@Resource.MSG00062</span>
+    <span id="InvalidEmail" style="display:none">@Resource.MSG00063</span>
+    <span id="Advanceamountmismatchwithinvoiceamount" style="display:none">@Resource.MSG00064</span>
+    <span id="GSTNumberismissinginAddress" style="display:none">@Resource.MSG00065</span>
+    <span id="InvalidGSTNumber" style="display:none">@Resource.MSG00066</span>
+    <span id="InvalidSerialFrom" style="display:none">@Resource.MSG00067</span>
+    <span id="InvalidSerialTo" style="display:none">@Resource.MSG00068</span>
+    <span id="PackedQuantityMismatchWithSerializationQuantityFor" style="display:none">@Resource.MSG00069</span>
+    <span id="VouchercannotModifiedPaymentCreated" style="display:none">@Resource.MSG00070</span>
+    <span id="PackedQuantityMismatchWithSerializationQuantity" style="display:none">@Resource.MSG00071</span>
+    <span id="PackSerializationDetailNotFound" style="display:none">@Resource.MSG00072</span>
+    <span id="OneOrMoreGLAccountMissing" style="display:none">@Resource.MSG00073</span>
+    <span id="JVRaisedAgainstCustomInvoice" style="display:none">@Resource.MSG00074</span>
+    <span id="DependenciesExistsCanNotBeModified" style="display:none">@Resource.MSG00075</span>
+    <span id="CustomInvoiceCreatedCanNotBeModified" style="display:none">@Resource.MSG00076</span>
+    <span id="ProductionAdviceIsUnderProcess" style="display:none">@Resource.MSG00077</span>
+    <span id="JobOrderHasBeenProcessedCanNotBeModified" style="display:none">@Resource.MSG00078</span>
+    <span id="PlannedQuantityMismatchedWithOrderToProduceQuantity" style="display:none">@Resource.MSG00079</span>
+    <span id="AutoGeneratedFromProductionPlan" style="display:none">@Resource.MSG00080</span>
+    <span id="AdjustedAmountMismatch" style="display:none">@Resource.MSG00081</span>
+    <span id="ExceedingPendingQuantity" style="display:none">@Resource.MSG00082</span>
+    <span id="ProductionOrderHasBeenProcessedDocumentCanNotBeModified" style="display:none">@Resource.MSG00083</span>
+    <span id="MRPHasBeenProcessedDocumentCanNotBeModified" style="display:none">@Resource.MSG00084</span>
+    <span id="MaterialHasBeenDispatchedDocumentCanNotBeCancelled" style="display:none">@Resource.MSG00085</span>
+    <span id="TermsConditionsDetailsNotFound" style="display:none">@Resource.MSG00086</span>
+    <span id="DeliveryNotehasbeenmadedocumentcannotbemodified" style="display:none">@Resource.MSG00087</span>
+    <span id="ReserveQuantityShouldBeGreaterThan0" style="display:none">@Resource.MSG00088</span>
+    <span id="AdvancePaymentDetailNotFound" style="display:none">@Resource.MSG00089</span>
+    <span id="InvoiceDetailNotFound" style="display:none">@Resource.MSG00090</span>
+    <span id="QCHasBnPrcsdCanNotBeMdfd" style="display:none">@Resource.MSG00091</span>
+    <span id="ExceedingAmount" style="display:none">@Resource.MSG00092</span>
+    <span id="ConsumeQtyIsExceedingTheReserveQty" style="display:none">@Resource.MSG00093</span>
+    <span id="SubItemDetaiNoFound" style="display:none">@Resource.MSG00094</span>
+    <span id="SubItemQuantityDoesNotMatchWithOrderToProduceQuantity" style="display:none">@Resource.MSG00095</span>
+    <span id="SubItemQuantityDoesNotMatchWithQuantity" style="display:none">@Resource.MSG00096</span>
+    <span id="ExceedingBalance" style="display:none">@Resource.MSG00097</span>
+    <span id="WorkflowIsUnderProcessCannotBeModified" style="display:none">@Resource.MSG00098</span>
+    <span id="WorkflowIsUnderProcessCannotBeDelete" style="display:none">@Resource.MSG00099</span>
+    <span id="CanNotBeLessThanRequiredQuantity" style="display:none">@Resource.MSG00100</span>
+    <span id="PlannedQuantityCanNotBeZeroForAllItems" style="display:none">@Resource.MSG00101</span>
+    <span id="SubItemQuantityDoesNotMatchWithItemQuantity" style="display:none">@Resource.MSG00102</span>
+    <span id="QCQuantityDoesNotMatchWithTotalQuantity" style="display:none">@Resource.MSG00103</span>
+    <span id="OrderAmendmentBy" style="display:none">@Resource.MSG00104</span>
+    <span id="GlamtmismatchWithCCAmt" style="display:none">@Resource.MSG00105</span>
+    <span id="DuplicateGLAccountNameFound" style="display:none">@Resource.MSG00106</span>
+    <span id="WiseTotalAmtMismatchWithGLAmt" style="display:none">@Resource.MSG00107</span>
+    <span id="AdjustmentAmtshouldbeLessorEqualtoApymentAmt" style="display:none">@Resource.MSG00108</span>
+    <span id="QualityInspectionHasBeenProcessedDocumentCanNotBeModified" style="display:none">@Resource.MSG00109</span>
+    <span id="ConsumedQuantityDoesNotMatchWithBatchQuantity" style="display:none">@Resource.MSG00110</span>
+    <span id="ConsumedQuantityDoesNotMatchWithSerialQuantity" style="display:none">@Resource.MSG00111</span>
+    <span id="TaxNotAppliedFor" style="display:none">@Resource.MSG00112</span>
+    <span id="HSNNotDefinedFor" style="display:none">@Resource.MSG00113</span>
+    <span id="InvalidParameterData" style="display:none">@Resource.MSG00114</span>
+    <span id="SourceDocumentHasBeenModifiedCanNotProceed" style="display:none">@Resource.MSG00115</span>
+    <span id="ParameterEvaluationIsIncompleteForItem" style="display:none">@Resource.MSG00116</span>
+    <span id="OrderCanNotBeModifiedSinceStockOfSomeItemsIsReserved" style="display:none">@Resource.MSG00117</span>
+    <span id="TotalMonthlyAmtVsyearlyAmt" style="display:none">@Resource.MSG00118</span>
+    <span id="TotalMonthlyAmtVsCostCenterAmt" style="display:none">@Resource.MSG00119</span>
+    <span id="SwapQuantityIsExceedingTheAvailableQuantity" style="display:none">@Resource.MSG00120</span>
+    <span id="BatchQuantityDoesNotMatchWithSwapQuantity" style="display:none">@Resource.MSG00121</span>
+    <span id="SerialQuantityDoesNotMatchWithSwapQuantity" style="display:none">@Resource.MSG00122</span>
+    <span id="span_PleaseSelectPrintType" style="display:none">@Resource.MSG00123</span>
+    <span id="PleaseFillExpenseDetail" style="display:none">@Resource.MSG00124</span>
+    <span id="GDAmtTORate" style="display:none">@Resource.MSG00126</span>
+    <span id="VDateCNBGTPODate" style="display:none">@Resource.MSG00127</span>
+    <span id="SchOrdQtyEqualTo" style="display:none">@Resource.MSG00128</span>
+    <span id="SchDateCNBGTPODate" style="display:none">@Resource.MSG00129</span>
+    <span id="noitemselectedmsg" style="display:none">@Resource.MSG00130</span>
+    <span id="fromtodatemsg" style="display:none">@Resource.MSG00131</span>
+    <span id="cancelmsg" style="display:none">@Resource.MSG00132</span>
+    <span id="yesdeleteit" style="display:none">@Resource.MSG00133</span>
+    <span id="deletemsg" style="display:none">@Resource.MSG00134</span>
+    <span id="packinglistunderprocess" style="display:none">@Resource.MSG00135</span>
+    <span id="UpperRangeNeverLessThenLowerRange" style="display:none">@Resource.MSG00136</span>
+    <span id="LeastRequired" style="display:none">@Resource.MSG00137</span>
+    <span id="deliverynoteunderprocess" style="display:none">@Resource.MSG00138</span>
+    <span id="PackedQtyBalanceQty" style="display:none">@Resource.MSG00139</span>
+    <span id="Serialqtydoesnotmatchwithreceivedqty" style="display:none">@Resource.MSG00140</span>
+    <span id="Batchqtydoesnotmatchwithreceivedqty" style="display:none">@Resource.MSG00141</span>
+    <span id="PleaseenterBatchDetails" style="display:none">@Resource.MSG00142</span>
+    <span id="PleaseenterSerialDetails" style="display:none">@Resource.MSG00143</span>
+    <span id="BatchQuantityExceeds" style="display:none">@Resource.MSG00144</span>
+    <span id="approvemsg" style="display:none">@Resource.MSG00145</span>
+    <span id="BillDateExceedsSourceDate" style="display:none">@Resource.MSG00146</span>
+    <span id="InspectedQty" style="display:none">@Resource.MSG00147</span>
+    <span id="InsepetionResultWarning" style="display:none">@Resource.MSG00148</span>
+    <span id="IssuedQtyGreaterthanAvaiQty" style="display:none">@Resource.MSG00149</span>
+    <span id="IssueQtyEqualShipppedQty" style="display:none">@Resource.MSG00150</span>
+    <span id="Stocknotavailable" style="display:none">@Resource.MSG00152</span>
+    <span id="FillQuantity" style="display:none">@Resource.MSG00153</span>
+    <span id="IssuedExceedsRequireQty" style="display:none">@Resource.MSG00154</span>
+    <span id="valueReq" style="display:none">@Resource.MSG00156</span>
+    <span id="nopricegroupselectedmsg" style="display:none">@Resource.MSG00158</span>
+    <span id="Batchqtydoesnotmatchwithissuedqty" style="display:none">@Resource.MSG00159</span>
+    <span id="Serialqtydoesnotmatchwithissuedqty" style="display:none">@Resource.MSG00160</span>
+    <span id="IssuedQtycannotbegreaterthanPendingQty" style="display:none">@Resource.MSG00161</span>
+    <span id="BatchIssuedQtyGreaterthanAvaiQty" style="display:none">@Resource.MSG00162</span>
+    <span id="SerializedIssuedQtydoesnotmatchwithIssueQty" style="display:none">@Resource.MSG00163</span>
+    <span id="ShippedQityisexceedingthanAvailableQty" style="display:none">@Resource.MSG00164</span>
+    <span id="BatchQtydoesnotmatchwithShippedQty" style="display:none">@Resource.MSG00165</span>
+    <span id="SerializedQtydoesnotmatchwithShippedQty" style="display:none">@Resource.MSG00166</span>
+    <span id="valueduplicate" style="display:none">@Resource.MSG00167</span>
+    <span id="IssuedQtyisGreaterthanAvailableQty" style="display:none">@Resource.MSG00168</span>
+    <span id="salesorderunderprocess" style="display:none">@Resource.MSG00169</span>
+    <span id="Userdetailsnotfound" style="display:none">@Resource.MSG00170</span>
+    <span id="Levelcannotbeskipped" style="display:none">@Resource.MSG00171</span>
+    <span id="Warehosecannotsame" style="display:none">@Resource.MSG00172</span>
+    <span id="Branchcannotsame" style="display:none">@Resource.MSG00173</span>
+    <span id="OrilotqtyhasbeenchangedDoccantbecancelled" style="display:none">@Resource.MSG00174</span>
+    <span id="SelectedlotqtyhasbeenchangedDoccantbesaved" style="display:none">@Resource.MSG00175</span>
+    <span id="Eachoptreqatleastonin_outputitem" style="display:none">@Resource.MSG00176</span>
+    <span id="AtleastOneSupisReq" style="display:none">@Resource.MSG00177</span>
+    <span id="deltital" style="display:none">@Resource.MSG00178</span>
+    <span id="SchReqQtyEqualTo" style="display:none">@Resource.MSG00179</span>
+    <span id="JC_noinputoutputitem" style="display:none">@Resource.MSG00181</span>
+    <span id="JC_InvalidDate" style="display:none">@Resource.MSG00182</span>
+    <span id="AtLeastOneUserRoleIsReq" style="display:none">@Resource.MSG00183</span>
+    <span id="AtLeastOneBranchAccessIsReq" style="display:none">@Resource.MSG00184</span>
+    <span id="PriceNotZero" style="display:none">@Resource.MSG00185</span>
+    <span id="PackedQtycannotexceedtoPendingQty" style="display:none">@Resource.MSG00186</span>
+    <span id="IssuedqtyshouldbeequaltoPackedqty" style="display:none">@Resource.MSG00187</span>
+    <span id="ExceedingQty" style="display:none">@Resource.MSG00188</span>
+    <span id="deltext" style="display:none">@Resource.MSG00189</span>
+    <span id="ReturnQtyDoesNotMatchSelectedQty" style="display:none">@Resource.MSG00191</span>
+    <span id="Batchqtydoesnotmatchwithpackedqty" style="display:none">@Resource.MSG00192</span>
+    <span id="Serializedqtydoesnotmatchwithpackedqty" style="display:none">@Resource.MSG00193</span>
+    <span id="BatchSerialqtydoesnotmatchwithreturnqty" style="display:none">@Resource.MSG00194</span>
+    <span id="NoTaxSelected" style="display:none">@Resource.MSG00195</span>
+    <span id="InvoiceCannotbeModified" style="display:none">@Resource.MSG00196</span>
+    <span id="QuotationHasBnPrcsdCanNotBeMdfd" style="display:none">@Resource.MSG00197</span>
+    <span id="RFQHasBnPrcsdCanNotBeMdfd" style="display:none">@Resource.MSG00198</span>
+    <span id="PurchaseOrderHasBnPrcsdCanNotBeMdfd" style="display:none">@Resource.MSG00199</span>
+    <span id="ValidationForSameName" style="display:none">@Resource.MSG00200</span>
+    <span id="GRNHasBnPrcsdCanNotBeMdfd" style="display:none">@Resource.MSG00201</span>
+    <span id="PurchaseInvoiceHasBnPrcsdCanNotBeMdfd" style="display:none">@Resource.MSG00202</span>
+    <span id="ShipmentHasBnPrcsdCanNotBeMdfd" style="display:none">@Resource.MSG00203</span>
+    <span id="SaleInvoiceHasBnPrcsdCanNotBeMdfd" style="display:none">@Resource.MSG00204</span>
+    <span id="InputRMNotFoundInOperation" style="display:none">@Resource.MSG00205</span>
+    <span id="OutputFGNotFoundInOperation" style="display:none">@Resource.MSG00206</span>
+    <span id="InputSFGNotFoundInOperation" style="display:none">@Resource.MSG00207</span>
+    <span id="OutputSFGNotFoundInOperation" style="display:none">@Resource.MSG00208</span>
+    <span id="NoOutputSFGDefinedInPreviousOperation" style="display:none">@Resource.MSG00209</span>
+    <span id="SelectBranch" style="display:none">@Resource.MSG00210</span>
+    <span id="Batchqtydoesnotmatchwithconsumedqty" style="display:none">@Resource.MSG00211</span>
+    <span id="Serializedqtydoesnotmatchwithconsumedqty" style="display:none">@Resource.MSG00212</span>
+    <span id="SelectedlotqtyforsomeitemhasbeenchangedDocannotbeCancelled" style="display:none">@Resource.MSG00213</span>
+    <span id="SelectedlotqtyforsomeitemhasbeenchangedDoccannotbeSaved" style="display:none">@Resource.MSG00214</span>
+    <span id="MaterialTransferReceiptIsUnderProcessTransferIssueCannotBeCancelled" style="display:none">@Resource.MSG00215</span>
+    <span id="ProductionConfirmationHasBeenProcessedCanNotBeModified" style="display:none">@Resource.MSG00216</span>
+    <span id="PackingList_NetWeightExceedingGrossWeight" style="display:none">@Resource.MSG00217</span>
+    <span id="MRP_PR_Processed_MRPCannotModified" style="display:none">@Resource.MSG00218</span>
+    <span id="ReserveQtyExceedingPendingQty" style="display:none">@Resource.MSG00219</span>
+    <span id="ReserveQtyExceedingAvalStk" style="display:none">@Resource.MSG00220</span>
+    <span id="WouldYouLikeToSaveTheDocumentAsADraft" style="display:none">@Resource.MSG00221</span>
+    <span id="TheOutputFGQuantityDoesNotMatchTheBillOfMaterialsQuantity" style="display:none">@Resource.MSG00222</span>
+    <span id="TheUnitOfMeasureUOMIsMissingForCertainItems" style="display:none">@Resource.MSG00223</span>
+    <span id="AtleastOneStockableItemIsRequiredInOrder" style="display:none">@Resource.MSG00224</span>
+    <span id="ManualRoundOffIsNotApplicableForGLHavingMultipleSuppliers" style="display:none">@Resource.MSG00225</span>
+    <span id="ValueShouldBeGreaterThan0" style="display:none">@Resource.MSG00226</span>
+    <span id="AssessableValuePlusTaxAmountdidnotmatchwithinvoiceamount" style="display:none">@Resource.MSG00229</span>
+    <span id="TotalSurplusQtyDoesNotMatchWithSelectedQty" style="display:none">@Resource.MSG00230</span>
+    <span id="AssAmtDidntMatchWithTtlAmt" style="display:none">@Resource.MSG00231</span>
+    <span id="AssAmtPlsTaxAmtDidntMatchWithTtlAmt" style="display:none">@Resource.MSG00232</span>
+    <span id="NetAmtSpecDidntMatchWithNetAmtBase" style="display:none">@Resource.MSG00233</span>
+    <span id="GrPlsTaxPlsOcAmtDidntMatchWithNetAmt" style="display:none">@Resource.MSG00234</span>
+    <span id="DataUploadedSuccessfully" style="display:none">@Resource.MSG00236</span>
+    <span id="DoYouWantToUploadDataToAPIPortal" style="display:none">@Resource.MSG00237</span>
+    @*<span id="DoYouWantToUploadDataToAPIPortal " style="display:none">@Resource.MSG00230</span>*@
+    <span id="InputItemNotSelected" style="display:none">@Resource.MSG00238</span>
+    <span id="OutputItemNotSelected" style="display:none">@Resource.MSG00239</span>
+    <span id="InvailidTdsSlabFound" style="display:none">@Resource.MSG00240</span>
+    <span id="DuplicateGlAccountFound" style="display:none">@Resource.MSG00241</span>
+    <span id="span_InvalidPrice" style="display:none">@Resource.MSG00242</span>
+    <span id="TDSAccountIsNotLinkedWithTDSSlab" style="display:none">@Resource.MSG00243</span>
+    <span id="GLAccountNameAlreadyExistsWithTheSameName" style="display:none">@Resource.MSG00244</span>
+    <span id="GlAccountNotFountInVoucherSerialNo" style="display:none">@Resource.MSG00245</span>
+    <span id="span_forVoucherSerialNo" style="display:none">@Resource.MSG00246</span>
+    <span id="ReturnValueMismatchedWithTotalGlValue" style="display:none">@Resource.MSG00247</span>
+    <span id="AdjustmentValueCanNotBeZero" style="display:none">@Resource.MSG00248</span>
+    <span id="InterbranchAdjustmentForPaymentReceivedIn" style="display:none">@Resource.MSG00249</span>
+    <span id="InterbranchAdjustmentForPaymentMadeFrom" style="display:none">@Resource.MSG00250</span>
+    <span id="VideReceipt" style="display:none">@Resource.MSG00251</span>
+    <span id="VidePayment" style="display:none">@Resource.MSG00252</span>
+    <span id="span_OutputSfgIsUsed" style="display:none">@Resource.MSG00257</span>
+    <span id="InterBranchTransferAccountNotFound" style="display:none">@Resource.MSG00253</span>
+    <span id="MaterialRequisitionIsUnderProcessDocumentCannotBeModify" style="display:none">@Resource.MSG00254</span>
+    <span id="PlannedPuantityShouldBeEqualWithOrderToProduceProcureQuantity" style="display:none">@Resource.MSG00255</span>
+    <span id="PurchaseRequisitionHasBeenProcessedProductionPlanCanNotBeModified" style="display:none">@Resource.MSG00256</span>
+    <span id="dataDelSucess" style="display:none">@Resource.MSG00258</span>
+    <span id="NomodificationisallowedinpreviousFYdocument" style="display:none">@Resource.MSG00261</span>
+    <span id="ThereIsSomethingWrongWhileSendingAlerts" style="display:none">@Resource.MSG00262</span>
+    <span id="NetPlsTaxPlsOcAmtDidntMatchWithNetAmt" style="display:none">@Resource.MSG00263</span>
+
+    @*-----------------------------End------------------------------*@
+    @*---------------------------Session----------------------------*@
+    <span id="CompID" style="display:none">@Session["CompId"].ToString()</span>
+    <span id="BrId" style="display:none">@Session["BranchId"].ToString()</span>
+    <span id="UserID" style="display:none">@Session["UserId"].ToString()</span>
+    <span id="QtyDigit" style="display:none">@Session["QtyDigit"].ToString()</span>
+    <span id="RateDigit" style="display:none">@Session["RateDigit"].ToString()</span>
+    <span id="ValDigit" style="display:none">@Session["ValDigit"].ToString()</span>
+    <span id="MAC_Address" style="display:none">@Session["UserMacaddress"].ToString()</span>
+    <span id="SystemName" style="display:none">@Session["UserSystemName"].ToString()</span>
+    <span id="System_IP_Address" style="display:none">@Session["UserIP"].ToString()</span>
+    <span id="WeightDigit" style="display:none">@Session["WeightDigit"]</span>
+    <span id="ExchDigit" style="display:none">@Session["ExchDigit"]</span>
+    <span id="ExpImpQtyDigit" style="display:none">@Session["ExpImpQtyDigit"]</span>
+    <span id="ExpImpRateDigit" style="display:none">@Session["ExpImpRateDigit"]</span>
+    <span id="ExpImpValDigit" style="display:none">@Session["ExpImpValDigit"]</span>
+    <span id="curr_format" style="display:none">@Session["curr_format"]</span>
+
+    @*-----------------------------End------------------------------*@
+
+    @*---------------------------Title and Placeholder----------------------------*@
+    <span id="ItemName" style="display:none">@Resource.ItemName</span>
+    <span id="span_AssessableValue" style="display:none">@Resource.AssessableValue</span>
+    <span id="ItemUOM" style="display:none">@Resource.UOM</span>
+    <span id="ItemType" style="display:none">@Resource.ItemType</span>
+    <span id="Hsn" style="display:none">@Resource.HSNCode</span>
+    <span id="AccName" style="display:none">@Resource.GLAccount</span>
+    <span id="AccGroup" style="display:none">@Resource.GLGroup</span>
+    <span id="Title_ReturnQuantityDetail" style="display:none">@Resource.ReturnQuantityDetail</span>
+    <span id="DocNo" style="display:none">@Resource.DocumentNumber</span>
+    <span id="DocDate" style="display:none">@Resource.DocumentDate</span>
+    <span id="span_OpName" style="display:none">@Resource.OperationName</span>
+    <span id="ItmInfo" style="display:none">@Resource.ItemInformation</span>
+    <span id="TaxInfo" style="display:none">@Resource.TaxCalculator</span>
+    <span id="span_AddNew" style="display:none">@Resource.AddNew</span>
+    <span id="Edit" style="display:none">@Resource.Edit</span>
+    <span id="span_Update" style="display:none">@Resource.Update</span>
+    <span id="ApprovedBy" style="display:none">@Resource.ApprovedBy</span>
+    <span id="ForwardedTo" style="display:none">@Resource.ForwardedTo</span>
+    <span id="RejectedBy" style="display:none">@Resource.RejectedBy</span>
+    <span id="RevertedTo" style="display:none">@Resource.RevertedTo</span>
+    <span id="BatchSpanDetail" style="display:none">@Resource.BatchNumber</span>
+    <span id="SerialSpanDetail" style="display:none">@Resource.SerialNumber</span>
+    <span id="ExpirySpanDetail" style="display:none">@Resource.ExpiryDate</span>
+    <span id="Span_Delete_Title" style="display:none">@Resource.Delete</span>
+    <span id="Span_ItemInformation_Title" style="display:none">@Resource.ItemInformation</span>
+    <span id="Span_WarehouseWiseStock_Title" style="display:none">@Resource.WarehouseWiseStock</span>
+    <span id="Span_ParameterEvaluatione_Title" style="display:none">@Resource.ParameterEvaluation</span>
+    <span id="Span_TaxCalculator_Title" style="display:none">@Resource.TaxCalculator</span>
+    <span id="Span_TdsCalculator_Title" style="display:none">@Resource.TDS @Resource.Calculator</span>
+    <span id="Span_OtherChargesCalculator_Title" style="display:none">@Resource.OtherChargesCalculator</span>
+    <span id="Span_VarianceDetail_Title" style="display:none">@Resource.VarianceDetail</span>
+    <span id="Span_CustomerInformation_Title" style="display:none">@Resource.CustomerInformation</span>
+    <span id="Span_SupplierInformation_Title" style="display:none">@Resource.SupplierInformation</span>
+    <span id="Span_QuantityDetail_Title" style="display:none">@Resource.QuantityDetail</span>
+    <span id="Span_Detail" style="display:none">@Resource.Detail</span>
+    <span id="Span_SaleHistory_Title" style="display:none">@Resource.SaleHistory</span>
+    <span id="Span_PackedQuantity_Title" style="display:none">@Resource.PackedQuantity</span>
+    <span id="span_remarks" style="display:none">@Resource.remarks</span>
+    <span id="span_ForecastQuantity" style="display:none">@Resource.ForecastQuantity</span>
+    <span id="span_AvailableStock" style="display:none">@Resource.AvailableStock</span>
+    <span id="span_PlannedQuantity" style="display:none">@Resource.PlannedQuantity</span>
+    <span id="span_StockDetail" style="display:none">@Resource.StockDetail</span>
+    <span id="span_MaterialDetail" style="display:none">@Resource.MaterialDetail</span>
+    <span id="span_PurchaseHistory_Title" style="display:none">@Resource.PurchaseHistory</span>
+    <span id="span_Narration" style="display:none">@Resource.Narration </span>
+    <span id="span_ReceiptsDetail" style="display:none">@Resource.Receipts @Resource.Detail</span>
+    <span id="span_IssueDetail" style="display:none">@Resource.IssueDetail</span>
+    <span id="span_IssuedDetail" style="display:none">@Resource.Issued  @Resource.Detail</span>
+    <span id="span_ReservedDetail" style="display:none">@Resource.Reserved @Resource.Stock @Resource.Detail</span>
+    <span id="span_RejectedStockDetail" style="display:none">@Resource.Rejected @Resource.Stock  @Resource.Detail</span>
+    <span id="span_ReworkableStockDetail" style="display:none">@Resource.Reworkable @Resource.Stock  @Resource.Detail</span>
+    <span id="span_OtherChargeName" style="display:none">@Resource.OtherChargeName</span>
+    <span id="span_OtherChargesAmount" style="display:none">@Resource.OtherCharges @Resource.Amount</span>
+    <span id="Span_PackingDetail_Title" style="display:none">@Resource.PackingDetail </span>
+    <span id="Span_GrossValue" style="display:none">@Resource.GrossValue</span>
+    <span id="Hdn_GstApplicable" style="display:none">@ViewBag.GstApplicable</span>
+    <span id="spanhdn_GstApplicableForExport" style="display:none">@ViewBag.GstApplicableForExport</span>
+    <span id="span_Total" style="display:none">@Resource.Total</span>
+    <span id="span_NetWeightPack" style="display:none">@Resource.NetWeightPack</span>
+    <span id="span_GrossWeightPack" style="display:none">@Resource.GrossWeightPack</span>
+    <span id="span_PackSerializationDetail" style="display:none">@Resource.Pack @Resource.Serialization @Resource.Detail</span>
+    <span id="span_Hdn_ExportCommercialPrintCustomOptions" style="display:none">@ViewBag.ExpComrcPrintOptions</span>
+
+    <span id="span_TopCustomers" style="display:none">@Resource.TopCustomers</span>
+    <span id="span_TopSupplier" style="display:none">@Resource.TopSupplier</span>
+    <span id="span_TopProducts" style="display:none">@Resource.TopProducts</span>
+    <span id="span_TopMaterials" style="display:none">@Resource.TopMaterials</span>
+    <span id="span_TopProduction" style="display:none">@Resource.TopProduction</span>
+    <span id="span_TopMaintenance" style="display:none">@Resource.TopMaintenance</span>
+    <span id="span_TopPayables" style="display:none">@Resource.TopPayables</span>
+    <span id="span_TopReceivables" style="display:none">@Resource.TopReceivables</span>
+    <span id="span_TopRegions" style="display:none">@Resource.TopRegions</span>
+    <span id="span_TopReceipts" style="display:none">@Resource.TopReceipts</span>
+    <span id="span_TopPayments" style="display:none">@Resource.TopPayments</span>
+    <span id="span_TopStocks" style="display:none">@Resource.TopStocks</span>
+    <span id="span_TopSalesReturn" style="display:none">@Resource.Top @Resource.SaleReturn</span>
+    <span id="span_BillOfMaterial" style="display:none">@Resource.BillOfMaterial</span>
+    <span id="span_PendingOrderQuantity" style="display:none">@Resource.PendingOrderQuantity</span>
+    <span id="span_OrderWiseDetail" style="display:none">@Resource.OrderWiseDetail</span>
+    <span id="span_InvoiceDetail" style="display:none">@Resource.InvoiceDetail</span>
+    <span id="span_InvoiceValueCalculation" style="display:none">@Resource.InvoiceValueCalculation</span>
+    <span id="span_OrderHistory" style="display:none">@Resource.OrderHistory</span>
+    <span id="span_MaterialDispatchNumber" style="display:none">@Resource.Material @Resource.Dispatch @Resource.Number</span>
+    <span id="span_ProductName" style="display:none">@Resource.ProductName</span>
+    <span id="span_MaterialType" style="display:none">@Resource.MaterialType</span>
+    <span id="span_TaxExempted" style="display:none">@Resource.TaxExempted</span>
+    <span id="span_SubItemDetail" style="display:none">@Resource.SubItem @Resource.Detail</span>
+    <span id="span_BinLocation" style="display:none">@Resource.Bin @Resource.Location</span>
+    <span id="span_SubItemStockDetail" style="display:none">@Resource.SubItem @Resource.StockDetail</span>
+    <span id="span_OtherDetail" style="display:none">@Resource.Other @Resource.Detail</span>
+    <span id="span_SampleType" style="display:none">@Resource.Sample @Resource.Type</span>
+    <span id="span_PendingOrderQuantity" style="display:none">@Resource.Pending @Resource.Order @Resource.Quantity</span>
+    <span id="span_ProductionDetail" style="display:none">@Resource.ProductionDetail</span>
+    <span id="span_srno" style="display:none">@Resource.SrNo</span>
+    <span id="span_SourceDocumentNumber" style="display:none">@Resource.SourceDocumentNumber</span>
+    <span id="span_SourceDocumentDate" style="display:none">@Resource.SourceDocumentDate</span>
+    <span id="span_SampleName" style="display:none">@Resource.Sample @Resource.Name </span>
+    <span id="span_issuedDate" style="display:none">@Resource.Issued @Resource.Date </span>
+    <span id="span_issuedQuantity" style="display:none">@Resource.Issued @Resource.Quantity </span>
+    <span id="span_pendingquantity" style="display:none">@Resource.Pending @Resource.Quantity </span>
+    <span id="span_ReceviedDate" style="display:none">@Resource.Received @Resource.Date </span>
+    <span id="span_itemcost" style="display:none">@Resource.ItemCost </span>
+    <span id="span_ReceivedQuantity" style="display:none">@Resource.Received @Resource.Quantity  </span>
+    <span id="span_TDSInformation" style="display:none">@Resource.TDS @Resource.Information</span>
+    <span id="span_issuedBy" style="display:none">@Resource.Issued @Resource.By</span>
+    <span id="span_CostCenterDetail" style="display:none">@Resource.CostCenterDetail</span>
+    <span id="span_AlternateItemDetail" style="display:none">@Resource.Alternate @Resource.ItemDetail</span>
+    <span id="span_Observative" style="display:none">@Resource.Observative</span>
+    <span id="span_ItemCode" style="display:none">@Resource.ItemCode</span>
+    <span id="span_ItemDescription" style="display:none">@Resource.ItemDescription</span>
+    <span id="span_PortfolioDescription" style="display:none">@Resource.PortfolioDescription</span>
+    <span id="span_ModelNumber" style="display:none">@Resource.ModelNumber</span>
+    <span id="span_OEMNo" style="display:none">@Resource.OEMNo</span>
+    <span id="span_PartNumber" style="display:none">@Resource.PartNumber</span>
+    <span id="span_GRNNumber" style="display:none">@Resource.GRNNumber</span>
+    <span id="span_GRNDate" style="display:none">@Resource.GRNDate</span>
+    <span id="span_ContactNumber" style="display:none">@Resource.ContactNumber</span>
+    <span id="span_VerifiedBy" style="display:none">@Resource.VerifiedBy</span>
+    <span id="span_SerialDetail" style="display:none">@Resource.SerialDetail</span>
+    <span id="span_BatchDetail" style="display:none">@Resource.BatchDetail</span>
+    <span id="span_MRSNumber" style="display:none">@Resource.MRS @Resource.Number</span>
+    <span id="span_LotNumber" style="display:none">@Resource.LotNumber</span>
+    <span id="span_ReasonForReturn" style="display:none">@Resource.ReasonForReturn</span>
+    <span id="span_Warehouse" style="display:none">@Resource.Warehouse</span>
+    <span id="span_Currency" style="display:none">@Resource.Currency</span>
+    <span id="span_AccountBalanceDetail" style="display:none">@Resource.AccountBalance @Resource.Detail</span>
+    <span id="span_QuotationNumber" style="display:none">@Resource.Quotation @Resource.Number</span>
+    <span id="span_QuotationDate" style="display:none">@Resource.Quotation @Resource.Date</span>
+    <span id="span_ProductionOrder" style="display:none">@Resource.Production @Resource.Order</span>
+    <span id="span_BillAdjustment" style="display:none">@Resource.BillAdjustment</span>
+    <span id="span_History" style="display:none">@Resource.History</span>
+    <span id="span_PaymentDate" style="display:none">@Resource.Payment @Resource.Date</span>
+    <span id="span_VoucherDate" style="display:none">@Resource.Voucher @Resource.Date</span>
+    <span id="span_BillNumber" style="display:none">@Resource.BillNumber</span>
+    <span id="span_InstrumentDetail" style="display:none">@Resource.Instrument @Resource.Detail</span>
+    <span id="span_DispatchDetail" style="display:none">@Resource.Dispatch @Resource.Detail</span>
+    <span id="span_State" style="display:none">@Resource.State</span>
+    <span id="span_PortOfLoading" style="display:none">@Resource.PortOfLoading</span>
+    <span id="span_FinishedProduct" style="display:none">@Resource.Finished @Resource.Product</span>
+    <span id="Hdn_UpdateItemPriceOnGrn" style="display:none">@ViewBag.UpdateItemPriceOnGrn</span>
+    <span id="span_City" style="display:none">@Resource.City</span>
+    <span id="span_Reworkremarks" style="display:none">@Resource.Rework @Resource.remarks</span>
+    <span id="span_ReasonForRejection" style="display:none">@Resource.ReasonForRejection</span>
+    <span id="span_ReasonForRejection_Remarks" style="display:none">@Resource.Rejection @Resource.remarks</span>
+    <span id="span_ReasonForAccept_Remarks" style="display:none">@Resource.Accepted @Resource.remarks</span>
+    <span id="span_Expoter" style="display:none">@Resource.Exporter</span>
+    <span id="span_Template" style="display:none">@Resource.Template</span>
+    <span id="span_ReferenceDocumentNumber" style="display:none">@Resource.ReferenceDocumentNumber</span>
+    <span id="span_Lot_has" style="display:none">@Resource.Lot</span>
+    <span id="Outputproduct" style="display:none">@Resource.Output @Resource.Product</span>
+    <span id="span_Value" style="display:none">@Resource.Value</span>
+    <span id="span_ContactDetail" style="display:none">@Resource.ContactDetail</span>
+    <span id="span_ContactedBy" style="display:none">@Resource.ContactedBy</span>
+    <span id="span_ContactedTo" style="display:none">@Resource.ContactedTo</span>
+    <span id="span_DiscussionRemarks" style="display:none">@Resource.DiscussionRemarks</span>
+    <span id="span_VoucherDetail" style="display:none">@Resource.Voucher @Resource.Detail</span>
+    <span id="span_CustomerReferenceNumber" style="display:none">@Resource.Customer @Resource.ReferenceNumber</span>
+    <span id="span_LandedPriceremarks" style="display:none">@Resource.Landed @Resource.Cost @Resource.remarks</span>
+    <span id="span_QCDetail" style="display:none">@Resource.QC @Resource.Detail</span>
+    <span id="span_RawMaterialDetailNotFound" style="display:none">@Resource.RawMaterialDetail @Resource.NotFound</span>
+    <span id="span_OrdNoDtl" style="display:none">@Resource.Order @Resource.Number @Resource.Detail</span>
+    <span id="span_InvoiceNo" style="display:none">@Resource.InvoiceNumber</span>
+    <span id="span_InvoiceDate" style="display:none">@Resource.InvoiceDate</span>
+    <span id="span_BillDate" style="display:none">@Resource.BillDate</span>
+    <span id="span_RequirementArea" style="display:none">@Resource.RequirementArea</span>
+    <span id="span_InvailidLotBatchDetail" style="display:none">@Resource.Invalid @Resource.LotBatchDetail</span>
+    <span id="span_AreNotAllowedInItemName" style="display:none">@Resource.AreNotAllowedInItemName</span>
+    <span id="span_InvalidFormat" style="display:none">@Resource.InvalidFormat</span>
+    <span id="span_ItmNotFound" style="display:none">@Resource.ItemDoesNotFound</span>
+    <span id="span_ItmFound" style="display:none">@Resource.ItemFound</span>
+    <span id="span_PANNumber" style="display:none">@Resource.PANNumber</span>
+    <span id="span_InvalidNumber" style="display:none">@Resource.Invalid @Resource.InvoiceNumber </span>
+    <span id="span_InvalidPANNumber" style="display:none">@Resource.Invalid @Resource.PANNumber</span>
+    <span id="span_InvCurrDtlsFor" style="display:none">@Resource.Invalid @Resource.Currency @Resource.Detail @Resource._for </span>
+    @*-------------------------------------End------------------------------------*@
+    <div class="container body">
+        <div class="main_container">
+            <!-- sidebar menu Left -->
+            @*<div class="col-md-3 left_col">
+            <div class="left_col scroll-view">
+                <div class="navbar nav_title">
+                    <a href="/Dashboard/DashboardHome" class="site_title">
+                        <img src="~/Content/Images/logo.png" height="30" alt="EnReP" class="img-fluid">
+                        <input type="hidden" id="hdMenuDocumentId" />
+                    </a>
+                    <input type="text" class="mn_search" id="search_menu" placeholder="search" />
+                </div>
+                <div class="clearfix"></div>
+                @Html.Partial("_SidebarMenu")
+            </div>
+        </div>*@
+            <!-- /sidebar menu Left-->
+            <!-- sidebar menu Left -->
+            <div class="col-md-3 left_col">
+                <div class="left_col scroll-view">
+                    <div class="navbar nav_title">
+                        @*<a href="index.html" class="site_title">
+                        *@
+                        <a href="/Dashboard/DashboardHome" class="site_title ml-3 pt-2">
+                            <img src="~/Content/Images/BusinetLogo.png" height="30" alt="EnReP" class="img-fluid">
+                            <input type="hidden" id="hdMenuDocumentId" />
+                            @*<span class="enrep_logo_text"> E<span style="color:#888888;">n</span>R<span style="color:#888888;">e</span>P Business Solutions</span>*@
+                        </a>
+                        <div class="form-group has-search pen_sear">
+                            <span class="fa fa-search form-control-feedback lef_ser_ico"></span>
+                            <input type="text" class="form-control mn_search" id="search_menu" placeholder="Search">
+                        </div>
+
+                        @*<input type="text" class="mn_search" id="search_menu" placeholder="search" />*@
+                    </div>
+                    <div class="clearfix"></div>
+                    @Html.Partial("_SidebarMenu")
+                </div>
+            </div>
+            <!-- /sidebar menu Left-->
+            <!-- top navigation -->
+            @Html.Partial("_TopNavigation")
+            <!-- /top navigation -->
+            <!-- page content -->
+            <div class="right_col margin45">
+                <div class="clearfix"></div>
+                @RenderBody()
+            </div>
+        </div>
+        <!-- /page content -->
+        <!-- footer content -->
+        @Html.Partial("_footer")
+        <!-- /footer content -->
+    </div>
+    @Scripts.Render("~/Content/Scripts/PageJs")
+    @Scripts.Render("~/Content/Scripts/GraphJs")
+    @Scripts.Render("~/Content/Scripts/DatatablesJs")
+    <script src="~/Content/Scripts/Common/jquery-ui.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            //$("#draggable").draggable();
+            $(".modal-dialog").draggable(/*{ containment: "parent" }*/);
+        });
+        $("#file-1").fileinput({
+            theme: 'fa',
+            uploadUrl: '#',
+            allowedFileExtensions: ['jpg', 'png', 'gif', 'pdf'],
+            overwriteInitial: false,
+            maxFileSize: 2048,
+            maxFilesNum: 10,
+            slugCallback: function (filename) {
+                debugger;
+                var flagmatch = "N";
+                var imgFiles = $("#FilesUpload .file-preview-thumbnails .krajee-default .file-thumbnail-footer #fname:odd");
+                imgFiles.each(function (index) {
+                    var nfilename = $(this).text();
+                    debugger;
+                    if (nfilename === filename) {
+                        flagmatch = "Y";
+                    }
+                });
+                if (flagmatch == "Y") {
+                    filename = filename.replace('.', (imgFiles.length + 1) + '.');
+                }
+                return filename.replace('(', '_').replace(']', '_');
+            }
+        });
+    </script>
+    @*<script src="~/signalr/hubs" type="text/javascript"></script>*@
+    @* show loader script when click on button , form submit .....etc*@
+    <script>
+        $(document).ready(function () {
+            //cookieStore.delete("fileDownLoad");
+            document.cookie = "fileDownLoad=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            $('form').submit(function (e) {
+                debugger;
+                //Loader Start
+                showLoader();
+                document.cookie = "fileDownLoad=true; path=/";//Cookie Creted for Submit Request
+                //check loading
+                var checkInterval = setInterval(function () {
+                    if (!document.cookie.includes("fileDownLoad=true")) {
+                        clearInterval(checkInterval);//Clearing checkInterval function
+                        hideLoader();
+                    }
+                }, 1000);
+            });
+
+            $('.fa-search').click(function () {
+                // Display loader before postback (on button click)
+                showLoader();
+                var checkInterval = setInterval(function () {
+                    if ($.active == 0) {
+                        clearInterval(checkInterval);//Clearing checkInterval function
+                        hideLoader();
+                    }
+                }, 1000);
+            });
+            // Handler for window load event (hide loader after postback)
+            $(document).ajaxStart(function () {
+                debugger
+                if (sessionStorage.ShowLoader == "N") {
+                    sessionStorage.removeItem("ShowLoader");
+                } else {
+                    showLoader();
+                }
+                // Hide loader when all AJAX requests are complete
+                //hideLoader();
+            });
+            $(window).on('load', function () {//this will triggered when all static files Loaded.
+                /*$("#loaderContainer").fadeOut(500);*/
+                //showLoader();
+                if ($.active > 0) {
+                    console.log("An AJAX request is processing.");
+                } else {
+                    hideLoader();
+                }
+
+            });
+
+            $(document).on('renderComplete', function () {
+                hideLoader();
+            });
+            $(document).ajaxStop(function () {
+                // Hide loader when all AJAX requests are complete
+                hideLoader();
+            });
+            //$(document).ajaxComplete(function () {
+            //    // Hide loader when all AJAX requests are complete
+            //    hideLoader();
+            //});
+            $(document).ajaxError(function (event, xhr, settings, thrownError) {
+                // Hide the loading spinner when any AJAX request fails
+                hideLoader();
+            });
+
+
+        });
+        function showLoader() {
+            $('#loader').show();
+        }
+        function hideLoader() {
+            $('#loader').hide();
+        }
+                                                    //$(document).ajaxStop(function () {
+                                                    //    // Hide loader when all AJAX requests are complete
+                                                    //    hideLoader();
+                                                    //});
+                                                    //$(document).ajaxStart(function () {
+                                                    //    showLoader();
+                                                    //    // Hide loader when all AJAX requests are complete
+                                                    //    //hideLoader();
+                                                    //});
+                                                    //$(document).on('renderComplete', function () {
+                                                    //    hideLoader();
+                                                    //});
+    </script>
+    @* show loader script END*@
+</body>
+
+
+</html>
+<script src="~/Content/Scripts/Dashboard/Notification.js"></script>

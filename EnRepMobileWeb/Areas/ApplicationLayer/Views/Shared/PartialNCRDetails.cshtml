@@ -1,0 +1,88 @@
+﻿@using EnRepMobileWeb.Resources;
+@using System.Data;
+
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<table id="datatable-buttons" class="table table-bordered width2700 rowhighlighttbl itmfrz">
+    <thead>
+        <tr class="headings">
+            <th width="3%">@Resource.SrNo</th>
+            <th width="10%" class="itmStick">@Resource.Item <br /> @Resource.Description</th>           
+            <th width="3%" title="@Resource.UnitOfMeasure"> @Resource.UOM</th>           
+            <th width="5%">@Resource.Source <br /> @Resource.Document</th>
+            <th hidden></th>
+            <th width="6%">@Resource.Document <br /> @Resource.Number</th>
+            <th width="4%">@Resource.Document <br /> @Resource.Date</th>
+            <th hidden></th>
+            <th width="6%">@Resource.BillNumber</th>
+            <th width="4%">@Resource.BillDate</th>
+            <th width="8%">@Resource.Entity <br /> @Resource.Name</th>
+            <th hidden></th>
+            <th width="5%">@Resource.Rejected <br /> @Resource.Quantity </th>
+            <th width="5%">@Resource.Rework <br /> @Resource.Quantity </th>
+            <th width="5%">@Resource.Short <br /> @Resource.Quantity </th>
+            <th width="5%">@Resource.Sample <br /> @Resource.Quantity </th>
+            <th width="10%">@Resource.ReasonForNCR</th>
+            <th width="11%">@Resource.QC @Resource.remarks</th>
+            <th width="5%">@Resource.Acknowledge</th>
+            <th width="5%">@Resource.Status</th>
+            <th hidden></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (ViewBag.NcrDetails != null)
+        {
+            var i = 1;
+            foreach (DataRow dr in ViewBag.NcrDetails.Rows)
+            {
+        <tr>
+            <td id="td_sr_no">@i</td>
+            <td id="td_item_name" class="ItmNameBreak itmStick tditemfrz">
+                <div class="col-sm-11" id="ddlitem_name">@dr["item_name"] </div>
+                <div class="col-sm-1 i_Icon">
+                    <button type="button" class="calculator" onclick="OnClickIconBtn(event);" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.ItemInformation">   </button>
+                </div>
+                <input type="hidden" id="td_item_id" value="@dr["item_id"]" />
+            </td>
+            
+            <td>
+                <span id="td_uom_alias">  
+                    @dr["uom_alias"]
+                </span>
+                <input type="hidden" id="td_uom_id" value="@dr["uom_id"]" />
+            </td>          
+            <td id="td_src_type">
+            @dr["src_type"]
+            </td>
+            <td id="td_src_type_id" hidden>@dr["src_type_id"]</td>
+            <td id="td_doc_no">@dr["doc_no"]</td>
+            <td id="td_doc_dt">@dr["doc_dt"]</td>
+            <td id="td_hdn_doc_dt" hidden>@dr["hd_doc_dt"]</td>
+            <td id="td_bill_no">@dr["bill_no"]</td>
+            <td id="">@dr["bill_date"]</td>
+            <td id="td_entity_name">@dr["entity_name"]</td>
+            <td id="td_entity_id" hidden>@dr["entity_id"]</td>
+            <td class="num_right" id="td_rej_qty">@dr["rej_qty"]</td>
+            <td class="num_right" id="td_rwk_qty">@dr["rwk_qty"]</td>
+            <td class="num_right" id="td_short_qty">@dr["short_qty"]</td>
+            <td class="num_right" id="td_simp_qty">@dr["simp_qty"]</td>
+            <td class="ncr no-padding"><textarea class="form-control remarksmessage" readonly>@dr["reason_for_ncr"]</textarea></td>
+            <td class="ncr no-padding"><textarea class="form-control remarksmessage" readonly>@dr["remarks"]</textarea></td>
+           
+            <td class="center">
+                <button type="button" id="Acknowledgement" onclick="OnClickAcknowledge(event)" class="calculator " data-toggle="modal" data-target="#Acknowledgement" data-backdrop="static" data-keyboard="false"><i class="fa fa-eye" aria-hidden="true" data-toggle="" title="@Resource.Acknowledgement"></i></button>
+            </td>
+
+            <td id="td_ack_status">@dr["status_name"]</td>
+            <td id="td_ack_status_code" hidden>@dr["status_code"]</td>
+        </tr>
+                i = i + 1;
+            }
+        }
+    </tbody>
+</table>
+@if (ViewBag.NCRSearch == "NCRSearch")
+{
+    @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+    @Scripts.Render("~/Content/Scripts/DatatablesJs")
+
+}

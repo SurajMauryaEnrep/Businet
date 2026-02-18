@@ -1,0 +1,97 @@
+﻿@using EnRepMobileWeb.Resources;
+@{
+    var rowId = 0;
+}
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<div class="modal-content">
+    <div class="modal-header">
+        <h2>@Resource.SubItem @Resource.Stock @Resource.Detail</h2>
+        <button type="button" class="close " data-dismiss="modal">×</button>
+    </div>
+    <div class="modal-body padd pop_top">
+        <div id="divwh_wiseRept_Issue">
+            <div class="col-md-12 col-sm-12 no-margin no-padding" style="margin-bottom:10px;">
+                <div class="col-md-3 padding_left">
+                    <label class="col-form-label label-align">@Resource.ItemName</label>
+                    <div class="label_value"><span id="txtwh_itemName"></span></div>
+                </div>
+                <div class="col-md-3">
+                    <label class="col-form-label label-align">@Resource.UOM</label>
+                    <div class="label_value"><span id="txtwh_uom"></span></div>
+                </div>
+                <div class="col-md-3">
+                    <label class="col-form-label label-align">@Resource.Branch</label>
+                    <div class="label_value"><span id="txtwh_branch"></span></div>
+                </div>
+                <div class="col-md-2" id="div_subitempop_Wh">
+                    @if (ViewBag.FlagWhShfl == "Shfl")
+                    {
+                        <label class="col-form-label label-align">@Resource.Shopfloor</label>
+                    }
+                    else
+                    {
+                        <label class="col-form-label label-align">@Resource.Warehouse</label>
+                    }
+                    <div class="label_value"><span id="txtwh_warehouse"></span></div>
+                </div>
+            </div>
+            <div class="clear"></div>
+            <div class="card-box table-responsive dy_table">
+                <div id="" class="sticky-table sticky-ltr-cells sb-container container-example1 OrderHistory height30VH">
+                    <table id="Wh_wiseDocDetailTbl" data-order="" class="table table-striped table-bordered rowhighlighttbl width1600 itmfrz" style="width:100%">
+                        <thead>
+                            <tr class="sticky-header">
+                                <th width="5%">@Resource.SrNo</th>
+                                <th width="23%" class="itmStick">@Resource.SubItem @Resource.Name</th>
+                                <th width="9%">@Resource.OpeningStock</th>
+                                <th width="9%">@Resource.Receipts</th>
+                                <th width="9%">@Resource.Issued</th>
+                                <th width="9%">@Resource.ReservedStock</th>
+                                @*<th width="9%">@Resource.Unreserve @Resource.Stock</th>*@
+                                <th width="9%">@Resource.RejectedStock</th>
+                                <th width="9%">@Resource.ReworkableStock</th>
+                                <th width="9%">@Resource.Total @Resource.Stock</th>
+                                <th width="9%">@Resource.AvailableStock</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (ViewBag.ResultData != null)
+                            {
+                                var rowIdx = 1;
+                                foreach (System.Data.DataRow dr in ViewBag.ResultData.Tables[0].Rows)
+                                {
+                                    <tr id="R@(rowIdx)">
+                                        <td width="5%">@rowIdx</td>
+                                        <td class="ItmNameBreak itmStick tditemfrz">@dr["subitemname"]</td>
+                                        <td class="num_right">@dr["opening"]</td>
+                                        <td class="num_right">@dr["receipts"]</td>
+                                        <td class="num_right">@dr["issued"]</td>
+                                        <td class="num_right">@dr["reserved"]</td>
+                                        <td class="num_right">@dr["rejected"]</td>
+                                        <td class="num_right">@dr["reworkabled"]</td>
+                                        <td class="num_right">@dr["totalstk"]</td>
+                                        <td class="num_right">@dr["avlstk"]</td>
+                                    </tr>
+                                    rowIdx++;
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            @*<table class="table table-bordered">
+                    <tr class="total">
+                        <td width="81%" class="num_right"><strong> @Resource.Total @Resource.Quantity</strong></td>
+                        <td width="15%" class="num_right" style="background: #e4e4e4 !important;"><strong><span id="Wh_TotalQty"></span></strong></td>
+                        <td width="4%"> &nbsp;</td>
+                    </tr>
+                </table>*@
+        </div>
+    </div>
+</div>
+@if (ViewBag.ResultData != null)
+{
+    <script>
+        cmn_apply_datatable("#Wh_wiseDocDetailTbl");
+    </script>
+}

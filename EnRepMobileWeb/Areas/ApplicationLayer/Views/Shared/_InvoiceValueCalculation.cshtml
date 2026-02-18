@@ -1,0 +1,125 @@
+﻿@using EnRepMobileWeb.Resources;
+<div class="modal-content">
+    <div class="modal-header">
+        <h2>@Resource.InvoiceValueCalculation</h2> <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body no-padding">
+        <div class="col-md-4 col-sm-12">
+            <div class="lpo_form">
+                <label class="col-form-label label-align">@Resource.ItemName</label>
+                <input id="InvoiceIconItemName" class="form-control" autocomplete="off" onchange="" onkeypress="" type="text" name="ItemName" placeholder="@Resource.ItemName" onblur="this.placeholder = '@Resource.ItemName'" disabled>
+                <input type="hidden" id="InvoiceItem_id" />
+            </div>
+        </div>
+        <div class="col-md-2 col-sm-12 pl-0">
+            <div class="lpo_form">
+                <label class="col-form-label label-align">@Resource.UOM</label>
+                <input id="InvoiceIconUOM" class="form-control" autocomplete="off" onchange="" onkeypress="" type="text" name="UOM" placeholder="@Resource.UOM" onblur="this.placeholder = '@Resource.UOM'" disabled>
+
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-12 pl-0">
+            <div class="lpo_form">
+                @if (ViewBag.DocumentMenuId == "105103142"|| ViewBag.DocumentMenuId == "105102150")
+                {
+                    @*<label class="col-form-label label-align">@Resource.ShipmentNumber</label>commented by shubham maurya on 20-03-2025*@
+                    <label class="col-form-label label-align">@Resource.SourceDocumentNumber</label>
+                }
+                else
+                {
+                    <label class="col-form-label label-align">@Resource.GRNNumber</label>
+                }
+                <input id="InvoiceIconGRNNumber" class="form-control" autocomplete="off" onchange="" onkeypress="" type="text" name="GRNNumber" placeholder="@Resource.GRNNumber" onblur="this.placeholder = '@Resource.GRNNumber'" disabled>
+
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-12 pl-0">
+            <div class="lpo_form">
+                @if (ViewBag.DocumentMenuId == "105103142"|| ViewBag.DocumentMenuId == "105102150")
+                {
+                    @*<label class="col-form-label label-align">@Resource.ShipmentDate</label>commented by shubham maurya on 20-03-2025*@
+                    <label class="col-form-label label-align">@Resource.SourceDocumentDate</label>
+                }
+                else
+                {
+                    <label class="col-form-label label-align">@Resource.GRNDate</label>
+                }
+
+                <input id="InvoiceIconGRNDate" class="form-control" autocomplete="off" onchange="" onkeypress="" type="text" name="GRNDate" placeholder="@Resource.GRNDate" onblur="this.placeholder = '@Resource.GRNDate'" disabled>
+
+            </div>
+        </div>
+
+
+        <div class="col-md-3 col-sm-12">
+            <div class="lpo_form">
+                <label class="col-form-label label-align">@Resource.ItemCost</label>
+                <input id="ItemCost" class="form-control num_right" autocomplete="off" onchange="" onkeypress="" type="text" name="" placeholder="" onblur="this.placeholder = ''" disabled>
+            </div>
+        </div>
+        @*<div class="col-md-3 col-sm-12">/*Commented and modify by Hina sharma on 16-12-2024*/
+            <div class="lpo_form">
+                <label class="col-form-label label-align">@Resource.TaxAmount</label>
+                <input id="TaxAmount" class="form-control num_right" autocomplete="off" onchange="" onkeypress="" type="text" name="" placeholder="" onblur="this.placeholder = ''" disabled>
+            </div>
+        </div>*@
+        <div class="col-md-3 col-sm-12 pl-0">
+            <div @*class="lpo_form"*@ class="col-sm-11 lpo_form no-padding" id="multiWrapper">
+                <label class="col-form-label label-align">@Resource.TaxAmount</label>
+                @if (ViewBag.DocumentMenuId == "105103142")
+                {
+                    <input id="ItemWiseTaxAmount" class="form-control num_right" autocomplete="off" onchange="" onkeypress="" type="text" name="" placeholder="" onblur="this.placeholder = ''" disabled>
+                }
+                else
+                {
+                    <input id="TaxAmount" class="form-control num_right" autocomplete="off" onchange="" onkeypress="" type="text" name="" placeholder="" onblur="this.placeholder = ''" disabled>
+                }
+            </div>
+            <div class="col-sm-1 i_Icon margin25">
+                <button type="button" id="btn_TaxAmountDetails" class="calculator" data-toggle="modal" onclick="OnclickTaxAmtDetailIcon(event)" data-target="#TaxAmountDetails" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Paid @Resource.Amount @Resource.Detail">  </button>
+
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-12 pl-0">
+            <div class="lpo_form">
+                <label class="col-form-label label-align">@Resource.OtherCharges</label>
+                <input id="OtherCharges" class="form-control num_right" autocomplete="off" onchange="" onkeypress="" type="text" name="" placeholder="" onblur="this.placeholder = ''" disabled>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-12 pl-0">
+            <div class="lpo_form">
+                <label class="col-form-label label-align">@Resource.NetRate</label>
+                <input id="NetRate" class="form-control num_right" autocomplete="off" onkeypress="" type="text" name="" placeholder="" onblur="this.placeholder = ''" disabled>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-12">
+            <div class="lpo_form">
+                <label class="col-form-label label-align">@Resource.ReturnQuantity</label>
+                <input id="InvoiceIconReturnQuantity" class="form-control num_right" autocomplete="off" type="text" name="" placeholder="" onblur="this.placeholder = ''" disabled>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-12 pl-0">
+            <div class="lpo_form">
+                <label class="col-form-label label-align">@Resource.InvoiceAmount</label>
+                <input id="InvoicePopupInvoiceAmount" class="form-control num_right" autocomplete="off" type="text" name="" placeholder="" onblur="this.placeholder = ''" disabled>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-12 pl-0">
+            <div class="lpo_form">
+                <label class="col-form-label label-align">@Resource.ReturnValue</label>
+                <input id="InvoicePopupReturnValue" class="form-control num_right" autocomplete="off" onkeypress="return OnKeyPressRetQty(this,event);" onchange="OnChangeRetValue(this,event)" type="text" disabled>
+                <span id="SpanReturnValuePopup" class="error-message is-visible"></span>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="modal-footer" id="btnIvSaveDiscardOnly">
+        <button type="button" class="btn btn-primary btn-sm" id="InvoiceSaveAndExitBtn" onclick="OnClickInvoiceSaveAndExitBtn();">@Resource.SaveAndExit</button>
+        <button type="button" class="btn btn-primary btn-sm" id="InvoiceDiscardAndExit" data-dismiss="modal">@Resource.DiscardAndExit</button>
+    </div>
+    <div class="modal-footer" style="display:none;" id="btnIvCloseOnly">
+        <button type="button" class="btn btn-primary btn-sm" id="" data-dismiss="modal" onclick="">@Resource.Close</button>
+    </div>
+
+</div>

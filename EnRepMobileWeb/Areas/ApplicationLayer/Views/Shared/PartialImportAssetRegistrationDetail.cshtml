@@ -1,0 +1,203 @@
+﻿@using EnRepMobileWeb.Resources;
+@using System.Data;
+@{
+    var i = 0;
+    var TotalOk = 0;
+    var TotalNotOk = 0;
+}
+<style>
+
+    #DttblBtnsassreg_wrapper .dataTables_length {
+        position: absolute;
+    }
+
+    #DttblBtnsassreg_wrapper .dt-buttons {
+        width: 10%;
+        margin-left: 16%;
+    }
+
+    #DttblBtnsassreg_filter {
+        position: relative;
+        float: right;
+    }
+
+    .loader1 {
+        -webkit-animation: spin 2s linear infinite; /* Safari */
+        animation: spin 2s linear infinite;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        margin-top: -40px; /* Half of width */
+        margin-left: -40px; /* Half of height */
+        z-index: 9999; /* Make sure it's on top of other elements */
+        display: none; /* Initially hide the loader */
+        /*    position: fixed;*/
+    }
+
+    @@-webkit-keyframes spin {
+        0% {
+            -webkit-transform: rotate(0deg);
+        }
+
+        100% {
+            -webkit-transform: rotate(360deg);
+        }
+    }
+
+    @@keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    .loader1 div {
+        width: 100%;
+        height: 100%;
+    }
+
+    #DttblBtnsassreg thead tr > :nth-child(4) {
+        z-index: 100 !important;
+        position: sticky;
+        left: 0;
+        top: 0;
+    }
+
+    #DttblBtnsassreg tbody tr > :nth-child(4) {
+        background: #ffffff;
+        position: sticky;
+        z-index: 1;
+        left: 0;
+    }
+    #AssRegistrationImport a.buttons-pdf {
+        display: none;
+    }
+    #AssRegistrationImport a.buttons-csv {
+        display: none;
+    }
+</style>
+<div id="loader1" class="loader1">
+    <img src="~/Content/Images/loader.gif" width="100" height="100" />
+</div>
+<!-- Asset Procrument Detail Start -->
+<table class="table table-striped margin5" hidden="hidden" id="tblpdhdn">
+    <tbody id="tbody_tblpdhdn">
+        @if (ViewBag.ProcrumentDetailData != null)
+        {
+            foreach (System.Data.DataRow Row in ViewBag.ProcrumentDetailData.Rows)
+            {
+                <tr>
+                    <td id="Srno"></td>
+                    <td id="hdnAssetDesc">@Row["asset_desc"].ToString()</td>
+                    @*<td id="hdnAssetLabel">@Row["asset_label"].ToString()</td>*@
+                    <td id="hdnSerialNumber">@Row["serial_no"].ToString()</td>
+                    <td id="hdnBillNumber">@Row["BillNumber"].ToString()</td>
+                    <td id="hdnBillDate">@Row["BillDate"].ToString()</td>
+                    <td id="hdnBillDt">@Row["BillDt"].ToString()</td>
+                    <td id="hdnSupplierName">@Row["SupplierName"].ToString()</td>
+                    <td id="hdnGSTNumber">@Row["GSTNumber"].ToString()</td>
+                    <td id="hdnCurrency" class="center">@Row["Currency"].ToString()</td>
+                    <td id="hdnCurrencyId" class="center" style="display:none">@Row["CurrencyId"].ToString()</td>
+                    <td id="hdnPurchasePrice" class="num_right">@Row["PurchasePrice"].ToString()</td>
+                    <td id="hdnTaxAmount" class="num_right">@Row["TaxAmount"].ToString()</td>
+                    <td id="hdnOCAmount" class="num_right">@Row["OtherCharges"].ToString()</td>
+                    <td id="hdnTotalCost" class="num_right"> @Row["TotalCost"].ToString()</td>
+                    <td id="hdnCaptAmount" class="num_right" style="display: none">@Row["CapitalizedValue"].ToString()</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+<!-- Asset Procrument Detail End -->
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<div id="AssRegistrationImport" class="sticky-table sticky-ltr-cells sb-container container-example1 OrderHistory height50VH">
+    <table id="DttblBtnsassreg" class="table table-striped table-bordered width1000 itmfrz">
+        <thead>
+            <tr class="sticky-header">
+                <th width="9%">@Resource.SrNo</th>
+                <th width="9%" class="ItmNameBreak itmStick tditemfrz">@Resource.Asset @Resource.Description </th>
+                <th width="9%">@Resource.Asset <br /> @Resource.Label</th>
+                <th width="9%">@Resource.SerialNumber</th>
+                <th width="9%">@Resource.Group</th>
+                <th width="9%">@Resource.Capitalized @Resource.Value</th>
+                <th width="9%">@Resource.Additional @Resource.Depreciation</th>
+                <th width="9%">@Resource.ValidUpto</th>
+                <th width="9%">@Resource.Asset @Resource.Working @Resource.Date</th>
+                <th width="9%">@Resource.Asset @Resource.RequirementArea</th>
+                <th width="9%">@Resource.Upload @Resource.Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (ViewBag.ImportProcDetailPreview != null)
+            {
+                var rowNo = 0;
+                foreach (DataRow dtr in ViewBag.ImportProcDetailPreview.Tables[0].Rows)
+                {
+                    rowNo = rowNo + 1;
+                    <tr>
+                        <td>@rowNo</td>
+                        <td id="tdassetdesc" class="ItmNameBreak itmStick tditemfrz">@dtr["asset_desc"].ToString()</td>
+                        <td id="asset_label">@dtr["asset_label"].ToString()</td>
+                        <td id="serial_no" class="tditemfrz">@dtr["serial_no"].ToString()</td>
+                        <td>@dtr["asset_group"].ToString()</td>
+                        <td>
+                            <div class="col-sm-11 no-padding">
+                                @dtr["capt_val"].ToString()
+                            </div>
+                            <div class="col-sm-1 i_Icon">
+                                <button type="button" class="calculator subItmImg" id="btnProcurementDetail" data-toggle="modal" data-target="#AssetProcrumentDetail" data-backdrop="static" onclick="return ProcurementDetailList(event)" data-keyboard="false">
+                                    <img src="/Content/Images/iIcon1.png" alt="" title=" @Resource.Procurement @Resource.Detail">
+                                </button>
+                            </div>
+                        </td>
+                        <td>@dtr["add_dep_per"].ToString()</td>
+                        <td class="center">@dtr["validupto"].ToString()  </td>
+                        <td>@dtr["asset_working_dt"].ToString()</td>
+                        <td>@dtr["ass_req_area"].ToString()</td>
+                        <td>
+                            <div class="col-sm-10 no-padding">
+                                @if (@dtr["UploadStatus"].ToString().ToLower() == "ok")
+                                {
+                                    <i class="fa fa-check text-success " aria-hidden="true"></i>
+                                }
+                                else
+                                {
+                                    <i class="fa fa-times-circle text-danger" aria-hidden="true"></i>
+                                }
+                            </div>
+                            @if (@dtr["UploadStatus"].ToString().ToLower() != "ok")
+                            {
+                                <div class="col-sm-2 i_Icon">
+                                    <button type="button" id="ItmInfoBtnIcon" class="calculator" onclick="OnClickErrorDetails(event);" data-toggle="modal" data-target="#ErrorDetail" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Error @Resource.Detail">  </button>
+                                </div>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+<div>
+    <table id="tblstatus_id" class="table table-striped table-bordered">
+        <tbody>
+            @if (ViewBag.ImportProcDetailPreview != null)
+            {
+                TotalOk = Convert.ToInt32(@ViewBag.ImportProcDetailPreview.Tables[2].Rows[0]["TotalOk"].ToString());
+                TotalNotOk = Convert.ToInt32(@ViewBag.ImportProcDetailPreview.Tables[2].Rows[0]["TotalNotOk"].ToString());
+                <tr class="total">
+                    <td colspan="3" align="right" width="75%"><strong>@Resource.Total valid records</strong></td>
+                    <td class="num_right"><span id="TotCons"></span>@ViewBag.ImportProcDetailPreview.Tables[2].Rows[0]["TotalOk"].ToString()</td>
+                    <td colspan="1" align="right" width="75%"><strong>@Resource.Total invalid records</strong></td>
+                    <td class="num_right"><span id="TotCons">@ViewBag.ImportProcDetailPreview.Tables[2].Rows[0]["TotalNotOk"].ToString()</span></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<input id="hdnOk" type="hidden" value="@TotalOk" />
+<input id="hdnNotOk" type="hidden" value="@TotalNotOk" />
+

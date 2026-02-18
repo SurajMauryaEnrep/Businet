@@ -1,0 +1,76 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.ProductionAndPlanning.ShopfloorStockTransfer.ShopfloorStockTransfer_Model
+@using EnRepMobileWeb.Resources;
+@using System.Data;
+
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/ProductionAndPlanning/ShopfloorStockTransfer/ShopfloorStockTransfer.js"></script>
+
+<table id="datatable-buttons" class="table table-striped width1800 rowhighlighttbl itmfrz" cellspacing="0" width="80%">
+    <thead>
+        <tr class="sticky-header">
+            <th width="2%"> @Resource.SrNo</th>
+            <th width="8%" class="itmStick">@Resource.TransferNumber</th>
+            <th width="8%">@Resource.TransferDate</th>
+            <th hidden="hidden">@Resource.TransferDate</th>
+            <th width="8%">@Resource.TransferType</th>
+            <th width="8%">@Resource.MaterialType</th>
+            <th width="8%">@Resource.Source</th>
+            <th width="8%">@Resource.Destination</th>
+            <th width="8%">@Resource.Status</th>
+            <th width="7%">@Resource.CreatedBy</th>
+            <th width="7%">@Resource.Createdon</th>
+            <th width="7%">@Resource.ApprovedBy</th>
+            <th width="7%">@Resource.ApprovedOn</th>
+            <th width="7%">@Resource.AmendedBy</th>
+            <th width="7%">@Resource.AmendedOn</th>
+        </tr>
+    </thead>
+    <tbody id="">
+
+        @if (ViewBag.SHFLTransferList != null)
+        {
+            int i = 1;
+            foreach (DataRow dr in ViewBag.SHFLTransferList.Rows)
+            {
+        <tr role="row" class="odd">
+           <td class="sr_padding">@i</td>
+            <td id="trf_no" class="ItmNameBreak itmStick tditemfrz">@dr["trf_no"].ToString()</td>
+            <td>@dr["trf_dt"].ToString()</td>
+            <td hidden="hidden" id="trf_dt1">@dr["trf_dt1"].ToString()</td>
+            <td>@dr["trf_type"].ToString()</td>
+            <td>@dr["material_type"].ToString()</td>
+            <td>@dr["shfl_name"].ToString()</td>
+            <td>@dr["dstn_name"].ToString()</td>
+            <td id="Doc_Status">@dr["status_name"].ToString()</td>
+            <td>@dr["create_by"].ToString()</td>
+            <td>@dr["create_dt"].ToString()</td>
+            <td>@dr["app_by"].ToString()</td>
+            <td>@dr["app_dt"].ToString()</td>
+            <td>@dr["mod_by"].ToString()</td>
+            <td>@dr["mod_dt"].ToString()</td>
+
+        </tr>
+                i++;
+            }
+        }
+
+    </tbody>
+</table>
+
+@*@if (Session["SSTSearch"] != null)*@
+@if (Model.SSTSearch != null)
+{
+    //if (Session["SSTSearch"].ToString() == "SSTSearch")
+    if (Model.SSTSearch == "SSTSearch")
+    {
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+        @Scripts.Render("~/Content/Scripts/DatatablesJs")
+        //Session["SSTSearch"] = null;
+        Model.SSTSearch = null;
+    }
+}
+
+
+
+

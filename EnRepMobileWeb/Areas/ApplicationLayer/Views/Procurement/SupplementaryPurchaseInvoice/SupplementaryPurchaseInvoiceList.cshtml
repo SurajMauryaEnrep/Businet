@@ -1,0 +1,102 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.Procurement.SupplementaryPurchaseInvoice.SuppPI_ListModel
+@using EnRepMobileWeb.Resources;
+
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+<title>@ViewBag.title</title>
+
+<script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+<script src="~/Content/Css/build/js/sweetalert.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/Procurement/SupplementaryPurchaseInvoice/SuppPurchaseInvoiceJs.js"></script>
+@{
+    if (TempData["Message"] != null)
+    {
+        if (TempData["Message"] == "Financial Year not Exist")
+        {
+            <script type="text/javascript">
+                swal("", $("#FinancialYearDoesNotExistTransactionCanNotBeDone").text(), "warning");
+            </script>
+        }
+    }
+}
+<div class="row">
+    <!-- Workflow Information -->
+    <div id="WorkflowInformation" class="modal fade" role="dialog">
+        <div class="modal-dialog" style="max-width:700px;">
+            <div class="price_item_detail">
+                <!-- Modal content-->
+                @Html.Partial("~/Areas/Common/Views/_WorkFlow.cshtml")
+                @Html.HiddenFor(m => m.FilterData, new { @id = "ListFilterData" })
+                @Html.HiddenFor(m => m.DocumentMenuId, new { @id = "DocumentMenuId" })
+                @Html.HiddenFor(m => m.WF_Status, new { @id = "WF_Status" })
+                <input type="hidden" id="DocumentMenuId" value="@ViewBag.DocumentMenuId" />
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <h2 class="col-md-5 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                <div id="wizard" class="form_wizard wizard_horizontal col-md-3 col-sm-12 work_flow">
+                    @Html.Partial("~/Areas/Common/Views/_PartialWorkflowBar.cshtml")
+                </div>
+                <div id="" class="col-md-4 col-sm-12 heading_right_padding">
+                    <ul>
+                        <li>
+                            <a class="tooltip-test"
+                               title="@Resource.AddNew" href="@Url.Action("AddSupplementaryPurchaseInvoiceDetail","SupplementaryPurchaseInvoice")"><img src="~/Content/Images/addgreen.png" width="32" height="32" id="Btn_AddNewGRN" alt="Add"></a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="x_title pad_mar ">
+                    <div class="col-md-12 col-sm-12 icon_tool padding_zero">
+                        <div class="col-md-3 col-sm-12">
+                            <label class="col-form-label label-align">@Resource.SupplierName</label>
+                            @Html.DropDownListFor(model => model.SuppPI_SuppID, new SelectList(Model.SupplierNameList, "supp_id", "supp_name"), new { @class = "form-control", id = "SupplierName" })
+                            <input type="hidden" id="SuppNameList" value='@Url.Action("GetAutoCompleteSearchSuppList", "SupplementaryPurchaseInvoice")' /></div>
+                        <div class="col-md-2 col-sm-12 pl-0">
+                            <label class="col-form-label label-align">@Resource.FromDate</label>
+
+                            @Html.TextBoxFor(model => model.SuppPI_FromDate, new { @class = "form-control", @id = "txtFromdate", @onchange = "FromToDateValidation()", @type = "date", @max = DateTime.Now.ToString("yyyy-MM-dd") })
+                            @Html.HiddenFor(model => model.FromDate, new { id = "hdFromdate" })
+                        </div>
+                        <div class="col-md-2 col-sm-12 pl-0">
+                            <label class="col-form-label label-align">@Resource.ToDate</label>
+                            @if (Model.SuppPI_ToDate != null)
+                            {
+                                @Html.TextBoxFor(model => model.SuppPI_ToDate, new { @class = "form-control", @id = "txtTodate", @placeholder = "dd-MM-yyyy", @onchange = "FromToDateValidation()", @type = "date", @max = DateTime.Now.ToString("yyyy-MM-dd"), @Value = Model.SuppPI_ToDate })
+                            }
+                            else
+                            {
+                                @Html.TextBoxFor(model => model.SuppPI_ToDate, new { @class = "form-control", @id = "txtTodate", @placeholder = "dd-MM-yyyy", @onchange = "FromToDateValidation()", @type = "date", @max = DateTime.Now.ToString("yyyy-MM-dd"), @Value = @DateTime.Now.ToString("yyyy-MM-dd") })
+                            }
+                        </div>
+                        <div class="col-md-2 col-sm-12 pl-0">
+                            <label class="col-form-label label-align">@Resource.Status</label>
+                            @Html.DropDownListFor(model => model.Status, new SelectList(Model.StatusList, "status_id", "status_name"), new { @class = "form-control", id = "ddlStatus" })
+                        </div>
+                        <div class="col-md-1 col-sm-12 pl-0">
+                            <button type="button" class="btn btn-primary btn-sm margintop20" onclick="BtnSearch();"><i class="fa fa-search" aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <div class="card-box table-responsive dy_table">
+                    <div id="SuppPIList" class="sticky-table sticky-ltr-cells sb-container container-example1">
+                        @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialSupplementaryPurchaseInvoiceList.cshtml")
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- page content end -->

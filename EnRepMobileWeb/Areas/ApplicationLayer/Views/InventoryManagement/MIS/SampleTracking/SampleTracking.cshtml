@@ -1,0 +1,150 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.InventoryManagement.MIS.SampleTracking.SampleTracking_Model
+@using EnRepMobileWeb.Resources;
+@using System.Data
+@if (Session["UserId"] == null)
+{
+    Response.Redirect("~/Login");
+}
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+<script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+<script src="~/Content/Css/build/js/sweetalert.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/InventoryManagement/MIS/SampleTracking/SampleTracking.js"></script>
+<title>@Model.Title</title>
+<div class="row">
+    <!-- Item Information -->
+    <div id="ItemInfo" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/Common/Views/_ItemInfomation.cshtml")
+        </div>
+    </div>
+    <div id="Issued_Received" class="modal fade show" role="dialog" aria-modal="true" style="">
+        <div class="modal-dialog pop_csv" style="max-width:800px;">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialIssueAndReceiptDetail_SampleTracking.cshtml")
+        </div>
+    </div>
+    <div id="BalanceIssued_Received" class="modal fade show" role="dialog" aria-modal="true" style="">
+        <div class="modal-dialog pop_csv" style="max-width:800px;">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialBalanceDetail_SampleTracking.cshtml")
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <h2 class="col-md-7 col-sm-12 heading_left_padding">@ViewBag.MenuPageName</h2>
+                <div id="" class="col-md-3 col-sm-12 no-margin no-padding ">
+                    <div class="col-md-4 col-sm-12 no-margin no-padding ">
+                        <label class="col-form-label label-align">@Resource.ReportType </label>
+                    </div>
+                    <div class="col-md-8 col-sm-12 no-margin no-padding ">
+                        <select class="form-control" id="ReportType" name="ReportType" onchange="OnchangeSalesBy()">
+                            <option value="EW">Entity Wise</option>
+                            <option value="SW">Sample Wise</option>
+                            <option value="PS">Pending Sample</option>
+                            <option value="BW">Bin Wise</option>
+                            <option value="IB">Issued By</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-2 col-sm-12 pl-3" id="Div_SummaryDetail">
+                    @Resource.Summary<span>&nbsp;</span>
+                    <input checked="checked" class="" id="SampleTrackingMISSummary" onclick="onchangeShowAs()" name="MISSampleTracking" type="radio" value="S">
+                    <span>&nbsp;</span> @Resource.Detail<span>&nbsp;</span>
+                    <input class="" id="SampleTrackingMISDetail" onclick="onchangeShowAs()" name="MISSampleTracking" type="radio" value="D">
+                </div>
+                <div class="x_title pad_mar pb-3">
+                    <div class="col-md-12 col-sm-12 icon_tool no-padding ">
+                        @*<form class="available_stock pad_mar" action="" method="post" novalidate>*@
+                        <div class="col-md-12 col-sm-12 pl-0 pr-0 pb-2 ">
+                            <div class="col-md-3 col-sm-12">
+                                <div class=" col-sm-11" style="padding:0px;">
+                                    <label class="col-form-label label-align">@Resource.ItemName <span id="InactiveRemarksReq" class="required" style="display:none;">*</span></label>
+                                    @Html.DropDownListFor(model => model.ST_Item, new SelectList(new List<SelectListItem>
+                            {  new SelectListItem {Text="---Select---",Value="0" }}, "Value", "Text"),
+                            new { @class = "form-control", @onchange = "OnChangeItemName()", @id = "ddlItemName", })
+                                    @Html.ValidationMessageFor(model => model.ST_Item, String.Empty, new { @id = "vmST_Item" })
+                                    @*@Html.DropDownListFor(model => model.ST_Item, new SelectList("---Select---", "0"), "---Select---", new { @class = "form-control", @id = "ddlItemName", })*@
+                                    <input type="hidden" id="hf_ItemID" />
+                                    @*<span id="ItemNameError" class="error-message is-visible"></span>*@
+                                    @Html.ValidationMessageFor(model => model.ST_Item, String.Empty, new { @style = "color:red;!important", @id = "ItemNameError" })
+                                </div>
+
+                                <div class="col-sm-1 i_Icon mt-4">
+                                    <button type="button" class="calculator" onclick="OnClickIconBtn(event);" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="Item Information">   </button>
+                                </div>
+                            </div>
+                            <div class="col-md-2 col-sm-12 pl-0">
+                                <label class="col-form-label label-align">@Resource.EntityType </label>
+                                @*<select class="form-control " id="" name="ST_Item" onchange="" tabindex="-1" aria-hidden="true">
+                            <option value="0">---Select---</option>
+                            <option>Entity Type</option>
+                        </select>*@
+                                @Html.DropDownListFor(model => model.entity_type, new SelectList(new List<Object>
+                                                      {
+                                                     new { value = "0", text = "---Select---"  },
+                                                      new { value = "C", text = "Customer"  },
+                                                      new { value = "S" , text = "Supplier" },
+                                                      },
+                                                                   "value",
+                                                                   "text"
+                                                ), new { @class = "form-control", @id = "EntityType", @onchange = "OnChangeEntityType()" })
+
+                            </div>
+                            <div class="col-md-2 col-sm-12 pl-0">
+                                <label class="col-form-label label-align">@Resource.Entity</label>
+
+                                @Html.DropDownListFor(model => model.Entity, new SelectList(Model.EntityNameList, "entity_id", "entity_name"), new { @class = "form-control", @id = "EntityName" })
+                                <input type="hidden" id="hfsuppcustlist" value='@Url.Action("GetSupp_CustList", "SampleTracking")' />
+                                @Html.ValidationMessageFor(model => model.Entity, String.Empty, new { @id = "vmEntityName" })
+                                <span id="SpanEntityNameErrorMsg" class="error_message"></span>
+                            </div>
+
+
+                            @*<div class="clear" id="div_null" style="display:none"></div>*@
+
+                            <div class="col-md-5 col-sm-12 pl-0">
+                                <div class="col-md-3 col-sm-12 pl-0 " id="Div_Issuedby" style="display:none">
+                                    <label id="" class="col-form-label label-align">@Resource.Issued @Resource.By</label>
+                                    @Html.DropDownListFor(model => model.Issuedby, new SelectList(Model.IssuedbyList, "Issuedby_id", "Issuedby_Name"), new { @id = "ddlissuedby", @onchange = "onchangeIssuedby()", @class = "form-control" })
+                                    @Html.HiddenFor(model => model.Issuedby, new { @id = "hdnddlissuedby" })
+                                </div>
+
+                                <div class="col-md-4 col-sm-12 pl-0">
+                                    <label class="col-form-label label-align">@Resource.FromDate</label>
+                                    @Html.TextBoxFor(model => model.FromDate, new { @class = "form-control", @disabled = "disabled", @id = "txtFromdate", @onchange = "FromToDateValidation()", @type = "date", @max = DateTime.Now.ToString("yyyy-MM-dd") })
+                                </div>
+                                <div class="col-md-4 col-sm-12 pl-0">
+                                    <label class="col-form-label label-align">@Resource.ToDate</label>
+                                    @Html.TextBoxFor(model => model.ToDate, new { @class = "form-control", @id = "txtTodate", @onchange = "FromToDateValidation()", @type = "date", @max = DateTime.Now.ToString("yyyy-MM-dd") })
+                                </div>
+                                <div class="col-md-1 col-sm-12 pl-0">
+                                    <button type="button" class="btn btn-primary btn-sm margintop20" id="Btn_Search" onclick="BtnSearch()"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                </div>
+                            </div>
+
+                        </div>
+                        @*</form>*@
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12">
+        <div class="x_panel margin_top_zero">
+            <div class="x_content">
+                <div class="card-box table-responsive dy_table">
+                    <div id="Divtble" class="sticky-table sticky-ltr-cells sb-container container-example1">
+                        @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialSampleTrackingList.cshtml")
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- page content end -->

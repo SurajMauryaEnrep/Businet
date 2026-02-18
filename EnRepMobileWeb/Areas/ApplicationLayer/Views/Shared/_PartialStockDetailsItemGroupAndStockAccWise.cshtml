@@ -1,0 +1,376 @@
+﻿@using EnRepMobileWeb.Resources;
+<style>
+    #IGSA_stockDetailDtList_wrapper .btn-group a:nth-child(3) {
+        display: inline-block;
+        position: absolute;
+    }
+
+    .hidden {
+        display: none;
+    }
+</style>
+@{
+    string ShowValue = "NotShowValue";
+    if (ViewBag.VBRoleList != null)
+    {
+        foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+        {
+            if (Row["feature_id"].ToString() == "105102180101003")
+            {
+                //<input hidden="hidden" id="showData" value="ShowValue" />
+                ShowValue = "ShowValue";
+            }
+        }
+    }
+    string tableWidth = "width2600";
+    if (Model.StockBy == "Branchwisestock")
+    {
+        tableWidth = "width2600";
+    }
+    else if (Model.StockBy == "Warehousewisestock")
+    {
+        tableWidth = "width2800";
+    }
+    else if (Model.StockBy == "LotBatchwisestock")
+    {
+        tableWidth = "width3000";
+    }
+    else if (Model.StockBy == "SubitemWise")
+    {
+        tableWidth = "width3200";
+    }
+    
+}
+
+<div class="modal-content" style="min-width:700px;">
+    <div class="modal-header">
+        <h2>@Resource.Item @Resource.Detail</h2>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body pt-0">
+        <div class="row">
+            <div class="card-box table-responsive dy_table pl-0 pr-2">
+                <div id="" class="sticky-table sticky-ltr-cells sb-container container-example1 OrderHistory height55VH pl-0">
+                    <table id="IGSA_stockDetailDtList" class="table table-striped @tableWidth itmfrz" cellspacing="0" width="100%">
+                        <thead>
+                            <tr class="sticky-header">
+                                <th width="3%">@Resource.SrNo</th>
+                                <th width="12%" class="itmStick">@Resource.ItemName</th>
+                                <th width="5%">@Resource.HSNCode</th>
+                                <th style="display: none;">ItemNameID</th>
+                                <th width="5%" title="@Resource.UnitOfMeasure"> @Resource.UOM</th>
+                                <th width="5%" class="center">@Resource.MinimumStockLevel</th>
+                                <th width="8%">@Resource.Branch</th>
+                                <th style="display: none;">BranchID</th>
+                                <th width="5%" class="center">@Resource.Opening <br /> @Resource.Stock</th>
+                                <th width="5%" class="center">@Resource.Receipts</th>
+                                <th width="5%" class="center">@Resource.Issued</th>
+                                <th width="5%" class="center">@Resource.Reserved <br />  @Resource.Stock</th>
+                                <th width="5%" class="center">@Resource.Rejected <br />  @Resource.Stock</th>
+                                <th width="5%" class="center">@Resource.Reworkable <br />  @Resource.Stock</th>
+                                <th width="5%" class="center">@Resource.Total <br />  @Resource.Stock</th>
+                                <th width="6%" class="center">@Resource.Total <br />  @Resource.Stock @Resource.InSpecific</th>
+                                @if (ShowValue == "ShowValue")
+                                {
+                                    <th width="6%" class="center">@Resource.Total <br />  @Resource.Stock @Resource.Value</th>
+                                }
+                                else
+                                {
+                                    <th width="6%" hidden="hidden">@Resource.Total <br />  @Resource.Stock @Resource.Value</th>
+                                }
+                                <th width="7%" class="center">@Resource.Available <br />  @Resource.Stock</th>
+                                <th width="7%" class="center">@Resource.Available <br />  @Resource.Stock @Resource.InSpecific</th>
+                                @if (ShowValue == "ShowValue")
+                                {
+                                    <th width="6%" class="center" d>@Resource.Available <br />  @Resource.Stock @Resource.Value</th>
+                                }
+                                else
+                                {
+                                    <th width="6%" hidden="hidden">@Resource.Available <br />  @Resource.Stock @Resource.Value</th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody @*id="tbodylotandbatch_list"*@>
+                        </tbody>
+                    </table>
+                    
+                </div>
+            </div>
+        </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary btn-sm" id="ShowDataOk" data-dismiss="modal" onclick="Cmn_onclickSearchItem_ShowDataOk()">@Resource.OK1</button>
+                <button type="button" class="btn btn-primary btn-sm" id="DiscardAndExit" data-dismiss="modal">@Resource.DiscardAndExit</button>
+            </div>
+        </div>
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        debugger;
+
+        ItemGroupAndGLAccWiseStkDtList();
+
+    });
+    function ItemGroupAndGLAccWiseStkDtList() {
+        var StockBy = "Branchwisestock";//$("#ddlStockBy").val();
+        var ItemId = "0";//$("#ddlItemName option:selected").val();
+        //var GroupId = $("#hdnGroupId_ItemGrpWise").val();
+        var GroupId = cmn_getddldataasstring("#hdnGroupId_ItemGrpWise");
+       // var BrachID = $("#hdnBranchId_ItemGrpAndStkGlAccWise").val();
+        var BranchIDList = cmn_getddldataasstring("#ddlBranch");
+        var WarehouseID = "0";//$("#ddlWarehouse").val();
+        var hsnCode = "0";//$("#ddlHsnCode").val();
+        var UpToDate = $("#calUpTodate").val();
+       // var PortfolioId = $("#ItemPortfolio option:selected").val();
+        var PortfolioId = cmn_getddldataasstring("#ItemPortfolio");
+        //var StkGlAccId = $("#hdnStkGlAccId_StkGlAccWise").val();
+        var StkGlAccId = cmn_getddldataasstring("#ddlStkGlAccId");
+        var ItemAlias = $("#hdnItemAlias_StkAliasWise").val();
+        var IncludeZeroStock = "";
+        if ($("#IncludeZeroStock").is(":checked")) {
+            IncludeZeroStock = "Y";
+        }
+        else {
+            IncludeZeroStock = "N";
+        }
+        var ExpiredItems = "";
+        if ($("#ExpiredItems").is(":checked")) {
+            ExpiredItems = "Y";
+        }
+        else {
+            ExpiredItems = "N";
+        }
+        var StockoutItems = "";
+        if ($("#StockoutItems").is(":checked")) {
+            StockoutItems = "Y";
+        }
+        else {
+            StockoutItems = "N";
+        }
+        var NearExpiryItm = "N";
+        if ($("#NearExpiryItems").is(":checked")) {
+            NearExpiryItm = "Y";
+        }
+        else {
+            NearExpiryItm = "N";
+        }
+       // var filters = IncludeZeroStock + "," + StockBy + "," + ItemId + "," + GroupId + "," + BrachID + "," + WarehouseID + "," + UpToDate + "," + PortfolioId + "," + hsnCode + "," + ExpiredItems + "," + StockoutItems + "," + NearExpiryItm + "," + StkGlAccId + "," + ItemAlias;
+        var filterArray = [
+            IncludeZeroStock, StockBy, ItemId, GroupId,
+            WarehouseID, UpToDate, PortfolioId, hsnCode, ExpiredItems, StockoutItems, NearExpiryItm, StkGlAccId, ItemAlias, BranchIDList
+        ];
+        var filters = filterArray.map(x => `[${x}]`).join('_');
+
+
+        $("#IGSA_stockDetailDtList").DataTable().destroy();
+        $("#IGSA_stockDetailDtList").DataTable({
+            dom: "Blfrtip",
+            "pageLength": 50,
+            "processing": true, // for show progress bar
+            "serverSide": true, // for process server side
+            "filter": true, // this is for disable filter (search box)
+            "orderMulti": false, // for disable multiple column at once
+            "ajax": {
+                "url": "/ApplicationLayer/StockDetail/LoadData",
+                "data": {
+                    ItemListFilter: filters,
+                },
+                "type": "POST",
+                "datatype": "json",
+            },
+            "columns": IGSA_StkDtldataColumns(StockBy),
+            columnDefs: IGSA_StkDtlDataColumnRenders(StockBy),
+            buttons: [
+                {
+                extend: "csv",
+                className: "btn-sm",
+                title: function () {
+                    try {/*Modified By NItesh 08042025 For Add Change Excel File Name*/
+                        return Cmn_DataTableCSVFileName();
+                    }
+                    catch (ex) {
+                        return $("title").text();
+                    }
+                },
+                exportOptions: {
+                    columns: ':visible'
+                    ,
+                    format: {
+                        body: function (data, row, column, node) {
+                            // Remove HTML tags
+                            debugger;
+                            var text = $('<div>').html(data).text();
+
+                            // Remove line breaks, extra spaces, and commas
+                            text = text.replace(/\n/g, '').replace(/\s+/g, ' ').trim();
+                            text = text.replace(/,/g, '');
+
+                            // Optional: if cell has repeated total like "123.45   123.45", take only the first
+                            let parts = text.split(' ');
+                            if (parts.length > 1 && parts[0] === parts[parts.length - 1]) {
+                                text = parts[0];
+                            }
+
+                            return text;
+                        }
+                    }
+                },
+                    action: function (e, dt, button, config) {
+                        let url = '/ApplicationLayer/StockDetail/ExportCsv';
+                        Cmn_importDataToCSV(e, dt, button, config, url);
+                        
+                    }
+
+            }],
+        });
+        //var exportbtn = `<a class="btn btn-default buttons-csv buttons-html5 btn-sm" id='export' tabindex="0" aria-controls="datatable-buttons" href="#"><span>CSV</span></a>`;
+        //$("#IGSA_stockDetailDtList_length").append(exportbtn);
+        //Export();
+    }
+    function IGSA_StkDtldataColumns(StockBy) {
+        var Array = [];
+        debugger;
+        var a = $("#showData").val();
+        if (a == undefined) {
+            a = "NotShowValue";
+        }
+        if (StockBy == "Branchwisestock") {
+            Array = [
+                { "data": "SrNo", "name": "SrNo", "autoWidth": true },
+                { "data": "itemname", "name": "itemname", "autoWidth": true, "id": "tditem", className: "ItmNameBreak itmStick tditemfrz"},
+                { "data": "HSNCode", "name": "HSNCode", "autoWidth": true },
+                { "data": "itemid", "name": "itemid", "autoWidth": true, /*"visible": false,*/ className: "hidden" },
+                { "data": "uomname", "name": "uomname", "autoWidth": true },
+                { "data": "min_stk_lvl", "name": "min_stk_lvl", "autoWidth": true, className: "num_right" },
+                { "data": "brname", "name": "brname", "autoWidth": true },
+                { "data": "brid", "name": "brid", "autoWidth": true, className: "hidden" },
+                { "data": "opening", "name": "opening", "autoWidth": true, className: "num_right" },
+                { "data": "receipts", "name": "receipts", "autoWidth": true, className: "num_right" },
+                { "data": "issued", "name": "issued", "autoWidth": true, className: "num_right" },
+                { "data": "reserved", "name": "reserved", "autoWidth": true, className: "num_right" },
+                { "data": "rejected", "name": "rejected", "autoWidth": true, className: "num_right" },
+                { "data": "reworkabled", "name": "reworkabled", "autoWidth": true, className: "num_right" },
+                { "data": "totalstk", "name": "totalstk", "autoWidth": true, className: "num_right" },
+                { "data": "totalstk_in_sp", "name": "totalstk_in_sp", "autoWidth": true, className: "num_right" },
+                { "data": "totalstkval", "name": "totalstkval", "autoWidth": true, className: "num_right", "visible": "@ShowValue" == "ShowValue" ? true : false },
+                { "data": "avlstk", "name": "avlstk", "autoWidth": true, className: "num_right light_green1_colour" },
+                { "data": "avlstk_in_sp", "name": "avlstk_in_sp", "autoWidth": true, className: "num_right light_green1_colour" },
+                { "data": "avlstkvalue", "name": "avlstkvalue", "autoWidth": true, className: "num_right", "visible": "@ShowValue" == "ShowValue" ? true : false },
+
+            ]
+        }
+
+        return Array;
+
+    }
+    function IGSA_StkDtlDataColumnRenders(StockBy) {
+        var array = [];
+        if (StockBy == "Branchwisestock") {
+            array = [
+                {
+                    'targets': 1,
+                    'createdCell': function (td, cellData, rowData, row, col) {
+                        $(td).attr('id', 'tditem');
+                    }
+                },
+                {
+                    render: (data, type, row) => `<div class="col-sm-11 no-padding" id="multiWrapper"><span id="ItmNameSpan"> ${data}</span></div>
+                            <div class="col-sm-1 i_Icon">
+                                <button type="button" id="ItmInfoBtnIcon" class="calculator" onclick="OnClickIconBtn(event);" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="Item Information">  </button>
+                            </div>`,
+                    targets: 1
+                },
+                {
+                    render: (data, type, row) => `<span id="ItmHsn">${data}</span>`,
+                    targets: 2
+                },
+                {
+                    render: (data, type, row) => `<input type="hidden" id="hfItemID" value='${data}'>`,
+                    targets: 3
+                },
+                {
+                    render: (data, type, row) => `<span id="ItmuomSpan">${data}</span>`,
+                    targets: 4
+                },
+                {
+                    render: (data, type, row) => `<span id="ItmMinStkLvlSpan">${parseFloat(CheckNullNumber(data)).toFixed(cmn_QtyDecDigit)}</span>`,
+                    targets: 5
+                },
+                {
+                    render: (data, type, row) => `<span id="ItmBranchSpan">${data}</span>`,
+                    targets: 6
+                },
+                {
+                    render: (data, type, row) => `<input type="hidden" id="hfBranchID" value='${data}'>`,
+                    targets: 7
+                },
+                {
+                    render: (data, type, row) => `${parseFloat(CheckNullNumber(data)).toFixed(cmn_QtyDecDigit)}`,
+                    targets: 8
+                },
+                {
+                    render: (data, type, row) => `<div class="col-sm-11 lpo_form no-padding" id="multiWrapper">${parseFloat(CheckNullNumber(data)).toFixed(cmn_QtyDecDigit)}</div>
+                            <div class="col-sm-1 i_Icon">
+                                <button type="button" id="" class="calculator" data-toggle="modal" onclick="OnClickReceiptIconBtn(event,'A');" data-target="#Receipts" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="Receipts">  </button>
+                            </div>`,
+                    targets: 9
+                },
+                {
+                    render: (data, type, row) => `<div class="col-sm-11 lpo_form no-padding" id="multiWrapper">${parseFloat(CheckNullNumber(data)).toFixed(cmn_QtyDecDigit)}</div>
+                            <div class="col-sm-1 i_Icon">
+                                <button type="button" id="ItmInfoBtnIcon" class="calculator" data-toggle="modal" onclick="OnClickReceiptIconBtn(event,'S');" data-target="#Receipts" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="Issued">  </button>
+                            </div>`,
+                    targets: 10
+                },
+                {
+                    render: (data, type, row) => `<div class="col-sm-11 no-padding">${parseFloat(CheckNullNumber(data)).toFixed(cmn_QtyDecDigit)}</div>
+                         <div class="col-sm-1 i_Icon"><button type="button" class="calculator" data-toggle="modal" onclick="OnClickReceiptIconBtn(event,'R');" data-target="#Receipts" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="Reserved Detail">  </button></div>`,
+                    targets: 11
+                },
+                {
+                    render: (data, type, row) => `<div class="col-sm-11 no-padding">${parseFloat(CheckNullNumber(data)).toFixed(cmn_QtyDecDigit)}</div>
+                         <div class="col-sm-1 i_Icon"><button type="button"  class="calculator" data-toggle="modal" onclick="OnClickReceiptIconBtn(event,'RJ');" data-target="#Receipts" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="Rejection Detail">  </button></div>`,
+                    targets: 12
+                },
+                {
+                    render: (data, type, row) => `<div class="col-sm-11 no-padding">${parseFloat(CheckNullNumber(data)).toFixed(cmn_QtyDecDigit)}</div>
+                         <div class="col-sm-1 i_Icon"><button type="button"  class="calculator" data-toggle="modal" onclick="OnClickReceiptIconBtn(event,'RW');" data-target="#Receipts" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="Reworkable Detail">  </button></div>`,
+                    targets: 13
+                },
+                {
+                    render: (data, type, row) => `<b>${parseFloat(CheckNullNumber(data)).toFixed(cmn_QtyDecDigit)}</b>`,
+                    targets: 14
+                },
+                {   /*For Column Total stock (in specific)*/
+                    render: (data, type, row) => `<b>${data}</b>`,
+                    targets: 15
+                },
+                {   /*For Column Total stock Value*/
+                    render: (data, type, row) => `${parseFloat(CheckNullNumber(data)).toFixed(cmn_ValDecDigit)}`,
+                    targets: 16
+                },
+                {
+                    render: (data, type, row) => `<div class="col-sm-10 lpo_form no-padding">
+                                <b>${parseFloat(CheckNullNumber(data)).toFixed(cmn_QtyDecDigit)}</b>
+                            </div>
+                            <div class="col-sm-2 i_Icon">
+                                <button type="button" id="" class="calculator subItmImg" ${row.sub_item == 'Y' ? "" : "disabled"} data-toggle="modal" onclick="OnClickSubItemStockIconBtn(event);" data-target="#SubItemStockDetail" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="Sub-Item Stock Detail">  </button>
+                            </div>`,
+                    targets: 17
+                },
+                {   /*For Column Avaiilable stock (in specific)*/
+                    render: (data, type, row) => `<b>${data}</b>`,
+                    targets: 18
+                },
+                {   /*For Column Available stock Value*/
+                    render: (data, type, row) => `${parseFloat(CheckNullNumber(data)).toFixed(cmn_ValDecDigit)}`,
+                    targets: 19
+                },
+
+            ]
+
+        }
+
+        return array;
+    }
+</script>

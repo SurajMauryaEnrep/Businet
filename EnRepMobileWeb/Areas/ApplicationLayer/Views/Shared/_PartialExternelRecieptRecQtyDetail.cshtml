@@ -1,0 +1,248 @@
+﻿@using EnRepMobileWeb.Resources;
+@{
+    decimal TotalIssueQty = 0;
+    var Disable = true;
+
+    if (ViewBag.TransType != null)
+    {
+        if (ViewBag.TransType == "Update")
+        {
+            if (ViewBag.Command == "Edit")
+            {
+                Disable = false;
+            }
+            else
+            {
+                Disable = true;
+            }
+        }
+        else
+        {
+            if (ViewBag.Command == "Refresh")
+            {
+                Disable = true;
+            }
+            else
+            {
+                Disable = false;
+            }
+        }
+    }
+}
+<div class="modal-content">
+    <div class="modal-header">
+        <h2>@Resource.QuantityDetail</h2>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body" style="padding-top: 0px;">
+        <div class="row">
+            <div class="col-md-4 col-sm-12">
+                <label class="col-form-label label-align">@Resource.ItemName</label>
+                <input id="OrderQtyItemName" disabled class="form-control" autocomplete="off" maxlength="25" tabindex="5" type="text" name="ItemName" placeholder="ItemName" onblur="this.placeholder='ItemName'">
+                <input type="hidden" id="hd_OQtyItemId" value="" />
+                @*<input type="hidden" id="hdn_PQDi_serial" value="" />*@
+                @*<input hidden type="text" id="Packingsub_item" value="@ViewBag.SubItemId" />*@
+            </div>
+            <div class="col-md-1 col-sm-12" style="padding-left: 0px;">
+                <label class="col-form-label label-align"> @Resource.UOM</label>
+                <input id="OrderQtyUOM" disabled class="form-control" autocomplete="off" maxlength="25" tabindex="5" type="text" name="UOM" placeholder="@Resource.UOM">
+                <input type="hidden" id="hd_OQtyUOMId" value="" />
+            </div>
+            <div class="col-md-2 col-sm-12" style="padding-left: 0px;">
+                <label class="col-form-label label-align">@Resource.IssuedQuantity</label>
+                <input id="ItemIssuedQuantity" disabled class="form-control num_right" autocomplete="off" maxlength="25" tabindex="5" type="text" name="IssuedQuantity" placeholder="@Resource.IssuedQuantity" onblur="this.placeholder = '@Resource.OrderQuantity'">
+            </div>
+
+            <div class="col-md-2 col-sm-12" style="padding-left: 0px;">
+                <label class="col-form-label label-align"> @Resource.PendingQuantity</label>
+                <input id="ItemPendingQuantity" disabled class="form-control num_right" autocomplete="off" maxlength="25" tabindex="5" type="text" name="PendingQuantity" placeholder="@Resource.PendingQuantity" onblur="this.placeholder = '@Resource.PendingQuantity'">
+            </div>
+        </div>
+        @*<div id="QuantityDetail" class="price_item_detail tableFixHead height30VH margin10">
+        <table class="table table-bordered" id="OrderQtyInfoTbl">
+            <thead>
+                <tr>
+        *@
+
+        <div id="QuantityDetail" class="card-box table-responsive dy_table margin10">
+            <div id="" class="sticky-table sticky-ltr-cells price_item_detail sb-container container-example1 OrderHistory height30VH">
+                <table id="TblExternalbatchserialLot" data-order="" class="table table-striped table-bordered rowhighlighttbl" style="width:100%">
+                    <thead>
+                        <tr class="sticky-header">
+                            <th width="1%">@Resource.SrNo</th>
+                            <th hidden="hidden">@Resource.ItemID</th>
+                            <th hidden="hidden">@Resource.UOM</th>
+                            <th width="9%">@Resource.Lot</th>
+                            <th width="13%">@Resource.Batch1 / @Resource.Serial1</th>
+                            <th width="15%" >@Resource.Manufacturer @Resource.Name</th>
+                            <th width="10%">@Resource.MRP</th>
+                            <th width="11%">@Resource.Manufactured @Resource.Date</th>
+                            <th width="11%">@Resource.ExpiryDate</th>
+                            <th  hidden="hidden">@Resource.ExpiryDate</th>
+                            <th width="10%">@Resource.Issued <br /> @Resource.Quantity</th>
+                            @if (ViewBag.flag == "PendingQty" || ViewBag.flag == "recqty")
+                            {
+                                <th width="10%">@Resource.Pending <br /> @Resource.Quantity</th>
+                            }
+                            @if (ViewBag.flag == "recqty")
+                            {
+                                <th width="10%">@Resource.Received <br /> @Resource.Quantity</th>
+                            }
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (ViewBag.ItemOrderQtyDetail != null)
+                        {
+                            var sr_no = 0;<!-- initialize counter once -->
+
+                            foreach (System.Data.DataRow Row in ViewBag.ItemOrderQtyDetail.Rows)
+                            {
+                                sr_no++; <!-- increment correctly (your code had sr_no = sr_no++; which always stays 0) -->
+
+                        <tr>
+                            <!-- Sr No -->
+                            <td>
+                                <input id="OrderQty_SrNo" disabled class="form-control center" type="text"
+                                       value="@sr_no" />
+                            </td>
+                            <!-- ItemID -->
+                            <td hidden="hidden">
+                                <input id="OrderQty_ItemID" class="form-control" type="text"
+                                       value="@Row["ItemID"].ToString()" />
+                            </td>
+                            <!-- ItemID -->
+                            <td hidden="hidden">
+                                <input id="OrderQty_UomID" class="form-control" type="text"
+                                       value="@Row["UomID"].ToString()" />
+                            </td>
+                            <!-- Lot -->
+                            <td>
+                                <input id="OrderQty_Lot" disabled class="form-control" type="text"
+                                       value="@Row["LotID"].ToString()" />
+                            </td>
+
+                            <!-- Batch -->
+                            <td>
+                                <input id="OrderQty_Batch" disabled class="form-control" type="text"
+                                       value="@Row["BatchSerial"].ToString()" placeholder="@Resource.Batch1 / @Resource.Serial1" />
+                            </td>
+
+                            <!-- Manufacturer Name -->
+                            <td>
+                                <input id="OrderQty_MfgName" disabled class="form-control" type="text"
+                                       value="@Row["mfg_name"].ToString()" placeholder="@Resource.Manufacturer @Resource.Name" />
+                            </td>
+                            <!-- MRP -->
+                            <td>
+                                <input id="OrderQty_MfgMrp" disabled class="form-control num_right" type="text"
+                                       value="@Row["mfg_mrp"].ToString()" placeholder="@Resource.MRP" />
+                            </td>
+                            <!-- Manufactured Date -->
+                            <td>
+                                <input id="OrderQty_MfgDate" disabled class="form-control" type="text"
+                                       value="@Row["mfg_date"].ToString()" placeholder="@Resource.Manufactured @Resource.Date" />
+                                <input id="OrderQty_MfgDate_hdn" hidden class="form-control" type="text"
+                                       value="@Row["mfg_date_hdn"].ToString()" />
+                            </td>
+                            <!-- Expiry Date -->
+                            <td>
+                                <input id="OrderQty_ExpDate" disabled class="form-control" type="text"
+                                       value="@Row["Exp_date"].ToString()" placeholder="@Resource.Expiry @Resource.Date" />
+                            </td>
+                            <!-- Expiry Date -->
+                            <td hidden="hidden">
+                                <input id="hdnExpDate" disabled class="form-control" type="text"
+                                       value="@Row["Expdate"].ToString()" />
+                            </td>
+                            <!-- Issued Quantity -->
+                            <td>
+                                <input id="OrderQty_Issued" disabled class="form-control num_right" type="text"
+                                       value="@Row["IssueQty"].ToString()" />
+                            </td>
+                            @if (ViewBag.flag == "PendingQty" || ViewBag.flag == "recqty")
+                            {
+                                <!-- Pending Quantity -->
+                                <td>
+                                    <input id="OrderQty_Pending" disabled class="form-control num_right" type="text"
+                                           value="@Row["PendingQty"].ToString()" />
+                                </td>
+                            }
+                            <!-- Received Quantity (if recqty flag) -->
+                            @if (ViewBag.flag == "recqty")
+                            {
+                                <td>
+                                    <div class="lpo_form col-sm-12 no-padding">
+                                        @if (Disable)
+                                        {
+                                            <input id="OrderQty_RecQty" class="form-control num_right"
+                                                   value="@Row["RecQty"].ToString()" disabled type="text" placeholder="0000.00">
+                                        }
+                                        else
+                                        {
+                                            if (ViewBag.Command == "Edit" && ViewBag.DocumentCode == "A")
+                                            {
+                                                <input id="OrderQty_RecQty" class="form-control num_right"
+                                                       value="@Row["RecQty"].ToString()" disabled type="text" placeholder="0000.00">
+                                            }
+                                            else
+                                            {
+                                                <input id="OrderQty_RecQty" class="form-control num_right" autocomplete="off"
+                                                       value="@Row["RecQty"].ToString()"
+                                                       onkeypress="return OnKeyPressOrderRecQty(this, event)"
+                                                       onchange="OnChangeOrderRecQty(event);"
+                                                       maxlength="25" type="text" placeholder="0000.00">
+                                            }
+                                        }
+                                        <span id="OrderQty_RecQty_Error" class="error-message is-visible"></span>
+                                    </div>
+                                </td>
+                            }
+                        </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+
+
+            </div>
+        </div>
+        @if (ViewBag.flag == "recqty")
+        {
+            <table class="table table-bordered" id="">
+                <tr class="total">
+                    <th width="72%" class="num_right"><strong>@Resource.Total</strong></th>
+                    <th class="num_right"><strong><span id="LblTotalPending">0000.00</span></strong></th>
+                    <th class="num_right"><strong><span id="LblTotalOrderQty">0000.00</span></strong></th>
+                </tr>
+            </table>
+        }
+        else if(ViewBag.flag == "PendingQty")
+        {
+            <table class="table table-bordered" id="">
+                <tr class="total">
+                    <th width="82%" class="num_right"><strong>@Resource.Total</strong></th>
+                    <th class="num_right"><strong><span id="LblTotalPending">0000.00</span></strong></th>
+                   
+                </tr>
+            </table>
+        }
+    </div>
+        <div class="modal-footer">
+            @if (ViewBag.flag == "recqty" && Disable==false)
+            {
+            <button type="button" id="btnOrderQtyReset" onclick="onclickbtnOrderQtyReset()" class="btn btn-primary btn-sm">@Resource.Reset</button>
+            <button type="button" id="btnOrderQtySaveAndExit" onclick="onclickbtnOrderQtySaveAndExit(event)" class="btn btn-primary btn-sm">@Resource.SaveAndExit</button>
+            <button type="button" id="btnOrderQtyDiscardAndExit" class="btn btn-primary btn-sm" data-dismiss="modal">@Resource.DiscardAndExit</button>
+            }
+            else
+            {
+            <button type="button" id="btnOrderQtyDiscardAndExit" class="btn btn-primary btn-sm" data-dismiss="modal">@Resource.Close</button>
+            }
+
+        </div>
+
+    </div>
+
+
+

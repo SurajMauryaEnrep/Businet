@@ -1,0 +1,454 @@
+﻿@model  EnRepMobileWeb.MODELS.BusinessLayer.CostCenterSetup.CostCenterSetup_Model
+@using EnRepMobileWeb.Resources;
+@using System.Data;
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+<script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+<script src="~/Content/Css/build/js/sweetalert.js"></script>
+<script src="~/Content/Scripts/BusinessLayer/CostCenterName/CostCenterName.js"></script>
+<script src="~/Content/Scripts/Common/CommonJS.js"></script>
+@{ if (Model.Message != null)
+    {
+        //var str = ViewBag.Message;
+        var str = Model.Message;
+        if (str == "New")
+        {
+            Model.ShowCC = "show";
+            Model.hdnSavebtn = "";
+        }
+        if (str == "SaveCC_name")
+        {
+            Model.hdnSavebtn = null;
+            <script type="text/javascript">
+                $("#hdnSavebtn").val("");
+                swal("", $("#savemsg").text(), "success");
+            </script>
+            Model.ShowCC = "show";
+        }
+        if (str == "SaveCCVal_name")
+        {
+            Model.hdnSavebtn = null;
+            <script type="text/javascript">
+                $("#hdnSavebtn").val("");
+                swal("", $("#savemsg").text(), "success");
+            </script>
+            Model.ShowVal = "show";
+        }
+        if (str == "SaveCC_branch_name")
+        {
+            Model.hdnSavebtn = null;
+            <script type="text/javascript">
+                $("#hdnSavebtn").val("");
+                swal("", $("#savemsg").text(), "success");
+            </script>
+            Model.Showbranch = "show";
+        }
+        if (str == "SaveCC_Module")
+        {
+            Model.hdnSavebtn = null;
+            <script type="text/javascript">
+                $("#hdnSavebtn").val("");
+                swal("", $("#savemsg").text(), "success");
+            </script>
+            Model.ShowModule = "show";
+        }
+        if (str == "Deleted")
+        {
+            Model.hdnSavebtn = null;
+            <script type="text/javascript">
+                $("#hdnSavebtn").val("");
+                swal("", $("#deletemsg").text(), "success");
+            </script>
+            Model.ShowCC = "show";
+        }
+        if (str == "Deleted_CCname")
+        {
+            Model.hdnSavebtn = null;
+            <script type="text/javascript">
+                $("#hdnSavebtn").val("");
+                swal("", $("#deletemsg").text(), "success");
+            </script>
+            Model.ShowCC = "show";
+        }
+        if (str == "Deleted_valuse")
+        {
+            Model.hdnSavebtn = null;
+            <script type="text/javascript">
+                $("#hdnSavebtn").val("");
+                swal("", $("#deletemsg").text(), "success");
+            </script>
+            Model.ShowVal = "show";
+        }
+        if (str == "Deleted_Branch_ccsetup")
+        {
+            Model.hdnSavebtn = null;
+            <script type="text/javascript">
+                $("#hdnSavebtn").val("");
+                swal("", $("#deletemsg").text(), "success");
+            </script>
+            Model.Showbranch = "show";
+        }
+        if (str == "delete_module")
+        {
+            Model.hdnSavebtn = null;
+            <script type="text/javascript">
+                $("#hdnSavebtn").val("");
+                swal("", $("#deletemsg").text(), "success");
+            </script>
+            Model.ShowModule = "show";
+        }
+        if (str == "Used")
+        {
+            Model.hdnSavebtn = null;
+            <script type="text/javascript">
+                $("#hdnSavebtn").val("");
+                swal("", $("#DependencyExist").text(), "warning");
+            </script>
+            Model.ShowCC = "show";
+        }
+        if (str == "UsedVal")
+        {
+            Model.hdnSavebtn = null;
+            <script type="text/javascript">
+                $("#hdnSavebtn").val("");
+                swal("", $("#DependencyExist").text(), "warning");
+            </script>
+            Model.ShowVal = "show";
+        }
+        if (str == "Used_br")
+        {
+            Model.hdnSavebtn = null;
+            <script type="text/javascript">
+                $("#hdnSavebtn").val("");
+                swal("", $("#DependencyExist").text(), "warning");
+            </script>
+            Model.ShowCC = "show";
+        }
+        if (str == "DuplicateCCsetup")
+        {
+            Model.hdnSavebtn = null;
+            <script type="text/javascript">
+                $(document).ready(function () {
+                    $("#hdnSavebtn").val("");
+                    $("#cc_name").css("border-color", "red");
+                    document.getElementById("vmcc_name").innerHTML = $("#valueduplicate").text();
+                })
+            </script>
+            Model.ShowCC = "show";
+        }
+        if (str == "DuplicateValue")
+        {
+            Model.hdnSavebtn = null;
+            <script type="text/javascript">
+                $(document).ready(function () {
+                    $("#hdnSavebtn").val("");
+                    $("#cc_val_name").css("border-color", "red");
+                    document.getElementById("vmcc_val_name").innerHTML = $("#valueduplicate").text();
+                })
+            </script>
+            Model.ShowVal = "show";
+        }
+        Model.hdnSavebtn = null;
+        str = null;
+    }
+    var AddNew = "N";
+    if (ViewBag.VBRoleList != null)
+    {
+        foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+        {
+            if (Row["feature_id"].ToString() == "103150001")
+            {
+                AddNew = "Y";
+            }
+        }
+    }
+    <input hidden="hidden" id="AddNewData" value="@AddNew" />
+}
+<title>@Model.Title</title>
+@using (Html.BeginForm("SaveCCSetup", "CostCenterSetup", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    {
+        <div class="row">
+            <div class="col-md-12 col-sm-12 ">
+                <div class="x_panel mar_pad1 ">
+                    <div class="x_content mar_pad1">
+                        <h2 class="col-md-5 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 col-sm-12 ">
+                <div class="x_panel mar_pad1 ">
+                    <div class="x_content mar_pad1">
+                        <article class="panel-group bs-accordion" id="accordion" role="tablist" aria-multiselectable="true">
+                            <section class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="headingOne">
+                                    <h4 class="panel-title">  <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne"> @Resource.CostCenterDetail <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a></h4>
+                                </div>
+                                @Html.HiddenFor(m => m.hdnSavebtn, new { @id = "hdnSavebtn" })
+                                <div id="collapseOne" class="panel-collapse in collapse @Model.ShowCC" role="tabpanel" aria-labelledby="headingOne" style="">
+                                    <div class="panel-body" style="padding-bottom:0px;">
+                                        <div class="row">
+                                            <div class="col-md-12 col-sm-12">
+                                                <div class="col-md-3 col-sm-12">
+                                                    <label class="col-form-label label-align">@Resource.CostCenterName <span class="required">*</span></label>
+                                                    @if (AddNew == "Y" || Model.Message== "DuplicateCCsetup")
+                                                    {
+                                                        @Html.TextBoxFor(m => m.cc_name, new {@class = "form-control",@id = "cc_name",@autocomplete = "off",@maxlength = "25",name = "CostCenterName",onkeyup = "OnChangeCostCenter()",@placeholder = Resource.CostCenterName})
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.TextBoxFor(m => m.cc_name, new {@class = "form-control",@disabled="disabled",@id = "cc_name",@autocomplete = "off",@maxlength = "25",name = "CostCenterName",onkeyup = "OnChangeCostCenter()",@placeholder = Resource.CostCenterName })
+                                                    }
+                                                    @Html.ValidationMessageFor(model => model.cc_name, "", new { @class = "text-danger", @id = "vmcc_name" })
+                                                    @Html.HiddenFor(m => m.cc_id, new { @id = "cc_id" })
+                                                </div>
+                                                <div class="col-md-55 col-sm-12">
+                                                    @if (AddNew == "Y" || Model.Message == "DuplicateCCsetup")
+                                                    {
+                                                        if (Model.BtnName != null && Model.ShowCC == "show")
+                                                        {
+                                                            <button class="margin22 address_save" title="@Resource.Save" type="submit" onclick="return CCSetupSaveBtnClick()" id="btn_saveCCname" name="Command" value="@Model.BtnName"></button>
+                                                        }
+                                                        else
+                                                        {
+                                                            <button class="margin22 address_save" title="@Resource.Save" type="submit" onclick="return CCSetupSaveBtnClick()" id="btn_saveCCname" name="Command" value="SaveCC_name"></button>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <div id="SaveBtnEnable" style="display:none">
+                                                            @if (Model.BtnName != null && Model.ShowCC == "show")
+                                                            {
+                                                                <button class="margin22 address_save" title="@Resource.Save" type="submit" onclick="return CCSetupSaveBtnClick()" id="btn_saveCCname" name="Command" value="@Model.BtnName"></button>
+                                                            }
+                                                            else
+                                                            {
+                                                                <button class="margin22 address_save" title="@Resource.Save" type="submit" onclick="return CCSetupSaveBtnClick()" id="btn_saveCCname" name="Command" value="SaveCC_name"></button>
+                                                            }
+                                                        </div>
+                                                    }
+                                                </div>
+                                                        <div class="col-md-12 col-sm-12">
+                                                            <div class="x_panel margin10">
+                                                                <div class="x_content">
+                                                                    <div class="card-box table-responsive dy_table">
+                                                                        <div class="sticky-table sticky-ltr-cells sb-container container-example1 height30VH">
+                                                                            @Html.Partial("~/Areas/BusinessLayer/Views/Shared/PartialCostCenterSetup.cshtml")
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                            <section class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="headingTwo">
+                                    <h4 class="panel-title"> <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo"> @Resource.CostCenterValues <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a> </h4>
+                                </div>
+                                <div id="collapseTwo" class="panel-collapse collapse @Model.ShowVal" role="tabpanel" aria-labelledby="headingTwo">
+                                    <div class="panel-body" style="padding-bottom:0px;">
+                                        <div class="row">
+                                            <div class="col-md-12 col-sm-12">
+                                                <div class="col-md-3 col-sm-12">
+                                                    <label class="col-form-label label-align">@Resource.CostCenter <span class="required">*</span></label>
+                                                    @if (AddNew == "Y" || Model.Message == "DuplicateValue")
+                                                    {
+                                                        @Html.DropDownListFor(model => model.DDLcc_id, new SelectList(Model.costCenter, "cc_id", "cc_name"), new { @class = "form-control", @id = "CostCenterlist", onchange = "OnChangeCostCenterDropdownValue()" })
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.DropDownListFor(model => model.DDLcc_id, new SelectList(Model.costCenter, "cc_id", "cc_name"), new { @class = "form-control", @disabled="disabled", @id = "CostCenterlist", onchange = "OnChangeCostCenterDropdownValue()" })
+                                                    }
+                                                    @Html.ValidationMessageFor(model => model.DDLcc_id, String.Empty, new { @style = "color:red;!important", @id = "VmCostCenterlist" })
+                                                </div>
+                                                <div class="col-md-3 col-sm-12">
+                                                    <label class="col-form-label label-align">@Resource.Value <span class="required">*</span></label>
+                                                     @if (AddNew == "Y" || Model.Message == "DuplicateValue")
+                                                     {
+                                                    @Html.TextBoxFor(m => m.cc_val_name, new {@class = "form-control",@autocomplete = "off",@id = "cc_val_name",@maxlength = "25",@name = "CostCenterValue",onkeyup = "OnChangeCostCenterValue()"@*, onkeypress = "OnChangeCostCenterValue()"*@,@placeholder = Resource.Value })
+                    }
+                    else
+                    {
+                                                    @Html.TextBoxFor(m => m.cc_val_name, new {@class = "form-control",@autocomplete = "off", @disabled="disabled",@id = "cc_val_name",@maxlength = "25",@name = "CostCenterValue",onkeyup = "OnChangeCostCenterValue()"@*, onkeypress = "OnChangeCostCenterValue()"*@,@placeholder = Resource.Value })
+                    }
+                                                    @Html.ValidationMessageFor(model => model.cc_val_name, "", new { @class = "text-danger", @id = "vmcc_val_name" })
+                                                    @Html.HiddenFor(m => m.cc_val_id, new { @id = "cc_val_id" })
+                                                </div>
+                                                <div class="col-md-55 col-sm-12">
+                                                    @if (AddNew == "Y" || Model.Message == "DuplicateValue")
+                                                    {
+                                                        if (Model.BtnName != null && Model.ShowVal == "show")
+                                                        {
+                                                            <button class="margin22 address_save" title="@Resource.Save" type="submit" onclick="return CCValueSaveBtnClick()" id="btn_saveCCValue" name="Command" value="@Model.BtnName"></button>
+                                                        }
+                                                        else
+                                                        {
+                                                            <button class="margin22 address_save" title="@Resource.Save" type="submit" onclick="return CCValueSaveBtnClick()" id="btn_saveCCValue" name="Command" value="SaveCCVal_name"></button>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                <div id="SaveBtnEnableValue" style="display:none">
+                                                    @if (Model.BtnName != null && Model.ShowVal == "show")
+                                                    {
+                                                        <button class="margin22 address_save" title="@Resource.Save" type="submit" onclick="return CCValueSaveBtnClick()" id="btn_saveCCValue" name="Command" value="@Model.BtnName"></button>
+                                                    }
+                                                    else
+                                                    {
+                                                        <button class="margin22 address_save" title="@Resource.Save" type="submit" onclick="return CCValueSaveBtnClick()" id="btn_saveCCValue" name="Command" value="SaveCCVal_name"></button>
+                                                    }
+                                                </div>
+                                                            }
+                                                        </div>
+                                                        <div class="col-md-12 col-sm-12">
+                                                            <div class="x_panel margin10">
+                                                                <div class="x_content">
+                                                                    <div class="card-box table-responsive dy_table">
+                                                                        <div class="sticky-table sticky-ltr-cells sb-container container-example1 height30VH">
+                                                                            @Html.Partial("~/Areas/BusinessLayer/Views/Shared/PartialCostCenterValue.cshtml")
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                            <section class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="headingThree">
+                                    <h4 class="panel-title">  <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree"> @Resource.BranchMapping <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a></h4>
+                                </div>
+                                <div id="collapseThree" class="panel-collapse in collapse @Model.Showbranch" role="tabpanel" aria-labelledby="headingThree" style="">
+                                    <div class="panel-body" style="padding-bottom:0px;">
+                                        <div class="row">
+                                            <div class="col-md-12 col-sm-12">
+                                                <div class="col-md-3 col-sm-12">
+                                                    <label class="col-form-label label-align">@Resource.CostCenter <span class="required">*</span></label>
+                                                    @if (AddNew == "Y")
+                                                    {
+                                                        @Html.DropDownListFor(model => model.BranchCC_id, new SelectList(Model.costCenter, "cc_id", "cc_name"), new { @class = "form-control", @id = "cc_id_inbranch", onchange = "OnChangeCostCenterDDL_inBr()" })
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.DropDownListFor(model => model.BranchCC_id, new SelectList(Model.costCenter, "cc_id", "cc_name"), new { @class = "form-control",@disabled="disabled", @id = "cc_id_inbranch", onchange = "OnChangeCostCenterDDL_inBr()" })
+                                                    }
+                                                    @Html.ValidationMessageFor(model => model.BranchCC_id, String.Empty, new { @style = "color:red;!important", @id = "vmcc_id_inbranch" })
+                                                </div>
+                                                <div class="col-md-3 col-sm-12">
+                                                    <label class="col-form-label label-align">@Resource.Branch <span class="required">*</span></label>
+                                                    @if (AddNew == "Y")
+                                                    {
+                                                        @Html.DropDownListFor(model => model.Branch_id, new SelectList(Model._branchList, "BranchID", "BranchName"), new { @class = "form-control", @id = "BranchName", onchange = "OnChangeBranchName()" })
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.DropDownListFor(model => model.Branch_id, new SelectList(Model._branchList, "BranchID", "BranchName"), new { @class = "form-control", @disabled="disabled", @id = "BranchName", onchange = "OnChangeBranchName()" })
+                                                    }
+                                                    @Html.HiddenFor(model => model.Branch_id, new { @id = "hdnBranch_id" })
+                                                    @Html.ValidationMessageFor(model => model.Branch_id, "", new { @class = "text-danger", @id = "vmbranchname" })
+                                                </div>
+                                                <div class="col-md-55 col-sm-12">
+                                                    @if (AddNew == "Y")
+                                                    {
+                                                        if (Model.BtnName != null && Model.Showbranch == "show")
+                                                        {
+                                                            <button class="margin22 address_save" title="@Resource.Save" type="submit" onclick="return CCValue_branchSaveBtnClick()" id="btn_saveBrnachValue" name="Command" value="@Model.BtnName"></button>
+                                                        }
+                                                        else
+                                                        {
+                                                            <button class="margin22 address_save" title="@Resource.Save" type="submit" onclick="return CCValue_branchSaveBtnClick()" id="btn_saveBrnachValue" name="Command" value="SaveCC_branch_name"></button>
+                                                        }
+                                                    }                                                  
+                                                        </div>
+                                                        <div class="col-md-12 col-sm-12">
+                                                            <div class="x_panel margin10">
+                                                                <div class="x_content">
+                                                                    <div class="card-box table-responsive dy_table">
+                                                                        <div class="sticky-table sticky-ltr-cells sb-container container-example1 height30VH">
+                                                                            @Html.Partial("~/Areas/BusinessLayer/Views/Shared/PartialCostCenterSetupBranchMapping.cshtml")
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                            <section class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="headingFour">
+                                    <h4 class="panel-title">  <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFour" aria-expanded="true" aria-controls="collapseFour"> @Resource.ModuleMapping <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a></h4>
+                                </div>
+                                <div id="collapseFour" class="panel-collapse in collapse @Model.ShowModule" role="tabpanel" aria-labelledby="headingFour" style="">
+                                    <div class="panel-body" style="padding-bottom:0px;">
+                                        <div class="row">
+                                            <div class="col-md-12 col-sm-12">
+                                                <div class="col-md-3 col-sm-12">
+                                                    <label class="col-form-label label-align">@Resource.CostCenter <span class="required">*</span></label>
+                                                    @if (AddNew == "Y")
+                                                    {
+                                                        @Html.DropDownListFor(model => model.Modulecc_id, new SelectList(Model.costCenter, "cc_id", "cc_name"), new { @class = "form-control", @id = "ModuleCC_id", onchange = "OnChangeCostCenterDDLin_module()" })
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.DropDownListFor(model => model.Modulecc_id, new SelectList(Model.costCenter, "cc_id", "cc_name"), new { @class = "form-control",@disabled="disabled", @id = "ModuleCC_id", onchange = "OnChangeCostCenterDDLin_module()" })
+                                                    }
+                                                    @Html.ValidationMessageFor(model => model.Modulecc_id, String.Empty, new { @style = "color:red;!important", @id = "VmModuleCC_id" })
+                                                </div>
+                                                <div class="col-md-3 col-sm-12">
+                                                    <label class="col-form-label label-align">@Resource.Module <span class="required">*</span></label>
+                                                    @if (AddNew == "Y")
+                                                    {
+                                                        @Html.DropDownListFor(model => model.module_id, new SelectList(Model._moduleno, "module_id", "module_name"), new { @class = "form-control", @id = "Module", onchange = "OnChangeCCModule()" })
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.DropDownListFor(model => model.module_id, new SelectList(Model._moduleno, "module_id", "module_name"), new { @class = "form-control", @disabled="disabled", @id = "Module", onchange = "OnChangeCCModule()" })
+                                                    }
+                                                    @Html.ValidationMessageFor(model => model.module_id, "", new { @id = "vmModule" })
+                                                </div>
+                                                <div class="col-md-55 col-sm-12">
+                                                    @if (AddNew == "Y")
+                                                    {
+                                                        if (Model.BtnName != null && Model.ShowModule == "show")
+                                                        {
+                                                            <button class="margin22 address_save" title="@Resource.Save" type="submit" onclick="return CC_ModuleSaveBtnClick()" id="btn_saveModuleValue" name="Command" value="@Model.BtnName"></button>
+                                                        }
+                                                        else
+                                                        {
+                                                            <button class="margin22 address_save" title="@Resource.Save" type="submit" onclick="return CC_ModuleSaveBtnClick()" id="btn_savemoduleValue" name="Command" value="SaveCC_Module"></button>
+                                                        }
+                                                    }                                                  
+                                                </div>
+                                                <div class="col-md-12 col-sm-12">
+                                                    <div class="x_panel margin10">
+                                                        <div class="x_content">
+                                                            <div class="card-box table-responsive dy_table">
+                                                                <div class="sticky-table sticky-ltr-cells sb-container container-example1 height30VH">
+                                                                    @Html.Partial("~/Areas/BusinessLayer/Views/Shared/PartialCostCenterSetupModuleMapping.cshtml")
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+

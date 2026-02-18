@@ -1,0 +1,76 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.SalesAndDistribution.ServiceSaleInvoice.ServiceSIListModel
+
+@using EnRepMobileWeb.Resources;
+@{
+    var rowId = 0;
+}
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/SalesAndDistribution/ServiceSaleInvoice/ServiceSIList.js"></script>
+<table id="datatable-buttons" class="table table-striped width2600 rowhighlighttbl itmfrz" cellspacing="0" width="100%">
+    <thead>
+        <tr class="sticky-header">
+            <th width="3%"> @Resource.SrNo</th>
+            <th width="5%" class="itmStick">@Resource.Invoice <br /> @Resource.Number</th>
+            <th width="5%">@Resource.Invoice <br /> @Resource.Date</th>
+            <th width="5%">@Resource.SourceType </th>
+            <th width="5%">@Resource.SourceDocumentNumber </th>
+            <th width="7%">@Resource.SourceDocumentDate </th>
+            <th width="5%">@Resource.SalesPerson </th>
+            <th style="display:none;">@Resource.Invoice <br /> @Resource.Date</th>
+            <th width="11%">@Resource.Customer <br /> @Resource.Name</th>
+            <th width="7%">@Resource.Customer @Resource.ReferenceNumber</th>
+            <th width="7%">@Resource.Customer @Resource.Reference @Resource.Date</th>
+            <th width="5%">@Resource.Invoice <br /> @Resource.Value</th>
+            <th width="5%">@Resource.Status</th>
+            <th width="5%">@Resource.CreatedBy</th>
+            <th width="5%">@Resource.Createdon</th>
+            <th width="5%">@Resource.ApprovedBy</th>
+            <th width="5%">@Resource.ApprovedOn</th>
+            <th width="5%">@Resource.AmendedBy</th>
+            <th width="5%">@Resource.AmendedOn</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.SSIList != null)
+        {
+            foreach (var row in Model.SSIList)
+            {
+                rowId++;
+        <tr>
+            <td>@rowId</td>
+            <td id="SSINo" class="ItmNameBreak itmStick tditemfrz">@row.InvNo</td>
+            <td id="">@row.InvDate</td>
+            <td id="">@row.src_type</td>
+            <td id="">@row.src_doc_no</td>
+            <td id="">@row.src_doc_dt</td>
+            <td id="">@row.SalesPerson</td>
+            <td style="display:none;" id="SSIDt">@row.InvDt</td>
+            <td id="CustName">@row.CustName</td>
+            <td>@row.RefDocNo</td>
+            <td>@row.RefDocDt</td>
+            <td class="num-right">@row.InvValue</td>
+            <td id="Doc_Status">@row.InvStauts</td>
+            <td>@row.create_by</td>
+            <td>@row.CreateDate</td>
+            <td>@row.app_by</td>
+            <td>@row.ApproveDate</td>
+            <td>@row.mod_by</td>
+            <td>@row.ModifyDate</td>
+        </tr>
+            }
+        }
+    </tbody>
+</table>
+@if (Model.SSISearch != null)
+{
+    if (Model.SSISearch == "SSI_Search")
+    {
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+        @Scripts.Render("~/Content/Scripts/DatatablesJs")
+        //Session["SPISearch"] = null;
+    }
+}
+
+
+
+

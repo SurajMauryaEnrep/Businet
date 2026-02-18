@@ -1,0 +1,75 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.FinancialAccountingAndControl.GeneralLedgerVoucher.Contra.ContraList_Model
+@using EnRepMobileWeb.Resources;
+@{
+    var rowId = 0;
+}
+
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+@*<script src="~/Content/Scripts/ApplicationLayer/FinancialAccountingAndControl/GeneralLedgerVoucher/Contra/ContraVoucher.js"></script>*@
+<script src="~/Content/Scripts/ApplicationLayer/FinancialAccountingAndControl/GeneralLedgerVoucher/Contra/ContraVoucherList.js"></script>
+
+<table id="datatable-buttons" class="table table-striped width1600  rowhighlighttbl itmfrz" cellspacing="0" width="100%">
+    <thead>
+        <tr class="sticky-header">
+            <th width="3%"> @Resource.SrNo</th>
+            <th width="12%" class="itmStick">@Resource.GLVoucher <br /> @Resource.Number</th>
+            <th width="8%">@Resource.GLVoucher <br /> @Resource.Date</th>
+            <th hidden>@Resource.GLVoucher <br /> @Resource.Date</th>
+            <th width="10%">@Resource.Amount</th>
+            <th width="7%">@Resource.Status</th>
+            <th width="10%">@Resource.CreatedBy</th>
+            <th width="10%">@Resource.Createdon</th>
+            <th width="10%">@Resource.ApprovedBy</th>
+            <th width="10%">@Resource.ApprovedOn</th>
+            <th width="10%">@Resource.AmendedBy</th>
+            <th width="10%">@Resource.AmendedOn</th>
+        </tr>
+    </thead>
+    <tbody id="">
+        @if (Model.VoucherList != null)
+        {
+            foreach (var row in Model.VoucherList)
+            {
+                rowId++;
+        <tr>
+            <td>@rowId</td>
+            @*<td id="VouNumber">@row.VouNumber</td>*@
+            <td id="VouNumber" class="ItmNameBreak itmStick tditemfrz"><div class="col-sm-10 no-padding" id="Cv_Vouno">@row.VouNumber</div>
+                <div class="col-sm-2 i_Icon">
+                    <button type="button" id="VoucherDetail" class="calculator" onclick="OnClickIconBtn(event);" data-toggle="modal" data-target="#VoucherDetailMW" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.VoucherDetail"> </button>
+                </div>
+            </td>
+
+            <td id="Cv_Date">@row.VouDate</td>
+            <td hidden id="hdVouDate">@row.hdVouDate</td>
+            <td class="num_right">@row.Amount</td>
+            <td id="Doc_Status">@row.VouStatus</td>
+            <td>@row.create_by</td>
+            <td>@row.CreatedON</td>
+            <td>@row.app_by</td>
+            <td>@row.ApprovedOn</td>
+            <td>@row.mod_by</td>
+            <td>@row.ModifiedOn</td>
+        </tr>
+            }
+        }
+
+    </tbody>
+</table>
+@*@if (Session["VouSearch"] != null)*@
+@if (Model.VouSearch != null)
+{
+    //if (Session["VouSearch"].ToString() == "Vou_Search")
+    if (Model.VouSearch == "Vou_Search")
+    {
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+        @Scripts.Render("~/Content/Scripts/DatatablesJs")
+        //Session["VouSearch"] = null;
+        Model.VouSearch = null;
+    }
+}
+
+
+
+
+

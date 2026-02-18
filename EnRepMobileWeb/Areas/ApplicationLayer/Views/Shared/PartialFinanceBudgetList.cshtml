@@ -1,0 +1,69 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.FinancialAccountingAndControl.FinanceBudget.FinanceBudgetListModel
+@using EnRepMobileWeb.Resources
+@{
+    var rowId = 0;
+}
+<style>
+  /*  .dataTables_length, .DataTable1_filter, .dt-buttons, .buttons-csv, .buttons-pdf {
+        float: left;
+    }
+
+    .dt-buttons {
+        width: 6%;
+        margin-left: 2%;
+    }*/
+</style>
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/FinancialAccountingAndControl/FinanceBudget/FinanceBudgetList.js"></script>
+<table id="datatable-buttons1" class="table table-striped width1200 rowhighlighttbl itmfrz " cellspacing="0" width="100%">
+@*<table id="FinanceBudgetList" class="table table-striped width1200 rowhighlighttbl itmfrz" cellspacing="0" width="100%">*@
+    <thead>
+        <tr class="sticky-header">
+            <th width="5%"> @Resource.SrNo</th>
+            @*<th width="12%">@Resource.Requirement <br /> @Resource.Area</th>*@
+            <th width="14%" class="itmStick">@Resource.FinancialYear</th>
+            <th width="13%">@Resource.Period</th>
+            <th width="13%">@Resource.Revision @Resource.Number</th>
+            @*<th width="20%">@Resource.remarks </th>*@
+            <th width="13%">@Resource.Status </th>
+            <th width="14%">@Resource.Createdon</th>
+            <th width="14%">@Resource.ApprovedOn</th>
+            <th width="14%">@Resource.AmendedOn</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.BudgetList != null)
+        {
+            foreach (var row in Model.BudgetList)
+            {
+                rowId++;
+                <tr>
+                    <td>@rowId</td>
+                    <td id="FinyearLs" class="ItmNameBreak itmStick tditemfrz">@row.Finyr</td>
+                    <td id="PeriodLs">@row.Period</td>
+                    <td id="RevnoLs">@row.Revno</td>
+                    @*<td>@row.Remarks</td>*@
+                    <td id="StatusLs">@row.Status</td>
+                    <td id="CreateDateLs">@row.CreateDate</td>
+                    <td id="AppdateLs">@row.ApproveDate</td>
+                    <td id="ModiDateLs">@row.ModiDate</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+@if (Model.BudSearch != null)
+{
+    if (Model.BudSearch == "BudSearch")
+    {
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+        @Scripts.Render("~/Content/Scripts/DatatablesJs")
+        Model.BudSearch = null;
+    }
+}
+
+
+
+
+
+

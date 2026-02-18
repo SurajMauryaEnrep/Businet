@@ -1,0 +1,939 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.InventoryManagement.MIS.SampleTracking.SampleTracking_Model
+
+@using EnRepMobileWeb.Resources;
+@{
+    //var rowId = 0;
+    string tableWidth = "width1800";
+    if (Model.SampleWisedata == "SW")
+    {
+        tableWidth = "width1800";
+    }
+    else if ((Model.SampleWisedata == "EW" || Model.SampleWisedata == "PS") && Model.SummaryDetail=="D")
+    {
+        tableWidth = "width2400";
+    }
+    else if (Model.SampleWisedata == "BW" || Model.SampleWisedata == "IB")
+    {
+        tableWidth = "width2200";
+    }
+    else if (Model.SampleWisedata == "EW" && Model.SummaryDetail == "S")
+    {
+        tableWidth = "width1500";
+    }
+    else
+    {
+        tableWidth = "width2000";
+    }
+}
+<style>
+    /*#datatable-buttons_wrapper .btn-group a:nth-child(3) {
+        display: inline-block;
+        position: absolute;
+    }*/
+
+    .hidden {
+        display: none;
+    }
+</style>
+
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+@*//<div id="EntityWiseTbl">*@
+@*<table id="datatable-buttons" class="table table-striped width1600 rowhighlighttbl" cellspacing="0">*@
+<table id="Sample_tracking" class="table table-striped @tableWidth itmfrz rowhighlighttbl table-bordered" cellspacing="0" width="100%">
+    <thead>
+        <tr class="sticky-header">
+            @if (Model.SampleWisedata != "SW" && Model.SampleWisedata != "PS" && Model.SampleWisedata != "BW" && Model.SampleWisedata != "IB" && Model.SummaryDetail != "D")
+            {
+                <th width="5%"> @Resource.SrNo</th>
+                <th width="10%">@Resource.EntityType</th>
+                <th style="display:none;">@Resource.EntityType</th>
+                <th width="25%" class="itmStick">@Resource.ItemName</th>
+                <th style="display:none;">@Resource.ItemName</th>
+                <th width="5%">@Resource.UOM</th>
+                <th hidden="hidden"></th>
+                <th width="15%">@Resource.Entity</th>
+                <th style="display:none;">@Resource.Entity</th>
+                <th width="10%">@Resource.OpeningBalance</th>
+                <th width="10%">@Resource.Issued</th>
+                <th width="10%">@Resource.Receipts</th>
+                <th width="10%">@Resource.Balance</th>
+                
+            }
+            else if (Model.SampleWisedata == "PS" && Model.SummaryDetail == "S")
+            {
+
+                <th width="3%"> @Resource.SrNo</th>
+                <th width="5%">@Resource.EntityType</th>
+                <th style="display:none;">@Resource.EntityType</th>
+                <th width="7%">@Resource.Entity</th>
+                <th style="display:none;">@Resource.Entity</th>
+                <th width="18%" class="itmStick">@Resource.ItemName</th>
+                <th style="display:none;">@Resource.ItemName</th>
+                <th width="5%">@Resource.UOM</th>
+                <th hidden="hidden"></th>
+                @*<th width="5%"> @Resource.Sample @Resource.Type</th>
+            <th width="15%">@Resource.Other @Resource.Detail</th>*@
+                <th width="6%">@Resource.Issued</th>
+                // <th width="5%">@Resource.Issue @Resource.Date</th>
+                <th width="6%">@Resource.Receipts</th>
+                // <th width="5%">@Resource.Received  @Resource.Date</th>
+                <th width="6%">@Resource.Balance</th>
+                // <th width="6%">@Resource.Elapsed @Resource.Days</th>
+            }
+            else if (Model.SampleWisedata == "BW")
+            {
+                <th width="3%"> @Resource.SrNo</th>
+                <th width="5%">@Resource.Bin @Resource.Location </th>
+                <th width="10%" class="itmStick">@Resource.ItemName</th>
+                <th style="display:none;">@Resource.ItemName</th>
+                <th width="5%">@Resource.UOM</th>
+                <th hidden="hidden"></th>
+                <th width="5%" class="itmStick">@Resource.Transaction @Resource.Number</th>
+                <th width="5%">@Resource.Transaction @Resource.Date</th>
+                <th width="5%">@Resource.EntityType</th>
+                @*<th style="display:none;">@Resource.EntityType</th>*@
+                <th width="5%"> @Resource.Sample @Resource.Type</th>
+                <th width="10%">@Resource.Entity @Resource.Name</th>
+                <th width="5%">@Resource.Issued @Resource.By</th>
+                <th width="5%">@Resource.Issue @Resource.Date</th>
+                <th width="5%"> @Resource.Received @Resource.Date</th>
+                <th width="7%">@Resource.Other @Resource.Detail</th>
+                <th width="5%">@Resource.Issue @Resource.Quantity</th>
+                <th width="5%"> @Resource.Received @Resource.Quantity</th>
+                <th width="5%">@Resource.Elapsed @Resource.Days</th>
+                <th width="10%">@Resource.remarks </th>
+            }
+            else if (Model.SampleWisedata == "IB")
+            {
+                <th width="3%"> @Resource.SrNo</th>
+                <th width="6%">@Resource.Issued @Resource.By</th>
+
+                <th width="10%" class="itmStick">@Resource.ItemName</th>
+                <th style="display:none;">@Resource.ItemName</th>
+                <th width="5%">@Resource.UOM</th>
+                <th hidden="hidden"></th>
+                <th width="5%" class="itmStick">@Resource.Transaction @Resource.Number</th>
+                <th width="5%">@Resource.Transaction @Resource.Date</th>
+                <th width="5%">@Resource.EntityType</th>
+                @*<th style="display:none;">@Resource.EntityType</th>*@
+                <th width="5%">@Resource.Bin @Resource.Location </th>
+                <th width="5%"> @Resource.Sample @Resource.Type</th>
+                <th width="10%">@Resource.Entity @Resource.Name</th>
+                <th width="5%">@Resource.Issue @Resource.Date</th>
+                <th width="5%"> @Resource.Received @Resource.Date</th>
+                <th width="15%">@Resource.Other @Resource.Detail</th>
+                <th width="5%">@Resource.Issue @Resource.Quantity</th>
+                <th width="5%"> @Resource.Received @Resource.Quantity</th>
+                <th width="5%">@Resource.Elapsed @Resource.Days</th>
+                <th width="10%">@Resource.remarks </th>
+            }
+            else if ((Model.SampleWisedata == "EW" || Model.SampleWisedata == "PS") && Model.SummaryDetail == "D")
+            {
+                <th width="3%"> @Resource.SrNo</th>
+                <th width="5%">@Resource.EntityType</th>
+                <th width="5%">@Resource.Entity @Resource.Name</th>
+                <th width="12%" class="itmStick">@Resource.ItemName</th>
+                <th style="display:none;">@Resource.ItemName</th>
+                <th width="5%">@Resource.UOM</th>
+                <th hidden="hidden"></th>
+                <th width="5%" >@Resource.Transaction @Resource.Number</th>
+                <th width="5%">@Resource.Transaction @Resource.Date</th>
+                <th width="5%">@Resource.Bin @Resource.Location </th>
+                <th width="5%"> @Resource.Sample @Resource.Type</th>
+                <th width="5%">@Resource.Issued @Resource.By</th>
+                <th width="5%">@Resource.Issue @Resource.Date</th>
+                <th width="5%"> @Resource.Received @Resource.Date</th>
+                <th width="5%">@Resource.Other @Resource.Detail</th>
+                <th width="5%">@Resource.Issue @Resource.Quantity</th>
+                <th width="5%"> @Resource.Received @Resource.Quantity</th>
+                <th width="5%">@Resource.Balance</th>
+                <th width="5%">@Resource.Elapsed @Resource.Days</th>
+                <th width="10%">@Resource.remarks </th>
+            }
+
+            else
+            {
+                <th width="3%">@Resource.SrNo </th>
+                <th width="5%" class="itmStick">@Resource.Transaction @Resource.Number</th>
+                <th width="5%">@Resource.Transaction @Resource.Date</th>
+                @*<th>@Resource.Transaction @Resource.Type</th>*@
+                <th width="5%">@Resource.EntityType</th>
+                <th width="5%">@Resource.Bin @Resource.Location </th>
+                <th width="5%"> @Resource.Sample @Resource.Type</th>
+                <th width="10%">@Resource.Entity @Resource.Name</th>
+                <th width="6%">@Resource.Issued @Resource.By</th>
+                <th width="5%">@Resource.Issue @Resource.Date</th>
+                <th width="5%"> @Resource.Received @Resource.Date</th>
+                <th width="16%">@Resource.Other @Resource.Detail</th>
+                <th width="5%">@Resource.Issue @Resource.Quantity</th>
+                <th width="5%"> @Resource.Received @Resource.Quantity</th>
+                <th width="5%">@Resource.Elapsed @Resource.Days</th>
+                @*<th>@Resource.Receipts @Resource.Date</th>*@
+                @*<th width="10%">@Resource.Quantity</th>*@
+                <th width="15%">@Resource.remarks </th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+@*<script src="~/Content/Scripts/Common/CommonJS.js"></script>*@
+
+<script>
+    $(document).ready(function () {
+        debugger;
+        SampleTrackingTableData();
+    })
+    function SampleTrackingTableData() {
+        debugger;
+        var ReportType = $("#ReportType").val();
+        var ShowAs = "";
+        if (ReportType == "EW" || ReportType == "PS") {
+            if ($("#SampleTrackingMISSummary").is(":checked")) {
+                ShowAs = "S"; // When checked
+            }
+            else if ($("#SampleTrackingMISDetail").is(":checked")) {
+                ShowAs = "D"; // When unchecked
+            }
+        }
+      
+
+        var EntityType, ItemId, EntityId, FromDate, ToDate, Issuedby;
+
+        EntityType = $("#EntityType").val();
+        ItemId = $("#ddlItemName").val();
+        EntityId = $("#EntityName").val();
+        FromDate = $("#txtFromdate").val();
+        ToDate = $("#txtTodate").val();
+        Issuedby = (ReportType === "SW" || ReportType === "PS" || ReportType === "BW" || ReportType === "IB" ) ? $("#ddlissuedby").val() : "";
+
+      
+        //var filters = EntityType + "," + EntityId + "," + ItemId + "," + FromDate + "," + ToDate + "," + ReportType + "," + Issuedby + "," + ShowAs;
+        var filterArray = [
+            EntityType, EntityId, ItemId, FromDate, ToDate, ReportType, Issuedby, ShowAs
+        ];
+        var filters = filterArray.map(x => `[${x}]`).join('_');
+        $("#Sample_tracking").DataTable().destroy();
+        $("#Sample_tracking").DataTable
+            ({
+                "processing": true, // for show progress bar
+                "serverSide": true, // for process server side
+                "pageLength": 50,
+                "filter": true, // this is for disable filter (search box)
+                "orderMulti": false, // for disable multiple column at once
+                "ajax": {
+                    "url": "/ApplicationLayer/SampleTracking/LoadData1",
+                    "data": {
+                        ItemListFilter: filters,
+                        ReportType: ReportType,
+                        ShowAs: ShowAs
+                    },
+                    "type": "POST",
+                    "datatype": "json",
+                },
+                "columns": SampleTrackingColumns(ReportType, ShowAs),
+                columnDefs: SampleTrackingTarget(ReportType, ShowAs),
+
+            });
+        //cmn_delete_datatable("#Sample_tracking");
+        //cmn_apply_datatable("#Sample_tracking");
+
+        var exportbtn = `<a class="btn btn-default buttons-csv buttons-html5 btn-sm" tabindex="0"
+            id='export'    aria-controls="Sample_tracking" href="#"><span>CSV</span></a>
+            <a class="btn btn-default buttons-pdf buttons-html5 btn-sm" tabindex="0"
+              aria-controls="Sample_tracking" href="#"><span>PDF</span></a>`;
+        $("#Sample_tracking_length").append(exportbtn);
+        Export();
+    }
+    function SampleTrackingColumns(ReportType, ShowAs) {
+        var Array = [];
+        debugger;
+        if (ReportType == "EW" && ShowAs=="S") {
+          
+                Array = [
+                    { "data": "SrNo", "name": "SrNo", "autoWidth": true },
+                    { "data": "_EntityType", "name": "_EntityType", "autoWidth": true },
+                    { "data": "_EntityTypeCode", "name": "_EntityTypeCode", "autoWidth": true, className: "hidden", "id": "hfEntityTypeCode" },
+                    { "data": "ItemName", "name": "ItemName", "autoWidth": true, "id": "ItemNameSpan", className: "ItmNameBreak itmStick tditemfrz" },
+                    { "data": "ItemID", "name": "ItemID", "autoWidth": true, className: "hidden", "id": "hfItemID" },
+                    //{ "data": "sr_type", "name": "sr_type", "autoWidth": true, "id": "sr_type" },
+                    //{ "data": "other_dtl", "name": "other_dtl", "autoWidth": true, "id": "other_dtl", className: "ItmNameBreak" },
+                    //  { "data": "issue_date", "name": "issue_date", "autoWidth": true, "id": "issue_date" },
+                    //{ "data": "receive_date", "name": "receive_date", "autoWidth": true, "id": "receive_date" },
+                    { "data": "UOM", "name": "UOM", "autoWidth": true },
+                    { "data": "uom_id", "name": "uom_id", "autoWidth": true, className: "hidden", "id": "ST_UOM" },
+                    { "data": "_Entity", "name": "_Entity", "autoWidth": true, "id": "EntityNameSpan" },
+                    { "data": "_EntityID", "name": "_EntityID", "autoWidth": true, className: "hidden", "id": "hfEntityID" },
+                    //{ "data": "elsp_days", "name": "elsp_days", "autoWidth": true },
+                    { "data": "Opening_balence", "name": "Opening_balence", className: "num_right", "autoWidth": true },
+                    { "data": "Issued", "name": "Issued", "autoWidth": true },
+                    { "data": "Receipts", "name": "Receipts", "autoWidth": true },
+                    { "data": "Balance", "name": "Balance", "autoWidth": true, className: "num_right" },
+
+                ]
+            
+          
+        }
+        else if (ReportType == "PS" && ShowAs == "S") {
+            Array = [
+                { "data": "SrNo", "name": "SrNo", "autoWidth": true },
+                { "data": "_EntityType", "name": "_EntityType", "autoWidth": true },
+                { "data": "_EntityTypeCode", "name": "_EntityTypeCode", "autoWidth": true, className: "hidden", "id": "hfEntityTypeCode" },
+                { "data": "_Entity", "name": "_Entity", "autoWidth": true, "id": "EntityNameSpan" },
+                { "data": "_EntityID", "name": "_EntityID", "autoWidth": true, className: "hidden", "id": "hfEntityID" },
+                { "data": "ItemName", "name": "ItemName", "autoWidth": true, "id": "ItemNameSpan", className: "ItmNameBreak itmStick tditemfrz" },
+                { "data": "ItemID", "name": "ItemID", "autoWidth": true, className: "hidden", "id": "hfItemID" },
+                { "data": "UOM", "name": "UOM", "autoWidth": true },
+                { "data": "uom_id", "name": "uom_id", "autoWidth": true, className: "hidden", "id": "ST_UOM" },
+                //{ "data": "sr_type", "name": "sr_type", "autoWidth": true, "id": "sr_type" },
+                //{ "data": "other_dtl", "name": "other_dtl", "autoWidth": true, "id": "other_dtl", className: "ItmNameBreak" },
+                { "data": "Issued", "name": "Issued", "autoWidth": true },
+                //{ "data": "issue_date", "name": "issue_date", "autoWidth": true, "id": "issue_date" },
+                { "data": "Receipts", "name": "Receipts", "autoWidth": true },
+                //{ "data": "receive_date", "name": "receive_date", "autoWidth": true, "id": "receive_date" },
+                { "data": "Balance", "name": "Balance", "autoWidth": true, className: "num_right" },
+                // { "data": "elsp_days", "name": "elsp_days", "autoWidth": true },
+            ]
+        }
+        else if (ReportType == "BW") {
+            Array = [
+                { "data": "SrNo_Bin", "name": "SrNo_Bin", "autoWidth": true },
+                { "data": "bin_loc_Bin", "name": "bin_loc_Bin", "autoWidth": true },
+                { "data": "ItemName_Bin", "name": "ItemName_Bin", "autoWidth": true, "id": "ItemNameSpan", className: "ItmNameBreak itmStick tditemfrz" },
+                { "data": "ItemId_Bin", "name": "ItemId_Bin", "autoWidth": true, className: "hidden", "id": "hfItemID" },
+                { "data": "Uom_Bin", "name": "Uom_Bin", "autoWidth": true },
+                { "data": "UomId_Bin", "name": "UomId_Bin", "autoWidth": true, className: "hidden", "id": "ST_UOM" },
+                { "data": "doc_no_Bin", "name": "doc_no_Bin", "autoWidth": true, className: "ItmNameBreak itmStick tditemfrz" },
+                { "data": "sr_dt_Bin", "name": "sr_dt_Bin", "autoWidth": true },
+                { "data": "entity_type_Bin", "name": "entity_type_Bin", "autoWidth": true },
+                { "data": "sr_type_Bin", "name": "sr_type_Bin", "autoWidth": true },
+                { "data": "entityName_Bin", "name": "entityName_Bin", "autoWidth": true },
+                { "data": "issued_by_Bin", "name": "issued_by_Bin", "autoWidth": true },
+                { "data": "issued_date_Bin", "name": "issued_date_Bin", "autoWidth": true },
+                { "data": "receive_date_Bin", "name": "receive_date_Bin", "autoWidth": true },
+                { "data": "other_dtl_Bin", "name": "other_dtl_Bin", "autoWidth": true, className: "ItmNameBreak" },
+                { "data": "issued_qty_Bin", "name": "issued_qty_Bin", "autoWidth": true },
+                { "data": "qty_Bin", "name": "qty_Bin", "autoWidth": true },
+                { "data": "elsp_days_Bin", "name": "elsp_days_Bin", "autoWidth": true },
+                { "data": "remarks_Bin", "name": "remarks_Bin", "autoWidth": true, className: "ItmNameBreak" },
+            ]
+        }    
+        else if (ReportType == "IB") {
+            Array = [
+                { "data": "SrNo_Bin", "name": "SrNo_Bin", "autoWidth": true },
+                { "data": "issued_by_Bin", "name": "issued_by_Bin", "autoWidth": true },
+
+                { "data": "ItemName_Bin", "name": "ItemName_Bin", "autoWidth": true, "id": "ItemNameSpan", className: "ItmNameBreak itmStick tditemfrz" },
+                { "data": "ItemId_Bin", "name": "ItemId_Bin", "autoWidth": true, className: "hidden", "id": "hfItemID" },
+                { "data": "Uom_Bin", "name": "Uom_Bin", "autoWidth": true },
+                { "data": "UomId_Bin", "name": "UomId_Bin", "autoWidth": true, className: "hidden", "id": "ST_UOM" },
+                { "data": "doc_no_Bin", "name": "doc_no_Bin", "autoWidth": true, className: "ItmNameBreak itmStick tditemfrz" },
+                { "data": "sr_dt_Bin", "name": "sr_dt_Bin", "autoWidth": true },
+                { "data": "entity_type_Bin", "name": "entity_type_Bin", "autoWidth": true },
+                { "data": "bin_loc_Bin", "name": "bin_loc_Bin", "autoWidth": true },
+                { "data": "sr_type_Bin", "name": "sr_type_Bin", "autoWidth": true },
+                { "data": "entityName_Bin", "name": "entityName_Bin", "autoWidth": true },
+
+                { "data": "issued_date_Bin", "name": "issued_date_Bin", "autoWidth": true },
+                { "data": "receive_date_Bin", "name": "receive_date_Bin", "autoWidth": true },
+                { "data": "other_dtl_Bin", "name": "other_dtl_Bin", "autoWidth": true, className: "ItmNameBreak" },
+                { "data": "issued_qty_Bin", "name": "issued_qty_Bin", "autoWidth": true },
+                { "data": "qty_Bin", "name": "qty_Bin", "autoWidth": true },
+                { "data": "elsp_days_Bin", "name": "elsp_days_Bin", "autoWidth": true },
+                { "data": "remarks_Bin", "name": "remarks_Bin", "autoWidth": true, className: "ItmNameBreak" },
+            ]
+        }
+        else if ((ReportType == "EW" || ReportType == "PS") && ShowAs == "D")
+        {
+            Array = [
+                { "data": "SrNo", "name": "SrNo", "autoWidth": true },
+                { "data": "_EntityType", "name": "_EntityType", "autoWidth": true },
+                { "data": "_Entity", "name": "_Entity", "autoWidth": true, "id": "EntityNameSpan" },
+                { "data": "ItemName", "name": "ItemName", "autoWidth": true, "id": "ItemNameSpan", className: "ItmNameBreak itmStick tditemfrz" },
+                { "data": "ItemID", "name": "ItemID", "autoWidth": true, className: "hidden", "id": "hfItemID" },
+                { "data": "UOM", "name": "UOM", "autoWidth": true },
+                { "data": "uom_id", "name": "uom_id", "autoWidth": true, className: "hidden", "id": "ST_UOM" },
+                { "data": "Issue_Number_Summ", "name": "doc_no_Tracking", "autoWidth": true },
+                { "data": "issued_dt_Summ", "name": "sr_dt_Tracking", "autoWidth": true },
+                { "data": "Bin_loc_Summ", "name": "bin_loc_Bin", "autoWidth": true },
+                { "data": "sr_type", "name": "sr_type", "autoWidth": true, "id": "sr_type" },
+                { "data": "Issued_by_Summ", "name": "issued_by_Bin", "autoWidth": true },
+                { "data": "issue_date", "name": "issue_date", "autoWidth": true, "id": "issue_date" },
+                { "data": "receive_date", "name": "receive_date", "autoWidth": true, "id": "receive_date" },
+                { "data": "other_dtl", "name": "other_dtl", "autoWidth": true, "id": "other_dtl" },
+                { "data": "Issued", "name": "Issued", "autoWidth": true },
+                { "data": "Receipts", "name": "Receipts", "autoWidth": true },
+                { "data": "Balance", "name": "Balance", "autoWidth": true, className: "num_right" },
+                { "data": "elsp_days", "name": "elsp_days", "autoWidth": true },
+                { "data": "Remarks_Summ", "name": "remarks_Bin", "autoWidth": true },
+
+            ]
+        }
+        else {
+            Array = [
+                { "data": "SrNo_Tracking", "name": "SrNo_Tracking", "autoWidth": true },
+                { "data": "doc_no_Tracking", "name": "doc_no_Tracking", "autoWidth": true, className: "ItmNameBreak itmStick tditemfrz" },
+                { "data": "sr_dt_Tracking", "name": "sr_dt_Tracking", "autoWidth": true },
+                { "data": "entity_type_Tracking", "name": "entity_type_Tracking", "autoWidth": true },
+                { "data": "bin_loc_Tracking", "name": "bin_loc_Tracking", "autoWidth": true },
+                { "data": "sr_type_Tracking", "name": "sr_type_Tracking", "autoWidth": true },
+                { "data": "entityName_Tracking", "name": "entityName_Tracking", "autoWidth": true },
+                { "data": "issued_by_Tracking", "name": "issued_by_Tracking", "autoWidth": true },
+                { "data": "issued_date_Tracking", "name": "issued_date_Tracking", "autoWidth": true },
+                { "data": "receive_date_Tracking", "name": "receive_date_Tracking", "autoWidth": true },
+                { "data": "other_dtl_Tracking", "name": "other_dtl_Tracking", "autoWidth": true, className: "ItmNameBreak" },
+                { "data": "issued_qty_Tracking", "name": "issued_qty_Tracking", "autoWidth": true },
+                { "data": "qty_Tracking", "name": "qty_Tracking", "autoWidth": true },
+                { "data": "elsp_days_Tracking", "name": "elsp_days_Tracking", "autoWidth": true },
+                { "data": "remarks_Tracking", "name": "remarks_Tracking", "autoWidth": true, className: "ItmNameBreak" },
+
+
+            ]
+        }
+        return Array;
+    }
+    function SampleTrackingTarget(ReportType, ShowAs) {
+        debugger;
+        var array = [];
+        if (ReportType == "EW" && ShowAs == "S")
+        {
+          
+           
+                array = [
+                    {
+                        'targets': 1,
+                        'createdCell': function (td, cellData, rowData, row, col) {
+                            $(td).attr('id', 'tditem');
+                        }
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "_EntityType" > ${data}</span>`,
+                        targets: 1
+                    },
+                    {
+                        render: (data, type, row) => `<input type="hidden" id="hfEntityTypeCode" value='${data}'>`,
+                        targets: 2
+                    },
+
+                    {
+                        render: (data, type, row) => `<div class="col-sm-11 no-padding"  id="multiWrapper"><span id="ItemNameSpan"> ${data}</span></div>
+                        <div class="col-sm-1 i_Icon">
+                            <button type="button" id="ItmInfoBtnIcon" class="calculator" onclick="OnClickIconBtnTable(event);" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="Item Information">  </button>
+                        </div>`,
+                        targets: 3
+                    },
+                    {
+                        render: (data, type, row) => `<input type="hidden" id="hfItemID" value='${data}'>`,
+                        targets: 4
+                    },
+                    //{
+                    //    render: (data, type, row) => `<span id = "sr_type" > ${data}</span>`,
+                    //    targets: 5
+                    //},
+                    //{
+                    //    render: (data, type, row) => `<span id = "other_dtl" > ${data}</span>`,
+                    //    targets: 6
+                    //},
+                    //{
+                    //    render: (data, type, row) => `<span id = "issue_date" > ${data}</span>`,
+                    //    targets: 7
+                    //},
+                    //{
+                    //    render: (data, type, row) => `<span id = "receive_date" > ${data}</span>`,
+                    //    targets: 8
+                    //},
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 5
+                    },
+                    {
+                        render: (data, type, row) => `<input type="hidden" id="ST_UOM" value='${data}'>`,
+                        targets: 6
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "EntityNameSpan" > ${data}</span >`,
+                        targets: 7
+                    },
+                    {
+                        render: (data, type, row) => `<input type="hidden" id="hfEntityID" value='${data}'>`,
+                        targets: 8
+                    },
+                    //{
+                    //    render: (data, type, row) => `<span id = "elsp_days" > ${data}</span >`,
+                    //    targets: 11
+                    //},
+                    {
+                        render: (data, type, row) => `<b > ${data}</b>`,
+                        targets: 9
+                    },
+                    {
+                        render: (data, type, row) => `<div class="col-sm-11 lpo_form num_right no-padding" id='multiWrapper'>${data}</div>
+                   <div class="col-sm-1 i_Icon">
+                   <button type="button" id="BtnIssuedIcon" class="calculator" data-toggle="modal" onclick="OnClickIssued_ReceiptIconBtn(event,'I');"
+                   data-target="#Issued_Received" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title=""></button>
+                    </div>`,
+                        targets: 10
+                    },
+                    {
+                        render: (data, type, row) => `<div class="col-sm-11 lpo_form num_right no-padding" id='multiWrapper'>${data}</div>
+                        <div class="col-sm-1 i_Icon">
+                            <button type="button" id="BtnReceiptsIcon" class="calculator" data-toggle="modal"
+                 onclick="OnClickIssued_ReceiptIconBtn(event,'R');" data-target="#Issued_Received" data-backdrop="static"
+                      data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title=""></button>
+                        </div>`,
+                        targets: 11
+                    },
+                    //{
+                    //    render: (data, type, row) => `<b> ${data}</b>`,
+                    //    targets: 12
+                    //},
+                    {
+                        render: (data, type, row) => `<div class="col-sm-11 lpo_form num_right no-padding" id='multiWrapper'>${data}</div>
+                        <div class="col-sm-1 i_Icon">
+                            <button type="button" id="BtnbBalanceIcon" class="calculator" data-toggle="modal"
+                 onclick="OnClickIssued_ReceiptIconBtn(event,'B');" data-target="#BalanceIssued_Received" data-backdrop="static"
+                      data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title=""></button>
+                        </div>`,
+                        targets: 12
+                    },
+                ]
+            
+          
+
+        }
+        else if (ReportType == "PS" && ShowAs == "S") {
+            array = [
+                {
+                    'targets': 1,
+                    'createdCell': function (td, cellData, rowData, row, col) {
+                        $(td).attr('id', 'tditem');
+                    }
+                },
+                {
+                    render: (data, type, row) => `<span id = "_EntityType" > ${data}</span>`,
+                    targets: 1
+                },
+                {
+                    render: (data, type, row) => `<input type="hidden" id="hfEntityTypeCode" value='${data}'>`,
+                    targets: 2
+                },
+                {
+                    render: (data, type, row) => `<span id = "EntityNameSpan" > ${data}</span >`,
+                    targets: 3
+                },
+                {
+                    render: (data, type, row) => `<input type="hidden" id="hfEntityID" value='${data}'>`,
+                    targets: 4
+                },
+                {
+                    render: (data, type, row) => `<div class="col-sm-11 no-padding"  id="multiWrapper"><span id="ItemNameSpan"> ${data}</span></div>
+                        <div class="col-sm-1 i_Icon">
+                            <button type="button" id="ItmInfoBtnIcon" class="calculator" onclick="OnClickIconBtnTable(event);" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="Item Information">  </button>
+                        </div>`,
+                    targets: 5
+                },
+                {
+                    render: (data, type, row) => `<input type="hidden" id="hfItemID" value='${data}'>`,
+                    targets: 6
+                },
+                {
+                    render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                    targets: 7
+                },
+                {
+                    render: (data, type, row) => `<input type="hidden" id="ST_UOM" value='${data}'>`,
+                    targets: 8
+                },
+                //{
+                //    render: (data, type, row) => `<span id = "sr_type" > ${data}</span>`,
+                //    targets: 9
+                //},
+                //{
+                //    render: (data, type, row) => `<span id = "other_dtl" > ${data}</span>`,
+                //    targets: 10
+                //},
+                {
+                    render: (data, type, row) => `<div class="col-sm-11 lpo_form num_right no-padding" id='multiWrapper'>${data}</div>
+                   <div class="col-sm-1 i_Icon">
+                   <button type="button" id="BtnIssuedIcon" class="calculator" data-toggle="modal" onclick="OnClickIssued_ReceiptIconBtn(event,'IP');"
+                   data-target="#Issued_Received" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title=""></button>
+                    </div>`,
+                    targets: 9
+                },
+                //{
+                //    render: (data, type, row) => `<span id = "issue_date" > ${data}</span>`,
+                //    targets: 12
+                //},
+                {
+                    render: (data, type, row) => `<div class="col-sm-11 lpo_form num_right no-padding" id='multiWrapper'>${data}</div>
+                        <div class="col-sm-1 i_Icon">
+                            <button type="button" id="BtnReceiptsIcon" class="calculator" data-toggle="modal"
+                 onclick="OnClickIssued_ReceiptIconBtn(event,'RP');" data-target="#Issued_Received" data-backdrop="static"
+                      data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title=""></button>
+                        </div>`,
+                    targets: 10
+                },
+                //{
+                //    render: (data, type, row) => `<span id = "receive_date" > ${data}</span>`,
+                //    targets: 14
+                //},
+                //{
+                //    render: (data, type, row) => `<b> ${data}</b>`,
+                //    targets: 11
+                //},
+                {
+                    render: (data, type, row) => `<div class="col-sm-11 lpo_form num_right no-padding" id='multiWrapper'>${data}</div>
+                        <div class="col-sm-1 i_Icon">
+                            <button type="button" id="BtnbBalanceIcon" class="calculator" data-toggle="modal"
+                 onclick="OnClickIssued_ReceiptIconBtn(event,'BP');" data-target="#BalanceIssued_Received" data-backdrop="static"
+                      data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title=""></button>
+                        </div>`,
+                    targets: 11
+                },
+                //{
+                //    render: (data, type, row) => `<span id = "elsp_days" > ${data}</span >`,
+                //    targets: 14
+                //},
+            ]
+
+        }
+        else if (ReportType == "BW")
+        {
+            array =
+                [
+                    {
+                        'targets': 1,
+                        'createdCell': function (td, cellData, rowData, row, col) {
+                            $(td).attr('id', 'tditem');
+                        }
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 1
+                    },
+                    {
+                        render: (data, type, row) => `<div class="col-sm-11 no-padding"  id="multiWrapper"><span id="ItemNameSpan"> ${data}</span></div>
+                        <div class="col-sm-1 i_Icon">
+                            <button type="button" id="ItmInfoBtnIcon" class="calculator" onclick="OnClickIconBtnTable(event);" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="Item Information">  </button>
+                        </div>`,
+                        targets: 2
+                    },
+                    {
+                        render: (data, type, row) => `<input type="hidden" id="hfItemID" value='${data}'>`,
+                        targets: 3
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 4
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 5
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 6
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 7
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 8
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 9
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 10
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 11
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 12
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 13
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 14
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 15
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 16
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 17
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 18
+                    },
+                ]
+        }
+        else if (ReportType == "IB")
+        {
+            array =
+                [
+                    {
+                        'targets': 1,
+                        'createdCell': function (td, cellData, rowData, row, col) {
+                            $(td).attr('id', 'tditem');
+                        }
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 1
+                    },
+                    {
+                        render: (data, type, row) => `<div class="col-sm-11 no-padding"  id="multiWrapper"><span id="ItemNameSpan"> ${data}</span></div>
+                        <div class="col-sm-1 i_Icon">
+                            <button type="button" id="ItmInfoBtnIcon" class="calculator" onclick="OnClickIconBtnTable(event);" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="Item Information">  </button>
+                        </div>`,
+                        targets: 2
+                    },
+                    {
+                        render: (data, type, row) => `<input type="hidden" id="hfItemID" value='${data}'>`,
+                        targets: 3
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 4
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 5
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 6
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 7
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 8
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 9
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 10
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 11
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 12
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 13
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 14
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 15
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 16
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 17
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 18
+                    },
+                ]
+        }
+        else if ((ReportType == "EW" || ReportType == "PS") && ShowAs=="D")
+        {
+            array = [
+                {
+                    'targets': 1,
+                    'createdCell': function (td, cellData, rowData, row, col) {
+                        $(td).attr('id', 'tditem');
+                    }
+                },
+                {
+                    render: (data, type, row) => `<span id = "_EntityType" > ${data}</span>`,
+                    targets: 1
+                },
+                {
+                    render: (data, type, row) => `<span id = "EntityNameSpan" > ${data}</span >`,
+                    targets: 2
+                },
+
+                {
+                    render: (data, type, row) => `<div class="col-sm-11 no-padding"  id="multiWrapper"><span id="ItemNameSpan"> ${data}</span></div>
+                        <div class="col-sm-1 i_Icon">
+                            <button type="button" id="ItmInfoBtnIcon" class="calculator" onclick="OnClickIconBtnTable(event);" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="Item Information">  </button>
+                        </div>`,
+                    targets: 3
+                },
+                {
+                    render: (data, type, row) => `<input type="hidden" id="hfItemID" value='${data}'>`,
+                    targets: 4
+                },
+                {
+                    render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                    targets: 5
+                },
+                {
+                    render: (data, type, row) => `<input type="hidden" id="ST_UOM" value='${data}'>`,
+                    targets: 6
+                },
+                {
+                    render: (data, type, row) => `<span id = "Issue_no" > ${data}</span>`,
+                    targets: 7
+                },
+                {
+                    render: (data, type, row) => `<span id = "Issue_dt" > ${data}</span>`,
+                    targets: 8
+                },
+                {
+                    render: (data, type, row) => `<span id = "Bin_loc" > ${data}</span>`,
+                    targets: 9
+                },
+                {
+                    render: (data, type, row) => `<span id = "sr_type" > ${data}</span>`,
+                    targets: 10
+                },
+                {
+                    render: (data, type, row) => `<span id = "Issued_by_Summ" > ${data}</span>`,
+                    targets: 11
+                },
+
+                {
+                    render: (data, type, row) => `<span id = "issue_date" > ${data}</span>`,
+                    targets: 12
+                },
+
+                {
+                    render: (data, type, row) => `<span id = "receive_date" > ${data}</span>`,
+                    targets: 13
+                },
+
+
+                {
+                    render: (data, type, row) => `<span id = "elsp_days" > ${data}</span >`,
+                    targets: 14
+                },
+                {
+                    render: (data, type, row) => `<b > ${data}</b>`,
+                    targets: 15
+                },
+                {
+                    render: (data, type, row) => `<b > ${data}</b>`,
+                    targets: 16
+                },
+                {
+                    render: (data, type, row) => `<b > ${data}</b>`,
+                    targets: 17
+                },
+                {
+                    render: (data, type, row) => `<b > ${data}</b>`,
+                    targets: 18
+                },
+                {
+                    render: (data, type, row) => `<b > ${data}</b>`,
+                    targets: 19
+                },
+            ]
+        }
+        else {
+            array =
+                [
+                    {
+                        'targets': 1,
+                        'createdCell': function (td, cellData, rowData, row, col) {
+                            $(td).attr('id', 'tditem');
+                        }
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 1
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 2
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 3
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 4
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 5
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 6
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 7
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 8
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 9
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 10
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 11
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 12
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 13
+                    },
+                    {
+                        render: (data, type, row) => `<span id = "" > ${data}</span>`,
+                        targets: 14
+                    },
+                ]
+        }
+        return array;
+    }
+</script>

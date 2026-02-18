@@ -1,0 +1,143 @@
+﻿@*@model EnRepMobileWeb.MODELS.ApplicationLayer.InventoryManagement.MRS.MRSList_Model*@
+@model EnRepMobileWeb.MODELS.ApplicationLayer.Procurement.PurchaseRequisition.PurchaseRequisition_Model
+@using EnRepMobileWeb.Resources;
+@using System.Data
+@if (Session["UserId"] == null)
+{
+    Response.Redirect("~/Login");
+}
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+<script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+<script src="~/Content/Css/build/js/sweetalert.js"></script>
+@*/*start Add by Hina on 06-02-2024 to chk Financial year exist or not*/*@
+@{
+    if (TempData["Message"] != null)
+    {
+        @*<script type="text/javascript">
+                swal("", $("#savemsg").text(), "success");
+            </script>*@
+        if (TempData["Message"] == "Financial Year not Exist")
+        {
+            <script type="text/javascript">
+                swal("", $("#FinancialYearDoesNotExistTransactionCanNotBeDone").text(), "warning");
+            </script>
+        }
+
+    }
+}
+@*/*End to chk Financial year exist or not*/*@
+
+<script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/Procurement/PurchaseRequisition/PurchaseRequisition.js"></script>
+<title>@Model.Title</title>
+<div class="row">
+    <!-- Workflow Information -->
+    <div id="WorkflowInformation" class="modal fade" role="dialog">
+        <div class="modal-dialog" style="max-width:700px;">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/Common/Views/_WorkFlow.cshtml")
+        </div>
+    </div>
+    <!-- Purchase Requisition Tracking -->
+    <div id="PurchaseRequisitionTracking" class="modal fade" role="dialog">
+        <div id="trackingpo" class="modal-dialog" style=" max-width:1200px;">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/_PurchaseRequisitionTracking.cshtml")
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <h2 class="col-md-5 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                <!-- Smart Wizard -->
+                <div id="wizard" class="form_wizard wizard_horizontal col-md-3 col-sm-12 work_flow">
+                    @if (ViewBag.AppLevel.Rows.Count > 0)
+                    {
+                        @Html.Partial("~/Areas/Common/Views/_PartialWorkflowBar.cshtml")
+                    }
+                </div>
+                @Html.HiddenFor(m => m.PRData, new { @id = "PRData" })
+                @Html.HiddenFor(m => m.WF_status, new { @id = "WF_status" })
+                <input type="hidden" id="DocumentMenuId" value="@ViewBag.DocumentMenuId" />
+                @if (ViewBag.VBRoleList != null)
+                {
+                    foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                    {
+                        if (Row["feature_id"].ToString() == "105101110001")
+                        {
+                            <div id="" class="col-md-4 col-sm-12 heading_right_padding">
+                                <ul>
+                                    <li>
+                                        <a class="tooltip-test checkFinYear"
+                                           title="@Resource.AddNew" href="@Url.Action("AddBtnFromList","PurchaseRequisition")"><img src="~/Content/Images/addgreen.png" width="32" id="addNewItem" height="32" alt="Add"></a>
+                                    </li>
+                                </ul>
+                            </div>
+                        }
+                    }
+                }
+                <div class="x_title pad_mar ">
+                    <div class="col-md-12 col-sm-12 icon_tool padding_zero">
+                        <form class="available_stock pad_mar" action="" method="post" novalidate>
+                            <div class="col-md-2 col-sm-12">
+                                <label class="col-form-label label-align">@Resource.RequirementArea</label>
+                                @Html.DropDownListFor(model => model.req_area, new SelectList(Model._requirementAreaLists, "req_id", "req_val"), new { @class = "form-control", onchange = "onChangeRequiredArea()", id = "ddlRequiredArea" })
+                                @Html.ValidationMessageFor(model => model.req_area, String.Empty, new { @style = "color:red;!important", @id = "vmRequiredArea" })
+                                @Html.HiddenFor(model => model.req_area, new { @id = "hdRequiredArea" })
+                                <span class="field-validation-valid" data-valmsg-for="req_area" data-valmsg-replace="true" id="vmRequiredArea" style="color:red;!important"></span>
+                                <input id="hdRequiredArea" name="req_area" type="hidden" value="0">
+                            </div>
+                            <div class="col-md-2 col-sm-12">
+                                <label class="col-form-label label-align">
+                                    @Resource.FromDate
+                                </label>
+                                @Html.TextBoxFor(model => model.PR_FromDate, new { @class = "form-control", @id = "txtFromdate", @onchange = "FromToDateValidation()", @type = "date", @max = DateTime.Now.ToString("yyyy-MM-dd") })
+                            </div>
+                            <div class="col-md-2 col-sm-12">
+                                <label class="col-form-label label-align">
+                                    @Resource.ToDate
+                                </label>
+                                @if (Model.PR_ToDate != null)
+                                {
+                                    @Html.TextBoxFor(model => model.PR_ToDate, new { @class = "form-control", @id = "txtTodate1", @placeholder = "dd-MM-yyyy", @onchange = "FromToDateValidation()", @type = "date", @max = DateTime.Now.ToString("yyyy-MM-dd"), @Value = Model.PR_ToDate })
+                                }
+                                else
+                                {
+                                    @Html.TextBoxFor(model => model.PR_ToDate, new { @class = "form-control", @id = "txtTodate1", @placeholder = "dd-MM-yyyy", @onchange = "FromToDateValidation()", @type = "date", @max = DateTime.Now.ToString("yyyy-MM-dd"), @Value = @DateTime.Now.ToString("yyyy-MM-dd") })
+                                }
+                            </div>
+                            <div class="col-md-2 col-sm-12">
+                                <label class="col-form-label label-align">
+                                    @Resource.Status
+                                </label>
+                                @Html.DropDownListFor(model => model.PR_status, new SelectList(Model.statusLists, "status_id", "status_name"), new { @class = "form-control", id = "ddlStatus" })
+
+                            </div>
+                            <div class="col-md-1 col-sm-12">
+                                <button type="button" class="btn btn-primary btn-sm margintop20" id="Btn_Search"  onclick="BtnSearch()"><i class="fa fa-search" aria-hidden="true"></i></button>
+
+                            </div>
+
+                        </form>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <div class="card-box table-responsive dy_table">
+                    <div id="PRListTbl" class="sticky-table sticky-ltr-cells sb-container container-example1">
+                        @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialPurchaseRequisitionList.cshtml")
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- page content end -->

@@ -1,0 +1,126 @@
+﻿@using EnRepMobileWeb.Resources;
+<div class="modal-content">
+    <div class="modal-header">
+        <input type="hidden" id="hdnunresval" value=" @Resource.Unreserve @Resource.Stock @Resource.Detail" />
+        <h2><span id="Span_UnResStkPopup"></span></h2>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body pop_top">
+        <div class="col-md-4 col-sm-12 pop_right pop_left">
+            <label class="col-form-label label-align">@Resource.ItemName</label>
+            <input id="UnresItemName" class="form-control" autocomplete="off" type="text" name="ItemName" placeholder="@Resource.ItemName" disabled>
+            <input type="hidden" id="hdn_Unresitemid" />
+        </div>
+        <div class="col-md-2 col-sm-12 pop_right ">
+            <label class="col-form-label label-align">@Resource.UOM</label>
+            <input id="UnresUOM" class="form-control" autocomplete="off" type="text" name="UOM" placeholder="@Resource.UOM" disabled>
+            <input type="hidden" id="hdn_Unresuom" />
+        </div>
+        <div class="col-md-55 col-sm-12 pop_right ">
+            <label class="col-form-label label-align">@Resource.Branch</label>
+            <input id="UnresBranch" class="form-control" autocomplete="off" type="text" name="Branch" placeholder="@Resource.Branch" disabled>
+            <input type="hidden" id="hdn_Unresbranch" />
+        </div>
+        <div class="col-md-55 col-sm-12 pop_right ">
+            <label class="col-form-label label-align">@Resource.Warehouse</label>
+            <input id="UnresWarehouse" class="form-control" autocomplete="off" type="text" name="Warehouse" placeholder="@Resource.Warehouse" disabled>
+            <input type="hidden" id="hdn_Unreswhid" />
+        </div>
+        <div class="col-md-2 col-sm-12 pop_right ">
+            <label class="col-form-label label-align">@Resource.Reserved @Resource.Quantity</label>
+            <div class="col-sm-10 lpo_form no-padding">
+                <input id="UnrespopupReservedQuantity" class="form-control num_right" autocomplete="off" type="text" name="ReservedQuantity" placeholder="0000.00" disabled>
+            </div>
+            <div class="col-sm-2 i_Icon no-padding" id="div_U_SubItemPopupResStock">
+                <button type="button" id="U_SubItemPopupResStock" class="calculator subItmImg" disabled onclick="return SubItemStockDetailsPopUp('U_TotalResStk',event)" data-toggle="modal" data-target="#SubItemStock" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+            </div>
+            <input hidden id="UR_Insight_OpenBy" />
+        </div>
+        <div class="col-md-2 col-sm-12 pop_right ">
+            <label class="col-form-label label-align">@Resource.TotalStock</label>
+            <div class="col-sm-10 lpo_form no-padding">
+                <input id="UnrespopupTotalQuantity" class="form-control num_right" autocomplete="off" type="text" name="TotaLQuantity" placeholder="0000.00" disabled>
+            </div>
+            <div class="col-sm-2 i_Icon no-padding" id="div_U_SubItemPopupTotalStock">
+                <button type="button" id="U_SubItemPopupTotalStock" class="calculator subItmImg" disabled onclick="return SubItemStockDetailsPopUp('U_TotalStk',event)" data-toggle="modal" data-target="#SubItemStock" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+            </div>
+        </div>
+        <div class="col-md-2 col-sm-12 pop_right ">
+            <label class="col-form-label label-align">@Resource.AvailableStock</label>
+            <div class="col-sm-10 lpo_form no-padding">
+                <input id="UnrespopupAvailableQuantity" class="form-control num_right" autocomplete="off" type="text" name="AvailableQuantity" placeholder="0000.00" disabled>
+            </div>
+            <div class="col-sm-2 i_Icon no-padding" id="div_U_SubItemPopupAvlStock">
+                <button type="button" id="U_SubItemPopupAvlStock" class="calculator subItmImg" disabled onclick="return SubItemStockDetailsPopUp('U_AvlStk',event)" data-toggle="modal" data-target="#SubItemStock" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+            </div>
+        </div>
+
+            @*<div class="col-md-12 col-sm-12">
+        <div class="price_item_detail">
+            <div class="tableFixHead height30VH">
+                <table class="table table-bordered margin15 width1400" id="Un_ReservedQtyDetail">
+                    <thead>
+                        <tr>*@
+            <div class="card-box table-responsive dy_table margin15">
+                <div class="price_item_detail">
+                    <div id="" class="sticky-table sticky-ltr-cells sb-container container-example1 OrderHistory height30VH">
+                        <table id="Un_ReservedQtyDetail" data-order="" class="table table-striped table-bordered rowhighlighttbl width1800 itmfrz">
+                            <thead>
+                                <tr class="sticky-header">
+                                    <th width="6%">@Resource.TransactionDate </th>
+                                    <th width="16%" class="itmStick">@Resource.EntityName </th>
+                                    <th width="6%">@Resource.Document <br />@Resource.Type </th>
+                                    <th width="6%">@Resource.Document <br />@Resource.Number </th>
+                                    <th width="6%">@Resource.Document <br />@Resource.Date </th>
+                                    <th width="6%">@Resource.Document <br /> @Resource.Quantity </th>
+                                    <th width="6%">@Resource.Lot</th>
+                                    <th width="6%">@Resource.Batch1</th>
+                                    <th width="6%">@Resource.Manufacturer @Resource.Name</th>
+                                    <th width="6%">@Resource.MRP</th>
+                                    <th width="6%">@Resource.Manufactured @Resource.Date</th>
+                                    <th width="6%">@Resource.Expiry <br /> @Resource.Date</th>
+                                    <th width="6%">@Resource.Serial1</th>
+                                    <th width="6%" id="threvqty">@Resource.Reserved <br /> @Resource.Quantity</th>
+                                    <th width="6%" id="thunrevqty">@Resource.Unreserve <br /> @Resource.Quantity</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                            <tfoot>
+                                <tr class="total">
+                                    <td colspan="13" class="num_right"><strong>@Resource.Total</strong></td>
+                                    <td id="tdftotal">&nbsp;</td>
+                                    <td class="num_right">
+                                        <div class="col-sm-10 no-padding">
+                                            <strong><span id="TotalUnResQuantity">0.00000</span></strong>
+                                        </div>
+                                        <div class="col-sm-2 i_Icon no-padding" id="div_SubItemPopupPendResQty">
+                                            <button type="button" id="SubItemPopupTotalUnResQty" class="calculator subItmImg" disabled onclick="return SubItemDetailsPopUp('PPTotalUnResQuantity',event)" data-toggle="modal" data-target="#SubItem" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+                @*<div class="col-md-12 col-sm-12 pop_left pop_right ">
+                <div class="tableFixHead height30VH">
+                    <table class="table table-bordered margin15" id="TaxCalculatorTbl">
+                        <tbody>
+                        </tbody>
+                        <tfoot>
+                            <tr class="total">
+                                <td colspan="4" width="80%" class="num_right"><strong>@Resource.Total</strong></td>
+                                <td class="num_right"><strong><span id="TotalUnResQuantity">0.00000</span></strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>*@
+            </div>
+        </div>
+    <div class="modal-footer" id="div_Unresfooter">        
+        <button type="button" class="btn btn-primary btn-sm" id="SaveAndExitBtn" onclick="OnClickSaveAndExitxBtn()">@Resource.SaveAndExit</button>
+        <button type="button" class="btn btn-primary btn-sm" id="TaxExitAndDiscard" data-dismiss="modal">@Resource.DiscardAndExit</button>
+    </div>
+</div>

@@ -1,0 +1,167 @@
+﻿@using EnRepMobileWeb.Resources;
+
+@model EnRepMobileWeb.MODELS.BusinessLayer.QualityControlSetup.QCItemParameterSetupViewModel
+
+@{
+    var rowId = 0;
+}
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<script src="~/Content/Scripts/BusinessLayer/QualityControlSetup/ItemParameterSetup/ItemParameterSetupList.js"></script>
+<style>
+    .hidden {
+        display: none;
+    }
+</style>
+<table id="QCparametersetuptbl" class="table table-striped table-bordered width2000 rowhighlighttbl">
+    <thead>
+        <tr class="sticky-header">
+
+            <th>@Resource.SrNo</th>
+            <th width="15%">@Resource.ItemName</th>
+            <th style="display:none;">@Resource.ItemName</th>
+            @*<th style="display:none;">@Resource.ParameterName</th>*@
+            <th width="20%">@Resource.Group</th>
+            <th title=""><span title="Unit of Measure" to>@Resource.UOM</span></th>
+
+            <th>@Resource.OEMNo</th>
+            <th>@Resource.SampleCode</th>
+            <th>@Resource.Status</th>
+            <th width="8%">@Resource.CreatedBy</th>
+            <th width="8%">@Resource.Createdon</th>
+            <th width="8%">@Resource.ApprovedBy</th>
+            <th width="8%">@Resource.ApprovedOn</th>
+            <th width="8%">@Resource.AmendedBy</th>
+            <th width="8%">@Resource.AmendedOn</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @*@if (Model.getViewModelItemList != null)
+        {
+            foreach (var row in Model.getViewModelItemList)
+            {
+                rowId++;
+        <tr>
+
+            <td>@rowId</td>
+            <td>@row.item_Name</td>
+            <td id="item_id" hidden="hidden">@row.item_id</td>
+            <td hidden="hidden">@row.param_Id</td>
+            <td>@row.group</td>
+            <td>@row.UOM</td>
+            <td>@row.OEM_No</td>
+            <td>@row.Sample_code</td>
+            <td>@row.Status</td>
+            <td>@row.create_by</td>
+            <td>@row.CreatedOn</td>
+            <td>@row.app_by</td>
+            <td>@row.ApprovedOn</td>
+            <td>@row.mod_by</td>
+            <td>@row.AmendedOn</td>
+        </tr>
+            }
+        }*@
+        </tbody>
+</table>
+
+
+
+<script>
+    $(document).ready(function () {
+        debugger;
+        SRTableData();
+    });
+
+    function SRTableData() {
+        var ItemID = $("#itemList").val();
+        var ItemGrpID = $("#GrpList").val();
+
+        $("#QCparametersetuptbl").DataTable().destroy();
+
+        $("#QCparametersetuptbl").DataTable({
+            processing: true,
+            serverSide: true,
+            pageLength: 50,
+            filter: true,
+            orderMulti: false,
+
+            ajax: {
+                url: "/BusinessLayer/ItemParameter/PageLoadData",
+                type: "POST",
+                datatype: "json",
+                data: {
+                    ItemID: ItemID,
+                    ItemGrpID: ItemGrpID,
+
+                }
+            },
+
+            columns: SampleReceiptColumns(),
+            columnDefs: TargetColumnSR(),
+        });
+        var exportbtn = `<a class="btn btn-default buttons-csv buttons-html5 btn-sm" tabindex="0"
+            id='export'    aria-controls="QCparameter_setup" href="#"><span>CSV</span></a>`;
+        $("#QCparametersetuptbl_length").append(exportbtn);
+        UploadExportExcel();
+    }
+
+    function SampleReceiptColumns() {
+        return [
+            { data: "sr_no", "name": "sr_no", autoWidth: true },
+            { data: "item_Name", "name": "item_Name", autoWidth: true, className: "ItmNameBreak itmStick tditemfrz" },
+            { data: "item_id", "name": "item_id", autoWidth: true, className: "hidden" },
+            { data: "group", "name": "group", autoWidth: true },           
+            { data: "UOM", "name": "UOM", autoWidth: true },
+            { data: "OEM_No", "name": "OEM_No", autoWidth: true },
+            { data: "Sample_code", "name": "Sample_code", autoWidth: true },
+            { data: "Status", "name": "Status", autoWidth: true },
+            { data: "create_by", "name": "create_by", "id": "create_by", autoWidth: true },
+            { data: "CreatedOn", "name": "CreatedOn", autoWidth: true },
+            { data: "app_by", "name": "app_by", autoWidth: true },
+            { data: "ApprovedOn", "name": "ApprovedOn", autoWidth: true },
+            { data: "mod_by", "name": "mod_by", autoWidth: true },
+            { data: "AmendedOn", "name": "AmendedOn", autoWidth: true }
+           
+        ];
+    }
+
+    function TargetColumnSR() {
+        return [
+            {
+                targets: 1,
+                createdCell: function (td) {
+                    $(td).attr('id', 'item_Name');
+                }
+            },
+            {
+                targets: 2,
+                createdCell: function (td) {
+                    $(td).attr('id', 'item_id');
+                }
+            },
+            { targets: 1, render: (data) => `<span>${data}</span>` },
+            //{ targets: 2, render: (data) => `<span>${data}</span>` },
+            //{ targets: 3, render: (data) => `<span>${data}</span>` },
+            //{ targets: 4, render: (data) => `<span>${data}</span>` },
+            //{ targets: 5, render: (data) => `<span>${data}</span>` },
+            //{ targets: 6, render: (data) => `<span>${data}</span>` },
+            //{ targets: 7, render: (data) => `<span>${data}</span>` },
+            //{ targets: 8, render: (data) => `<b>${data}</b>` },
+            //{ targets: 9, render: (data) => `<span>${data}</span>` },
+            //{ targets: 10, render: (data) => `<span>${data}</span>` },
+            //{ targets: 11, render: (data) => `<span>${data}</span>` },
+            //{ targets: 12, render: (data) => `<span>${data}</span>` },
+            //{ targets: 13, render: (data) => `<span>${data}</span>` },
+            //{ targets: 14, render: (data) => `<span>${data}</span>` },
+        ];
+    }
+
+</script>
+
+
+@*@if (Session["IPSearch"].ToString() == "IP_Search")*@
+@*@if (Model.IPSearch == "IP_Search")
+    {
+@Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+@Scripts.Render("~/Content/Scripts/DatatablesJs")
+}*@

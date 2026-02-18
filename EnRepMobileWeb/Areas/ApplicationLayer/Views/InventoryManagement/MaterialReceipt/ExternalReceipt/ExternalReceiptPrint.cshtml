@@ -1,0 +1,239 @@
+﻿@using System.Data;
+@{
+    string doc_status = "";
+    string BackGroundImgUrl = "";
+    if (ViewBag.DocStatus != null)
+    {
+        doc_status = ViewBag.DocStatus;
+    }
+    if (doc_status == "D" || doc_status == "F")
+    {
+        BackGroundImgUrl = Server.MapPath("~/Content/Images/draft.png");
+    }
+    else if(doc_status == "C")
+    {
+        BackGroundImgUrl = Server.MapPath("~/Content/Images/cancelled.png");
+    }
+    DataTable dt = new DataTable();
+    DataView data = new DataView();
+    if (ViewBag.Details != null)
+    {
+        dt = ViewBag.Details.Tables[1];
+    }
+    var srno = 1;
+}
+<style>
+    #dtlTable, #dtlTable td, #dtlTable th {
+        border: 0.5px solid black;
+    }
+
+    #sub, #sub td, #sub th {
+        border: 0px;
+    }
+</style>
+<div style='background: url(@BackGroundImgUrl) no-repeat; backgroundposition: center center;'>
+    @Html.Partial("~/Areas/Common/Views/Cmn_PrintHeaderWithAddrSampleIssue.cshtml")
+    @*@Html.Partial("~/Areas/Common/Views/Cmn_PrintHeaderWithoutAddr.cshtml")*@
+    <table width='100%' style="vertical-align: top;">
+        <tr>
+            <td style="vertical-align: top;">
+                <table style='width:100%;vertical-align:top;'>
+                    <tr>
+                        <td style='width:10px;'></td>
+                        <td>
+                            <table style='width:100%;border:solid 1px #000000;'>
+                                <tr>
+                                    <td style='width: 50%; border-right: solid 1px #000000;padding: 0px; vertical-align:top; '>
+                                        <table class="suppInfo" style=''>
+                                            <tr>
+
+                                                <td style="paddingright: 10px; width: 250px;"><strong> @ViewBag.Details.Tables[0].Rows[0]["comp_nm"].ToString() </strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td style="width:18%; paddingtop:0px; vertical-align:top;"><strong> Address </strong> </td>
+                                                <td style="paddingright: 10px; width: 250px;">: @ViewBag.Details.Tables[0].Rows[0]["Comp_Add"].ToString() </td>
+                                            </tr>
+
+
+                                            <tr>
+                                                <td style="width:18%;"><strong> State </strong></td>
+                                                <td style="paddingright: 10px; width: 250px;">: @ViewBag.Details.Tables[0].Rows[0]["state_name"].ToString()</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="width:18%;"><strong> Country </strong></td>
+                                                <td style="paddingright: 10px; width: 250px;">: @ViewBag.Details.Tables[0].Rows[0]["country_name"].ToString()</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="width:18%;"><strong> Phone </strong></td>
+                                                <td style="paddingright: 10px; width: 250px;">: @ViewBag.Details.Tables[0].Rows[0]["contact_no"].ToString()</td>
+                                            </tr>
+                                            <tr>
+                                                <td width="20%" style="paddingtop: 2px; paddingbottom: 2px;"><strong> Email </strong></td>
+                                                <td width="75%">: @ViewBag.Details.Tables[0].Rows[0]["email_id1"].ToString()</td>
+                                            </tr>
+                                            <tr>
+                                                <td width="20%" style="paddingtop: 2px; paddingbottom: 2px;"><strong> Website </strong></td>
+                                                <td width="75%">: @ViewBag.Details.Tables[0].Rows[0]["comp_website"].ToString()</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td style="width:18%;"><strong> GSTIN/UIN </strong></td>
+                                                <td style="paddingright: 10px; width: 250px;">: @ViewBag.Details.Tables[0].Rows[0]["gst_no"].ToString()</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="width:18%;"><strong> PAN</strong> </td>
+                                                <td style="paddingright: 10px; width: 250px;">: @ViewBag.Details.Tables[0].Rows[0]["pan_no"].ToString()</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td style='width:50%;'>
+                                        <table style='font-size:12px;font-weight:normal;padding:0px 0px 0px 5px;'>
+                                            <tr>
+                                                <td style='font-size:12px;'> <strong> Received From :</strong> @ViewBag.Details.Tables[1].Rows[0]["issued_for"].ToString() </td>
+                                            </tr>
+                                            <tr>
+                                                <td style='font-size: 12px; font-weight: normal; vertical-align: top;'>
+                                                    <table class="suppInfo" style=''>
+                                                        <tr>
+                                                            <td style="width:18%; paddingtop:0px; vertical-align:top;"><strong> Address </strong></td>
+                                                            <td style="paddingright: 10px; width: 280px; vertical-align: top; ">: @ViewBag.Details.Tables[1].Rows[0]["issued_addr"].ToString() </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="width:18%;"><strong> Pin Code </strong> </td>
+                                                            <td style="paddingright: 10px; width: 280px;">: @ViewBag.Details.Tables[1].Rows[0]["PinCode"].ToString()</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="width:18%;"><strong> State </strong> </td>
+                                                            <td style="paddingright: 10px; width: 280px;">: @ViewBag.Details.Tables[1].Rows[0]["issued_state"].ToString()</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="width:18%;"><strong> Country </strong> </td>
+                                                            <td style="paddingright: 10px; width: 280px;">: @ViewBag.Details.Tables[1].Rows[0]["issued_Country"].ToString()</td>
+                                                        </tr>
+                                                        @*<tr>
+            <td style="width:18%;"><strong> Pin Code </strong> </td>
+            <td style="paddingright: 10px; width: 280px;">: @ViewBag.Details.Tables[1].Rows[0]["PinCode"].ToString()</td>
+        </tr>*@
+                                                        <tr>
+                                                            <td style="width:18%;"><strong> Phone </strong></td>
+                                                            <td style="paddingright: 10px; width: 280px;">: @ViewBag.Details.Tables[1].Rows[0]["issued_Contect_no"].ToString()</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="width:18%;"><strong> GSTIN/UIN  </strong></td>
+                                                            <td style="paddingright: 10px; width: 280px;">: @ViewBag.Details.Tables[1].Rows[0]["issued_Gst"].ToString()</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="width:18%;"><strong> PAN </strong> </td>
+                                                            <td style="paddingright: 10px; width: 280px;">: @ViewBag.Details.Tables[1].Rows[0]["issued_pan_no"].ToString()</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td style='width:10px;'></td>
+                    </tr>
+                    <tr>
+                        <td style='width:10px;'></td>
+                        <td style="vertical-align: top;">
+                            <table style='width:100%;border:solid 1px #000000;vertical-align:top;'>
+                                <tr>
+                                    <td style='width:50%;vertical-align:top;'>
+                                        <table style='font-size:12px;font-weight:normal;padding:0px 0px 0px 5px;vertical-align:top;'>
+                                            <tr><td><strong>Receipt No. : </strong> @ViewBag.Details.Tables[1].Rows[0]["recpt_no"]</td></tr>
+                                        </table>
+                                    </td>
+                                    <td style='width:50%; vertical-align:top;'>
+                                        <table style='font-size:12px;font-weight:normal;padding:0px 0px 0px 0px;vertical-align:top;'>
+                                            <tr><td><strong>Dated : </strong>@ViewBag.Details.Tables[1].Rows[0]["gpass_dt"].ToString()</td></tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td style='width:10px;'></td>
+                    </tr>
+                    <tr>
+                        <td style='width:10px;'></td>
+                        <td>
+                            <table id="dtlTable" cellspacing="0" cellpadding="0" style=" width:100%; font-size: 12px; font-weight:normal;padding: 0px 0px; line-height:18px; font-weight:normal; vertical-align:top; border: solid 1px #000000;">
+                                <thead>
+                                    <tr>
+                                        <th width="7%" align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'><strong> S.NO.</strong></th>
+                                        <th width="32%" align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'><strong> Item Name</strong></th>
+                                        <th width="8%" align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'><strong> UOM</strong></th>
+                                        <th width="20%" align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'><strong> Received <br /> Quantity</strong></th>
+                                        <th width="33%" align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'><strong> Remarks</strong></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (DataRow dr in dt.Rows)
+                                    {
+                                        <tr>
+                                            <td style='text-align:center;'>@srno</td>
+                                            <td style='text-align:left; paddingleft:5px;paddingtop:5px;paddingbottom:3px;'>@dr["item_name"].ToString() </td>
+                                            <td style='text-align:left; paddingleft:5px; paddingtop:5px; paddingbottom: 3px; text-align: center;'>@dr["uom_alias"]</td>
+                                            <td style='text-align: right; paddingtop: 5px; paddingright: 5px; paddingbottom: 3px;'> @dr["Rec_qty"].ToString() </td>
+                                            <td style='text-align:left; paddingleft:5px; paddingtop:5px; paddingbottom: 3px;'>@dr["remarks"]</td>
+                                        </tr>
+                                        srno = srno + 1;
+                                    }
+                                </tbody>
+                            </table>
+                        </td>
+                        <td style='width:10px;'></td>
+                    </tr>
+                    <tr>
+                        <td style='width: 10px;'></td>
+                        <td>
+                            <table cellspacing="0" cellpadding="0" style=" width: 100%; font-size: 12px; font-weight: normal; padding: 0px 0px; margin-top:5px; font-weight: normal; vertical-align: top; border: solid 1px #000000;">
+                                <tr>
+                                    <td style="paddingleft: 5px; paddingtop: 5px; paddingbottom: 5px; border-top: solid 1px #000000; border-right: solid 1px #000000; ">
+                                        <strong> Remark :</strong>  @ViewBag.Details.Tables[1].Rows[0]["header_remarks"]
+
+                                    </td>
+                                </tr>
+
+                                @*@if (@ViewBag.Details.Tables[1].Rows[0]["header_remarks"].ToString() != "" && @ViewBag.Details.Tables[1].Rows[0]["header_remarks"].ToString() != null)
+                                    {
+                                        <tr>
+                                            <td style="paddingleft:5px;vertical-align:top;border-top: solid 1px #000000;border-right: solid 1px #000000;">@ViewBag.Details.Tables[1].Rows[0]["header_remarks"].ToString()</td>
+                                        </tr>
+                                    }*@
+                            </table>
+                        </td>
+                        <td style='width:10px;'></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+    <table style="paddingleft:8px; paddingright:9px; vertical-align:top;">
+        <tr>
+            <td width="100%" style="vertical-align:top;">
+                <table style="vertical-align:top;">
+                    <tr>
+                        <td style="font-size: 12px; font-weight:bold;vertical-align:top; text-align:left; width:35%;">
+                            For @ViewBag.Details.Tables[0].Rows[0]["comp_nm"]
+                        </td>
+                        <td style="font-size: 12px; font-weight: bold; vertical-align: top; text-align: right; width: 12%;">
+                            Checked By :
+                        </td>
+                        <td style="font-size: 12px; font-weight: normal; vertical-align: top; text-align: left; width: 18%; paddingleft:0px;">
+                            @ViewBag.Details.Tables[1].Rows[0]["check_by"]
+                        </td>
+                        <td style="font-size: 12px; font-weight: bold; vertical-align: top; text-align: right; width: 35%; paddingright:25px;">
+                            Receiver's Signature
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="font-size: 12px; font-weight:bold;padding: 30px 15px 0px 0px; vertical-align:top; text-align:left;">Authorised Signatory</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>

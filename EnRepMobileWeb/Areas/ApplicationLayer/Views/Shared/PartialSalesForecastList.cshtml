@@ -1,0 +1,75 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.SalesAndDistribution.SalesForecast.SalesForecastModel
+@using EnRepMobileWeb.Resources;
+@{
+    var count = 0;
+}
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/SalesAndDistribution/SalesForecast/SalesForecast.js"></script>
+
+<table id="datatable-buttons1" class="table table-striped width2200 rowhighlighttbl itmfrz" cellspacing="0" width="100%">
+    <thead>
+        <tr class="sticky-header">
+            <th hidden="hidden"></th>
+            <th hidden="hidden"></th>
+            <th hidden="hidden"></th>
+            <th hidden="hidden"></th>
+            <th hidden="hidden"></th>
+            <th hidden="hidden"></th>
+            <th width="3%"> @Resource.SrNo</th>
+            <th width="7%" class="itmStick">@Resource.FinancialYear</th>
+            <th width="6%">@Resource.Period</th>
+            <th width="6%">@Resource.FromDate</th>
+            <th width="6%">@Resource.ToDate</th>
+            <th width="8%">@Resource.PreviousYearSales <br /> @Resource.InValue</th>
+            <th width="8%">@Resource.TargetSales <br /> @Resource.InValue</th>
+            <th width="8%">@Resource.ActualSale <br /> @Resource.InValue</th>
+            <th width="6%">@Resource.Status</th>
+            <th width="7%">@Resource.CreatedBy</th>
+            <th width="7%">@Resource.Createdon</th>
+            <th width="7%">@Resource.ApprovedBy</th>
+            <th width="7%">@Resource.ApprovedOn</th>
+            <th width="7%">@Resource.AmendedBy</th>
+            <th width="7%">@Resource.AmendedOn</th>
+        </tr>
+    </thead>
+    <tbody id="">
+        @if (ViewBag.GetFCList != null)
+        {
+            foreach (System.Data.DataRow item in ViewBag.GetFCList.Rows)
+            {
+                count++;
+                <tr role="row" class="odd">
+                    <td class="sorting_1">@count</td>
+                    <td hidden="hidden" id="hdn_sf_id">@item["sf_id"]</td>
+                    <td hidden="hidden" id="hdn_f_freq">@item["f_freq"]</td>
+                    <td hidden="hidden" id="hdn_f_fy">@item["f_fy1"]</td>
+                    <td hidden="hidden" id="hdn_f_period1">@item["f_period1"]</td>
+                    <td hidden="hidden" id="hdn_f_status1">@item["f_status"]</td>
+                    <td hidden="hidden" id="hdn_createdate">@item["create_date"]</td>
+
+                    <td class="ItmNameBreak itmStick tditemfrz">@item["f_fy"]</td>
+                    <td>@item["f_period"]</td>
+                    <td>@item["from_date"]</td>
+                    <td>@item["to_date"]</td>
+
+                    <td class="num_right">@item["pys_v"]</td>
+                    <td class="num_right">@item["f_tgt_val"]</td>
+                    <td class="num_right">@item["actual_sale_v"]</td>
+                    <td id="Doc_Status">@item["status_name"]</td>
+                    <td>@item["create_by"]</td>
+                    <td>@item["create_dt"]</td>
+                    <td>@item["app_by"]</td>
+                    <td>@item["app_dt"]</td>
+                    <td>@item["mod_by"]</td>
+                    <td>@item["mod_dt"]</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+@*@if (Session["SFCSearch"].ToString() == "SFCSearch")
+{
+    @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+    @Scripts.Render("~/Content/Scripts/DatatablesJs")
+}*@

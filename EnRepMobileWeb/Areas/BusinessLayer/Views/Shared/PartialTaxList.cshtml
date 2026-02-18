@@ -1,0 +1,92 @@
+﻿@using EnRepMobileWeb.Resources;
+@*//***Modifyed by shubham maurya on 12-12-2022 12:10 remove all session and using Model to Transfer Data***//*@
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<script src="~/Content/Scripts/BusinessLayer/TaxSetup/TaxList.js"></script>
+<table id="datatable-buttons" class="table table-striped table-bordered wider width2000 rowhighlighttbl">
+    <thead>
+        <tr class="sticky-header">
+            <th width="3%">@Resource.SrNo</th>
+            <th>TaxID</th>
+            <th>@Resource.TaxName</th>
+            <th>@Resource.GLAccount</th>
+            <th>@Resource.TaxPercentage</th>
+            <th>@Resource.TaxType</th>
+            <th>Section @Resource.Code</th>
+            <th width="18%">@Resource.TaxAuthority</th>
+            <th width="5%">@Resource.Recoverable</th>
+            <th width="5%">@Resource.ManualCalculation</th>
+            <th>@Resource.ApplicableDate</th>
+            <th width="5%">@Resource.Active</th>
+            <th hidden="hidden"></th>
+            <th hidden="hidden"></th>
+            <th hidden="hidden"></th>
+            <th>@Resource.CreatedBy</th>
+            <th>@Resource.Createdon</th>
+            <th>@Resource.AmendedBy</th>
+            <th>@Resource.AmendedOn</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (ViewBag.VBTaxList != null)
+        {
+            var RowId = 0;
+            foreach (System.Data.DataRow item in ViewBag.VBTaxList.Rows)
+            {
+                RowId++;
+        <tr>
+            <td>@RowId</td>
+            <td id="taxid">@item["tax_id"].ToString() </td>
+            <td>@item["tax_name"].ToString() </td>
+            <td>@item["acc_name"].ToString()</td>
+            <td class="num_right">@item["tax_perc"].ToString()</td>
+            <td>@item["tax_type"].ToString() </td>
+            <td>@item["sec_code"].ToString() </td>
+            <td>@item["taxauth"].ToString() </td>
+            @if (item["recov"].ToString() == "N")
+            {
+                <td class="center"><i class="fa fa-times-circle text-danger" aria-hidden="true"></i></td>
+            }
+            else
+            {
+                <td class="center"><i class="fa fa-check text-success " aria-hidden="true"></i></td>
+            }
+            @if (@item["manual_calc"].ToString() == "N")
+            {
+                <td class="center"><i class="fa fa-times-circle text-danger" aria-hidden="true"></i></td>
+            }
+            else
+            {
+                <td class="center"><i class="fa fa-check text-success " aria-hidden="true"></i></td>
+            }
+
+            <td>@item["app_date"].ToString() </td>
+
+            @if (@item["act_status"].ToString() == "N")
+            {
+                <td class="center"><i id="" class="fa fa-times-circle text-danger" aria-hidden="true"></i></td>
+            }
+            else
+            {
+                <td class="center"><i id="" class="fa fa-check text-success " aria-hidden="true"></i></td>
+            }
+            <td hidden="hidden" id="act_status">@item["act_status"].ToString()</td>
+            <td hidden="hidden" id="manual_calc">@item["manual_calc"].ToString()</td>
+            <td hidden="hidden" id="recov">@item["recov"].ToString()</td>
+            <td>@item["create_by"].ToString()</td>
+            <td>@item["create_dt"].ToString()</td>
+            <td>@item["mod_by"].ToString()</td>
+            <td>@item["mod_dt"].ToString()</td>
+        </tr>
+            }
+        }
+    </tbody>
+</table>
+@if (Model.TaxSearch != null)
+{
+    //if (Session["TaxSearch"].ToString() == "Tax_Search")
+    if (Model.TaxSearch.ToString() == "Tax_Search")
+    {
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+        @Scripts.Render("~/Content/Scripts/DatatablesJs")
+    }
+}

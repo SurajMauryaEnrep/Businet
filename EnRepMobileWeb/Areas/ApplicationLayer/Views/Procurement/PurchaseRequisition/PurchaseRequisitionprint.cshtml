@@ -1,0 +1,130 @@
+﻿@using System.Data;
+@{
+
+    string doc_status = "";
+    string BackGroundImgUrl = "";
+    if (ViewBag.DocStatus != null)
+    {
+        doc_status = ViewBag.DocStatus;
+    }
+    if (doc_status == "D" || doc_status == "F")
+    {
+        BackGroundImgUrl = Server.MapPath("~/Content/Images/draft.png");
+    }
+    string QtyDigit = "0.";
+    var QD = Convert.ToInt32(Session["QtyDigit"].ToString());
+    for (var i = 0; i < QD; i++)
+    {
+        QtyDigit += "0";
+    }
+}
+<style>
+    .table_border {
+        border: 0.5px solid #000000;
+    }
+    .table_border > tbody > tr > td, .table_border > thead > tr > th {
+        border: 0.5px solid #000000;
+    }
+</style>
+<div style='background: url(@BackGroundImgUrl) no-repeat ;backgroundposition: center center;'>
+    @Html.Partial("~/Areas/Common/Views/Cmn_PrintHeader.cshtml")
+    <table width='100%'>
+        <tr>
+            <td>
+                <table style='width:100%;'>
+                    <tr>
+                        <td style='width:10px;'></td>
+                        <td style="vertical-align:top; padding:0px;">
+                            <table style='width:100%;border:solid 1px #000000;'>
+                                <tr>
+                                    <td style='font-size:12px;font-weight:bold; width:15%;'> Order Number </td>
+                                    <td style='font-size:12px;font-weight:normal;width:85%;'> @ViewBag.Details.Tables[0].Rows[0]["pr_no"].ToString()</td>
+                                </tr>
+                                <tr>
+                                    <td style='font-size:12px;font-weight:bold;'> Order Date </td>
+                                    <td style='font-size:12px;font-weight:normal;'> @ViewBag.Details.Tables[0].Rows[0]["pr_dt"].ToString()</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td style='width:10px;'></td>
+                    </tr>
+                    <tr>
+                        <td style='width:10px;'></td>
+                        <td>
+                            <table class="table_border" cellspacing='0' cellpadding='0' style='width:100%;font-size:12px;font-weight:normal;padding:0px 0px;line-height:18px;font-weight:normal;'>
+                                <thead>
+                                    <tr>
+                                        <th width='5%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'> S.NO.</th>
+                                        <th width='45%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'> Goods Description </th>
+                                        <th width='10%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'> UOM </th>
+                                        <th width='10%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'> Available Quantity </th>
+                                        <th width='15%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'> Requisition Quantity </th>
+                                        <th width='25%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'> Remarks </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (ViewBag.Details.Tables[0].Rows != null)
+                                    {
+                                        var i = 1;
+                                        DataView data = new DataView();
+                                        foreach (DataRow dr in ViewBag.Details.Tables[0].Rows)
+                                        {
+                                            <tr>
+                                                <td style='text-align:center; width:5%;'>@i</td>
+                                                <td style='paddingleft:5px;paddingtop:5px;paddingbottom:3px;'>
+                                                    @dr["item_name"].ToString()
+                                                    @if (ViewBag.Details.Tables[1].Rows.Count > 0)
+                                                    {
+                                                        data = ViewBag.Details.Tables[1].DefaultView;
+                                                        DataTable NewDT1 = new DataTable();
+                                                        data.RowFilter = "item_id='" + dr["item_id"].ToString() + "'";
+                                                        NewDT1 = data.ToTable();
+                                                        <table width="100%" style="font-size: 11px; paddingtop:3px;">
+                                                            <tr>
+                                                                <td colspan="3"></td>
+                                                            </tr>
+                                                            @foreach (System.Data.DataRow drsubitm in NewDT1.Rows)
+                                                            {
+                                                                if (dr["item_id"].ToString() == drsubitm["item_id"].ToString())
+                                                                {
+                                                                    <tr>
+                                                                        <td width="10%" style="paddingtop: 0px;paddingbottom:0px;"></td>
+                                                                        <td width="45%" style="paddingtop: 0px; paddingbottom: 0px;">@drsubitm["sub_item_name"] </td>
+                                                                        <td width="45%" style="text-align: right; paddingtop: 0px; paddingbottom: 0px; paddingright: 5px;"> @drsubitm["pr_qty"]</td>
+                                                                    </tr>
+                                                                }
+                                                            }
+                                                        </table>
+                                                    }
+                                                </td>
+                                                <td style='paddingleft:5px;paddingtop:5px;paddingbottom:3px;'>@dr["uom_id"].ToString()</td>
+                                                <td style='text-align:right; paddingright:5px;paddingtop:5px;paddingbottom:3px;'>@dr["avl_qty"].ToString()</td>
+                                                <td style='text-align:right; paddingright:5px;paddingtop:5px;paddingbottom:3px;'>@dr["pr_qty"].ToString()</td>
+                                                <td style='text-align: left; paddingleft: 5px; paddingright: 5px; paddingtop: 5px; paddingbottom: 3px;'>@dr["it_remarks"].ToString()</td>
+                                            </tr>
+                                            i++;
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </td>
+                        <td style='width:10px;'></td>
+                    </tr>
+                    
+                <tr>
+                    <td style='width:10px;'></td>
+                    <td>
+                        <table styl='width:100%;'>
+                            <tr><td style='font-size:12px;font-weight:normal;padding:10px 0px 0px 0px;width:75%;'><strong> Remarks</strong></td></tr>
+                            <tr><td style='font-size:12px;font-weight:normal;padding:0px 0px;width:60%;'>@ViewBag.Details.Tables[0].Rows[0]["pr_rem"].ToString()</td></tr>
+
+                        </table>
+                    </td>
+                    <td style='width:10px;'></td>
+                </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+    @Html.Partial("~/Areas/Common/Views/Cmn_PrintFooter.cshtml")
+</div>

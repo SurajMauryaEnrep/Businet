@@ -1,0 +1,156 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.FinancialAccountingAndControl.MIS.AuditTrail.AuditTrailModel
+@using EnRepMobileWeb.Resources;
+<style>
+    /*#datatable-buttons5_wrapper .btn-group a:nth-child(3) {
+        display: block;
+    }
+*/
+   /* #datatable-buttons_wrapper .buttons-pdf, #datatable-buttons1_wrapper .buttons-pdf, #datatable-buttons2_wrapper .buttons-pdf, #datatable-buttons3_wrapper .buttons-csv, #datatable-buttons4_wrapper .buttons-pdf, #datatable-buttons5_wrapper .buttons-pdf, #datatable-buttons6_wrapper .buttons-pdf, #datatable-buttons7_wrapper .buttons-pdf, #datatable-buttons8_wrapper .buttons-pdf, #datatable-buttons9_wrapper .buttons-pdf, #datatable-buttons10_wrapper .buttons-pdf {
+        position: absolute;
+        margin-left: 21%;
+        z-index: 100;
+        margin-top: 0px;
+        cursor: pointer;
+    }*/
+    .truncate-text {
+        display: inline-block;
+       /* overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;*/
+    }
+</style>
+@*<style>
+    #datatable-buttons_wrapper .btn-group a:nth-child(3) {
+        display: inline-block;
+        position: absolute;
+    }
+
+    table.dataTable tbody th, table.dataTable tbody td {
+        padding: 5px 10px !important;
+        white-space: normal;
+    }
+</style>*@
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<table id="datatable-buttons5" class="table table-striped rowhighlighttbl itmfrz table-bordered width2800" cellspacing="0" width="100%">
+    <thead>
+        <tr class="sticky-header">
+            <th width="3%">@Resource.SrNo</th>
+            <th width="5%">@Resource.Voucher @Resource.Number</th>
+            <th hidden="hidden">@Resource.Voucher @Resource.Number</th>
+            <th width="4%">@Resource.Voucher @Resource.Date</th>
+            <th hidden="hidden">@Resource.Voucher @Resource.Date</th>
+            <th width="5%">@Resource.Voucher @Resource.Type </th>
+            <th hidden="hidden">@Resource.Voucher @Resource.Type</th>
+            <th width="5%">@Resource.Instrument @Resource.Type</th>
+            <th width="5%">@Resource.Instrument @Resource.Number</th>
+            <th width="4%">@Resource.Status</th>
+            <th hidden="hidden">@Resource.Status</th>
+            <th width="5%">@Resource.CreatedBy</th>
+            <th width="4%">@Resource.Createdon</th>
+            <th width="5%">@Resource.ApprovedBy</th>
+            <th width="4%">@Resource.ApprovedOn</th>
+            <th width="4%">@Resource.Cancelled @Resource.By</th>
+            <th width="4%">@Resource.Cancelled @Resource.On</th>
+            <th width="8%">@Resource.Cancellation @Resource.remarks</th>
+            <th width="3%">@Resource.Currency</th>
+            <th hidden="hidden">@Resource.Currency</th>
+            <th width="10%">@Resource.GLAccount</th>
+            <th hidden="hidden">@Resource.GLAccount</th>
+            <th hidden="hidden">@Resource.AccountType</th>
+            <th width="6%">@Resource.Debit @Resource.Amount</th>
+            <th width="6%">@Resource.Credit @Resource.Amount</th>
+            <th width="11%">@Resource.Narration</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (ViewBag.AuditTrailDetails != null)
+        {
+            var srno = 1;
+            var vou_no = "";
+            foreach (System.Data.DataRow dr in ViewBag.AuditTrailDetails.Rows)
+            {
+                string vouno = dr["vou_no"].ToString();
+
+                //string sono_total = dr["Sno_vou_no"].ToString();
+                //int snorowspan = Convert.ToInt32(dr["sno3"]);
+                //int colspan = snorowspan == 1 ? snorowspan : snorowspan - 1;
+                //bool isFirstRow = sono_total == "1";
+                //bool showFullRow = snorowspan == 1;
+
+                <tr>
+                    @if (vou_no == vouno)
+                    {
+                        <td><span style="display:none;">@srno</span> </td>
+                        <td id="JBPrtl_VouNo">&nbsp;</td>
+                        <td id="hdnJBPrtl_VouNo" hidden="hidden">@dr["vou_no"].ToString()</td>
+                        <td>&nbsp;</td>
+                        <td id="JBPartl_VouDate" hidden="hidden">@dr["vou_date"].ToString()</td>
+                        <td>&nbsp;</td>
+                        <td id="JBPartl_VouType" hidden="hidden">@dr["vou_type"].ToString()</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td hidden="hidden">&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td class="truncate-text" style="width: 350px; padding-right: 30px;"> <span> </span></td>
+
+                    }
+                    else
+                    {
+                        vou_no = dr["vou_no"].ToString();
+
+
+                        <td>@srno</td>
+                        <td id="JBPrtl_VouNo">@dr["vou_no"].ToString()</td>
+                        <td id="hdnJBPrtl_VouNo" hidden="hidden">@dr["vou_no"].ToString()</td>
+                        <td>@dr["vou_dt"].ToString()</td>
+                        <td id="JBPartl_VouDate" hidden="hidden">@dr["vou_date"].ToString()</td>
+                        <td>@dr["VouTypeName"].ToString()</td>
+                        <td id="JBPartl_VouType" hidden="hidden">@dr["vou_type"].ToString()</td>
+                        <td>@dr["InstrumentTypName"].ToString()</td>
+                        <td>@dr["InstrumentNo"].ToString()</td>
+                        <td>@dr["VouStatusName"].ToString()</td>
+                        <td id="JBPartl_VouStatus" hidden="hidden">@dr["vou_status"].ToString()</td>
+                        <td>@dr["Created_By"].ToString()</td>
+                        <td>@dr["Created_On"].ToString()</td>
+                        <td>@dr["Approved_By"].ToString()</td>
+                        <td>@dr["Approved_On"].ToString()</td>
+                        <td>@dr["Cancelled_By"].ToString()</td>
+                        <td>@dr["Cancelled_On"].ToString()</td>
+                        <td class="truncate-text" style="width: 350px; padding-right: 30px;"> <span> @dr["Cancelled_Remarks"].ToString() </span></td>
+                        srno++;
+                    }
+
+                    <td class="center">@dr["curr_name"].ToString()</td>
+                    <td id="JBPartl_CurrId" hidden="hidden">@dr["curr_id"].ToString()</td>
+                    <td id="JBPartl_AccName">@dr["acc_name"].ToString()</td>
+                    <td id="JBPartl_AccID" hidden="hidden">@dr["acc_id"].ToString()</td>
+                    <td id="JBPartl_AccType" hidden="hidden">@dr["acc_type"].ToString()</td>
+                    <td class="num_right" id="JBPartl_dr_amt_bs">@dr["dr_amt_bs"].ToString()</td>
+                    <td class="num_right" id="JBPartl_cr_amt_bs">@dr["cr_amt_bs"].ToString()</td>
+                    <td class="truncate-text" style="width: 350px; padding-right: 30px;"> <span>@dr["narr"].ToString()</span> </td>
+
+                </tr>
+            }
+        }
+
+    </tbody>
+
+</table>
+@{
+    if (Model.SearchStatus != null)
+    {
+        if (Model.SearchStatus == "ATSEARCH")
+        {
+            @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+            @Scripts.Render("~/Content/Scripts/DatatablesJs")
+            Model.SearchStatus = null;
+            
+        }
+    }
+}

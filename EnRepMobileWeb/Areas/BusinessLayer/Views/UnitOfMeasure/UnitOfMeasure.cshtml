@@ -1,0 +1,291 @@
+﻿@model  EnRepMobileWeb.MODELS.BusinessLayer.UnitOfMeasure.UnitOfMeasure_MODEL
+@*@model  EnRepMobileWeb.MODELS.BusinessLayer.UnitOfMeasure.Modeldata*@
+@using EnRepMobileWeb.Resources;
+@using System.Data;
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+<script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+<script src="~/Content/Css/build/js/sweetalert.js"></script>
+<script src="~/Content/Scripts/BusinessLayer/UnitOfMeasure/UnitOfMeasure.js"></script>
+<script src="~/Content/Scripts/Common/CommonJS.js"></script>
+
+@{
+    if (Model.Message != null)
+    {
+        var msg = Model.Message;
+        Model.hdnSavebtn = null;
+        if (msg == "New")
+        {
+            Model.ShowUom = "show";
+        }
+        if (msg == "Save")
+        {
+            <script type="text/javascript">
+                swal("", $("#savemsg").text(), "success");
+            </script>
+            Model.ShowUom = "show";
+        }
+        if (msg == "SaveConversion")
+        {
+            <script type="text/javascript">
+                swal("", $("#savemsg").text(), "success");
+            </script>
+            Model.ShowCD = "show";
+        }
+        if (msg == "Deleted")
+        {
+            <script type="text/javascript">
+                swal("", $("#deletemsg").text(), "success");
+            </script>
+            Model.ShowUom = "show";
+        }
+        if (msg == "DeleteConversionTable")
+        {
+            <script type="text/javascript">
+                swal("", $("#deletemsg").text(), "success");
+            </script>
+            Model.ShowCD = "show";
+        }
+        if (msg == "Duplicate")
+        {
+            <script type="text/javascript">
+                $(document).ready(function () {
+                    $("#uom_name").css("border-color", "red");
+                    document.getElementById("vmuom_name").innerHTML = $("#valueduplicate").text();
+                    $("#uom_alias").css("border-color", "red");
+                    document.getElementById("vmuom_alias").innerHTML = $("#valueduplicate").text();
+                })
+            </script>
+            Model.ShowUom = "show";
+        }
+        if (msg == "DuplicateName")
+        {
+            <script type="text/javascript">
+                $(document).ready(function () {
+                    $("#uom_name").css("border-color", "red");
+                    document.getElementById("vmuom_name").innerHTML = $("#valueduplicate").text();
+                })
+            </script>
+            Model.ShowUom = "show";
+        }
+        if (msg == "DuplicateAlias")
+        {
+            <script type="text/javascript">
+                $(document).ready(function () {
+                    $("#uom_alias").css("border-color", "red");
+                    document.getElementById("vmuom_alias").innerHTML = $("#valueduplicate").text();
+                })
+            </script>
+            Model.ShowUom = "show";
+        }
+    }
+
+    var AddNew = "N";
+    if (ViewBag.VBRoleList != null)
+    {
+        foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+        {
+            if (Row["feature_id"].ToString() == "103110001")
+            {
+                AddNew = "Y";
+
+            }
+        }
+    }
+    <input hidden="hidden" id="AddNewData" value="@AddNew" />
+}
+<title>@Model.Title</title>
+@using (Html.BeginForm("SaveUOMSetup", "UnitOfMeasure", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    {
+        <div class="row">
+            <div class="col-md-12 col-sm-12 ">
+                <div class="x_panel mar_pad1 ">
+                    <div class="x_content mar_pad1">
+                        <h2 class="col-md-5 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                    </div>
+                </div>
+            </div>
+            @Html.HiddenFor(m => m.hdnSavebtn, new { @id = "hdnSavebtn" })
+            <div class="col-md-12 col-sm-12 ">
+                <div class="x_panel mar_pad1 ">
+                    <div class="x_content mar_pad1">
+                        @Html.HiddenFor(m => m.DeleteCommand, new { @id = "hdnAction" })
+                        <article class="panel-group bs-accordion" id="accordion" role="tablist" aria-multiselectable="true">
+                            <section class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="headingOne">
+                                    <h4 class="panel-title">  <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne"> @Resource.UOM @Resource.Detail <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a></h4>
+                                </div>
+                                <div id="collapseOne" class="panel-collapse in collapse @Model.ShowUom" role="tabpanel" aria-labelledby="headingOne" style="">
+                                    <div class="panel-body" style="padding-bottom:0px;">
+                                        <div class="row">
+                                            <div class="col-md-12 col-sm-12">
+                                                <div class="col-md-3 col-sm-12">
+                                                    <label class="col-form-label label-align">@Resource.UOM @Resource.Name <span class="required">*</span></label>
+                                                    @if (AddNew == "Y" || Model.Message == "Duplicate" || Model.Message == "DuplicateName" || Model.Message == "DuplicateAlias")
+                                                    {
+                                                        @Html.TextBoxFor(m => m.uom_name, new { @class = "form-control", @autocomplete = "off", @id = "uom_name", @maxlength = "20", name = "UOMName", onkeyup = "OnChangeUOM()", onchange = "OnChangeUOM()", @placeholder = Resource.Name })
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.TextBoxFor(m => m.uom_name, new { @class = "form-control", @autocomplete = "off", @id = "uom_name", @maxlength = "20", name = "UOMName", @disabled = "disabled", onkeyup = "OnChangeUOM()", onchange = "OnChangeUOM()", @placeholder = Resource.Name })
+                                                    }
+                                                    @Html.ValidationMessageFor(model => model.uom_name, "", new { @class = "text-danger", @id = "vmuom_name" })
+                                                    @Html.HiddenFor(m => m.uom_id, new { @id = "hdnuomID" })
+                                                </div>
+                                                <div class="col-md-3 col-sm-12">
+                                                    <label class="col-form-label label-align">@Resource.Notation <span class="required">*</span></label>
+                                                    @*<input class="form-control" id="Notation" maxlength="25" name="Notation" onkeyup="" placeholder="@Resource.Notation" type="text" value="">*@
+                                                    @if (AddNew == "Y" || Model.Message == "Duplicate" || Model.Message == "DuplicateName" || Model.Message == "DuplicateAlias")
+                                                    {
+                                                        @Html.TextBoxFor(m => m.uom_alias, new { @class = "form-control", @id = "uom_alias", @maxlength = "3", name = "Notation", autocomplete = "off", onkeyup = "OnChangeUOM_alias()", onchange = "OnChangeUOM_alias()", @placeholder = Resource.Name })
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.TextBoxFor(m => m.uom_alias, new { @class = "form-control", @id = "uom_alias", @maxlength = "3", name = "Notation", autocomplete = "off", @disabled = "disabled", onkeyup = "OnChangeUOM_alias()", onchange = "OnChangeUOM_alias()", @placeholder = Resource.Name })
+                                                    }
+                                                    @Html.ValidationMessageFor(model => model.uom_alias, "", new { @class = "text-danger", @id = "vmuom_alias" })
+                                                    @Html.HiddenFor(m => m.uom_alias, new { @id = "hdnuom_alias" })
+                                                </div>
+                                                <div class="col-md-55 col-sm-12">
+                                                    @if (AddNew == "Y" || Model.Message== "Duplicate" || Model.Message == "DuplicateName" || Model.Message == "DuplicateAlias")
+                                                    {
+                                                        if (Model.BtnName != null)
+                                                        {
+                                                            <button class="margin22 address_save" title="@Resource.Save" type="submit" onclick="return UOMSetupSaveBtnClick()" id="btn_saveUOM" name="Command" value="@Model.BtnName"></button>
+                                                        }
+                                                        else
+                                                        {
+                                                            <button class="margin22 address_save" title="@Resource.Save" type="submit" onclick="return UOMSetupSaveBtnClick()" id="btn_saveUOM" name="Command" value="Save"></button>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <div id="SaveBtnEnable" style="display:none">
+                                                            @if (Model.BtnName != null)
+                                                            {
+                                                                <button class="margin22 address_save" title="@Resource.Save" type="submit" onclick="return UOMSetupSaveBtnClick()" id="btn_saveUOM" name="Command" value="@Model.BtnName"></button>
+                                                            }
+                                                            else
+                                                            {
+                                                                <button class="margin22 address_save" title="@Resource.Save" type="submit" onclick="return UOMSetupSaveBtnClick()" id="btn_saveUOM" name="Command" value="Save"></button>
+                                                            }
+                                                        </div>
+                                                    }
+                                                </div>
+                                                <div class="col-md-12 col-sm-12">
+                                                    <div class="x_panel margin10">
+                                                        <div class="x_content">
+                                                            <div class="card-box table-responsive dy_table">
+                                                                <div class="sticky-table sticky-ltr-cells sb-container container-example1" style=" max-height:45vh">
+                                                                    @Html.Partial("~/Areas/BusinessLayer/Views/Shared/PartialUnitOfMeasureSetup.cshtml")
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                            <section class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="headingTwo">
+                                    <h4 class="panel-title">  <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo"> @Resource.Conversion  @Resource.Table <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a></h4>
+                                </div>
+                                <div id="collapseTwo" class="panel-collapse in collapse @Model.ShowCD" role="tabpanel" aria-labelledby="headingTwo">
+                                    <div class="panel-body" style="padding-bottom:0px;">
+                                        <div class="row">
+                                            <div class="col-md-12 col-sm-12">
+                                                <div class="col-md-3 col-sm-12">
+                                                    <label class="col-form-label label-align">@Resource.ItemName <span class="required" id="">*</span></label>
+                                                    @if (AddNew == "Y")
+                                                    {
+                                                        @Html.DropDownListFor(m => m.ItemName, new SelectList(Model._ItemNameList, "ItemId", "ItemName"), new { @class = "form-control", @id = "ddlItemName", onchange = "OnchangeProductName()" })
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.DropDownListFor(m => m.ItemName, new SelectList(Model._ItemNameList, "ItemId", "ItemName"), new { @class = "form-control", @id = "ddlItemName", @disabled = "disabled", onchange = "OnchangeProductName()" })
+                                                    }
+                                                    @Html.ValidationMessageFor(model => model.ItemName, String.Empty, new { @style = "color:red;!important", @id = "vmddlItemName" })
+                                                </div>
+                                                <div class="col-md-2 col-sm-12">
+                                                    <label class="col-form-label label-align">@Resource.Base @Resource.Unit</label>
+                                                    @Html.TextBoxFor(m => m.Uom, new { @class = "form-control", @id = "UOM", @name = "UOM", @readonly = "readonly", @type = "text", @placeholder = Resource.UOM })
+                                                    @Html.HiddenFor(m => m.UomID, new { @id = "UOMID" })
+                                                </div>
+                                                <div class="col-md-2 col-sm-12">
+                                                    <label class="col-form-label label-align">@Resource.Converted  @Resource.Unit <span class="required" id="">*</span></label>
+                                                    @if (AddNew == "Y")
+                                                    {
+                                                        @Html.DropDownListFor(m => m.ConvertedUnit, new SelectList(Model._ConvertedUnitList, "UnitId", "UnitName"), new { @class = "form-control", @id = "ddlUomName", onchange = "onchangeddlUom()" })
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.DropDownListFor(m => m.ConvertedUnit, new SelectList(Model._ConvertedUnitList, "UnitId", "UnitName"), new { @class = "form-control", @disabled = "disabled", @id = "ddlUomName", onchange = "onchangeddlUom()" })
+                                                    }
+                                                    @Html.ValidationMessageFor(model => model.ConvertedUnit, String.Empty, new { @style = "color:red;!important", @id = "vmddlUomName" })
+                                                </div>
+                                                <div class="col-md-2 col-sm-12">
+                                                    <label class="col-form-label label-align">@Resource.Conversion  @Resource.Rate1 <span class="required" id="">*</span></label>
+                                                    @if (AddNew == "Y")
+                                                    {
+                                                        @Html.TextBoxFor(m => m.ConversionRate, new { @id = "ConversionRate", @autocomplete = "off", @class = "form-control num_right", @placeholder = "0000.00", @onblur = "this.placeholder='0000.00'", onchange = "OnChangeConvRate();", onkeypress = "return RateFloatValueonly(this,event);" })
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.TextBoxFor(m => m.ConversionRate, new { @id = "ConversionRate", @autocomplete = "off", @class = "form-control num_right", @placeholder = "0000.00", @disabled = "disabled", @onblur = "this.placeholder='0000.00'", onchange = "OnChangeConvRate();", onkeypress = "return RateFloatValueonly(this,event);" })
+                                                    }
+                                                    @Html.ValidationMessageFor(model => model.ConversionRate, String.Empty, new { @style = "color:red;!important", @id = "vmConversionRate" })
+                                                </div>
+                                                <div class="col-md-3 col-sm-12">
+                                                    <div class="col-md-6 col-sm-12 mt-4 pl-0">
+                                                        <div class="custom-control custom-switch ">
+                                                            @Html.CheckBoxFor(model => model.ShowStock, new { @class = "custom-control-input col-md-3 col-sm-12 margin-switch", @id = "ShowStock" })
+                                                            @*<input class="custom-control-input col-md-3 col-sm-12 margin-switch" data-val="true" data-val-required="" id="ShowStock" name="ShowStock" type="checkbox" value="true">
+        <input name="ShowStock" type="hidden" value="false">*@
+                                                            <label class="custom-control-label col-md-9 col-sm-12" for="ShowStock" style="padding: 3px 0px;"> @Resource.Show @Resource.Stock </label>
+                                                            <input hidden="hidden" value="Y" id="ShowStock">
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="col-md-6 col-sm-12">
+                                                        @if (AddNew == "Y")
+                                                        {
+                                                            <button class="margin22 address_save" title="Save" type="submit" onclick="return SaveBtnClick()" id="SaveConversion" name="Command" value="SaveConversion"></button>
+                                                        }
+                                                        else
+                                                        {
+                                                            <div id="ConvSaveBtnEnable" style="display:none">
+                                                                <button class="margin22 address_save" title="Save" type="submit" onclick="return SaveBtnClick()" id="SaveConversion" name="Command" value="SaveConversion"></button>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                                   
+                                                    <div class="col-md-12 col-sm-12">
+                                                        <div class="x_panel margin15">
+                                                            <div class="x_content">
+                                                                <div class="card-box table-responsive dy_table">
+                                                                    <div class="sticky-table sticky-ltr-cells sb-container container-example1">
+                                                                        @Html.Partial("~/Areas/BusinessLayer/Views/Shared/PartialUnitOfMeasureConversionTable.cshtml")
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                    </div>
+                                </div>
+                            </section>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+}

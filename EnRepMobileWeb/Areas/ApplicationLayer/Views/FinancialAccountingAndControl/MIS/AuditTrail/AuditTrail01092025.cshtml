@@ -1,0 +1,77 @@
+﻿@using EnRepMobileWeb.Resources;
+@using System.Data
+@*@if (Session["UserId"] == null)
+    {
+        Response.Redirect("~/Login");
+    }*@
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+@*<title>@Model.Title</title>*@
+<div class="row">
+    <!-- Partial General Ledger Voucher Detail Month Wise -->
+    <div id="VoucherDetailMW" class="modal fade" role="dialog">
+        <div class="modal-dialog" style=" max-width:800px;">
+            <div id="gl_mwvoucherdetails">
+                @Html.Partial("~/Areas/Common/Views/Comn_PartialGeneralLedgerVoucherDetailMW.cshtml")
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <h2 class="col-md-6 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                <div class="x_title pad_mar ">
+                    <div class="col-md-12 col-sm-12 icon_tool padding_zero">
+                        <div class="col-md-12 col-sm-12 pl-0 pb-2">
+                            <div class="col-md-2 col-sm-12">
+                                <label class="col-form-label label-align">
+                                    @Resource.FromDate
+                                </label>
+                                <input class="form-control" id="FromDate" max="2025-07-22" name="FromDate" type="date" value="2025-04-01">
+                            </div>
+                            <div class="col-md-2 col-sm-12 pl-0">
+                                <label class="col-form-label label-align">
+                                    @Resource.ToDate
+                                </label>
+                                <input class="form-control" id="ToDate" max="2025-07-22" name="ToDate" placeholder="dd-MM-yyyy" type="date" value="2025-07-22">
+                            </div>
+                            <div class="col-md-2 col-sm-12 pl-0">
+                                <label class="col-form-label label-align">
+                                    @Resource.Status
+                                </label>
+                                <select class="form-control" id="ddlStatus" name="QT_Status">
+                                    <option value="0">All</option>
+                                    <option value="0">All</option>
+                                    <option value="A">Approved</option>
+                                    <option value="C">Cancelled</option>
+                                    <option value="D">Drafted</option>
+                                    <option value="F">Forwarded</option>
+                                    <option value="OR">Order Received</option>
+                                </select>
+                            </div>
+                            <div class="col-md-1 col-sm-12 pl-0">
+                                <button type="button" class="btn btn-primary btn-sm margintop20" id="Btn_Search" onclick="BtnSearch();"><i class="fa fa-search" aria-hidden="true"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <div class="card-box table-responsive dy_table">
+                    <div class="sticky-table sticky-ltr-cells sb-container container-example1" id="">
+                        <div id="">
+                            @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialMISAuditTrailList.cshtml")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

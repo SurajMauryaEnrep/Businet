@@ -1,0 +1,103 @@
+﻿@*/*Used in Delivery Note Detail MIS*/*@
+@using EnRepMobileWeb.Resources;
+@{
+    string IsNull(string str, string str2)
+    {
+        return string.IsNullOrEmpty(str) == true ? str2 : str;
+    }
+    decimal subItmTotalOrd = 0;
+    decimal subItmTotalPend = 0;
+    decimal subItmTotalBill = 0;
+    decimal subItmTotalReceiv = 0;
+    string QtyDigit = "0.";
+    var VD = Convert.ToInt32(Session["QtyDigit"].ToString());
+    for (var i = 0; i < VD; i++)
+    {
+        QtyDigit += "0";
+    }
+}
+<div class="modal-content">
+    <div class="modal-header">
+        <h2>@Resource.SubItem @Resource.Stock @Resource.Detail</h2>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body ">
+        <div class="col-md-6 col-sm-12" style="padding-left:0px;">
+            <label class="col-form-label label-align">
+                @Resource.Product @Resource.Name
+            </label>
+            <input id="Sub_ProductlName" class="form-control" autocomplete="off" type="text" name="ProductlName" placeholder="@Resource.Product @Resource.Name" disabled="">
+            <input id="Sub_ProductlId" hidden>
+
+        </div>
+        <div class="col-md-2 col-sm-12" style="padding-left:0px;">
+            <label class="col-form-label label-align">
+                @Resource.UOM
+            </label>
+            <input id="Sub_UOM" class="form-control" autocomplete="off" type="text" name="serialUOM" placeholder="UOM" onblur="this.placeholder='UOM'" disabled="">
+        </div>
+        <div class="col-md-4 col-sm-12" style="padding-left:0px;">
+            <label class="col-form-label label-align ">@Resource.Quantity</label>
+            <input id="Sub_Quantity" class="form-control num_right" autocomplete="off" type="text" name="Quantity" placeholder="0000.00" disabled="">
+        </div>
+        <div class="card-box table-responsive dy_table margin15 price_item_detail">
+            <div id="" class="sticky-table sticky-ltr-cells sb-container container-example1 OrderHistory height30VH">
+                <table id="Sub_ItemDetailTbl" data-order="" class="table table-striped table-bordered rowhighlighttbl" style="width:100%">
+                    <thead>
+                        <tr class="sticky-header">
+                            <th width="10%">@Resource.SrNo</th>
+                            <th width="30%">@Resource.SubItem @Resource.Name</th>
+                            <th hidden></th>
+                            <th width="15%">@Resource.OrderedQuantity</th>
+                            <th width="15%">@Resource.PendingQuantity</th>
+                            <th width="15%">@Resource.Billed <br />@Resource.Quantity</th>
+                            <th width="15%">@Resource.Received <br />@Resource.Quantity</th>
+                         </tr>
+                    </thead>
+                    <tbody>
+                       @if (ViewBag.SubitemDetail != null)
+                        {
+                            var srno = 1;
+                            foreach (System.Data.DataRow dr in ViewBag.SubitemDetail.Rows)
+                            {
+                        <tr>
+                            <td><input type="text" class="form-control" disabled id="" value='@srno'></td>
+                            <td><input type="text" class="form-control" disabled id="" value='@dr["sub_item_name"]'></td>
+                            <td hidden><input type="text" class="form-control" disabled id="" value='@dr["sub_item_id"]'></td>
+                            <td class="num_right"><input type="text" class="form-control num_right" disabled id="" value=@Convert.ToDecimal(dr["Ord_qty"]).ToString(QtyDigit)></td>
+                            <td class="num_right"><input type="text" class="form-control num_right" disabled id="" value=@Convert.ToDecimal(dr["Pend_qty"]).ToString(QtyDigit)></td>
+                            <td class="num_right"><input type="text" class="form-control num_right" disabled id="" value=@Convert.ToDecimal(dr["Bill_qty"]).ToString(QtyDigit)></td>
+                            <td class="num_right"><input type="text" class="form-control num_right" disabled id="" value=@Convert.ToDecimal(dr["Recv_qty"]).ToString(QtyDigit)></td>
+
+                        </tr>
+                                subItmTotalOrd = subItmTotalOrd + Convert.ToDecimal(IsNull(@dr["Ord_qty"].ToString(), "0"));
+                                subItmTotalPend = subItmTotalPend + Convert.ToDecimal(IsNull(@dr["Pend_qty"].ToString(), "0"));
+                                subItmTotalBill = subItmTotalBill + Convert.ToDecimal(IsNull(@dr["Bill_qty"].ToString(), "0"));
+                                subItmTotalReceiv = subItmTotalReceiv + Convert.ToDecimal(IsNull(@dr["Recv_qty"].ToString(), "0"));
+                                srno++;
+                            }
+                        }
+
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td class="num_right" style="padding:5px 5px 0px 0px;"><strong> @Resource.Total</strong></td>
+                            <td hidden></td>
+                            <td class="num_right"><span id="SubItemTotal_OrdQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@Convert.ToDecimal(subItmTotalOrd).ToString(QtyDigit)</span></td>
+                            <td class="num_right"><span id="SubItemTotal_PendQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@Convert.ToDecimal(subItmTotalPend).ToString(QtyDigit)</span></td>
+                            <td class="num_right"><span id="SubItemTotal_BillQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@Convert.ToDecimal(subItmTotalBill).ToString(QtyDigit)</span></td>
+                            <td class="num_right"><span id="SubItemTotal_RecvQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@Convert.ToDecimal(subItmTotalReceiv).ToString(QtyDigit)</span></td>
+
+                        </tr>
+                    </tfoot>
+                </table>
+
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" id="" onclick="">@Resource.Close</button>
+    </div>
+</div>
+

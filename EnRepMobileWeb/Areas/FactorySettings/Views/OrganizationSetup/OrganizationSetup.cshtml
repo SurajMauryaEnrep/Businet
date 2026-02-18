@@ -1,0 +1,1523 @@
+﻿,@model EnRepMobileWeb.MODELS.Factory_Settings.Organization_Setup.OrganizationSetupModel
+@using EnRepMobileWeb.Resources;
+@using System.Data
+@if (Session["UserId"] == null)
+{
+    Response.Redirect("~/Login");
+}
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+<title>@Model.Title</title>
+<script src="~/Content/Scripts/FactorySettings/OrganizationSetup/OrganizationSetup.js"></script>
+<script src="~/Content/Css/build/js/sweetalert.js"></script>
+<link href="~/Content/Css/dropzone/dist/min/dropzone.min.css" rel="stylesheet" />
+<script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+<link href="~/Content/Css/build/css/simpleTree.css" rel="stylesheet" />
+<script src="~/Content/Css/build/js/simpleTreeForFactory.js"></script>
+<script src="~/Content/Css/dropzone/dist/min/dropzone.min.js"></script>
+<script src="~/Content/Scripts/Common/CommonJS1.js"></script>
+<link href="~/Content/Css/build/css/sweetalert.css" rel="stylesheet" />
+<style>
+    #mytree {
+        min-width: 350px;
+    }
+    .field-validation-valid {
+        position: relative;
+    }
+</style>
+@{
+    //var Disable = false;
+    var Disable = true;
+    string Lbl_d_none = "";
+    if (Model.Country != "101" && Model.Country != "")
+    {
+        Lbl_d_none = "none";
+    }
+    if (Model.TransType != null)
+    {
+        //if (Session["TransType"].ToString() == "Update")
+        if (Model.TransType == "Update")
+        {
+            //if (Session["Command"].ToString() == "Edit")
+            if (Model.Command == "Edit")
+            {
+                Disable = false;
+            }
+            else
+            {
+                Disable = true;
+            }
+        }
+        else
+        {
+            Disable = false;
+        }
+        //if (Session["TransType"].ToString() == "Refresh")
+        if (Model.TransType == "Refresh")
+        {
+            Disable = true;
+        }
+        //if (Session["TransType"].ToString() == "Duplicate")
+        if (Model.TransType == "Duplicate")
+        {
+            Disable = false;
+        }
+        //if (Session["TransType"].ToString() == "Save")
+        if (Model.TransType == "Save")
+        {
+            //if (Session["Command"].ToString() == "Add")
+            if (Model.Command == "Add")
+            {
+                Disable = false;
+            }
+            else
+            {
+                Disable = true;
+            }
+        }
+    }
+    if (Model.Message != null)
+    {
+        if (Model.Message == "Duplicate")
+        {
+            Disable = false;
+        }
+
+    }
+}
+@{
+    if (Model.Message != null)
+    {
+        var str = Model.Message;
+        Model.hdnsaveApprovebtn = null;
+
+        <script>
+            if ("@str" == "Save") {
+            swal("", $("#savemsg").text(), "success");
+        }
+        if ("@str" == "Duplicate") {
+            $(document).ready(function () {
+                document.getElementById("vmentity").innerHTML = $("#valueduplicate").text();
+                $("#EntityName").css("border-color", "red");
+                $("#vmentity").css("display", "block");
+                return false;
+            });
+            }
+        if ("@str" == "DuplicatePerfix") {
+            $(document).ready(function () {
+                document.getElementById("vmEntityPrefix").innerHTML = $("#valueduplicate").text();
+                $("#Entityprefix").css("border-color", "red");
+                $("#vmEntityPrefix").css("display", "block");
+                return false;
+            });
+        }
+        </script>
+        Model.Message = "";
+        str = "";
+    }
+}
+<style>
+    .custom-switch {
+        padding-left: 40px !important;
+    }
+    #datatable-buttons_filter {
+        right: 14%;
+    }
+
+    .image-upload-one {
+        grid-area: img-u-one;
+        display: flex;
+        justify-content: center;
+    }
+
+    .form-input img {
+        width: auto;
+        max-width: 205px;
+        height: 150px;
+        margin: 2px;
+    }
+</style>
+<title>@Model.Title</title>
+@using (Html.BeginForm("OrganizationSetupSave", "OrganizationSetup", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    {
+        <div class="row">
+            <div class="col-md-12 col-sm-12 ">
+                <div class="x_panel mar_pad1 ">
+                    <div class="x_content mar_pad1">
+                        <h2 class="col-md-5 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                        <div id="wizard" class="form_wizard wizard_horizontal col-md-3 col-sm-12 work_flow">&nbsp;</div>
+                        <div id="" class="col-md-4 col-sm-12 work_flow heading_right_padding">
+                            @{
+                                //var btnName = Session["BtnName"].ToString();
+                                var btnName = Model.BtnName;
+                                switch (btnName)
+                                {
+                                    case "BtnAddNew":
+                                        <ul>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "102110001")
+                                                    {
+                                                        <li> <button class="add" title="@Resource.AddNew" disabled style="filter: grayscale(100%)" type="submit" id="btn_add" name="Command" value="Add"></button> </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "102110002")
+                                                    {
+                                                        <li> <button class="edit" title="@Resource.Edit" disabled style="filter: grayscale(100%)" type="submit" id="btn_edit" name="Command" value="Edit"></button> </li>
+                                                    }
+                                                    @*if (Row["feature_id"].ToString() == "102110004")
+                                                        {
+                                                            <li>
+                                                                <button class="delete"
+                                                                        title="@Resource.Delete" disabled style="filter: grayscale(100%)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                            </li>
+                                                        }*@
+                                                }
+                                            }
+                                            <li> <button class="save" title="@Resource.Save" type="submit" id="btn_save" onclick="return SaveBtnClick();" name="Command" value="Save"></button> </li>
+                                            <li> <button class="refresh" title="@Resource.Refresh" type="submit" id="btn_refresh" onclick="MandatoryDisable();" name="Command" value="Refresh"></button> </li>
+                                            <li> <button class="back" title="@Resource.Back" disabled style="filter: grayscale(100%)" type="submit" id="btn_back" name="Command" value="BacktoList"></button> </li>
+                                        </ul>
+                                        break;
+                                    case "BtnSave":
+                                        <ul>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "102110001")
+                                                    {
+                                                        <li> <button class="add" title="@Resource.AddNew" onclick="DisableActStat();" type="submit" id="btn_add" name="Command" value="Add"></button> </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "102110002")
+                                                    {
+                                                        <li> <button class="edit" title="@Resource.Edit" type="submit" onclick="EnableActStat();" id="btn_edit" name="Command" value="Edit"></button> </li>
+                                                    }
+                                                    @*if (Row["feature_id"].ToString() == "102110004")
+                                                        {
+
+                                                                <li>
+                                                                    <button class="delete"
+                                                                            title="@Resource.Delete" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                                </li>
+                                                            @Html.HiddenFor(m => m.DeleteCommand, new { @id = "HdDeleteCommand" })
+                                                        }*@
+                                                }
+                                            }
+
+
+
+                                            <li> <button class="save" title="@Resource.Save" disabled style="filter: grayscale(100%)" type="submit" id="btn_save" name="Command" value="Save"></button> </li>
+                                            <li> <button class="refresh" title="@Resource.Refresh" type="submit" id="btn_refresh" onclick="MandatoryDisable();" name="Command" value="Refresh"></button> </li>
+                                            <li> <button class="back" title="@Resource.Back" disabled style="filter: grayscale(100%)" type="submit" id="btn_back" name="Command" value="BacktoList"></button> </li>
+                                        </ul>
+                                        break;
+                                    case "BtnEdit":
+                                        <ul>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "102110001")
+                                                    {
+                                                        <li> <button class="add" title="@Resource.AddNew" disabled style="filter: grayscale(100%)" type="submit" id="btn_add" name="Command" value="Add"></button> </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "102110002")
+                                                    {
+                                                        <li> <button class="edit" title="@Resource.Edit" disabled style="filter: grayscale(100%)" type="submit" id="btn_edit" name="Command" value="Edit"></button> </li>
+                                                    }
+                                                    @*if (Row["feature_id"].ToString() == "102110004")
+                                                        {
+                                                            <li>
+                                                                <button class="delete"
+                                                                        title="@Resource.Delete" disabled style="filter: grayscale(100%)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                            </li>
+                                                        }*@
+                                                }
+                                            }
+
+
+
+                                            <li> <button class="save" title="@Resource.Save" type="submit" id="btn_save" onclick="return SaveBtnClick();" name="Command" value="Save"></button> </li>
+
+                                            <li> <button class="refresh" title="@Resource.Refresh" type="submit" id="btn_refresh" onclick="MandatoryDisable();" name="Command" value="Refresh"></button> </li>
+
+                                            <li> <button class="back" title="@Resource.Back" disabled style="filter: grayscale(100%)" type="submit" id="btn_back" name="Command" value="BacktoList"></button> </li>
+                                        </ul>
+                                        break;
+                                    case "BtnRefresh":
+                                        <ul>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "102110001")
+                                                    {
+                                                        <li> <button class="add" title="@Resource.AddNew" onclick="DisableActStat();" type="submit" id="btn_add" name="Command" value="Add"></button> </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "102110002")
+                                                    {
+                                                        <li> <button class="edit" title="@Resource.Edit" disabled style="filter: grayscale(100%)" type="submit" id="btn_edit" name="Command" value="Edit"></button> </li>
+                                                    }
+                                                    @*if (Row["feature_id"].ToString() == "102110004")
+                                                        {
+                                                            <li>
+                                                                <button class="delete"
+                                                                        title="@Resource.Delete" disabled style="filter: grayscale(100%)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                            </li>
+                                                        }*@
+                                                }
+                                            }
+                                            <li>
+                                                <button class="save" title="@Resource.Save" disabled style="filter: grayscale(100%)" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                            </li>
+                                            <li><button class="refresh" title="@Resource.Refresh" disabled style="filter: grayscale(100%)" type="submit" id="btn_refresh" onclick="MandatoryDisable();" name="Command" value="Refresh"></button> </li>
+                                            <li> <button class="back" title="@Resource.Back" type="submit" id="btn_back" name="Command" value="BacktoList"></button> </li>
+                                        </ul>
+                                        break;
+                                        @*case "BtnToDetailPage":
+                                            <ul>
+                                                @if (ViewBag.VBRoleList != null)
+                                                {
+                                                    foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                    {
+                                                        if (Row["feature_id"].ToString() == "102110001")
+                                                        {
+                                                            <li>
+                                                                <button class="add"
+                                                                        title="@Resource.AddNew" onclick="DisableActStat();" type="submit" id="btn_add" name="Command" value="Add"></button>
+                                                            </li>
+                                                        }
+                                                        if (Row["feature_id"].ToString() == "102110002")
+                                                        {
+
+                                                                <li>
+                                                                    <button class="edit"
+                                                                            title="@Resource.Edit" type="submit" onclick="EnableActStat();" id="btn_edit" name="Command" value="Edit"></button>
+                                                                </li>
+
+                                                        }
+                                                        if (Row["feature_id"].ToString() == "102110004")
+                                                        {
+
+                                                                <li>
+                                                                    <button class="delete"
+                                                                            onclick="return functionConfirm(this)" title="@Resource.Delete" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                                </li>
+
+                                                            @Html.HiddenFor(m => m.DeleteCommand, new { @id = "HdDeleteCommand" })
+                                                        }
+                                                    }
+                                                }
+
+
+
+                                                <li>
+                                                    <button class="save"
+                                                            title="@Resource.Save" disabled style="filter: grayscale(100%)" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                                </li>
+
+                                                <li>
+                                                    <button class="refresh"
+                                                            title="@Resource.Refresh" type="submit" id="btn_refresh" onclick="MandatoryDisable();" name="Command" value="Refresh"></button>
+                                                </li>
+
+                                                <li>
+                                                    <button class="back"
+                                                            title="@Resource.Back" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                                                </li>
+                                            </ul>*@
+                                        //break;
+                                        @*case "Delete":
+                                            <ul>
+                                                @if (ViewBag.VBRoleList != null)
+                                                {
+                                                    foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                    {
+                                                        if (Row["feature_id"].ToString() == "102110001")
+                                                        {
+                                                            <li>
+                                                                <button class="add"
+                                                                        title="@Resource.AddNew" onclick="DisableActStat();" type="submit" id="btn_add" name="Command" value="Add"></button>
+                                                            </li>
+                                                        }
+                                                        if (Row["feature_id"].ToString() == "102110002")
+                                                        {
+                                                            <li>
+                                                                <button class="edit"
+                                                                        title="@Resource.Edit" disabled style="filter: grayscale(100%)" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                            </li>
+                                                        }
+                                                        if (Row["feature_id"].ToString() == "102110004")
+                                                        {
+                                                            <li>
+                                                                <button class="delete"
+                                                                        title="@Resource.Delete" disabled style="filter: grayscale(100%)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                            </li>
+                                                        }
+                                                    }
+                                                }
+
+
+
+                                                <li>
+                                                    <button class="save"
+                                                            title="@Resource.Save" disabled style="filter: grayscale(100%)" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                                </li>
+
+                                                <li>
+                                                    <button class="refresh"
+                                                            title="@Resource.Refresh" disabled style="filter: grayscale(100%)" type="submit" id="btn_refresh" onclick="MandatoryDisable();" name="Command" value="Refresh"></button>
+                                                </li>
+
+                                                <li>
+                                                    <button class="back"
+                                                            title="@Resource.Back" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                                                </li>
+                                            </ul>
+                                            break;*@
+
+                                }
+                            }
+                        </div>
+                        <div class="x_title pad_mar ">
+                            <div class="col-md-12 col-sm-12 icon_tool ">
+                                <!--<span>Collapsible / Accordion </span>-->
+                                <div class="approved_by">
+                                    <ul>
+                                        <li><span>@Resource.CreatedBy <br><b>@Html.DisplayFor(model => model.create_id)</b> </span></li>
+                                        <li><span>@Resource.Createdon <br><b>@Html.DisplayFor(model => model.creat_dt)</b></span> </li>
+                                        <li><span>@Resource.AmendedBy<br><b>@Html.DisplayFor(model => model.mod_by)</b></span></li>
+                                        <li><span>@Resource.AmendedOn<br><b>@Html.DisplayFor(model => model.mod_dt)</b></span></li>
+                                    </ul>
+                                </div>
+                                @Html.HiddenFor(model => model.comp_id, new { @id = "com_id" })
+                                @Html.HiddenFor(model => model.commEdit, new { @id = "commandedit" })
+                                @Html.HiddenFor(model => model.Title, new { @id = "hdn_title" })
+                                @Html.HiddenFor(model => model.TransType, new { @id = "hdn_TransType" })
+                                @Html.HiddenFor(model => model.comp_id, new { @id = "HdnDocNo_ForAttach" })
+                                @Html.HiddenFor(model => model.hdnAttachment, new { @id = "hdnAttachment" })
+                                @Html.HiddenFor(model => model.hdnAttachment1, new { @id = "hdnAttachment1" })
+
+                                @Html.HiddenFor(model => model.ValidEntity_prefix, new { @id = "ValidEntity_prefix" })
+                                @Html.HiddenFor(model => model.ValidEntity_Name, new { @id = "ValidEntity_Name" })
+                            </div>
+                            <div class="clearfix"></div>
+                            @Html.HiddenFor(model => model.hdnsaveApprovebtn, new { @id = "hdnsavebtn" })
+                            @Html.HiddenFor(model => model.hdnLincenceDetail, new { @id = "hdnLincenceDetail" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 col-sm-12 ">
+                <div class="x_panel mar_pad1 ">
+                    <div class="x_content mar_pad1">
+                        <div class="col-md-3 col-sm-12 padding_left group_tree">
+                            <input type="search" id="tree_menu" class="form-control" placeholder="Search">
+                            <div id="mytree"></div>
+                        </div>
+                        <div class="col-md-9 col-sm-12 padding_right  ">
+                            <article class="panel-group bs-accordion" id="accordion" role="tablist" aria-multiselectable="true">
+                                <section class="panel panel-default">
+                                    <div class="panel-heading" role="tab" id="headingOne">
+                                        <h4 class="panel-title"> <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne"> @Resource.Organization @Resource.Detail <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a></h4>
+                                    </div>
+                                    <div id="collapseOne" class="panel-collapse in collapse show" role="tabpanel" aria-labelledby="headingOne" style="">
+                                        <div class="panel-body">
+                                            <div class="row">
+                                                <div class="col-md-12 col-sm-12">
+                                                    <div class="col-md-12 col-sm-6 no-padding domestic">
+                                                        <div class="input-group col-md-9 col-sm-12 no-padding ">
+
+                                                            @if (Disable || Model.Command == "Edit")
+                                                            {
+                                                                <span>@Resource.HO</span>
+                                                                @Html.RadioButtonFor(model => model.HeadBranch, "H", new { @id = "HeadOfficechk", @checked = "checked", @disabled = "disabled", @onclick = "GetCustcurr()" })
+                                                                <span>@Resource.Branch</span>
+                                                                @Html.RadioButtonFor(model => model.HeadBranch, "B", new { @id = "Branchchk", @disabled = "disabled", @onclick = "GetCustcurr()" })
+                                                            }
+                                                            else
+                                                            {
+                                                                <span>@Resource.HO</span>
+                                                                @Html.RadioButtonFor(model => model.HeadBranch, "H", new { @id = "HeadOfficechk", @checked = "checked", @onclick = "GetCustcurr()" })
+                                                                <span>@Resource.Branch</span>
+                                                                @Html.RadioButtonFor(model => model.HeadBranch, "B", new { @id = "Branchchk", @onclick = "GetCustcurr()" })
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-9 col-sm-12 ">
+                                                        <div class="col-md-6 col-sm-12">
+                                                            <label class="col-form-label label-align">
+                                                                @Resource.EntityName <span class="required">*</span>
+                                                            </label>
+                                                            @if (Disable)
+                                                            {
+                                                                @Html.TextBoxFor(model => model.EntityName, new { @class = "form-control", @maxlength = "100", @id = "EntityName", @Onclick = "onchangeEntityName()", @disabled = "disabled", @placeholder = @Resource.EntityName })
+                                                                @Html.ValidationMessageFor(model => model.EntityName, String.Empty, new { @style = "color:red;!important", @id = "vmentity" })
+                                                            }
+                                                            else
+                                                            { @Html.TextBoxFor(model => model.EntityName, new { @class = "form-control", @maxlength = "100", @autocomplete = "off", @id = "EntityName", @Onclick = "onclickEntityName()", @Onchange = "onchangeEntityName()", @onkeypress = "onkeypressEntityName(event)", @placeholder = @Resource.EntityName })
+                                                            @Html.ValidationMessageFor(model => model.EntityName, String.Empty, new { @style = "color:red;!important", @id = "vmentity" })
+                                                        }
+                                                        </div>
+                                                        <div class="col-md-4 col-sm-12" id="Headoffice">
+                                                            <label class="col-form-label label-align">@Resource.HO  <span class="required">*</span></label>
+                                                            @if (Disable || Model.Command == "Edit")
+                                                            {
+                                                                @Html.DropDownListFor(model => model.HeadOffice, new SelectList(Model.hO_Lists, "HO_ID", "HO_Name"), new { @class = "form-control", @disabled = "disabled", @id = "RoleHoName", @onchange = "OnchangeHOGetRole()", @onclick = "onclickHO()" })
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.DropDownListFor(model => model.HeadOffice, new SelectList(Model.hO_Lists, "HO_ID", "HO_Name"), new { @class = "form-control", @id = "RoleHoName", @onclick = "onclickHO()", @onchange = "OnchangeHOGetRole()" })
+                                                            }
+                                                            @Html.ValidationMessageFor(model => model.HeadOffice, String.Empty, new { @style = "color:red;!important", @id = "vmRoleHoName" })
+                                                            @Html.HiddenFor(Model => Model.HeadOffice, new { @id = "headoffice" })
+                                                        </div>
+                                                        <div class="col-md-2 col-sm-12 pl-0">
+                                                            <label class="col-form-label label-align">@Resource.Entity @Resource.Prefix  <span class="required">*</span></label>
+                                                            @if (Disable || Model.Command == "Edit" || Model.TransType == "DuplicateUpdate")
+                                                            {
+                                                                @Html.TextBoxFor(model => model.EntityPrefix, new { @class = "form-control", @autocomplete = "off", @maxlength = "2", @minlength = "2", @id = "Entityprefix", @Onclick = "onclickEntityPrefix()", @disabled = "disabled", @Resource.Entity, @Resource.Prefix })
+                                                                @Html.ValidationMessageFor(model => model.EntityPrefix, String.Empty, new { @style = "color:red;!important", @id = "vmEntityPrefix" })
+
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.TextBoxFor(model => model.EntityPrefix, new { @class = "form-control", @maxlength = "2", @minlength = "2", @autocomplete = "off", @id = "Entityprefix", @onkeyup = "upper(this)", @Onclick = "onclickEntityPrefix()", @onKeyPress = "return ValidateAlpha(event)", @placeholder = @Resource.Entity, @Resource.Prefix, @onchange = "onchangeEntityPerfix()" })
+                                                                @Html.ValidationMessageFor(model => model.EntityPrefix, String.Empty, new { @style = "color:red;!important", @id = "vmEntityPrefix" })
+                                                                @*<input id="EntityPrefix" class="form-control" type="text" name="" placeholder="@Resource.Entity @Resource.Prefix">*@
+                                                            }
+                                                            @*<input id="EntityPrefix" class="form-control" type="text" name="" placeholder="@Resource.Entity @Resource.Prefix">*@
+                                                        </div>
+                                                        <div class="clear"></div>
+                                                        <div class="col-md-3 col-sm-12">
+                                                            <label class="col-form-label label-align">@Resource.FY @Resource.StartDate  <span class="required">*</span></label>
+                                                            @if (Disable || Model.Command == "Edit" || Model.HeadBranch == "B" || Model.TransType == "DuplicateUpdate")
+                                                            {
+                                                                @Html.TextBoxFor(model => model.FY_StartDate, new { @class = "form-control", @id = "ddlStartDate", @onclick = "OnclickDBFromDt()", @onchange = "OnchangeDBFromDt()", @type = "date", @disabled = "disabled" })
+                                                                @Html.ValidationMessageFor(model => model.FY_StartDate, String.Empty, new { @style = "color:red;!important", @id = "vmFY_StartDate" })
+                                                                @*<input class="form-control" id="ValidUptoDate" min="2023-03-15" name="ValidUpto" onchange="OnChangeValidUpToDate(this)" type="date" value="">*@
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.TextBoxFor(model => model.FY_StartDate, new { @class = "form-control", @id = "ddlStartDate", @onclick = "OnclickDBFromDt()", @onchange = "OnchangeDBFromDt()", @type = "date" })
+                                                                @Html.ValidationMessageFor(model => model.FY_StartDate, String.Empty, new { @style = "color:red;!important", @id = "vmFY_StartDate" })
+                                                            }
+                                                        </div>
+                                                        <div class="col-md-3 col-sm-12 pl-0">
+                                                            <label class="col-form-label label-align">@Resource.FY @Resource.EndDate  <span class="required">*</span></label>
+                                                            @if (Disable || Model.Command == "Edit" || Model.HeadBranch == "B" || Model.TransType == "DuplicateUpdate")
+                                                            {
+                                                                @Html.TextBoxFor(model => model.FY_EndDate, new { @class = "form-control", @id = "FY_EndDate", @onclick = "OnclickDBendDte()", @type = "date", @disabled = "disabled" })
+                                                                @Html.ValidationMessageFor(model => model.FY_EndDate, String.Empty, new { @style = "color:red;!important", @id = "vmFY_EndDate" })
+                                                                @*<input class="form-control" id="ValidUptoDate" min="2023-03-15" name="ValidUpto" onchange="OnChangeValidUpToDate(this)" type="date" value="">*@
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.TextBoxFor(model => model.FY_EndDate, new { @class = "form-control", @id = "FY_EndDate", @onclick = "OnclickDBendDte()", @type = "date" })
+                                                                @Html.ValidationMessageFor(model => model.FY_EndDate, String.Empty, new { @style = "color:red;!important", @id = "vmFY_EndDate" })
+                                                                @*<input class="form-control" id="ValidUptoDate" min="2023-03-15" name="ValidUpto" onchange="OnChangeValidUpToDate(this)" type="date" value="">*@
+                                                            }
+                                                        </div>
+                                                        <div class="clear"></div>
+                                                        <div class="col-md-3 col-sm-12">
+                                                            <label class="col-form-label label-align">@Resource.DefaultLanguage  <span class="required">*</span></label>
+                                                            @if (Disable)
+                                                            {
+                                                                @Html.DropDownListFor(model => model.def_lang, new SelectList(Model.lang_Lists, "Lang_ID", "Lang_Name"), new { @class = "form-control", @disabled = "disabled", @id = "def_lang", @onclick = "onclickdef_lang()" })
+                                                                @Html.ValidationMessageFor(model => model.def_lang, String.Empty, new { @style = "color:red;!important", @id = "vmdef_lang" })
+                                                                @Html.HiddenFor(model => model.defa_lang, new { @id = "Language" })
+
+                                                            }
+                                                            else
+                                                            {
+
+                                                                @Html.DropDownListFor(model => model.def_lang, new SelectList(Model.lang_Lists, "Lang_ID", "Lang_Name"), new { @class = "form-control", @id = "def_lang", @onclick = "onclickdef_lang()" })
+                                                                @Html.ValidationMessageFor(model => model.def_lang, String.Empty, new { @style = "color:red;!important", @id = "vmdef_lang" })
+                                                                @Html.HiddenFor(model => model.defa_lang, new { @id = "Language" })
+                                                            }
+                                                        </div>
+                                                        <div class="col-md-3 col-sm-12 pl-0">
+                                                            <label class="col-form-label label-align">@Resource.Base @Resource.Currency  <span class="required">*</span></label>
+                                                            @if (Disable || Model.Command == "Edit" || Model.HeadBranch == "B" || Model.TransType == "DuplicateUpdate")
+                                                            {
+                                                                @Html.DropDownListFor(model => model.Currency_name, new SelectList(Model._currencyNameList, "curr_id", "curr_name"), new { @class = "form-control", @onclick = "onChangecurrency()", @id = "CurrencyName", @disabled = "disabled" })
+                                                                @Html.ValidationMessageFor(model => model.Currency_name, String.Empty, new { @style = "color:red;!important", @id = "vmCurrname" })
+                                                                @Html.HiddenFor(model => model.Currency_id, new { @id = "curr_id" })
+                                                                @Html.HiddenFor(model => model.Curren_name, new { @id = "currency_name" })
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.DropDownListFor(model => model.Currency_name, new SelectList(Model._currencyNameList, "curr_id", "curr_name"), new { @class = "form-control", @onclick = "onChangecurrency()", @id = "CurrencyName" })
+                                                                @Html.ValidationMessageFor(model => model.Currency_name, String.Empty, new { @style = "color:red;!important", @id = "vmCurrname" })
+                                                                @Html.HiddenFor(model => model.Currency_id, new { @id = "curr_id" })
+                                                                @Html.HiddenFor(model => model.Curren_name, new { @id = "currency_name" })
+                                                            }
+                                                        </div>
+                                                        @if (Model.HeadBranch == "B")
+                                                        {
+                                                            <div class="col-md-3 col-sm-12 pl-0" id="DivCurrencyFormet">
+                                                                <label class="col-form-label label-align">@Resource.Currency @Resource.Format <span class="required">*</span></label>
+                                                                @if (Disable)
+                                                                {
+                                                                    @Html.DropDownListFor(model => model.Currency_Formet, new SelectList(new List<object>
+                                         {
+                                                                   new { value = "0", text = "---Select---"  },
+                                          new { value = "en-us", text = "USD"  },
+                                          new { value = "en-in" , text = "INR" }
+                                                               }, "value", "text"), new { @class = "form-control", @onchange = "onChangeCurrency_Formet()", @id = "Currency_Formet", @disabled = "disabled" })
+                                                                    @Html.ValidationMessageFor(model => model.Currency_Formet, String.Empty, new { @style = "color:red;!important", @id = "vmCurrency_Formet" })
+                                                                    @Html.HiddenFor(model => model.Currency_Formet_id, new { @id = "Currency_Formet_id" })
+                                                                    @Html.HiddenFor(model => model.Currency_Formet, new { @id = "Currency_Formet" })
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Html.DropDownListFor(model => model.Currency_Formet, new SelectList(new List<object>
+                                         { new { value = "0", text = "---Select---"  },
+                                          new { value = "en-us", text = "USD"  },
+                                          new { value = "en-in" , text = "INR" } }, "value", "text"), new { @class = "form-control", @onchange = "onChangeCurrency_Formet()", @id = "Currency_Formet", })
+                                                                    @Html.ValidationMessageFor(model => model.Currency_Formet, String.Empty, new { @style = "color:red;!important", @id = "vmCurrency_Formet" })
+                                                                    @Html.HiddenFor(model => model.Currency_Formet_id, new { @id = "Currency_Formet_id" })
+                                                                    @Html.HiddenFor(model => model.Currency_Formet, new { @id = "Currency_Formet" })
+                                                                }
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <div class="col-md-3 col-sm-12 pl-0" style="display:none" id="DivCurrencyFormet">
+                                                                <label class="col-form-label label-align">@Resource.Currency @Resource.Format <span class="required">*</span></label>
+                                                                @Html.DropDownListFor(model => model.Currency_Formet, new SelectList(new List<object>
+                                          {
+                                                                    new { value = "0", text = "---Select---"  },
+                                           new { value = "en-us", text = "USD"  },
+                                           new { value = "en-in" , text = "INR" }
+                                                                }, "value", "text"), new { @class = "form-control", @onchange = "onChangeCurrency_Formet()", @id = "Currency_Formet", @disabled = "disabled" })
+                                                                @Html.ValidationMessageFor(model => model.Currency_Formet, String.Empty, new { @style = "color:red;!important", @id = "vmCurrency_Formet" })
+                                                                @Html.HiddenFor(model => model.Currency_Formet_id, new { @id = "Currency_Formet_id" })
+                                                                @Html.HiddenFor(model => model.Currency_Formet, new { @id = "Currency_Formet" })
+                                                            </div>
+                                                        }
+
+                                                        <div class="clear"></div>
+                                                        <div class="col-md-3 col-sm-12">
+                                                            <label class="col-form-label label-align">@Resource.ContactPerson</label>
+                                                            @if (Disable)
+                                                            {
+                                                                @Html.TextBoxFor(model => model.cont_pers, new { @class = "form-control", @maxlength = "50", @placeholder = "Contact Person", @disabled = "disabled" })
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.TextBoxFor(model => model.cont_pers, new { @class = "form-control", @maxlength = "50", @placeholder = "Contact Person", @autocomplete = "off" })
+                                                            }
+                                                        </div>
+                                                        <div class="col-md-3 col-sm-12 pl-0">
+                                                            <label class="col-form-label label-align">@Resource.MobileNumber</label>
+                                                            @if (Disable)
+                                                            {
+                                                                @Html.TextBoxFor(model => model.cont_num1, new { @class = "form-control", @id = "mobileNumber", @type = "number", @maxlength = "10", @placeholder = @Resource.MobileNumber, @disabled = "disabled" })
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.TextBoxFor(model => model.cont_num1, new { @class = "form-control", @id = "mobileNumber", @type = "number", @maxlength = "10", @autocomplete = "off", @placeholder = @Resource.MobileNumber })
+
+                                                            }
+                                                        </div>
+                                                        <div class="col-md-3 col-sm-12 pl-0">
+                                                            <label class="col-form-label label-align">@Resource.ContactEmailID</label>
+                                                            @if (Disable)
+                                                            {
+                                                                @Html.TextBoxFor(model => model.cont_email, new { @class = "form-control", @maxlength = "50", @placeholder = @Resource.ContactEmailID, @disabled = "disabled" })
+
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.TextBoxFor(model => model.cont_email, new { @class = "form-control", @id = "Email", @maxlength = "50", @autocomplete = "off", @onclick = "onclickEmail()", @onchange = "return ValidateEmail()", @placeholder = @Resource.ContactEmailID })
+
+                                                            }
+                                                            @Html.ValidationMessageFor(model => model.cont_email, String.Empty, new { @style = "color:red;!important", @id = "vmEmail" })
+                                                        </div>
+                                                        <div class="col-md-3 col-sm-12 pl-0">
+                                                            <label class="col-form-label label-align">@Resource.LandlineNumber</label>
+                                                            @if (Disable)
+                                                            {
+                                                                @Html.TextBoxFor(model => model.LandlineNumber, new { @class = "form-control", @maxlength = "30", @placeholder = @Resource.LandlineNumber, @disabled = "disabled" })
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.TextBoxFor(model => model.LandlineNumber, new { @class = "form-control", @maxlength = "30", @autocomplete = "off", @placeholder = @Resource.LandlineNumber })
+                                                            }
+                                                        </div>
+                                                        <div class="col-md-3 col-sm-12">
+                                                            <label class="col-form-label label-align">@Resource.Website</label>
+                                                            @*<input class="form-control" disabled="disabled" id="Website" maxlength="50" name="Website" placeholder="@Resource.Website" type="text" value="">*@
+                                                            @if (Disable)
+                                                            {
+                                                                @Html.TextBoxFor(model => model.WebSite, new { @class = "form-control", @id = "ddlWebSite", @maxlength = "100", @placeholder = @Resource.Website, @disabled = "disabled" })
+
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.TextBoxFor(model => model.WebSite, new { @class = "form-control", @id = "ddlWebSite", @maxlength = "100", @autocomplete = "off", @onclick = "OnclickWebsite()", @onchange = "return OnChangeWebsite()", @placeholder = @Resource.Website })
+
+                                                            }
+                                                        </div>
+
+                                                        <div class="col-md-4 col-sm-12" style="display:none;">
+                                                            <label class="col-form-label label-align">@Resource.ContactPerson</label>
+                                                            @if (Disable)
+                                                            {
+                                                                @Html.TextBoxFor(model => model.cont_pers1, new { @class = "form-control", @maxlength = "50", @placeholder = "Contact Person", @disabled = "disabled" })
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.TextBoxFor(model => model.cont_pers1, new { @class = "form-control", @maxlength = "50", @autocomplete = "off", @placeholder = "Contact Person" })
+                                                            }
+                                                        </div>
+                                                        <div class="col-md-4 col-sm-12" style="display:none;">
+                                                            <label class="col-form-label label-align">@Resource.ContactNumber1</label>
+                                                            @if (Disable)
+                                                            {
+                                                                @Html.TextBoxFor(model => model.cont_num2, new { @class = "form-control", @maxlength = "50", @placeholder = "Contact Number 2", @disabled = "disabled" })
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.TextBoxFor(model => model.cont_num2, new { @class = "form-control", @maxlength = "50", @autocomplete = "off", @placeholder = "Contact Number 2" })
+                                                            }
+                                                        </div>
+                                                        <div class="col-md-4 col-sm-12" style="display:none;">
+                                                            <label class="col-form-label label-align">@Resource.ContactEmailID</label>
+                                                            @if (Disable)
+                                                            {
+                                                                @Html.TextBoxFor(model => model.cont_email1, new { @class = "form-control", maxlength = "50", @placeholder = "Contact email id", @disabled = "disabled" })
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.TextBoxFor(model => model.cont_email1, new { @class = "form-control", @id = "Email1", @maxlength = "50", @onclick = "onclickEmail1()", @autocomplete = "off", @onchange = "return ValidateEmail1()", @placeholder = "Contact email id" })
+
+                                                            }
+                                                            @Html.ValidationMessageFor(model => model.cont_email1, String.Empty, new { @style = "color:red;!important", @id = "vmEmail1" })
+                                                        </div>
+                                                        <div class="clear"></div>
+                                                        @if (Disable)
+                                                        {
+                                                            <div class="col-md-4 col-sm-12 pr-0">
+                                                                <label class="col-form-label label-align" style="width:100%;">@Resource.GSTNumber <span id="GSTNumrequired" class="required" style="display: @Lbl_d_none ">*</span> </label>
+                                                                @*@Html.TextBoxFor(model => model.gst_num, new
+                                        {
+                                            @id = "gst_num",
+                                            @tabindex = "25",
+                                            @autocomplete = "off",
+                                            @class = "form-control tel col-md-2 col-sm-12 ",
+                                            @type = "text",
+                                            @name = "GST Number",
+                                            @readonly = "readonly",
+                                            @placeholder = "GST Number",
+                                            @maxlength = "2",
+                                            @onkeyup = "upper(this)",
+                                            @onblur = "this.placeholder='GST Number'"
+                                        })*@
+                                                                @Html.TextBoxFor(model => model.gst_num, new
+                                                           {
+                                                               @class = "form-control tel col-md-2 col-sm-12",
+                                                               @maxlength = "2",
+                                                               @minlength = "2",
+                                                               @autocomplete = "off",
+                                                               @id = "gst_num",
+                                                               @onkeyup = "upper(this)",
+                                                               @tabindex = "25",
+                                                               @placeholder = "GST Number",
+                                                                    @readonly = "readonly"
+
+                                                           })
+                                                                @Html.TextBoxFor(model => model.GSTMidPrt, new { @class = " form-control col-md-6 col-sm-12 gst_left no-padding", @autocomplete = "off", @readonly = "readonly", @id = "GSTMidPrt", @maxlength = "10", @name = "", @placeholder = "", @type = "text", @value = "" })
+                                                                @Html.TextBoxFor(model => model.GSTLastPrt, new { @class = " form-control col-md-3 col-sm-12 gst_left no-padding", @autocomplete = "off", @readonly = "readonly", @id = "GSTLastPrt", @maxlength = "3", @name = "", placeholder = "", @type = "text", @value = "" })
+                                                                <span id="SpanSuppGSTMidPrt" class="error_message"></span>
+                                                                <span id="SpanSuppGST" class="error_message"></span>
+                                                                <input type="hidden" id="hdSupplierGst" />
+                                                                @Html.HiddenFor(model => model.GSTNumber, new { @id = "GSTNumber" })
+                                                            </div>
+
+                                                        }
+                                                        else
+                                                        {
+
+                                                            <div class="col-md-4 col-sm-12 pr-0">
+                                                                <label class="col-form-label label-align" style="width:100%;">@Resource.GSTNumber <span id="GSTNumrequired" class="required" style="display: @Lbl_d_none ">*</span> </label>
+                                                                @*-------COMMENTED and modify BY HINA SHARMA ON 06-08-2025------*@
+                                                                @*@Html.TextBoxFor(model => model.gst_num, new
+                                        {
+                                            @id = "gst_num",
+                                            @tabindex = "25",
+                                            @class = "form-control tel col-md-2 col-sm-12 ",
+                                            @type = "text",
+                                            @autocomplete = "off",
+                                            @name = "GST Number",
+                                            @readonly = "readonly" ,
+                                            @placeholder = "GST Number",
+                                            @maxlength = "2",
+                                            @onchange = "onchangeGST()",
+                                            @onkeypress = "onchangeGST()",
+                                            @onkeyup = "upper(this)",
+                                            @onblur = "this.placeholder='GST Number'"
+                                        })*@
+                                                                @Html.TextBoxFor(model => model.gst_num, new
+                                                                {
+                                                                    @class = "form-control tel col-md-2 col-sm-12",
+                                                                    @maxlength = "2",
+                                                                    @minlength = "2",
+                                                                    @autocomplete = "off",
+                                                                    @id = "gst_num",
+                                                                    @onkeyup = "upper(this)",@*@Onclick = "onchangeGST()",*@@onKeyPress = "return ValidateDigitOnly(event)",
+@tabindex = "25",
+@placeholder = "GST Number",
+@onchange = "onchangeGST()"
+})
+
+                                                                @Html.TextBoxFor(model => model.GSTMidPrt, new { @class = " form-control col-md-6 col-sm-12 gst_left no-padding", @id = "GSTMidPrt", @maxlength = "10", @name = "", @autocomplete = "off", @placeholder = "", @onkeyup = "upper(this)", @onchange = "onchangeGST()", @onkeypress = "onchangeGST()", @type = "text", @value = "" })
+                                                                @Html.TextBoxFor(model => model.GSTLastPrt, new { @class = " form-control col-md-3 col-sm-12 gst_left", @id = "GSTLastPrt", @maxlength = "3", @name = "", placeholder = "", @autocomplete = "off", @onkeyup = "upper(this)", @onchange = "onchangeGST()", @onkeypress = "onchangeGST()", @type = "text", @value = "" })
+                                                                <span id="vmgst_num" class="error_message"></span>
+                                                                <span id="SpanSuppGSTMidPrt" class="error_message"></span>
+                                                                <span id="SpanSuppGST" class="error_message"></span>
+                                                                <input type="hidden" id="hdSupplierGst" />
+                                                                @Html.HiddenFor(model => model.GSTNumber, new { @id = "GSTNumber" })
+                                                                @*@Html.ValidationMessageFor(model => model.gst_num, String.Empty, new { @style = "color:red;!important", @id = "vmgst_num" })*@
+                                                            </div>
+
+                                                        }
+                                                        @if (Disable)
+                                                        {
+
+
+                                                            <div class="col-md-55 col-sm-12 pl-0">
+                                                                <label class="col-form-label label-align">@Resource.PANNumber <span id="pannumberrequired" class="required" style="display: @Lbl_d_none ">*</span></label>
+
+                                                                @*<input id="PANNumber" class="form-control optional" readonly="readonly" name="PANNumber" data-validate-length-range="5,15" type="text" placeholder="@Resource.PANNumber "*@
+                                                                @Html.TextBoxFor(model => model.PANNumber, new { @class = " form-control optional", @id = "pannumber", @maxlength = "20", @name = "", @autocomplete = "off", @placeholder = "", @onkeyup = "upper(this)", @onchange = "onchangeGST()", @onkeypress = "onchangepannum()", @type = "text", @disabled = "disabled" })
+                                                                @Html.ValidationMessageFor(model => model.PANNumber, String.Empty, new { @style = "color:red;!important", @id = "vmPANNumber" })
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <div class="col-md-55 col-sm-12 pl-0">
+                                                                <label class="col-form-label label-align">@Resource.PANNumber <span id="pannumberrequired" class="required" style="display: @Lbl_d_none ">*</span></label>
+
+                                                                @Html.TextBoxFor(model => model.PANNumber, new { @class = " form-control optional", @id = "pannumber", @maxlength = "20", @name = "", @autocomplete = "off", @placeholder = "", @onkeyup = "upper(this)", @onchange = "onchangepan()", @onkeypress = "onchangepannum()", @type = "text" })
+                                                                @Html.ValidationMessageFor(model => model.bank_benef, String.Empty, new { @style = "color:red;!important", @id = "vmPANNumber" })
+                                                            </div>
+                                                        }
+
+
+                                                        <div class="col-md-55 col-sm-12 pl-0">
+                                                            <label class="col-form-label label-align">@Resource.MSME @Resource.Number  </label>
+                                                            @if (Disable)
+                                                            {
+                                                                @Html.TextBoxFor(model => model.MSME_Number, new { @class = " form-control optional", @id = "MSME_Number", @maxlength = "100", @name = "MSMENumber", @autocomplete = "off", @placeholder = @Resource.MSME + " " + @Resource.Number, @onkeyup = "", @onchange = "", @onkeypress = "", @type = "text", @disabled = "disabled" })
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.TextBoxFor(model => model.MSME_Number, new { @class = " form-control optional", @id = "MSME_Number", @maxlength = "100", @name = "MSMENumber", @autocomplete = "off", @placeholder = @Resource.MSME + " " + @Resource.Number, @onkeyup = "", @onchange = "", @onkeypress = "", @type = "text" })
+                                                            }
+                                                        </div>
+                                                        <div class="col-md-55 col-sm-12 pl-0">
+                                                            <label class="col-form-label label-align"> @Resource.IECCode  </label>
+                                                            @if (Disable)
+                                                            {
+                                                                @Html.TextBoxFor(model => model.IEC_Code, new { @class = " form-control optional", @id = "ID_IEC_Code", @maxlength = "100", @name = "IEC Code", @autocomplete = "off", @placeholder = @Resource.IECCode, @onkeyup = "", @onchange = "", @onkeypress = "", @type = "text", @disabled = "disabled" })
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.TextBoxFor(model => model.IEC_Code, new { @class = " form-control optional", @id = "ID_IEC_Code", @maxlength = "100", @name = "IEC Code", @autocomplete = "off", @placeholder = @Resource.IECCode, @onkeyup = "", @onchange = "", @onkeypress = "", @type = "text" })
+                                                            }
+                                                        </div>
+
+                                                    </div>
+
+                                                    <div class="col-md-3 col-sm-12 no-padding">
+
+                                                        @if (Disable)
+                                                        {
+                                                            <div class="col-md-12 col-sm-12 ">
+                                                                <div class="row">
+                                                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                                                        <div class="x_panel pb-0 mb-0">
+                                                                            <div class="x_title">
+                                                                                <h2 class="pt-0 pb-0">@Resource.Company @Resource.Logo</h2>
+                                                                                <div class="clearfix"></div>
+                                                                            </div>
+                                                                            <div class="x_content">
+                                                                                <div class="image-upload-one">
+                                                                                    <div class="center">
+                                                                                        <div class="form-input">
+                                                                                            <label hidden="hidden"><img id="defltimg" src="~/Content/Images/default.png" /></label>
+                                                                                            <label for="file-ip-1">
+                                                                                                @if (Model.attatchmentdetail != null)
+                                                                                                {
+                                                                                                    <img id="file-ip-1-preview" src="@Model.attatchmentdetail">
+                                                                                                }
+                                                                                                else
+                                                                                                {
+                                                                                                    <img id="file-ip-1-preview" src="~/Content/Images/default.png">
+                                                                                                }
+                                                                                            </label>
+                                                                                        </div>
+                                                                                        <div>
+                                                                                            @Html.TextBoxFor(model => model.img_six, new { @id = "file-ip-1", @onchange = "showPreview(event);", @maxlength = "250", @style = "width:90px;", @type = "file", @disabled = "disabled" })
+                                                                                            @Html.HiddenFor(model => model.attatchmentdetail, new { @id = "hdn_Attatchment_details" })
+                                                                                            @*<input type="file" class="" name="img_six" id="file-ip-1" accept="image/*" onchange="showPreview(event);" style="width:90px;">*@
+                                                                                            <button type="button" class="" disabled onclick="myImgRemove()">Clear</button>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <div class="col-md-12 col-sm-12 ">
+                                                                <div class="row">
+                                                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                                                        <div class="x_panel">
+                                                                            <div class="x_title">
+                                                                                <h2 class="" style="margin-bottom:0px;">@Resource.Company @Resource.Logo</h2>
+                                                                                <div class="clearfix"></div>
+                                                                            </div>
+                                                                            <div class="x_content">
+                                                                                <div class="image-upload-one">
+                                                                                    <div class="center">
+                                                                                        <div class="form-input">
+                                                                                            <label hidden="hidden"><img id="defltimg" src="~/Content/Images/default.png" /></label>
+                                                                                            <label for="file-ip-1">
+                                                                                                @if (Model.attatchmentdetail != null)
+                                                                                                {
+                                                                                                    <img id="file-ip-1-preview" src="@Model.attatchmentdetail">
+                                                                                                }
+                                                                                                else
+                                                                                                {
+                                                                                                    <img id="file-ip-1-preview" src="~/Content/Images/default.png">
+                                                                                                }
+                                                                                            </label>
+                                                                                        </div>
+                                                                                        <div>
+                                                                                            @Html.TextBoxFor(model => model.img_six, new { @id = "file-ip-1", @onchange = "showPreview(event);", @maxlength = "250", @style = "width:90px;", @type = "file" })
+                                                                                            @Html.HiddenFor(model => model.attatchmentdetail, new { @id = "hdn_Attatchment_details" })
+                                                                                            @*<input type="file" class="" name="img_six" id="file-ip-1" accept="image/*" onchange="showPreview(event);" style="width:90px;">*@
+
+                                                                                            <button type="button" class="" onclick="myImgRemove()">Clear</button>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                    <div class="col-md-12 col-sm-12 margin5">
+                                                        <h2 class="pt-0 pb-0">@Resource.Company @Resource.Address</h2>
+                                                        <div class="col-md-12 col-sm-12 border no-padding">
+                                                            @Html.HiddenFor(model => model.OrgAddressDetails, new { id = "hdOrgAddressList" })
+                                                            <div class="col-md-55 col-sm-12">
+                                                                <label class="col-form-label label-align">@Resource.Address <span class="required">*</span></label>
+                                                                @if (Disable)
+                                                                {
+                                                                    @Html.TextBoxFor(model => model.Address, new { @class = "form-control", @maxlength = "500", @id = "customer_address", @autocomplete = "off", @onkeypress = "onchangeCustAddr()", @onkeyup = "upper(this)", @onchange = "onchangeCustAddr()", @disabled = "disabled", @placeholder = @Resource.Address })
+                                                                    @Html.ValidationMessageFor(model => model.Address, String.Empty, new { @style = "color:red;!important", @id = "SpancustAddr" })
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Html.TextBoxFor(model => model.Address, new { @class = "form-control", @maxlength = "500", @id = "customer_address", @autocomplete = "off", @onkeypress = "onchangeCustAddr()", @onchange = "onchangeCustAddr()", @placeholder = @Resource.Address })
+                                                                    @Html.ValidationMessageFor(model => model.Address, String.Empty, new { @style = "color:red;!important", @id = "SpancustAddr" })
+                                                                }
+                                                            </div>
+                                                            <div class="col-md-4 col-sm-12 pl-0">
+                                                                <label class="col-form-label label-align">@Resource.Country <span class="required">*</span></label>
+                                                                @if (Disable)
+                                                                {
+                                                                    @Html.DropDownListFor(model => model.Country, new SelectList(Model.countryList, "country_id", "country_name"), new { @class = "form-control", @id = "OrgCountry", disabled = "true", @onchange = "OnChangeCountry()" })
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Html.DropDownListFor(model => model.Country, new SelectList(Model.countryList, "country_id", "country_name"), new { @class = "form-control", @id = "OrgCountry", @onchange = "OnChangeCountry()" })
+                                                                }
+                                                                @Html.HiddenFor(model => model.Country, new { @id = "HdnCountry" })
+                                                                @Html.ValidationMessageFor(model => model.Country, String.Empty, new { @style = "color:red;!important", @id = "vmOrgCountryname" })
+                                                            </div>
+                                                            <div class="col-md-4 col-sm-12 pl-0">
+                                                                <label class="col-form-label label-align">@Resource.State <span class="required">*</span></label>
+                                                                @if (Disable)
+                                                                {
+                                                                    @Html.DropDownListFor(model => model.State, new SelectList(Model.StateList, "state_id", "state_name"), new { @class = "form-control", disabled = "true", @id = "OrgState", @onchange = "OnChangeState()" })
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Html.DropDownListFor(model => model.State, new SelectList(Model.StateList, "state_id", "state_name"), new { @class = "form-control", @id = "OrgState", @onchange = "OnChangeState()" })
+                                                                }
+                                                                @Html.HiddenFor(model => model.State, new { @id = "HdnState" })
+                                                                @Html.ValidationMessageFor(model => model.State, String.Empty, new { @style = "color:red;!important", @id = "vmOrgStatename" })
+                                                            </div>
+                                                            <div class="col-md-3 col-sm-12">
+                                                                <label class="col-form-label label-align">@Resource.District <span class="required">*</span></label>
+                                                                @if (Disable)
+                                                                {
+                                                                    @Html.DropDownListFor(model => model.District, new SelectList(Model.DistrictList, "district_id", "district_name"), new { @class = "form-control", @id = "OrgDistrict", disabled = "true", @onchange = "OnChangeDistrict()" })
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Html.DropDownListFor(model => model.District, new SelectList(Model.DistrictList, "district_id", "district_name"), new { @class = "form-control", @id = "OrgDistrict", @onchange = "OnChangeDistrict()" })
+                                                                }
+                                                                @Html.HiddenFor(model => model.District, new { @id = "HdnDistrict" })
+                                                                @Html.ValidationMessageFor(model => model.District, String.Empty, new { @style = "color:red;!important", @id = "vmOrgDistname" })
+                                                            </div>
+                                                            <div class="col-md-3 col-sm-12 pl-0">
+                                                                <label class="col-form-label label-align">@Resource.City <span class="required">*</span></label>
+                                                                @if (Disable)
+                                                                {
+                                                                    @Html.DropDownListFor(model => model.City, new SelectList(Model.cityLists, "City_Id", "City_Name"), new { @class = "form-control", @id = "OrgCity", disabled = "true", @onchange = "OnChangeCity()" })
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Html.DropDownListFor(model => model.City, new SelectList(Model.cityLists, "City_Id", "City_Name"), new { @class = "form-control", @id = "OrgCity", @onchange = "OnChangeCity()" })
+                                                                }
+                                                                <input type="hidden" id="hdnSrRowId" />
+                                                                @Html.HiddenFor(model => model.City, new { @id = "HdnCity" })
+                                                                @Html.ValidationMessageFor(model => model._CommonAddress_Detail.State_Id, String.Empty, new { @style = "color:red;!important", @id = "vmOrgCityname" })
+                                                            </div>
+                                                            <div class="col-md-2 col-sm-12 pl-0">
+                                                                <label class="col-form-label label-align">@Resource.Pin <span class="required">*</span></label>
+                                                                @*<input autocomplete="off" class=" form-control" id="Pin" maxlength="50" name="Pin" placeholder="@Resource.Pin" tabindex="" type="text" value="">*@
+                                                                @if (Disable)
+                                                                {
+                                                                    @Html.TextBoxFor(model => model.Pin, new { @id = "OrgPin", @class = "form-control", maxlength = "12", minlength = "4", disabled = "true", @placeholder = "Pin", autocomplete = "off" })
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Html.TextBoxFor(model => model.Pin, new { @id = "OrgPin", @class = "form-control", maxlength = "12", minlength = "4", @placeholder = "Pin", autocomplete = "off", onkeypress = "onchangeCustPin()" })
+                                                                }
+                                                                @Html.ValidationMessageFor(model => model.Pin, String.Empty, new { @class = "", @id = "vmOrgPin" })
+                                                            </div>
+                                                            <div class="col-md-4 col-sm-12  ">
+                                                                @if (Disable)
+                                                                {
+                                                                    <div class="custom-control custom-switch col-md-7 col-sm-12 billing_address pl-0" style="padding-left:0px !important; ">
+                                                                        <input type="checkbox" class="custom-control-input col-md-4 col-sm-12 margin-switch" id="chkCompDefaultAddress" checked disabled="disabled" style="left:-5px !important;">
+                                                                        <label class="custom-control-label col-md-8 col-sm-12" for="i_sls"> @Resource.Default @Resource.Address</label>
+                                                                    </div>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <div class="custom-control custom-switch col-md-7 col-sm-12 billing_address pl-0" style="padding-left:0px !important; ">
+                                                                        <input type="checkbox" class="custom-control-input col-md-4 col-sm-12 margin-switch" id="chkCompDefaultAddress" checked style="left:-5px !important;">
+                                                                        <label class="custom-control-label col-md-8 col-sm-12" for="i_sls"> @Resource.Default @Resource.Address</label>
+                                                                    </div>
+                                                                }
+                                                                <div class="col-md-3 col-sm-12 margin25 ">
+                                                                    <div class="col-md-6 col-sm-12" id="divAddAddrDtl">
+
+                                                                        @if (Disable)
+                                                                        {
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <a href="#" title="" data-original-title="Add">
+                                                                                <div class="plus_icon1"><i class="fa fa-plus" aria-hidden="true" onclick="AddAddressdetail()"></i></div>
+                                                                            </a>
+                                                                        }
+                                                                    </div>
+                                                                    <div class="col-md-6 col-sm-12">
+                                                                        <a href="#" style="color:#ffffff;">
+                                                                            <div class="plus_icon1" id="divUpdate" style="display:none;">
+                                                                                <i class="fa fa-refresh ref" id="SuppUpdateBtn" onclick="OnClickAddressUpdateBtn()" title="@Resource.Update"></i>
+                                                                                <input type="hidden" id="UpdtAddrId" />
+                                                                            </div>
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+
+
+
+                                                            <div class="clear"></div>
+                                                            <div class="row margin10">
+                                                                <div class="col-md-12 col-sm-12">
+                                                                    <div class="col-md-12 col-sm-12">
+                                                                        <table class="table table-striped jambo_table bulk_action margin5" id="tblCompanyAddressDetail" width="100%">
+                                                                            <thead>
+                                                                                <tr>
+                                                                                    <th class="column-title" width="3%"></th>
+                                                                                    <th class="column-title" width="3%"></th>
+                                                                                    <th>@Resource.Address</th>
+                                                                                    <th>@Resource.Country</th>
+                                                                                    <th>@Resource.State</th>
+                                                                                    <th>@Resource.DistrictAndZone</th>
+                                                                                    <th>@Resource.City</th>
+                                                                                    <th>@Resource.Pin</th>
+                                                                                    <th>@Resource.Default @Resource.Address</th>
+                                                                                </tr>
+                                                                            </thead>
+                                                                            @if (Disable)
+                                                                            {
+                                                                                <tbody id="CompAddressBody">
+                                                                                    @if (ViewBag.CompAddressDetail != null)
+                                                                                    {
+                                                                                        var rowIdx = 0;
+                                                                                        foreach (DataRow rw in ViewBag.CompAddressDetail.Rows)
+                                                                                        {
+                                                                                            rowIdx++;
+                                                                                            <tr>
+                                                                                                <td class=" red center"> <i class="fa fa-trash" disabled style="filter:grayscale()" aria-hidden="true" title="@Resource.Delete"></i></td>
+                                                                                                <td class="center edit_icon"> <i class="fa fa-edit" disabled style="filter:grayscale()" aria-hidden="true" title="@Resource.Edit"></i></td>
+
+                                                                                                <td id="tblcompadd">@rw["Comp_Add"].ToString()</td>
+                                                                                                <td hidden="hidden" id="comp_address_id">@rw["comp_add_id"].ToString()</td>
+                                                                                                <td id="tblcontryname">@rw["country_name"].ToString()</td>
+                                                                                                <td hidden="hidden" id="hdntblcntryid">@rw["country"].ToString()</td>
+                                                                                                <td id="tblstatename">@rw["state_name"].ToString()</td>
+                                                                                                <td hidden="hidden" id="hdntblstateid">@rw["state"].ToString()</td>
+                                                                                                <td id="tbldistname">@rw["district_name"].ToString()</td>
+                                                                                                <td hidden="hidden" id="hdntbldistid">@rw["district"].ToString()</td>
+                                                                                                <td id="tblcityname">@rw["city_name"].ToString()</td>
+                                                                                                <td hidden="hidden" id="hdntblcityid">@rw["city"].ToString()</td>
+                                                                                                <td id="tblpin">@rw["pin"].ToString()</td>
+                                                                                                @*<td id="supgstno">@rw["supp_gst_no"].ToString()</td>*@
+
+                                                                                                @if (@rw["default_add"].ToString() == "Y")
+                                                                                                {
+                                                                                                    <td id="defcompadd">
+                                                                                                        <div class="custom-control custom-switch" style="margin-bottom: 0px; margin-top: -5px; margin-left: 40px;">
+                                                                                                            <input type="checkbox" class="custom-control-input col-md-3 col-sm-12 margin-switch" id="chkCCA_@rowIdx" checked disabled="disabled">
+                                                                                                            <label class="custom-control-label col-md-9 col-sm-12" for="chkCCA_@rowIdx" style="padding: 3px 0px;"> </label>
+                                                                                                        </div>
+                                                                                                    </td>
+                                                                                                    <td hidden="hidden"><span id="spanhiddenCompDef_@rowIdx">Y</span></td>
+                                                                                                    <td hidden="hidden"><span id="spanCompDefrowId">@rowIdx</span></td>
+
+                                                                                                }
+                                                                                                else
+                                                                                                {
+
+                                                                                                    <td id="defcompadd">
+                                                                                                        <div class="custom-control custom-switch" style="margin-bottom: 0px; margin-top: -5px; margin-left: 40px;">
+                                                                                                            <input type="checkbox" class="custom-control-input col-md-3 col-sm-12 margin-switch" id="chkCCA_@rowIdx" disabled="disabled">
+                                                                                                            <label class="custom-control-label col-md-9 col-sm-12" for="chkCCA_@rowIdx" style="padding: 3px 0px;"> </label>
+                                                                                                        </div>
+                                                                                                    </td>
+                                                                                                    <td hidden="hidden"><span id="spanhiddenCompDef_@rowIdx">N</span></td>
+                                                                                                    <td hidden="hidden"><span id="spanCompDefrowId">@rowIdx</span></td>
+                                                                                                }
+                                                                                                <td hidden="hidden" id="address_id">@rw["comp_add_id"].ToString()</td>
+                                                                                                <td hidden="hidden" id="hdn_id">Update</td>
+                                                                                            </tr>
+                                                                                        }
+                                                                                    }
+
+
+                                                                                </tbody>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <tbody id="CompAddressBody">
+                                                                                    @if (ViewBag.CompAddressDetail != null)
+                                                                                    {
+                                                                                        var rowIdx = 0;
+                                                                                        foreach (DataRow rw in ViewBag.CompAddressDetail.Rows)
+                                                                                        {
+                                                                                            rowIdx++;
+                                                                                            <tr>
+                                                                                                <td class=" red center"> <i class="fa fa-trash" disabled style="filter:grayscale()" aria-hidden="true" title="@Resource.Delete"></i></td>
+                                                                                                <td class="center edit_icon"> <i class="fa fa-edit" aria-hidden="true" id="editBtnIcon" title="@Resource.Edit"></i></td>
+
+                                                                                                <td id="tblcompadd">@rw["Comp_Add"].ToString()</td>
+                                                                                                <td hidden="hidden" id="comp_address_id">@rw["comp_add_id"].ToString()</td>
+                                                                                                <td id="tblcontryname">@rw["country_name"].ToString()</td>
+                                                                                                <td hidden="hidden" id="hdntblcntryid">@rw["country"].ToString()</td>
+                                                                                                <td id="tblstatename">@rw["state_name"].ToString()</td>
+                                                                                                <td hidden="hidden" id="hdntblstateid">@rw["state"].ToString()</td>
+                                                                                                <td id="tbldistname">@rw["district_name"].ToString()</td>
+                                                                                                <td hidden="hidden" id="hdntbldistid">@rw["district"].ToString()</td>
+                                                                                                <td id="tblcityname">@rw["city_name"].ToString()</td>
+                                                                                                <td hidden="hidden" id="hdntblcityid">@rw["city"].ToString()</td>
+                                                                                                <td id="tblpin">@rw["pin"].ToString()</td>
+                                                                                                @*<td id="supgstno">@rw["supp_gst_no"].ToString()</td>*@
+
+                                                                                                @if (@rw["default_add"].ToString() == "Y")
+                                                                                                {
+                                                                                                    <td id="defcompadd">
+                                                                                                        <div class="custom-control custom-switch" style="margin-bottom: 0px; margin-top: -5px; margin-left: 40px;">
+                                                                                                            <input type="checkbox" class="custom-control-input col-md-3 col-sm-12 margin-switch" id="chkCCA_@rowIdx" checked onclick="defcompchk(event)" @*disabled="disabled"*@>
+                                                                                                            <label class="custom-control-label col-md-9 col-sm-12" for="chkCCA_@rowIdx" style="padding: 3px 0px;"> </label>
+                                                                                                        </div>
+                                                                                                    </td>
+                                                                                                    <td hidden="hidden"><span id="spanhiddenCompDef_@rowIdx">Y</span></td>
+                                                                                                    <td hidden="hidden"><span id="spanCompDefrowId">@rowIdx</span></td>
+
+                                                                                                }
+                                                                                                else
+                                                                                                {
+
+                                                                                                    <td id="defcompadd">
+                                                                                                        <div class="custom-control custom-switch" style="margin-bottom: 0px; margin-top: -5px; margin-left: 40px;">
+                                                                                                            <input type="checkbox" class="custom-control-input col-md-3 col-sm-12 margin-switch" id="chkCCA_@rowIdx" onclick="defcompchk(event)" @*disabled="disabled"*@>
+                                                                                                            <label class="custom-control-label col-md-9 col-sm-12" for="chkCCA_@rowIdx" style="padding: 3px 0px;"> </label>
+                                                                                                        </div>
+                                                                                                    </td>
+                                                                                                    <td hidden="hidden"><span id="spanhiddenCompDef_@rowIdx">N</span></td>
+                                                                                                    <td hidden="hidden"><span id="spanCompDefrowId">@rowIdx</span></td>
+                                                                                                }
+                                                                                                <td hidden="hidden" id="address_id">@rw["comp_add_id"]</td>
+                                                                                                <td hidden="hidden" id="hdn_id">Update</td>
+                                                                                            </tr>
+                                                                                        }
+                                                                                    }
+
+
+                                                                                </tbody>
+                                                                            }
+                                                                        </table>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-12 col-sm-12 margin5">
+                                                        <h2>@Resource.BankDetail</h2>
+                                                        <div class="col-md-12 col-sm-12 border no-padding">
+                                                            <div class="col-md-55 col-sm-12">
+                                                                <label class="col-form-label label-align">@Resource.Beneficiary @Resource.Name @*<span id="Beneficiaryrequired" class="required">*</span>*@</label>
+                                                                @if (Disable)
+                                                                {
+                                                                    @Html.TextBoxFor(model => model.bank_benef, new { @class = "form-control", @id = "bank_benef", @placeholder = "Bank Branch", @onkeypress = "onkeypressbankbenef()", @disabled = "disabled" })
+                                                                    @Html.ValidationMessageFor(model => model.bank_benef, String.Empty, new { @style = "color:red;!important", @id = "vmbank_benef" })
+
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Html.TextBoxFor(model => model.bank_benef, new { @class = "form-control", @id = "bank_benef", @autocomplete = "off", @maxlength = "100", @placeholder = "Bank Branch", @onkeypress = "onkeypressbankbenef()" })
+                                                                    @Html.ValidationMessageFor(model => model.bank_benef, String.Empty, new { @style = "color:red;!important", @id = "vmbank_benef" })
+                                                                }
+                                                            </div>
+                                                            <div class="col-md-55 col-sm-12 pl-0">
+                                                                <label class="col-form-label label-align">@Resource.Bank @Resource.Name @*<span id="Bankrequired" class="required">*</span>*@</label>
+                                                                @if (Disable)
+                                                                {
+                                                                    @Html.TextBoxFor(model => model.bank_name, new { @class = "form-control", @id = "bank_name", @placeholder = "Bank Name", @disabled = "disabled", @onkeypress = "onkeypressbankname()" })
+                                                                    @Html.ValidationMessageFor(model => model.bank_name, String.Empty, new { @style = "color:red;!important", @id = "vmbank_name" })
+
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Html.TextBoxFor(model => model.bank_name, new { @class = "form-control", @id = "bank_name", @autocomplete = "off", @maxlength = "100", @placeholder = "Bank Name", @onkeypress = "onkeypressbankname()" })
+                                                                    @Html.ValidationMessageFor(model => model.bank_name, String.Empty, new { @style = "color:red;!important", @id = "vmbank_name" })
+                                                                }
+                                                            </div>
+                                                            <div class="col-md-55 col-sm-12 pl-0">
+                                                                <label class="col-form-label label-align">@Resource.Bank @Resource.Address @*<span id="Bankadressrequired" class="required">*</span>*@</label>
+                                                                @if (Disable)
+                                                                {
+
+                                                                    @Html.TextBoxFor(modal => modal.bank_add, new { @disabled = "disabled", @id = "bank_add", @class = "form-control remarks_height", @maxlength = "100", @placeholder = "Address", @onkeypress = "onkeypressAddress()" })
+                                                                    @Html.ValidationMessageFor(model => model.bank_add, String.Empty, new { @style = "color:red;!important", @id = "vmbank_add" })
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Html.TextBoxFor(modal => modal.bank_add, new { @class = "form-control remarks_height", @id = "bank_add", @autocomplete = "off", @maxlength = "100", @placeholder = "Address", @onkeypress = "onkeypressAddress()" })
+                                                                    @Html.ValidationMessageFor(model => model.bank_add, String.Empty, new { @style = "color:red;!important", @id = "vmbank_add" })
+
+                                                                }
+                                                            </div>
+                                                            <div class="col-md-55 col-sm-12 pl-0">
+                                                                <label class="col-form-label label-align">@Resource.Account @Resource.Number @*<span id="Accountrequired" class="required">*</span>*@</label>
+                                                                @if (Disable)
+                                                                {
+                                                                    @Html.TextBoxFor(model => model.bank_acc_no, new { @class = "form-control", @id = "bank_acc_no", @placeholder = "Account Number", @disabled = "disabled", @onkeypress = "onkeypressAcco()" })
+                                                                    @Html.ValidationMessageFor(model => model.bank_acc_no, String.Empty, new { @style = "color:red;!important", @id = "vmbank_acc_no" })
+
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Html.TextBoxFor(model => model.bank_acc_no, new { @class = "form-control", @id = "bank_acc_no", @autocomplete = "off", @maxlength = "25", @placeholder = "Account Number", @onkeypress = "onkeypressAcco()" })
+                                                                    @Html.ValidationMessageFor(model => model.bank_acc_no, String.Empty, new { @style = "color:red;!important", @id = "vmbank_acc_no" })
+                                                                }
+                                                                @*<input id="AccountNumber" class="form-control optional" name="AccountNumber" data-validate-length-range="5,15" type="text" placeholder="@Resource.Account @Resource.Number" />*@
+
+                                                            </div>
+                                                            <div class="col-md-55 col-sm-12 pl-0">
+                                                                <label class="col-form-label label-align">@Resource.SWIFT_Code @*<span id="shiftcoderequired" class="required">*</span>*@</label>
+                                                                @if (Disable)
+                                                                {
+                                                                    @Html.TextBoxFor(model => model.swift_code, new { @class = "form-control", @id = "swift_code", @placeholder = "SWIFT Code", @disabled = "disabled", @onkeypress = "onkeypressshiftcode()" })
+                                                                    @Html.ValidationMessageFor(model => model.swift_code, String.Empty, new { @style = "color:red;!important", @id = "vmswift_code" })
+
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Html.TextBoxFor(model => model.swift_code, new { @class = "form-control", @id = "swift_code", @autocomplete = "off", @maxlength = "25", @placeholder = "SWIFT Code", @onkeypress = "onkeypressshiftcode()" })
+                                                                    @Html.ValidationMessageFor(model => model.swift_code, String.Empty, new { @style = "color:red;!important", @id = "vmswift_code" })
+                                                                }
+                                                            </div>
+
+                                                            <div class="col-md-55 col-sm-12">
+                                                                <label class="col-form-label label-align">@Resource.IFSC_Code @*<span id="ifsccoderequired" class="required">*</span>*@</label>
+                                                                @if (Disable)
+                                                                {
+                                                                    @Html.TextBoxFor(model => model.ifsc_code, new { @class = "form-control", @id = "ifsc_code", @placeholder = "IFSC Code", @disabled = "disabled", @onkeypress = "onkeypressifsccode()" })
+                                                                    @Html.ValidationMessageFor(model => model.ifsc_code, String.Empty, new { @style = "color:red;!important", @id = "vmifsc_code" })
+
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Html.TextBoxFor(model => model.ifsc_code, new { @class = "form-control", @id = "ifsc_code", @autocomplete = "off", @maxlength = "25", @placeholder = "IFSC Code", @onkeypress = "onkeypressifsccode()" })
+                                                                    @Html.ValidationMessageFor(model => model.ifsc_code, String.Empty, new { @style = "color:red;!important", @id = "vmifsc_code" })
+                                                                }
+
+                                                            </div>
+                                                            <div class="col-md-12 col-sm-12">&nbsp; </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-12 col-sm-12 margin5" id="decimal">
+                                                        <h2>@Resource.Decimal @Resource.Setup</h2>
+                                                        <div class="col-md-12 col-sm-12 border no-padding">
+                                                            <div class="col-md-55 col-sm-12">
+                                                                <label class="col-form-label label-align">@Resource.Quantity <span class="required">*</span></label>
+                                                                @if (Disable || Model.Command == "Edit" || Model.TransType == "Refresh" || Model.TransType == "DuplicateUpdate")
+                                                                {
+                                                                    @Html.TextBoxFor(model => model.Quantity, new { @id = "Quantity", @maxlength = "1", @onkeyup = "upper(this)", @class = "form-control num_rignt", @onkeypress = "onkeypressQunatity()", @disabled = "disabled" })
+                                                                    @Html.ValidationMessageFor(model => model.Quantity, String.Empty, new { @style = "color:red;!important", @id = "vmQuantity" })
+                                                                    @*<input class="form-control num_rignt" id="Quantity" maxlength="15" name="Pin" onkeyup="upper(this)" disabled placeholder="@Resource.Quantity" type="text" value="">*@
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Html.TextBoxFor(model => model.Quantity, new { @id = "Quantity", @maxlength = "1", @autocomplete = "off", @class = "form-control num_rignt", @onkeypress = "return RqtyFloatValueonly(this, event)" })
+                                                                    @Html.ValidationMessageFor(model => model.Quantity, String.Empty, new { @style = "color:red;!important", @id = "vmQuantity" })
+                                                                }
+                                                            </div>
+
+
+
+
+                                                            <div class="col-md-55 col-sm-12 pl-0">
+                                                                <label class="col-form-label label-align">@Resource.Value <span class="required">*</span></label>
+                                                                @if (Disable || Model.Command == "Edit" || Model.TransType == "Refresh" || Model.TransType == "DuplicateUpdate")
+                                                                {
+                                                                    @Html.TextBoxFor(model => model.Quantity_Value, new { @id = "Quantity_Value", @max = "1", @onkeyup = "upper(this)", @class = "form-control num_rignt", @onkeypress = "onkeypressvalue(this, event)", @disabled = "disabled" })
+                                                                    @Html.ValidationMessageFor(model => model.Quantity_Value, String.Empty, new { @style = "color:red;!important", @id = "vmQuantity_Value" })
+                                                                }
+                                                                @*<input class="form-control num_rignt" id="Quantity" maxlength="15" name="Pin" onkeyup="upper(this)" disabled placeholder="@Resource.Value" type="text" value="">*@
+                                                                else
+                                                                {
+                                                                    @Html.TextBoxFor(model => model.Quantity_Value, new { @id = "Quantity_Value", @autocomplete = "off", @maxlength = "1", @class = "form-control num_rignt", @onkeypress = "return onchagevalue(this, event)" })
+                                                                    @Html.ValidationMessageFor(model => model.Quantity_Value, String.Empty, new { @style = "color:red;!important", @id = "vmQuantity_Value" })
+                                                                }
+                                                            </div>
+
+
+                                                            <div class="col-md-55 col-sm-12 pl-0">
+                                                                <label class="col-form-label label-align">@Resource.Rate1 <span class="required">*</span></label>
+                                                                @if (Disable || Model.Command == "Edit" || Model.TransType == "Refresh" || Model.TransType == "DuplicateUpdate")
+                                                                {
+                                                                    @Html.TextBoxFor(model => model.Rate, new { @id = "Rate1", @autocomplete = "off", @maxlength = "1", @onkeyup = "upper(this)", @class = "form-control num_rignt", @onchange = "onchangerate()", @disabled = "disabled" })
+                                                                    @Html.ValidationMessageFor(model => model.Rate, String.Empty, new { @style = "color:red;!important", @id = "vmRate" })
+                                                                    @*<input class="form-control num_rignt" id="Rate" maxlength="15" name="Rate" onkeyup="upper(this)" disabled placeholder="@Resource.Rate1" type="text" value="">*@
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Html.TextBoxFor(model => model.Rate, new { @id = "Rate1", @autocomplete = "off", @maxlength = "1", @class = "form-control num_rignt", @onchange = "onchangerate()", @onkeypress = "return rate(this, event)" })
+                                                                    @Html.ValidationMessageFor(model => model.Rate, String.Empty, new { @style = "color:red;!important", @id = "vmRate" })
+                                                                }
+                                                            </div>
+                                                            <div class="col-md-55 col-sm-12 pl-0">
+                                                                <label class="col-form-label label-align">@Resource.Weight <span class="required">*</span></label>
+                                                                @if (Disable || Model.Command == "Edit" || Model.TransType == "Refresh" || Model.TransType == "DuplicateUpdate")
+                                                                {
+                                                                    @Html.TextBoxFor(model => model.Weight, new { @id = "Weightid", @autocomplete = "off", @maxlength = "1", @onkeyup = "upper(this)", @class = "form-control num_rignt", @onchange = "onchangeWeight()", @disabled = "disabled" })
+                                                                    @Html.ValidationMessageFor(model => model.Weight, String.Empty, new { @style = "color:red;!important", @id = "vmWeight" })
+                                                                    @*<input class="form-control num_rignt" id="Rate" maxlength="15" name="Rate" onkeyup="upper(this)" disabled placeholder="@Resource.Rate1" type="text" value="">*@
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Html.TextBoxFor(model => model.Weight, new { @id = "Weightid", @autocomplete = "off", @maxlength = "1", @class = "form-control num_rignt", @onchange = "onchangeWeight()" })
+                                                                    @Html.ValidationMessageFor(model => model.Weight, String.Empty, new { @style = "color:red;!important", @id = "vmWeight" })
+                                                                }
+                                                            </div>
+                                                            <div class="col-md-55 col-sm-12 pl-0">
+                                                                <label class="col-form-label label-align">@Resource.ExchangeRate <span class="required">*</span></label>
+                                                                @if (Disable || Model.Command == "Edit" || Model.TransType == "Refresh" || Model.TransType == "DuplicateUpdate")
+                                                                {
+                                                                    @Html.TextBoxFor(model => model.Exchange, new { @id = "Exchangeid", @autocomplete = "off", @maxlength = "1", @onkeyup = "upper(this)", @class = "form-control num_rignt", @onchange = "onchangeExchange()", @disabled = "disabled" })
+                                                                    @Html.ValidationMessageFor(model => model.Exchange, String.Empty, new { @style = "color:red;!important", @id = "vmExchange" })
+                                                                    @*<input class="form-control num_rignt" id="Rate" maxlength="15" name="Rate" onkeyup="upper(this)" disabled placeholder="@Resource.Rate1" type="text" value="">*@
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Html.TextBoxFor(model => model.Exchange, new { @id = "Exchangeid", @autocomplete = "off", @maxlength = "1", @class = "form-control num_rignt", @onchange = "onchangeExchange()" })
+                                                                    @Html.ValidationMessageFor(model => model.Exchange, String.Empty, new { @style = "color:red;!important", @id = "vmExchange" })
+                                                                }
+                                                            </div>
+
+
+
+                                                            <div class="col-md-12 col-sm-12">&nbsp; </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Changes by Prakash after discussion with Prem Start-->
+                                                    <div class="col-md-12 col-sm-12 mt-2 ">
+                                                        <h2>@Resource.Reports @Resource.Path</h2>
+                                                        <div class="col-md-12 col-sm-12 border no-padding">
+                                                            <div class="col-md-3 col-sm-12 mb-2">
+                                                                <label class="col-form-label label-align">Report Path</label>
+                                                                <input class="form-control" disabled="disabled" id="ReportPath" maxlength="50" name="ReportPath" onkeypress="" onkeyup="" type="text" value="">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <!-- Changes by Prakash after discussion with Prem End-->
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+
+                                @Html.Partial("~/Areas/Common/Views/Comn_PartialLicenseDetail.cshtml")
+                                <section class="panel panel-default">
+                                    <div class="panel-heading" role="tab" id="headingTwo">
+                                        <h4 class="panel-title"> <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">@Resource.Document @Resource.Setup <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a> </h4>
+                                    </div>
+                                    <div id="collapseTwo" class="panel-collapse collapse show" role="tabpanel" aria-labelledby="headingTwo">
+                                        <table width="100%">
+                                            <tr>
+                                                <td>
+                                                    <div class="panel-body">
+                                                        <div class="col-md-3 col-sm-12">
+                                                            <label class="col-form-label label-align">@Resource.Document @Resource.Name </label><span id="Req_Lcl_Sale_Acc" class="required d-none"> *</span>
+                                                            @Html.DropDownListFor(model => model.Doc_name, new SelectList(Model.DocumentList, "Doc_id", "Doc_Name"), new { @class = "form-control", @id = "Doc_name", onchange = "OnchangeDoc_name()", @disabled = "disabled" })
+                                                            @Html.ValidationMessageFor(model => model.Doc_name, String.Empty, new { @style = "color:red;!important", @id = "vmDoc_name" })
+                                                            @*<input autocomplete="off" class="form-control" id="DocumentName" maxlength="50" name="DocumentName" placeholder="@Resource.Document @Resource.Name" type="text" value="">*@
+                                                        </div>
+                                                        <div class="col-md-2 col-sm-12 pl-0">
+                                                            <label class="col-form-label label-align">@Resource.Prefix </label>
+                                                            @Html.TextBoxFor(model => model.Prefix, new { @id = "Prefix", @class = "form-control", @onchange = "onchangePrefix()", @disabled = "disabled" })
+                                                            @Html.ValidationMessageFor(model => model.Prefix, String.Empty, new { @style = "color:red;!important", @id = "vmPrefix" })
+                                                            @*<input autocomplete="off" class="form-control" id="Prefix" maxlength="50" name="Prefix" placeholder="@Resource.Prefix" type="text" value="">*@
+                                                        </div>
+                                                        <div class="col-md-3 col-sm-12 pl-0">
+                                                            <label class="col-form-label label-align">@Resource.Frequency </label>
+                                                            <select class="form-control" data-val="true" data-val-number="The field curr must be a number." id="suppcurr" name="curr" onchange="OnChangeCurr()" ,disabled=disabled>
+                                                                <option value="">Frequency</option>
+                                                                <option value="">Frequency 1</option>
+                                                                <option value="">Frequency 2</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-md-2 col-sm-12 margin25">
+                                                            <input class="js-switch" data-val="true" data-val-required="" id="Services" name="goods" type="checkbox" value="true" data-switchery="true" style="display: none;">
+                                                            <label> @Resource.Approval @Resource.Required </label>
+                                                        </div>
+                                                        <div class="col-md-1 col-sm-12">
+                                                            <button class="margin22 address_save" title="Save" type="submit" onclick="return CheckValidation();" id="btn_save" name="Command" value="TaxPerSave"></button>
+                                                        </div>
+                                                        <div class="col-md-12 col-sm-12">
+                                                            <div class="card-box table-responsive dy_table margin15">
+                                                                <div id="" class="sticky-table sticky-ltr-cells sb-container container-example1 OrderHistory height30VH">
+                                                                    <table id="datatable-buttons" data-order="" class="table table-striped table-bordered rowhighlighttbl">
+                                                                        <thead>
+                                                                            <tr class="sticky-header">
+                                                                                <th width="1%">@Resource.SrNo</th>
+                                                                                <th>@Resource.Document @Resource.Name</th>
+                                                                                <th>@Resource.Prefix </th>
+                                                                                <th>@Resource.Frequency</th>
+                                                                                <th>@Resource.Approval  @Resource.Required</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            <tr>
+                                                                                <td>01</td>
+                                                                                <td>Document @Resource.Name</td>
+                                                                                <td>Prefix</td>
+                                                                                <td>Frequency</td>
+                                                                                <td>Approval Required</td>
+                                                                            </tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-12 col-sm-12"> &nbsp; </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </section>
+                            </article>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+<script>
+    debugger;
+    var RequestedUrl = window.location.protocol + "//" + window.location.host + "/FactorySettings/OrganizationSetup/GetAllHoBranchGrp";
+    $.ajax({
+        type: 'POST',
+        url: RequestedUrl,
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        async: false,
+        data: JSON.stringify(),
+        success: function (Objdata) {
+            debugger;
+            //if (data == 'ErrorPage') {
+            //    ErrorPage();
+            //    return false;
+            //}
+
+            if (Objdata !== null && Objdata !== "") {
+                var arr = [];
+                arr = JSON.parse(Objdata);
+                FinalData = []
+                $.each(arr, function (i, n) {
+                    FinalData.push(n);
+                });
+                debugger;
+                var options = {
+                    // Optionally provide here the jQuery element that you use as the search box for filtering the tree. simpleTree then takes control over the provided box, handling user input
+                    searchBox: $('#tree_menu'),
+
+                    // Search starts after at least 3 characters are entered in the search box
+                    searchMinInputLength: 1,
+                    // Number of pixels to indent each additional nesting level
+                    indentSize: 25,
+                    // Show child count badges?
+                    childCountShow: true,
+                    // Symbols for expanded and collapsed nodes that have child nodes
+                    symbols: {
+                        collapsed: '▶',
+                        expanded: '▼'
+                    },
+                    css: {
+                        childrenContainer: 'simpleTree-childrenContainer',
+                        /*childCountBadge: 'simpleTree-childCountBadge badge badge-pill badge-secondary',*/
+                        highlight: 'simpleTree-highlight',
+                        indent: 'simpleTree-indent',
+                        label: 'simpleTree-label',
+                        value: 'simpleTree-value',
+                        /*mainContainer: 'simpleTree-mainContainer',*/
+                        /*nodeContainer: 'simpleTree-nodeContainer',*/
+                        selected: 'simpleTree-selected',
+                        toggle: 'simpleTree-toggle'
+                    }
+                };
+                $('#mytree').simpleTree(options, FinalData);
+            }
+        }
+    });
+</script>

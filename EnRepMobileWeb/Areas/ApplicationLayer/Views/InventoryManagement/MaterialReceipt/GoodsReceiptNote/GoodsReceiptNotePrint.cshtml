@@ -1,0 +1,205 @@
+﻿@using System.Data;
+@{
+    string lpath = string.Empty;
+    if (!string.IsNullOrEmpty(ViewBag.FLogoPath))
+    {
+        lpath = ViewBag.FLogoPath.ToString();
+    }
+
+}
+
+@{
+    string doc_status = "";
+    string BackGroundImgUrl = "";
+    if (ViewBag.DocStatus != null)
+    {
+        doc_status = ViewBag.DocStatus;
+    }
+    if (doc_status == "D" || doc_status == "F")
+    {
+        BackGroundImgUrl = Server.MapPath("~/Content/Images/draft.png");
+    }
+    else if (doc_status == "C" )
+    {
+        BackGroundImgUrl = Server.MapPath("~/Content/Images/cancelled.png");
+    }
+    DataTable dt = new DataTable();
+
+    if (ViewBag.Details != null)
+    {
+        dt = ViewBag.Details.Tables[0];
+    }
+
+    var srno = 1;
+}
+<style>
+    #dtlTable, #dtlTable td, #dtlTable th {
+        border: 0.5px solid black;
+    }
+</style>
+<div style='background: url(@BackGroundImgUrl) no-repeat ; height:800px; backgroundposition: center center;'>
+    @*@Html.Partial("~/Areas/Common/Views/Cmn_PrintHeaderWithoutAddr.cshtml")*@
+    @Html.Partial("~/Areas/Common/Views/Cmn_PrintHeader.cshtml")
+    <table width='100%' style="vertical-align: top;">
+        <tr>
+            <td style="vertical-align: top;">
+                <table style='width:100%;vertical-align:top;'>
+                    <tr>
+                        <td style='width:10px;'></td>
+                        <td style="vertical-align: top;">
+                            <table style='width:100%;border:solid 1px #000000;vertical-align:top;'>
+                                <tr>
+                                    <td style='width:51%; border-right:solid 1px #000000;vertical-align:top; paddingright:7%'>
+                                        <table style='font-size:12px;font-weight:normal;padding:0px 0px 0px 5px;vertical-align:top;'>
+                                            @*<tr><td><strong>Supplier : </strong> @dt.Rows[0]["supp_name"]<br /> @dt.Rows[0]["supp_add"]</td></tr>*@
+                                            <tr><td><strong>Supplier : </strong> @dt.Rows[0]["supp_name"]</td></tr>
+                                            <tr><td><strong>Address :  </strong> @dt.Rows[0]["supp_add"]</td></tr>
+                                            <tr><td><strong>Pin Code :  </strong> @dt.Rows[0]["supp_pin"]</td></tr>
+                                            <tr><td><strong>State :  </strong> @dt.Rows[0]["supp_state"]</td></tr>
+                                            <tr><td><strong>Country : </strong> @dt.Rows[0]["supp_cntry"]</td></tr>
+                                            <tr><td><strong>Phone No.:  </strong> @dt.Rows[0]["cont_num"]</td></tr>
+                                            <tr><td><strong>GST No.: </strong> @dt.Rows[0]["supp_gst_no"]</td></tr>
+                                            <tr><td><strong> PAN No.: </strong> @dt.Rows[0]["supp_pan_no"]</td></tr>
+                                        </table>
+                                    </td>
+                                    <td style='width:42%; vertical-align:top;'>
+                                        <table style='font-size:12px;font-weight:normal;padding:0px 0px 0px 0px;vertical-align:top;'>
+                                            <tr>
+                                                <td style='font-size:12px;font-weight:bold;'> GRN Number </td>
+                                                <td style='font-size:12px;font-weight:normal;'><strong>:</strong> @dt.Rows[0]["mr_no"]</td>
+                                            </tr>
+                                            <tr>
+                                                <td style='font-size:12px;font-weight:bold;'> GRN Date </td>
+                                                <td style='font-size:12px;font-weight:normal;'><strong>:</strong> @dt.Rows[0]["mr_dt"]</td>
+                                            </tr>
+                                            <tr>
+                                                <td style='font-size:12px;font-weight:bold;'> Bill/Challan Number </td>
+                                                <td style='font-size:12px;font-weight:normal;'><strong>:</strong> @dt.Rows[0]["bill_no"]</td>
+                                            </tr>
+                                            <tr>
+                                                <td style='font-size:12px;font-weight:bold;'>Bill/Challan Date </td>
+                                                <td style='font-size:12px;font-weight:normal;'><strong>:</strong> @dt.Rows[0]["bill_date"] </td>
+                                            </tr>
+                                            <tr>
+                                                <td style='font-size:12px;font-weight:bold;'> Gate Entry Number </td>
+                                                <td style='font-size:12px;font-weight:normal;'><strong>:</strong> @dt.Rows[0]["dn_no"]</td>
+                                            </tr>
+                                            <tr>
+                                                <td style='font-size:12px;font-weight:bold;'> Gate Entry Date </td>
+                                                <td style='font-size:12px;font-weight:normal;'><strong>:</strong> @dt.Rows[0]["dn_dt"]</td>
+                                            </tr>
+                                            <tr>
+                                                <td style='font-size:12px;font-weight:bold;'> G/R Number </td>
+                                                <td style='font-size:12px;font-weight:normal;'><strong>:</strong> @dt.Rows[0]["gr_no"] </td>
+                                            </tr>
+                                            <tr>
+                                                <td style='font-size:12px;font-weight:bold;'> G/R Date </td>
+                                                <td style='font-size:12px;font-weight:normal;'><strong>:</strong> @dt.Rows[0]["gr_date"]</td>
+                                            </tr>
+                                            <tr>
+                                                <td style='font-size:12px;font-weight:bold;'>Transporter Name </td>
+                                                <td style='font-size:12px;font-weight:normal;'><strong>:</strong> @dt.Rows[0]["trans_name"] </td>
+                                            </tr>
+                                            <tr>
+                                                <td style='font-size:12px;font-weight:bold;'> Vehicle Number</td>
+                                                <td style='font-size:12px;font-weight:normal;'><strong>:</strong> @dt.Rows[0]["veh_no"]</td>
+                                            </tr>
+                                            <tr>
+                                                <td style='font-size:12px;font-weight:bold;'> Vehicle Load (in Tonnage) </td>
+                                                <td style='font-size:12px;font-weight:normal;'><strong>:</strong> @dt.Rows[0]["veh_load"]</td>
+                                            </tr>
+                                            @*<tr>
+            <td style='font-size:12px;font-weight:bold;'> Remarks </td>
+            <td style='font-size:12px;font-weight:normal;'>This is a remarks    </td>
+        </tr>*@
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td style='width:10px;'></td>
+                    </tr>
+                    <tr>
+                        <td style='width:10px;'></td>
+                        <td>
+                            <table id="dtlTable" cellspacing='0' cellpadding='0' style='width:100%;font-size:12px;font-weight:normal;padding:0px 0px;line-height:18px;font-weight:normal;'>
+                                <thead>
+                                    <tr>
+                                        <th width='5%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'> S.NO.</th>
+                                        <th width='20%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'> Item <br /> Description</th>
+                                        <th width='6%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'> UOM </th>
+                                        <th width='16%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'> Received <br /> Warehouse </th>
+                                        <th width='9%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'> Received <br /> Quantity </th>
+                                        <th width='9%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'> QC <br /> Accepted </th>
+                                        <th width='9%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'> QC <br /> Rejected </th>
+                                        <th width='10%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'> QC <br /> Reworkable </th>
+                                        <th width='16%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'> Remarks </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (DataRow dr in dt.Rows)
+                                    {
+                                        <tr>
+                                            <td style='text-align:center; width:5%;'>@srno</td>
+                                            <td style='paddingleft:5px;paddingtop:5px;paddingbottom:3px;'>@dr["item_name"]</td>
+                                            <td style='paddingleft:5px;paddingtop:5px;paddingbottom:3px;'>@dr["uom_name"]</td>
+                                            <td style='paddingleft:5px;paddingtop:5px;paddingbottom:3px;'>@dr["rec_wh_nm"]</td>
+                                            <td style='text-align:right; paddingright:5px; paddingtop:5px; paddingbottom:3px;'>@dr["rec_qty"]</td>
+                                            <td style='text-align:right; paddingright:5px; paddingtop:5px; paddingbottom:3px;'>@dr["acc_qty"]</td>
+                                            <td style='text-align:right; paddingright:5px; paddingtop:5px; paddingbottom:3px;'>@dr["rej_qty"]</td>
+                                            <td style='text-align:right; paddingright:5px;paddingtop:5px;paddingbottom:3px;'>@dr["rework_qty"]</td>
+                                            <td style='text-align: left; paddingleft: 5px; paddingright: 5px; paddingtop: 5px; paddingbottom: 3px;'>@dr["it_remarks"]</td>
+                                        </tr>
+                                        srno = srno + 1;
+                                    }
+                                    @*<tr>
+                                            <td style='text-align:center; width:5%;'>01</td>
+                                            <td style='paddingleft:5px;paddingtop:5px;paddingbottom:3px;'>45678UHGHDJSK</td>
+                                            <td style='paddingleft:5px;paddingtop:5px;paddingbottom:3px;'>Kgs</td>
+                                            <td style='paddingleft:5px;paddingtop:5px;paddingbottom:3px;'>GN Raw Material</td>
+                                            <td style='text-align:right; paddingright:5px; paddingtop:5px; paddingbottom:3px;'>120.00</td>
+                                            <td style='text-align:right; paddingright:5px; paddingtop:5px; paddingbottom:3px;'>100.00</td>
+                                            <td style='text-align:right; paddingright:5px; paddingtop:5px; paddingbottom:3px;'>20.00</td>
+                                            <td style='text-align:right; paddingright:5px;paddingtop:5px;paddingbottom:3px;'>0.00</td>
+                                        </tr>*@
+
+                                </tbody>
+                            </table>
+                        </td>
+                        <td style='width:10px;'></td>
+                    </tr>
+
+
+
+                    <tr>
+                        <td style='width:10px;'></td>
+                        <td>
+                            <table id="" cellspacing='0' cellpadding='0' style='width:100%;font-size:12px;font-weight:normal;margin-top:20px;font-weight:normal;'>
+                                <thead>
+                                    <tr>
+                                        <th width='25%' align='left' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'>Received by</th>
+                                        <th width='25%' align='left' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'>Checked By</th>
+                                        <th width='25%' align='left' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'>Inspected By</th>
+                                        <th width='25%' align='left' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'> Approved By</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    <tr>
+                                        <td style='text-align:left; width:5%;'></td>
+                                        <td style='text-align: left; paddingleft: 5px; paddingtop: 5px; paddingbottom: 3px;'></td>
+                                        <td style='text-align:left; paddingright:5px;paddingtop:5px;paddingbottom:3px;'></td>
+                                        <td style='text-align: left; paddingleft: 5px; paddingright: 5px; paddingtop: 5px; paddingbottom: 3px;'></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                        <td style='width:10px;'></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+    @*@Html.Partial("~/Areas/Common/Views/Cmn_PrintFooter.cshtml")*@
+</div>

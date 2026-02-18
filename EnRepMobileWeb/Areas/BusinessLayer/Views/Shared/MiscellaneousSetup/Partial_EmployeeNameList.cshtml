@@ -1,0 +1,72 @@
+﻿@using EnRepMobileWeb.Resources;
+@*@{
+        var EditFlag = "N";
+        var DeleteFlag = "N";
+        if (ViewBag.VBRoleList != null)
+        {
+            foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+            {
+                if (Row["feature_id"].ToString() == "103205115002")
+                {
+                    EditFlag = "Y";
+                }
+                if (Row["feature_id"].ToString() == "103205115004")
+                {
+                    DeleteFlag = "Y";
+                }
+            }
+        }
+    }*@
+<table id="datatable-buttons11" class="table table-bordered data_table_full_width rowhighlighttbl">
+    <thead>
+        <tr class="sticky-header">
+            <th class="wi">@Resource.SrNo</th>
+            <th style="display:none"></th>
+            <th> @Resource.EmployeeName</th>
+            <th> @Resource.ContactNumber</th>
+            <th> @Resource.ContactEmailID</th>
+            <th width="5%"> </th>
+            <th width="5%"> </th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            var i = 0;
+        }
+        @if (ViewBag.EmployeeSetup != null)
+        {
+            foreach (System.Data.DataRow dr in ViewBag.EmployeeSetup.Rows)
+            {
+                i = i + 1;
+
+                <tr role="row" class="odd">
+                    <td class="sorting_1">@i</td>
+                    <td id="emp_id" style="display:none">@dr["emp_id"].ToString()</td>
+                    <td id="Emp_name">@dr["emp_name"].ToString()</td>
+                    <td id="Emp_cont_no">@dr["emp_cont_no"].ToString()</td>
+                    <td id="emp_EmailId">@dr["emp_email_id"].ToString()</td>
+                    <td class="center">
+
+                        <i type="submit" class="fa fa-edit" onclick="EditEmployeeSetup(event); CheckBranchStatusWhenUpdate('Employee');" aria-hidden="true" title="@Resource.Edit"></i>
+
+                    </td>
+                    <td class="center">
+                        @if (@dr["Checkdependcy"].ToString() == "Y")
+                        {
+                            <i class="fa fa-trash" Disabled aria-hidden="true" title="@Resource.Delete" onclick=""></i>
+                        }
+                        else
+                        {
+                            <i class="fa fa-trash red" aria-hidden="true" title="@Resource.Delete" onclick="return functionConfirm(event,'Employee')"></i>
+                        }
+
+
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+
+

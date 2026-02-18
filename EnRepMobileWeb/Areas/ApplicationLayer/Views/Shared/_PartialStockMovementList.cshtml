@@ -1,0 +1,99 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.InventoryManagement.MIS.StockMovement.StockMovement_Model
+
+@using EnRepMobileWeb.Resources;
+@{
+    var rowId = 0;
+}
+<style>
+    #datatable-buttons_wrapper .btn-group a:nth-child(3) {
+        display: inline-block;
+        position:absolute;
+    }
+</style>
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<table id="datatable-buttons" class="table table-striped width2100 rowhighlighttbl itmfrz" cellspacing="0" width="100%">
+    <thead>
+        <tr class="sticky-header">
+            <th width="3%">@Resource.SrNo</th>
+            <th width="15%">@Resource.ItemName</th>
+            <th width="8%">@Resource.Branch</th>
+            <th width="8%" class="itmStick">@Resource.Warehouse</th>
+            <th>@Resource.Lot</th>
+            <th>@Resource.Batch1</th>
+            <th>@Resource.Serial1</th>
+            <th width="5%">@Resource.Manufacturer @Resource.Name</th>
+            <th width="5%">@Resource.MRP</th>
+            <th width="5%">@Resource.Manufactured @Resource.Date</th>
+            <th>@Resource.TransactionDate</th>
+            <th>@Resource.SourceType</th>
+            <th>@Resource.DocumentNumber</th>
+            <th>@Resource.BillNumber</th>
+            <th>@Resource.BillDate</th>
+            @*<th>@Resource.OpeningStock</th>*@
+            <th>@Resource.Inward</th>
+            <th>@Resource.Outward</th>
+            <th>@Resource.ClosingStock </th>
+            <th>@Resource.CostPrice </th>
+            <th>@Resource.ClosingValue</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.MovDetailsLists != null)
+        {
+            foreach (var row in Model.MovDetailsLists)
+            {
+                rowId++;
+        <tr>
+
+            <td>@rowId</td>
+            <td>@row.itemname</td>
+            <td>@row.branch</td>
+            <td class="ItmNameBreak itmStick tditemfrz">@row.warehouse</td>
+            <td>@row.lot</td>
+            <td>@row.batch</td>
+            <td>@row.serial_no</td>
+            <td>@row.mfg_name</td>
+            <td>@row.mfg_mrp</td>
+            <td>@row.mfg_date</td>
+            <td>@row.transdate</td>
+            <td>@row.sourcetype</td>
+            <td>@row.docno</td>
+            <!--<td>
+    <div class="col-sm-11 lpo_form" style="padding:0px;" id=''>@row.docno</div> <div class="col-sm-1 i_Icon">
+        <button type="button" id="" class="calculator" data-toggle="modal" data-target="#Receipts" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.DocumentInformation ">-->
+            @*<i class="fa fa-info" aria-hidden="true" title="Document Information"></i>*@
+            <!--</button>
+        </div>
+    </td>-->
+            @*<td class="num_right">@row.openingstock</td>*@
+            @*/*Add billno,billdt by Hina sharma on 19-09-2025 */*@
+
+            <td>@row.billno</td>
+            <td>@row.billdt</td>
+
+            <td class="num_right">@row.inwardqty</td>
+            <td class="num_right">@row.outwardqty</td>
+            <td class="num_right">@row.closingstock</td>
+            <td class="num_right">@row.costprice</td>
+            <td class="num_right">@row.closingvalue</td>
+
+        </tr>
+            }
+        }
+    </tbody>
+</table>
+
+@*@if (Session["MovementBy"] != null )*@
+@if (Model.MovementBy != null )
+{
+    <script src="~/Content/Scripts/Common/CommonJS.js"></script>
+    <script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+    
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+        @Scripts.Render("~/Content/Scripts/DatatablesJs")
+
+
+    //Session["MovementBy"] = null;
+    Model.MovementBy = null;
+}

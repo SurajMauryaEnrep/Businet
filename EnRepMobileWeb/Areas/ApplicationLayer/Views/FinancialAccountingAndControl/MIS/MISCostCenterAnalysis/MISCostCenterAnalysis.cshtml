@@ -1,0 +1,150 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.FinancialAccountingAndControl.MIS.MISCostCenterAnalysis.MISCostCenterAnalysis_Model
+@using EnRepMobileWeb.Resources;
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+<title>@Model.Title</title>
+
+<script src="~/Content/Scripts/ApplicationLayer/FinancialAccountingAndControl/MIS/MISCostCenterAnalysis/MISCostCenterAnalysisJS.js"></script>
+
+<style>
+
+    #Div_CostCenterExpRevDetail #TblTransactionDetails_wrapper .buttons-csv {
+        position: absolute;
+        margin-left: 0%;
+        /* top: -10px;*/
+    }
+
+    #Div_CostCenterExpRevDetail #TblTransactionDetails_filter {
+        position: absolute;
+        right: 0;
+        top: 0;
+    }
+
+    #Div_CostCenterExpRevDetail .dataTables_length {
+        position: absolute;
+        z-index: 10;
+    }
+
+    #Div_CostCenterExpRevDetail #TblTransactionDetails_wrapper {
+        height: 30px;
+    }
+
+    #Div_CostCenterExpRevDetail .pop_csv .dt-buttons {
+        margin-left: 15%;
+        width: 10%;
+    }
+</style>
+@using (Html.BeginForm("MISCostCenterAnalysisDetail", "MISCostCenterAnalysis", FormMethod.Post))
+{
+    <div class="row">
+        <!-- Workflow Information -->
+        <div id="WorkflowInformation" class="modal fade" role="dialog">
+            <div class="modal-dialog" style="max-width:700px;">
+                <div class="price_item_detail">
+                    <!-- Modal content-->
+                    @Html.Partial("~/Areas/Common/Views/_WorkFlow.cshtml")
+                </div>
+            </div>
+        </div>
+
+        <!-- MIS Cost Center Transaction Detail -->
+        <div id="MISCostCenterTransactionDetail" class="modal fade" role="dialog">
+            <div class="modal-dialog" style="max-width:1200px;" id="div_PopUpMISCostCenterTransactionDetail">
+                <!-- Modal content-->
+                @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/Partial_MISCostCenterTransactionDetail.cshtml")
+            </div>
+        </div>
+        <!-- MIS Cost Center Transaction Detail End -->
+        <!-- MIS Cost Center Voucher Detail Start -->
+        <div id="MISCostCenterVoucherDetail" class="modal fade" role="dialog">
+            <div class="modal-dialog" style=" max-width:800px;" id="div_PopUpMISCostCenterVoucherDetail">
+                <div id="gl_mwvoucherdetails">
+                    @* This Partial Data is Comming From CommonJS *@
+                    @*@Html.Partial("~/Areas/ApplicationLayer/Views/Shared/Partial_MISCostCenterVoucherDetail.cshtml")*@
+                </div>
+            </div>
+        </div>
+        <!-- MIS Cost Center Voucher Detail End -->
+        <!-- Cost Center Detail -->
+        <div id="CostCenterDetail" class="modal fade" role="dialog">
+            <div class="modal-dialog" style="max-width:800px;">
+                <div id="gl_ccdeatilsdis">
+                    @Html.Partial("~/Areas/Common/Views/Cmn_PartialCostCenterDetailDisplay.cshtml")
+                </div>
+            </div>
+        </div>
+        <!-- Cost Center Detail End-->
+
+        <div class="col-md-12 col-sm-12 ">
+            <div class="x_panel mar_pad1 ">
+                <div class="x_content mar_pad1">
+                    <h2 class="col-md-5 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                    <input type="hidden" id="DocumentMenuId" value="@ViewBag.DocumentMenuId" />
+                    <div id="wizard" class="form_wizard wizard_horizontal col-md-3 col-sm-12 work_flow">
+                        @Html.Partial("~/Areas/Common/Views/_PartialWorkflowBar.cshtml")
+                    </div>
+                    @*<div id="" class="col-md-4 col-sm-12 heading_right_padding">
+                            <ul>
+                                <li>
+                                    <a class="tooltip-test"
+                                       title=" @Resource.AddNew" href="@Url.Action("ProcurementPlanDetail","ProcurementPlan")"><img src="~/Content/Images/addgreen.png" width="32" height="32" id="Btn_AddNewGRN" alt="Add"></a>
+                                </li>
+                            </ul>
+                        </div>*@
+
+                    <div class="x_title pad_mar ">
+                        <div class="col-md-12 col-sm-12 icon_tool padding_zero">
+                            <div class="col-md-12 col-sm-12 padding_zero">
+                                @*<div class="col-md-2 col-sm-12">
+                                        <label class="col-form-label label-align">@Resource.CostCenter</label>
+                                        <input autocomplete="off" class="form-control" id="CostCenter" maxlength="25" name="CostCenter" onchange="" onkeypress="" placeholder="@Resource.CostCenter" type="text" value="">
+                                    </div>*@
+                                <div class="col-md-2 col-sm-12">
+                                    <label class="col-form-label label-align">@Resource.CostCenter <span class="required"> *</span></label>
+                                    @Html.DropDownListFor(m => m.cc_id, new SelectList(Model.costCenterLists, "cc_id", "cc_name"), new { @class = "form-control", @id = "txtCcId", onchange = "onChangeCcName()" })
+                                    <span class="error_message" id="span_CcId" style="display: none;"></span>
+                                </div>
+                                <div class="col-md-2 col-sm-12">
+                                    <label class="col-form-label label-align">@Resource.CostCenter @Resource.Value <span class="required"> *</span></label>
+                                    @Html.DropDownListFor(m => m.cc_id, new SelectList(Model.costCenterValueLists, "cc_val_id", "cc_val_name"), new { @class = "form-control", @id = "txtCcValId", onchange = "onChangeCcValName()" })
+                                    <span class="error_message" id="span_CcValId" style="display: none;"></span>
+                                </div>
+                                <div class="col-md-2 col-sm-12">
+                                    <label class="col-form-label label-align">@Resource.FromDate</label>
+                                    @Html.TextBoxFor(m => m.from_dt, new { @class = "form-control", @id = "txtFromdate", @type = "date", @max = System.DateTime.Now.ToString("yyyy-MM-dd"), onchange = "onChangeFromDt()" })
+                                    <span class="error_message" id="span_Fromdate" style="display: none;"></span>
+                                </div>
+                                <div class="col-md-2 col-sm-12 pl-0">
+                                    <label class="col-form-label label-align">@Resource.ToDate</label>
+                                    @Html.TextBoxFor(m => m.to_dt, new { @class = "form-control", @id = "txtTodate", @type = "date", @max = System.DateTime.Now.ToString("yyyy-MM-dd"), onchange = "onChangeToDt()" })
+                                    <span class="error_message" id="span_Todate" style="display: none;"></span>
+                                </div>
+                                <div class="col-md-1 col-sm-12 pl-0">
+                                    <button type="button" class="btn btn-primary btn-sm margintop20" id="BtnSearch" onclick="return SearchCostCenterExpRevDetails();"><i class="fa fa-search" @*onclick="BtnSearch()"*@ aria-hidden="true"></i></button>
+                                </div>
+                                @Html.HiddenFor(model => model.cc_TransactionDetail, new { @id = "cc_TransactionDetail" })
+                                @Html.HiddenFor(model => model.searchValue, new { @id = "searchValue" })
+                                @Html.HiddenFor(model => model.hdnCSVPrint, new { @id = "hdnCSVPrint" })
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 col-sm-12 ">
+            <div class="x_panel mar_pad1 ">
+                <div class="x_content mar_pad1">
+                    <div class="card-box table-responsive dy_table">
+                        <div id="Div_CostCenterExpRevDetail" class="sticky-table sticky-ltr-cells sb-container container-example1">
+                            @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialMISCostCenterAnalysisList.cshtml")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- page content end -->

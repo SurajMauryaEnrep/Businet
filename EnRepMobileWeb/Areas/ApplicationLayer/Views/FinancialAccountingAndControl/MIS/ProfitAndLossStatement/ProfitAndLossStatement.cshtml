@@ -1,0 +1,141 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.FinancialAccountingAndControl.MIS.ProfitAndLossStatement.ProfitAndLossStatementModel
+@using EnRepMobileWeb.Resources;
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+<style>
+    .test {
+        border: solid 1px #ff0000;
+    }
+</style>
+<script src="~/Content/Scripts/ApplicationLayer/FinancialAccountingAndControl/MIS/ProfitAndLossStatement/ProfitAndLossStatement.js"></script>
+<title>@ViewBag.Title</title>
+<div class="row">
+    <div id="div_glDetail" class="modal fade" role="dialog">
+        <div class="modal-dialog" style="min-width:1000px;">
+            <div id="div_gldetails_popup">
+            </div>
+        </div>
+    </div>
+    <!-- Partial General Ledger Voucher Detail Month Wise -->
+    <div id="VoucherDetailMW" class="modal fade" role="dialog">
+        <div class="modal-dialog" style="max-width:800px;">
+            <div id="gl_mwvoucherdetails">
+                @Html.Partial("~/Areas/Common/Views/Comn_PartialGeneralLedgerVoucherDetailMW.cshtml")
+            </div>
+        </div>
+    </div>
+    <!-- Cost Center Detail -->
+    <div id="CostCenterDetail" class="modal fade" role="dialog">
+        <div class="modal-dialog" style="max-width:800px;">
+            <div id="gl_ccdeatilsdis">
+                @Html.Partial("~/Areas/Common/Views/Cmn_PartialCostCenterDetailDisplay.cshtml")
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <h2 class="col-md-8 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                <input type="hidden" id="DocumentMenuId" value="@ViewBag.DocumentMenuId" />@*/*Add by Hina sharma on 19-11-2024 to loader*/*@
+                <div id="" class="col-md-4 col-sm-12 heading_right_padding">
+                    <ul>
+                        <li>
+                            @*<a class="tooltip-test" title="@Resource.Print" href=""><img src="/Content/Images/pdf.png" width="32" height="32" id="" alt=""></a>*@
+                            <button type="button" id="div_PLGeneratePDF" style="display:none" class="calculator" data-toggle="modal" onclick="GenerateProfitAndLossPDF(event)" data-target="#" data-backdrop="static" data-keyboard="false"><img src="~/Content/Images/pdf.png" width="32" height="32" alt="" title="@Resource.ProfitAndLossStatement">  </button>
+
+                        </li>
+                    </ul>
+                </div>
+                <div class="x_title pad_mar ">
+                    <div class="col-md-12 col-sm-12 icon_tool padding_zero">
+                        <div class="col-md-12 col-sm-12 padding_zero">
+                            <div class="col-md-2 col-sm-12">
+                                <label class="col-form-label label-align">@Resource.FromDate</label>
+                                <input class="form-control" id="txtFromdate" name="FromDate" type="date" onchange="FromDateValidation()" value="@ViewBag.FromDate.ToString()" min="@ViewBag.FromFyMindate.ToString()" max="@ViewBag.ToFyMaxdate.ToString()">
+                                <span class="error_message" id="span_fromdt" style="display: none;"></span>
+                            </div>
+                            <div class="col-md-2 col-sm-12 pl-0">
+                                <label class="col-form-label label-align">@Resource.ToDate</label>
+                                <input class="form-control" id="txtTodate" name="ToDate" type="date" value="@ViewBag.ToDate.ToString()" min="@ViewBag.ToFyMindate.ToString()" max="@ViewBag.ToFyMaxdate.ToString()">
+                            </div>
+                            <div class="col-md-5 col-sm-12 pl-0 multiselectBranch">
+                                <label class="col-form-label label-align">@Resource.Branch</label>
+                                <select class="form-control" id="ddl_branch" multiple="multiple" name="ddl_branch">
+                                    @if (ViewBag.br_list != null)
+                                    {
+                                        foreach (System.Data.DataRow row in ViewBag.br_list.Rows)
+                                        {
+                                            if (ViewBag.vb_br_id == @row["Comp_Id"].ToString())
+                                            {
+                                                <option selected="selected" value="@row["Comp_Id"].ToString()">@row["comp_nm"].ToString()</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@row["Comp_Id"].ToString()">@row["comp_nm"].ToString()</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                <span class="error_message" id="span_br" style="display: none;"></span>
+                            </div>
+                            <div class="col-md-2 col-sm-12">
+                                <label class="col-form-label label-align">@Resource.ReportType</label>
+                                @*<select class="form-control" id="ddl_RptType" name="ReportType">
+
+                                        <option value="H">Horizontal </option>
+                                        <option value="V" selected="selected">Vertical</option>
+                                    </select>*@
+                                @Html.DropDownListFor(model => model.ReportType, new SelectList(new List<Object>
+                                           {
+                       new { value = "H", text ="Horizontal" },
+                       new { value = "V", text = "Vertical" },
+                                           },
+                                  "value",
+                                  "text"
+                                  ), new { @id = "ddl_RptType", @class = "form-control" })
+                            </div>
+                            <div class="col-md-1 col-sm-12 pl-0">
+                                <button type="button" class="btn btn-primary btn-sm margintop20" id="BtnSearch" onclick="GetProfitAndLoss_Details()"><i class="fa fa-search" aria-hidden="true"></i></button>
+                            </div>
+                            <div>
+                                <table id="tbl_hdnfylist" style="display:none;">
+                                    <tbody>
+                                        @if (ViewBag.fylist != null)
+                                        {
+                                            foreach (System.Data.DataRow row in ViewBag.fylist.Rows)
+                                            {
+                                                <tr>
+                                                    <td>@row["comp_id"].ToString()</td>
+                                                    <td>@row["br_Id"].ToString()</td>
+                                                    <td id="fystdt">@row["fin_st_date"].ToString()</td>
+                                                    <td id="fyenddt">@row["fin_end_date"].ToString()</td>
+                                                </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <input hidden="hidden" id="hdn_acc_id_forCSV" />
+                        @*@Html.HiddenFor(model => model.hdnCsvPrint, new { @id = "hdnCsvPrint" })
+                            @Html.HiddenFor(model => model.hdnCsvPrintData, new { @id = "hdnCsvPrint" })*@
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <div class="card-box table-responsive dy_table">
+                    <div id="div_profitloss" class="sticky-table sticky-ltr-cells sb-container container-example1">
+                        @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialProfitAndLossStatementList.cshtml")
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- page content end -->

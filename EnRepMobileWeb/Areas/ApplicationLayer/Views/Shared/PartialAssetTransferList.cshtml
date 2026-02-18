@@ -1,0 +1,66 @@
+﻿@using EnRepMobileWeb.Resources;
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/FixedAssetManagement/AssetTransfer/AssetTransfer.js"></script>
+
+<table id="datatable-buttons" class="table table-striped rowhighlighttbl width2200 itmfrz" cellspacing="0" width="100%">
+    <thead>
+        <tr class="sticky-header">
+            <th width="4%"> @Resource.SrNo</th>
+            <th width="8%">@Resource.Document @Resource.Number</th>
+            <th width="6%">@Resource.Document @Resource.Date</th>
+            <td style="display: none;" id="InvDate"></td>
+            <th width="6%">@Resource.Transfer  @Resource.Date</th>
+            <th width="6%">@Resource.Asset @Resource.Description</th>
+            <th width="6%">@Resource.Serial</th>
+            <th width="6%">@Resource.Label</th>
+            <th width="8%">@Resource.Source <br /> @Resource.Requirement @Resource.Area</th>
+            <th width="8%">@Resource.Destination <br /> @Resource.Requirement @Resource.Area</th>
+            <th width="6%">@Resource.Status</th>
+            <th width="6%">@Resource.CreatedBy</th>
+            <th width="6%">@Resource.Createdon</th>
+            <th width="6%">@Resource.ApprovedBy</th>
+            <th width="6%">@Resource.ApprovedOn</th>
+            <th width="6%">@Resource.AmendedBy</th>
+            <th width="6%">@Resource.AmendedOn</th>
+        </tr>
+    </thead>
+    <tbody>
+       
+        @if (ViewBag.ListDetail != null)
+        {
+            int Srno = 1;
+            foreach (System.Data.DataRow dr in ViewBag.ListDetail.Rows)
+            {
+                <tr role="row" class="odd">
+                    <td class="sorting_1">@Srno</td>
+                    <td id="InvoiceNo" class="ItmNameBreak itmStick tditemfrz">@dr["assettrans_No"].ToString()</td>
+                    <td>@dr["assettrans_date"].ToString()</td>
+                    <td style="display: none;" id="InvDate">@dr["assettrans_dt"].ToString()</td>
+                    <td>@dr["transfer_date"].ToString()</td>
+                    <td class="center">@dr["AssetDescription"].ToString()</td>
+                    <td>@dr["serial_no"].ToString()</td>
+                    <td>@dr["serial_no"].ToString()</td>
+                    <td>@dr["src_assign_req_area"].ToString()</td>
+                    <td>@dr["des_assign_req_area"].ToString()</td>
+                    <td id="Doc_Status">@dr["ATStatus"].ToString()</td>
+                    <td>@dr["create_by"].ToString()</td>
+                    <td>@dr["CreateDate"].ToString()</td>
+                    <td>@dr["mod_by"].ToString()</td>
+                    <td>@dr["ApproveDate"].ToString()</td>
+                    <td>@dr["app_by"].ToString()</td>
+                    <td>@dr["ModifyDate"].ToString()</td>
+                </tr>
+                Srno = Srno + 1;
+            }
+        }
+    </tbody>
+</table>
+@if (ViewBag.ListSearch != null)
+{
+    if (ViewBag.ListSearch == "ListSearch")
+    {
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+        @Scripts.Render("~/Content/Scripts/DatatablesJs")
+        ViewBag.ListSearch = null;
+    }
+}

@@ -1,0 +1,184 @@
+﻿@using EnRepMobileWeb.Resources;
+@using System.Data;
+
+@{
+    string ValDigit = "0.";
+    var VD = Convert.ToInt32(Session["ValDigit"].ToString());
+    for (var i = 0; i < VD; i++)
+    {
+        ValDigit += "0";
+    }
+    var ShowValues = "N";
+    if (ViewBag.VBRoleList != null)
+    {
+        foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+        {
+            if (Row["feature_id"].ToString() == "105105155105001")
+            {
+                ShowValues = "Y";
+            }
+        }
+    }
+
+}
+<style>
+    #tblProdAnalysisDetail1 .Product_Name {
+        width: 14% !important;
+    }
+
+    #tblProdAnalysisDetail1 .CostVariation {
+        width: 6% !important;
+    }
+
+    #tblProdAnalysisDetail1 .op_Name {
+        width: 12% !important;
+    }
+
+    #tblProdAnalysisDetail1 .product_type {
+        width: 8% !important;
+    }
+
+    #datatable-buttons_wrapper .btn-group a:nth-child(3) {
+        display: inline-block;
+        position: absolute;
+    }
+</style>
+@*<table id="datatable-buttons" class="table table-striped width1400 rowhighlighttbl" cellspacing="0" width="100%">
+    <thead>
+        <tr class="sticky-header">*@
+
+<div id="" class="sticky-table sticky-ltr-cells sb-container container-example1 OrderHistory ">
+    <table id="datatable-buttons" data-order="" class="table table-striped width1800 table-bordered rowhighlighttbl itmfrz" style="width:100%">
+        <thead>
+            <tr class="sticky-header">
+                <th width="2%">@Resource.SrNo</th>
+                <th width="24%" class="Product_Name itmStick">@Resource.Product <br /> @Resource.Name</th>
+                <th hidden="hidden"></th>
+                <th width="5%">@Resource.UOM</th>
+                <th width="6%" class="product_type">@Resource.Product @Resource.Type</th>
+                <th hidden="hidden"></th>
+                <th width="9%" class="Product_Name">@Resource.ShopfloorName</th>
+                <th hidden="hidden"></th>
+                <th width="5%" class="op_Name">@Resource.OperationName</th>
+                <th width="5%">@Resource.Ordered <br /> @Resource.Quantity</th>
+                <th width="5%">@Resource.Produced <br /> @Resource.Quantity</th>
+                <th width="5%">@Resource.QC <br /> @Resource.Quantity</th>
+                <th width="5%">@Resource.QC <br /> @Resource.Accepted</th>
+                <th width="5%">@Resource.QC <br /> @Resource.Reworkable</th>
+                <th width="5%">@Resource.QC <br /> @Resource.Rejected</th>
+                @if (ShowValues == "Y")
+                {
+                    <th width="5%">@Resource.Estimated <br /> @Resource.Value</th>
+                    <th width="6%">@Resource.Actual <br /> @Resource.Value</th>
+                    <th width="8%" class="CostVariation">@Resource.CostVariation <br /> @Resource.InPercentage</th>
+                }
+            </tr>
+        </thead>
+        <tbody id="">
+            @if (ViewBag.ProductionAnalysisList != null)
+            {
+                var srno = 1;
+                foreach (DataRow dr in ViewBag.ProductionAnalysisList.Rows)
+                {
+            <tr>
+                <td>@srno</td>
+                <td id="item_name" class="ItmNameBreak itmStick tditemfrz">
+                    <div class="col-sm-11 no-padding" id=""> @dr["item_name"].ToString() </div>
+                    <div class="col-sm-1 i_Icon">
+                        <button type="button" id="ItmInfoBtnIcon" class="calculator" onclick="OnClickIconBtn(event);" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="Item Information">  </button>
+                    </div>
+                </td>
+
+                <td hidden="hidden" id="Hdn_product_id">@dr["product_id"].ToString()</td>
+                <td id="UomAlias">@dr["uom_alias"].ToString()</td>
+                <td>@dr["product_type"].ToString()</td>
+                <td hidden="hidden" id="hdnShflId">@dr["shfl_id"].ToString()</td>
+                <td id="hdnShflName1">@dr["shfl_name"].ToString()</td>
+                <td hidden="hidden" id="hdnOpId">@dr["op_id"].ToString()</td>
+                <td id="hdnOpName1">@dr["op_name"].ToString()</td>
+                <td>
+                    <div class="col-sm-10 num_right no-padding" id="orderqty"><span id=""> @Convert.ToDecimal(dr["orderqty"]).ToString(ValDigit) </span></div>
+                    <div class="col-sm-2 i_Icon">
+                        <button type="button" id="" class="calculator" onclick="OnClickOrderedQty(event,'orderqty')" data-toggle="modal" data-target="#ProductionAnalysisDetail" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.ProductionDetail"> @*<i class="fa fa-info" aria-hidden="true" title="@Resource.ProductionDetail"></i>*@ </button>
+                    </div>
+                </td>
+                <td>
+                    @*<div class="col-sm-10 num_right no-padding" id="produceqty"><span id="txtProduceQty"> @Convert.ToDecimal(dr["produceqty"]).ToString(ValDigit) </span></div>*@
+                    <div class="col-sm-10 num_right no-padding" id="produceqty"><span id="txtProduceQty"> @Convert.ToDecimal(dr["produceqty"]).ToString(ValDigit) </span></div>
+                    <div class="col-sm-2 i_Icon">
+                        <button type="button" id="" class="calculator" onclick="OnClickOrderedQty(event,'produceqty')" data-toggle="modal" data-target="#ProductionAnalysisDetail" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.ProductionDetail"> @*<i class="fa fa-info" aria-hidden="true" title="@Resource.ProductionDetail"></i>*@ </button>
+                    </div>
+                </td>
+                <td>
+                    <div class="col-sm-10 num_right no-padding" id="qcqty"><span id=""> @Convert.ToDecimal(dr["qcqty"]).ToString(ValDigit)</span></div>
+                    <div class="col-sm-2 i_Icon">
+                        <button type="button" id="" class="calculator" onclick="OnClickOrderedQty(event,'AnalysisQcQty')" data-toggle="modal" data-target="#ProductionAnalysisDetail" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.QCDetail"> @*<i class="fa fa-info" aria-hidden="true" title="@Resource.QCDetail"></i>*@ </button>
+                    </div>
+                </td>
+                <td>
+                    <div class="col-sm-10 num_right no-padding" id="accept_qty"><span id=""> @Convert.ToDecimal(dr["accept_qty"]).ToString(ValDigit)</span></div>
+                    <div class="col-sm-2 i_Icon">
+                        <button type="button" id="" class="calculator" onclick="OnClickOrderedQty(event,'accept_qty')" data-toggle="modal" data-target="#ProductionAnalysisDetail" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.QCDetail"> @*<i class="fa fa-info" aria-hidden="true" title="@Resource.QCDetail"></i>*@ </button>
+                    </div>
+                </td>
+                <td>
+                    <div class="col-sm-10 num_right no-padding" id="rework_qty"><span id=""> @Convert.ToDecimal(dr["rework_qty"]).ToString(ValDigit) </span></div>
+                    <div class="col-sm-2 i_Icon">
+                        <button type="button" id="" class="calculator" onclick="OnClickOrderedQty(event,'rework_qty')" data-toggle="modal" data-target="#ProductionAnalysisDetail" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.CostingDetail"> @*<i class="fa fa-info" aria-hidden="true" title="@Resource.CostingDetail"></i>*@ </button>
+                    </div>
+                </td>
+                <td>
+                    <div class="col-sm-10 num_right no-padding" id="reject_qty"><span id=""> @Convert.ToDecimal(dr["reject_qty"]).ToString(ValDigit) </span></div>
+                    <div class="col-sm-2 i_Icon">
+                        <button type="button" id="" class="calculator" onclick="OnClickOrderedQty(event,'reject_qty')" data-toggle="modal" data-target="#ProductionAnalysisDetail" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.CostingDetail"> @*<i class="fa fa-info" aria-hidden="true" title="@Resource.CostingDetail"></i>*@ </button>
+                    </div>
+                </td>
+                @if (ShowValues == "Y")
+                {
+                    <td>
+                        <div class="col-sm-10 num_right no-padding" id=""><span id=""> @Convert.ToDecimal(dr["estimatedcost"]).ToString(ValDigit) </span></div>
+                        <div class="col-sm-2 i_Icon">
+                            <button type="button" id="" class="calculator" onclick="OnClickEstimateValue(event)" data-toggle="modal" data-target="#EstimatedCost" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.CostingDetail"> @*<i class="fa fa-info" aria-hidden="true" title="@Resource.CostingDetail"></i>*@ </button>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="col-sm-10 num_right no-padding" id=""><span id=""> @Convert.ToDecimal(dr["actualcost"]).ToString(ValDigit) </span></div>
+                        <div class="col-sm-2 i_Icon">
+                            <button type="button" id="" class="calculator" onclick="OnClickActualValue(event)" data-toggle="modal" data-target="#ActualCost" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.CostingDetail"> @*<i class="fa fa-info" aria-hidden="true" title="@Resource.CostingDetail"></i>*@ </button>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="col-sm-12 num_right no-padding" id=""><span id=""> @Convert.ToDecimal(dr["costvariation"]).ToString(ValDigit) </span></div>
+                        @*<div class="col-sm-2 i_Icon">
+            <button type="button" id="" class="calculator" onclick="OnClickOrderedQty(event,'CostVariation')" data-toggle="modal" data-target="#ProductionAnalysisDetail" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.ProductionDetail">
+            </button>
+        </div>*@
+                    </td>
+                }
+
+            </tr>
+                    srno = srno + 1;
+                }
+            }
+
+        </tbody>
+    </table>
+
+</div>
+
+@*@if (Session["PAFilter"] != null)*@
+@if (Model.PAFilter != null)
+{
+    //if (Session["PAFilter"].ToString() == "PAFilter")
+    if (Model.PAFilter == "PAFilter")
+    {
+        <script src="~/Content/Scripts/Common/CommonJS.js"></script>
+        <script src="~/Content/Css/build/js/customdatatable.min.js"></script>
+        @*@Scripts.Render("~/Content/Scripts/DataTableRefreshJs")*@
+        @*@Scripts.Render("~/Content/Scripts/DatatablesJs")*@
+        //Session["PAFilter"] = null;
+        Model.PAFilter = null;
+    }
+}
+
+

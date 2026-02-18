@@ -1,0 +1,735 @@
+﻿@using System.Data;
+@using EnRepMobileWeb.MODELS.ApplicationLayer.SalesAndDistribution.DomesticSaleInvoice;
+@{
+    string QtyDigit = "0.";
+    var QD = Convert.ToInt32(Session["QtyDigit"].ToString());
+    for (var i = 0; i < QD; i++)
+    {
+        QtyDigit += "0";
+    }
+    string doc_status = "";
+    string BackGroundImgUrl = "";
+    DataSet ds = new DataSet();
+    ds = ViewBag.Details;
+    string curr = ds.Tables[0].Rows[0]["curr"].ToString();
+    if (ViewBag.DocStatus != null)
+    {
+        doc_status = ViewBag.DocStatus;
+    }
+    if (doc_status == "D" || doc_status == "F")
+    {
+        BackGroundImgUrl = Server.MapPath("~/Content/Images/draft.png");
+    }
+    if (doc_status == "C")
+    {
+        BackGroundImgUrl = Server.MapPath("~/Content/Images/cancelled.png");
+    }
+    decimal ShipQty = 0;
+    decimal item_gr_val_bs = 0;
+    decimal tax_val = 0;
+    decimal item_gr_val_sp = 0;
+    decimal tot_gwt = 0;
+    var rno = 1;
+    decimal totalsp = item_gr_val_sp;
+    decimal totalbs = item_gr_val_bs;
+    string Trd_trm = @ds.Tables[0].Rows[0]["trade_term"].ToString();
+
+    var Options = ViewBag.ProntOption as PrintOptionsList;
+
+}
+
+<style>
+    .print_font {
+        font-size: 11px;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    table.main {
+        width: 100%;
+        font-weight: normal;
+        padding: 0px 0px;
+        line-height: 18px;
+        border: 1px solid #000000;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 10px;
+    }
+
+        table.main tr th {
+            paddingtop: 5px;
+            paddingbottom: 3px;
+            font-size: 11px;
+            text-align: center;
+            border-bottom: 1px solid #000000;
+        }
+
+        table.main tr td {
+            font-size: 11px;
+            font-family: Arial, Helvetica, sans-serif;
+            paddingleft: 5px;
+            paddingtop: 3px;
+            paddingright: 5px;
+            /*paddingbottom: 3px;*/
+        }
+
+    .pt_top {
+        paddingtop: 5px;
+    }
+
+    .bor_left {
+        border-left: 1px solid #000000;
+    }
+
+    .bor_right {
+        border-right: 1px solid #000000;
+    }
+
+    .bor_top {
+        border-top: 1px solid #000000;
+    }
+
+    .bor_bottom {
+        border-bottom: 1px solid #000000;
+    }
+
+    .fon_bol {
+        font-weight: bold !important;
+    }
+
+    .fon_nor {
+        font-weight: normal;
+    }
+
+    .all_td {
+        padding-left: 5px;
+        padding-top: 0px;
+        padding-bottom: 0px;
+        height: 15px;
+        max-height: 15px;
+        line-height: 15px;
+    }
+    .bankdetail{
+        paddingleft:0px !important;
+        paddingright:0px !important;
+        paddingtop:10px !important; 
+
+    }
+    .bankdetail .all_td {
+        paddingleft: 5px;
+        paddingtop: 3px;
+        /*paddingbottom: 3px;*/
+        height: 15px;
+        max-height: 15px;
+        line-height: 15px;
+    }
+    .footer_td {
+        paddingleft: 5px;
+        paddingtop: 3px;
+        paddingbottom: 1px;
+        height: 15px;
+        max-height: 15px;
+        line-height: 15px;
+    }
+
+    .ver_bot {
+        vertical-align: bottom;
+    }
+
+    .ver_top {
+        vertical-align: top;
+    }
+
+    .thight50 {
+        height: 50px;
+    }
+
+    .thight100 {
+        height: 100px;
+    }
+
+    .right_text {
+        text-align: right;
+    }
+
+    .center_text {
+        text-align: center;
+    }
+
+    .left_pd {
+        paddingleft: 0px !important
+    }
+
+    .padding0 {
+        paddingleft: 0px !important;
+        paddingtop: 0px !important;
+        paddingright: 0px !important;
+        paddingbottom: 0px !important;
+    }
+    .underline{
+        text-decoration:underline;
+    }
+    .data_div{
+        padding-bottom:1px;
+    }
+    .p-1{
+        padding:1px ;
+    }
+    .pt-2{
+        paddingtop:2px;
+    }
+    /*.right_pd {
+        paddingright:10px;
+
+    }*/
+
+</style>
+<div style='backgroundposition: center center;'>
+
+    <table width='100%'>
+        <tr>
+            <td>
+                <table style='width:100%;'>
+                    @*<tr>
+                        <td style='width:10px;'></td>
+                        <td align="center" class="print_font">
+                            
+                            @{
+                                var txt3 = ds.Tables[0].Rows[0]["inv_head"].ToString();
+                                string[] stringSeparators3 = new string[] { "\r\n" };
+                                string text3 = txt3;
+                                string[] lines3 = text3.Split(stringSeparators3, StringSplitOptions.None);
+
+                                for (var i = 0; i < lines3.Length; i++)
+                                {
+                                    <span>@lines3[i]</span><br />
+                                }
+                            }
+                        </td>
+                        <td style='width:10px;'></td>
+
+                    </tr>*@
+                    <tr>
+                        <td style='width:10px;'></td>
+                        <td style=' paddingleft:0px;'>
+                            <table class="main" cellspacing='0' cellpadding='0'>
+                                <tr>
+                                    <td style='width: 40%; paddingleft: 0px; paddingright:0px;' class="bor_right">
+                                        <table class="" cellspacing='0' cellpadding='0' width="100%">
+                                            <tr>
+                                                <td colspan="2" class=" fon_bol  pt_top bor_bottom">
+                                                    Exporter,<br />
+                                                    @ds.Tables[0].Rows[0]["comp_nm"].ToString()<br />
+                                                    @if (ds.Tables[0].Rows[0]["exp_addr"].ToString() != null && ds.Tables[0].Rows[0]["exp_addr"].ToString() != "")
+                                                    {
+                                                        @ds.Tables[0].Rows[0]["exp_addr"].ToString();
+                                                    }
+                                                    else
+                                                    {
+                                                        <span>
+                                                            @ds.Tables[0].Rows[0]["Comp_Add"].ToString()
+                                                            @ds.Tables[0].Rows[0]["state"].ToString()
+                                                            - @ds.Tables[0].Rows[0]["pin"].ToString()
+                                                            (@ds.Tables[0].Rows[0]["country"].ToString())
+                                                        </span>
+                                                    }
+                                                <br />
+                                               <span> IEC Code: </span> @ds.Tables[0].Rows[0]["iec_no"].ToString()
+                                               
+</td>
+                                                
+                                            </tr>
+                                            @*<tr>
+
+                                                <td class=" pt_top"><span class="fon_bol">STATE CODE </span> - @ds.Tables[0].Rows[0]["state_code"].ToString()</td>
+                                                <td class=" "><span class="fon_bol"> PAN NO. </span>@ds.Tables[0].Rows[0]["pan_no"].ToString()</td>
+                                            </tr>*@
+                                            <!--<tr>-->
+                                                @*<td class="  bor_bottom"><span class="fon_bol">GSTIN NO. </span> @ds.Tables[0].Rows[0]["gst_no"].ToString()</td>*@
+                                                
+                                            <!--</tr>-->
+
+                                            <tr>
+                                                <td colspan="2" class="  thight50 bor_bottom ver_top">
+                                                    <span class="fon_bol">
+                                                        CONSIGNEE :
+
+                                                    </span> <br />
+                                                            <span>
+                                                                @if (ViewBag.Details.Tables[0].Rows[0]["consig_name"] != null && ViewBag.Details.Tables[0].Rows[0]["consig_name"].ToString() != "")
+                                                                {
+                                                                    @ViewBag.Details.Tables[0].Rows[0]["consig_name"].ToString();
+                                                                }
+                                                                else
+                                                                {
+                                                                    @ViewBag.Details.Tables[0].Rows[0]["acc_name"]
+                                                                }
+                                                            </span>
+                                                    <br />
+                                                    @if (ViewBag.Details.Tables[0].Rows[0]["consig_addr"] != null && ViewBag.Details.Tables[0].Rows[0]["consig_addr"].ToString() != "")
+                                                    {
+                                                        <span class="">
+                                                            @ViewBag.Details.Tables[0].Rows[0]["consig_addr"].ToString();
+                                                        </span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="">
+                                                            @ViewBag.Details.Tables[0].Rows[0]["cust_add"].ToString(),
+                                                            @ViewBag.Details.Tables[0].Rows[0]["cust_state"].ToString(),
+                                                            @ViewBag.Details.Tables[0].Rows[0]["cust_cntry"].ToString()
+                                                        </span>
+                                                    }
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="bor_bottom ver_top">
+                                                    <span class="fon_bol">Pre Carriage By</span><br />
+                                                    <span >@ds.Tables[0].Rows[0]["pre_carr_by"].ToString()</span>
+                                                </td>
+                                                <td class="   bor_bottom ver_top">
+                                                    <span class="fon_bol">PI Of Recpt by Pre carrier</span><br />
+                                                    <span >@ds.Tables[0].Rows[0]["pi_rcpt_carr"].ToString()</span>
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td class="bor_bottom">
+                                                    <span class="fon_bol">Vessel/Flight No</span><br />
+                                                    <span >@ds.Tables[0].Rows[0]["ves_fli_no"].ToString()</span>
+                                                </td>
+                                                <td class="bor_bottom  pt_top">
+                                                    <span class="fon_bol">Port Of Loading</span><br /> @ds.Tables[0].Rows[0]["loading_port"].ToString()
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class=" pt_top"><span class="fon_bol">Port Of Discharge</span> <br />@ds.Tables[0].Rows[0]["discharge_port"].ToString()</td>
+                                                <td class=" "><span class="fon_bol">Final Destination</span><br />@ds.Tables[0].Rows[0]["destination_port"].ToString()</td>
+                                            </tr>
+
+
+
+                                        </table>
+                                    </td>
+                                    <td style='width: 60%; paddingleft: 0px; paddingright: 0px; paddingtop: -8px; ' class="ver_top">
+
+                                        @*<td style='width: 60%;' class="ver_top">*@
+                                        <table cellspacing='0' cellpadding='0' width="100%">
+                                            <tr>
+                                                <th width="20%"></th>
+                                                <th width="20%"></th>
+                                                <th width="20%"></th>
+                                                <th width="20%"></th>
+                                                <th width="20%"></th>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2" class="fon_bol pt_top bor_right">
+                                                    Inv No & Date
+                                                </td>
+
+                                                <td colspan="3" class=" pt_top bor_bottom">
+                                                    <span class="fon_bol"> Exporter's Ref. </span>
+                                                    <span>@ds.Tables[0].Rows[0]["ext_ref"].ToString()</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2" class=" pt_top bor_bottom bor_right">
+                                                    @ds.Tables[0].Rows[0]["custom_inv_no"].ToString() @ds.Tables[0].Rows[0]["custom_inv_dt"].ToString()
+                                                </td>
+                                                <td colspan="3" class=" pt_top bor_bottom">
+                                                    @*<span class="fon_bol">GSTIN NO. </span> @ds.Tables[0].Rows[0]["gst_no"].ToString()*@
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="5" class=" pt_top bor_bottom">
+                                                    <span class="fon_bol">Buyer's Ord No & Dt.</span>
+                                                    
+                                                    <table cellspacing='0' cellpadding='0' width="100%" class="">
+                                                    <tr>
+                                                        <td>
+                                                            @{
+                                                                var txt2 = ds.Tables[0].Rows[0]["buyer_ord_no_dt"].ToString();
+                                                                ViewBag.TextData = txt2;
+                                                                @Html.Partial("~/Areas/Common/Views/Cmn_PartialMultilineSpacedData.cshtml")
+                                                                @*string[] stringSeparators2 = new string[] { "\r\n" };
+                                                                string text2 = txt2;
+                                                                string[] lines2 = text2.Split(stringSeparators2, StringSplitOptions.None);
+
+                                                                for (var i = 0; i < lines2.Length; i++)
+                                                                {
+                                                                    <span>@lines2[i]</span><br />
+                                                                }*@
+                                                            }
+                                                            @*<span>@ds.Tables[0].Rows[0]["buyer_ord_no_dt"].ToString()</span>*@
+                                                            @*@{ var j = 0; }
+        @foreach (System.Data.DataRow dr in ds.Tables[1].Rows)
+        {
+            if (j == 0)
+            {
+                <span>@dr["so_no"] &nbsp; @dr["so_dt"]</span>
+            }
+            else
+            {
+                <span>, @dr["so_no"] &nbsp; @dr["so_dt"]</span>
+            }
+            j++;
+        }*@
+                                                        </td>
+                                                    </tr>    
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="5" class=" pt_top bor_bottom">
+                                                    <span class="fon_bol"> Other Reference(s)</span> <br />
+                                                    @{
+                                                        var txt1 = ds.Tables[0].Rows[0]["other_ref"].ToString();
+                                                        ViewBag.TextData = txt1;
+                                                        @Html.Partial("~/Areas/Common/Views/Cmn_PartialMultilineSpacedData.cshtml")
+                                                        @*string[] stringSeparators1 = new string[] { "\r\n" };
+                                                        string text1 = txt1;
+                                                        string[] lines1 = text1.Split(stringSeparators1, StringSplitOptions.None);
+
+                                                        for (var i = 0; i < lines1.Length; i++)
+                                                        {
+                                                            string[] stringSeprtr = new string[] { "  " };
+                                                            string[] spLins = lines1[i].Split(stringSeprtr, StringSplitOptions.None);
+                                                            if (spLins.Length > 1)
+                                                            {
+                                                                var j = spLins.Length - 1;
+                                                                <span>
+                                                                    @spLins[0]
+                                                                    @for (var k = 0; k < (j - 1); k++)
+                                                                    {
+                                                                        <span>&nbsp; &nbsp;</span>
+                                                                    }
+                                                                    @spLins[j]
+                                                                </span><br />
+                                                            }
+                                                            else
+                                                            {
+                                                                <span>@lines1[i]</span><br />
+                                                            }
+                                                        }*@
+                                                    }
+
+                                                </td>
+                                                @*<td class="fon_bol pt_top bor_bottom ver_top">Other Reference(s)</td>
+        <td colspan="4" class=" pt_top bor_bottom">
+            @{
+                var txt1 = ds.Tables[0].Rows[0]["other_ref"].ToString();
+                string[] stringSeparators1 = new string[] { "\r\n" };
+                string text1 = txt1;
+                string[] lines1 = text1.Split(stringSeparators1, StringSplitOptions.None);
+
+                for (var i = 0; i < lines1.Length; i++)
+                {
+                    <span>@lines1[i]</span><br />
+                }
+            }*@
+                                                @*@ds.Tables[0].Rows[0]["other_ref"].ToString()*@
+                                                @*<table cellspacing='0' cellpadding='0' width="100%" class="fon_bol">
+            <tr>
+                <td>(i) State of Origin of Goods</td>
+                <td>@ds.Tables[0].Rows[0]["state"].ToString()</td>
+            </tr>
+            <tr>
+                <td>(ii) District of Origin of Goods</td>
+                <td>@ds.Tables[0].Rows[0]["district_name"].ToString()</td>
+            </tr>
+            <tr>
+                <td>(iii) Standard Unit Quantity Code (SQC)</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>(iv) Applicable Preferential Agreement</td>
+                <td>GSTP</td>
+            </tr>
+        </table>*@
+                                                @*</td>*@
+                                            </tr>
+                                            <tr>
+                                                <td colspan="5" class=" pt_top bor_bottom">
+                                                    <span class="fon_bol">Buyer if other then Consignee</span>
+                                                    <span> @ds.Tables[0].Rows[0]["buyer_consig"].ToString()</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="3" class=" pt_top bor_bottom">
+                                                    <span class="fon_bol"> Country Of Origin of Goods</span>
+                                                    <br /> @ds.Tables[0].Rows[0]["cntry_origin"].ToString()
+                                                </td>
+                                                <td colspan="2" class=" pt_top bor_bottom">
+                                                    <span class="fon_bol">
+                                                        Country Of Final Destination
+                                                    </span>
+                                                    <br /> @ds.Tables[0].Rows[0]["cntry_fin_dest"].ToString()
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="5" class=" pt_top ">
+                                                    <span class="fon_bol">
+                                                        Term of Delivery & Payment
+                                                    </span>
+                                                    <br />
+                                                    @{
+                                                        var txt = ViewBag.Details.Tables[0].Rows[0]["term_del_pay"].ToString();
+                                                        ViewBag.TextData = txt;
+                                                        @Html.Partial("~/Areas/Common/Views/Cmn_PartialMultilineSpacedData.cshtml")
+                                                        @*string[] stringSeparators = new string[] { "\r\n" };
+                                                        string text = txt;
+                                                        string[] lines = text.Split(stringSeparators, StringSplitOptions.None);
+
+                                                        for (var i = 0; i < lines.Length; i++)
+                                                        {
+                                                            <span>@lines[i]</span><br />
+                                                        }*@
+                                                    }
+                                                    @*@ds.Tables[0].Rows[0]["term_del_pay"].ToString()*@
+                                                    @*@foreach (System.Data.DataRow dr in ds.Tables[2].Rows)
+        {
+            //Commented by Suraj on 23-10-2023
+            <br />
+            <span>@dr["term_desc"].ToString()</span>
+        }*@
+                                                </td>
+                                            </tr>
+
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td style='width:10px;'></td>
+                    </tr>
+
+                    <tr>
+                        <td style='width:10px;'></td>
+                        <td style=''>
+                            <table class="main" cellspacing='0' cellpadding='0'>
+                                <tr>
+                                    <td style='width:40%;' class="bor_right">
+                                        <table class="" cellspacing='0' cellpadding='0' width="100%">
+                                            <tr>
+                                                @*<td width="50%" class="fon_bol bor_right pt_top">
+                                                    Container No.
+
+                                                </td>*@
+                                                <td width="100%" align="center" class="fon_bol pt_top">
+                                                    No & Kind Of Pkgs.
+
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                @*<td width="50%" class="fon_nor bor_right">
+                                                    @ds.Tables[0].Rows[0]["container_no"]
+                                                </td>*@
+                                                <td width="100%" class="fon_nor " align="center">
+                                                    @ds.Tables[0].Rows[0]["NoOfPacks"]
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td style='width:60%;'>
+                                        <table class="" cellspacing='0' cellpadding='0' width="100%">
+                                            <tr>
+                                                <td class="fon_bol pt_top">
+                                                    Description of Goods
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="fon_nor">
+                                                    <div class="data_div">@ds.Tables[0].Rows[0]["des_good"]</div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td style='width:10px;'></td>
+                    </tr>
+                    <tr>
+                        <td style='width:10px;'></td>
+                        <td>
+                            <table class="main" cellspacing='0' cellpadding='0'>
+                                <tr>
+                                    <th class="bor_right ver_bot" width='70%'>
+                                        @Trd_trm @ds.Tables[0].Rows[0]["prof_detail"]
+                                        @*AS PER PROFORMA INVOICE ON
+
+        @{ var k = 0; }
+        @foreach (System.Data.DataRow dr in ds.Tables[1].Rows)
+        {
+            if (k == 0)
+            {
+                <span>@dr["so_no"] DATED  @dr["so_dt"]</span>
+            }
+            else
+            {
+                <span>, @dr["so_no"] DATED  @dr["so_dt"]</span>
+            }
+            k++;
+        }*@
+                                    </th>
+                                    <th class="bor_right" width='10%'>QTY. </th>
+                                    <th class="bor_right" width='10%'> RATE/UNIT<br />(in @curr)</th>
+                                    <th width='10%'>AMOUNT<br />(in @curr)<br />
+                                    <span class="fon_nor ">@Trd_trm</span>
+                                    </th>
+                                </tr>
+
+
+                                @if (ds.Tables[0].Rows != null)
+                                {
+
+                                    var i = 1;
+                                    foreach (DataRow dr in ds.Tables[0].Rows)
+                                    {
+                                        {
+<tr>
+                                                <td class="bor_right all_td">
+                                                    <table width="100%" cellpadding="0" cellspacing="0" border="0" style='font-size:11px;'>
+                                                  
+                                                        <tr>
+                                                            <td width="5%" align="left" class="all_td">&nbsp;</td>
+                                                            @if (Options != null)
+                                                            {
+                                                                if (Options.PrtOpt_catlog_number)
+                                                                {
+                                                                    <td width="10%" align="left" class="all_td">@dr["item_cat_no"]</td>
+                                                                }
+                                                                if (Options.PrtOpt_item_code)
+                                                                {
+                                                                    <td width="30%" align="center" class="all_td">@dr["Item_code"]</td>
+                                                                }
+                                                                if (Options.PrtOpt_item_desc)
+                                                                {
+                                                                    <td width="55%" align="left" class="all_td">@dr["item_name"]</td>
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                <td width="10%" align="left" class="all_td">@dr["item_cat_no"]</td>
+                                                                <td width="30%" align="center" class="all_td">@dr["Item_code"]</td>
+                                                                <td width="55%" align="left" class="all_td"> @dr["item_name"]</td>
+                                                            }
+
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                                <td class="bor_right all_td right_text">@dr["ship_qty"].ToString()</td>
+                                                <td class="bor_right all_td right_text">@dr["item_rate"].ToString()</td>
+                                                <td class="bor_right all_td right_text">@dr["item_gr_val"].ToString()</td>
+
+                                            </tr>
+
+                                        }
+
+                                        i++;
+                                        ShipQty = ShipQty + Convert.ToDecimal(dr["ship_qty"]);
+                                        item_gr_val_bs = item_gr_val_bs + Convert.ToDecimal(dr["item_gr_val"]);
+                                        //tot_gwt = tot_gwt + Convert.ToDecimal(dr["gr_wght"]);
+                                    }
+                                    <tr>
+                                        <td class="bor_right all_td bankdetail">
+
+                                            <span class="underline">&nbsp; EXPORTER'S BANK DETAILS:</span>
+                                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style='font-size:10px !important;'>
+                                                <tr>
+                                                    <td width="35%" align="left" class="all_td bor_top bor_right">BENEFICIARY</td>
+                                                    <td width="65%" align="left" class="all_td bor_top">
+                                                        @ds.Tables[0].Rows[0]["benif_name"]
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td width="35%" align="left" class="all_td bor_top bor_right">BANK NAME</td>
+                                                    <td width="65%" align="left" class="all_td bor_top ">
+                                                        @ds.Tables[0].Rows[0]["bank_name"]
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td width="35%" align="left" class="all_td bor_top bor_right">BANK ADDRESS</td>
+                                                    <td width="65%" align="left" class="all_td bor_top ">
+                                                        @ds.Tables[0].Rows[0]["bank_add"]
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td width="35%" align="left" class="all_td bor_top bor_right">ACCOUNT NUMBER</td>
+                                                    <td width="65%" align="left" class="all_td bor_top ">
+                                                        @ds.Tables[0].Rows[0]["acc_no"]
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td width="35%" align="left" class="all_td bor_top bor_right">SWIFT CODE</td>
+                                                    <td width="65%" align="left" class="all_td bor_top ">
+                                                        @ds.Tables[0].Rows[0]["swift_code"]
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td width="35%" align="left" class="all_td bor_top bor_right">IFSC CODE</td>
+                                                    <td width="65%" align="left" class="all_td bor_top ">
+                                                        @ds.Tables[0].Rows[0]["ifsc_code"]
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="2" align="left" class="all_td bor_top ">
+                                                        <span class="underline">USD CORRESPONDENT BANK : </span>
+                                                        @ds.Tables[0].Rows[0]["usd_corr_bank"]
+                                                    </td>
+
+                                                </tr>
+                                            </table>
+                                        </td>
+                                        <td class="bor_right all_td right_text">&nbsp;</td>
+                                        <td class="bor_right all_td right_text">&nbsp;</td>
+                                        <td class="bor_right all_td right_text">&nbsp;</td>
+
+                                    </tr>
+                                    <tr>
+                                        <td rowspan="@(ds.Tables[3].Rows.Count + 2)" class="bor_right bor_top all_td left_pd ver_bot" >
+                                            <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                                <tr>
+                                                    <td>Amount Chargeable (In Words ) :</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="fon_bol">@ds.Tables[0].Rows[0]["net_val_spec_inwords"]</td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                        <td colspan="2" class="bor_right fon_bol pt_top right_text bor_top ">
+                                            @curr
+                                        </td>
+                                        <td class="bor_right all_td bor_top fon_bol pt_top right_text">@item_gr_val_bs.ToString()</td>
+                                    </tr>
+                                    totalsp = item_gr_val_bs;
+                                    foreach (System.Data.DataRow dr in ds.Tables[3].Rows)
+                                    {
+                                        <tr>
+                                            <td colspan="2" class="bor_right bor_top footer_td fon_bol right_text">@dr["tax_name"] @curr </td>
+                                            <td class="bor_right fon_bol bor_top footer_td right_text">@dr["tax_val"].ToString()</td>
+                                            @*<td width="30%" class=" fon_bol bor_top footer_td right_text">@dr["oc_val_bs"].ToString()</td>*@
+                                        </tr>
+                                        totalsp = totalsp + Convert.ToDecimal(dr["tax_val"]);
+                                        //totalbs = totalbs + Convert.ToDecimal(dr["oc_val_bs"]);
+                                    }
+                                    <tr>
+                                        <td colspan="2" class="bor_right bor_top footer_td fon_bol right_text">TOTAL @Trd_trm @curr </td>
+                                        <td class="bor_right fon_bol bor_top footer_td right_text">@totalsp.ToString()</td>
+                                        @*<td width="30%" class=" fon_bol bor_top footer_td right_text">@dr["oc_val_bs"].ToString()</td>*@
+                                    </tr>
+                                   
+
+                                }
+
+
+                            </table>
+                        </td>
+                        <td style='width:10px;'></td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+
+    </table>
+
+
+</div>

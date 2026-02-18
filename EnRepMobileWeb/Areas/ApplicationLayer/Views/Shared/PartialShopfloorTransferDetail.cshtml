@@ -1,0 +1,94 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.ProductionAndPlanning.MIS.ShopfloorTransferDetail.ShopfloortransferDetailModel
+@using EnRepMobileWeb.Resources;
+@using System.Data
+@{
+    string ValDigit = "0.";
+    var VD = Convert.ToInt32(Session["ValDigit"].ToString());
+    for (var j = 0; j < VD; j++)
+    {
+        ValDigit += "0";
+    }
+    var RowId = 0;
+}
+<style>
+    #datatable-buttons_wrapper .btn-group a:nth-child(3) {
+        display: inline-block;
+        position: absolute;
+    }
+</style>
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/FinancialAccountingAndControl/OpeningBalance/OpeningBalance.js"></script>
+<script src="~/Content/Scripts/Common/CommonJS.js"></script>
+<table id="datatable-buttons" class="table table-striped rowhighlighttbl width1900 itmfrz" cellspacing="0" width="100%">
+    <thead>
+        <tr class="sticky-header">
+            <th width="4%"> @Resource.SrNo</th>
+            <th width="24%" class="itmStick">@Resource.ItemName</th>
+            <th hidden="hidden">@Resource.ItemID</th>
+            <th hidden="hidden">@Resource.TransferNumber</th>
+            <th hidden="hidden">@Resource.TransferDate</th>
+            <th width="5%">@Resource.UOM</th>
+            <th width="8%">@Resource.Transfer <br /> @Resource.Number</th>
+            <th width="9%">@Resource.Transfer @Resource.Date</th>
+            <th width="10%">@Resource.Transfer @Resource.Type</th>
+            <th width="8%">@Resource.Material @Resource.Type</th>
+            <th width="12%">@Resource.Source</th>
+            <th width="12%">@Resource.Destination</th>
+            @*<th width="8%">@Resource.BatchNumber</th>*@
+            <th width="8%">@Resource.Transfer <br /> @Resource.Quantity</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (ViewBag.ShflTrfDetails != null)
+        {
+            foreach (DataRow dr in ViewBag.ShflTrfDetails.Rows)
+            {
+                RowId = RowId + 1;
+                var subitmDisable = "";
+                if (dr["sub_item"].ToString() != "Y")
+                {
+                    subitmDisable = "disabled";
+                }
+                <tr>
+                    <td>@RowId</td>
+                    <td class="ItmNameBreak itmStick tditemfrz">
+                        <div class="col-md-11 col-sm-12" id="item_name">@dr["item_name"].ToString() </div> <div class="col-sm-1 i_Icon">
+                            <button type="button" id="ItmInfoBtnIcon" class="calculator" onclick="BindItemInfoBtnClick(event)" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.ItemInformation"> </button>
+                        </div>
+                    </td>
+                    <td id="hdnItemId" hidden="hidden">@dr["item_id"].ToString()</td>
+                    <td id="hdnTrfNo" hidden="hidden">@dr["trf_no"].ToString()</td>
+                    <td id="hdnTrfDt" hidden="hidden">@dr["trf_dt"].ToString()</td>
+                    <td id="uom_alias">@dr["uom_alias"].ToString()</td>
+                    <td>@dr["trf_no"].ToString()</td>
+                    <td>@dr["trf_dt1"].ToString()</td>
+                    <td>@dr["trftype"].ToString()</td>
+                    <td>@dr["Materialtype"].ToString()</td>
+                    <td>@dr["sourceName"].ToString()</td>
+                    <td>@dr["dstnName"].ToString()</td>
+                    <td>
+                        <div class="col-md-8 col-sm-12 num_right" id="trf_qty">@Convert.ToDecimal(dr["trf_qty"]).ToString(ValDigit) </div>
+                        <div class="col-sm-2 i_Icon">
+                            <button type="button" id="ItmInfoBtnIcon" class="calculator" onclick="return BindBatchOrSerialDetails(event)" data-toggle="modal" data-target="#MISBatchDetail" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Transfer @Resource.Quantity"> </button>
+                        </div>
+                        <div class="col-sm-2 i_Icon">
+                            <button type="button" id="" @subitmDisable class="calculator subItmImg" data-toggle="modal" onclick="return SubItemDetailsPopUpShopfloorTD('Quantity',event)" data-target="#SubItem" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail">  </button>
+                        </div>
+                    </td>
+                </tr>
+
+            }
+        }
+    </tbody>
+</table>
+
+@if (Model.STFilter != null)
+{
+    if (Model.STFilter == "STFilter")
+    {
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+        @Scripts.Render("~/Content/Scripts/DatatablesJs")
+        //Session["QISearch"] = null;
+    }
+
+}

@@ -1,0 +1,66 @@
+﻿@using EnRepMobileWeb.Resources;
+@{
+    var rowId = 0;
+}
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/Procurement/DirectPurchaseInvoice/DirectPurchaseInvoiceJs.js"></script>
+<table id="datatable-buttons" class="table table-striped table-bordered width2200 rowhighlighttbl itmfrz">
+    <thead>
+        <tr class="sticky-header">
+            <th style="width:35px;"> @Resource.SrNo</th>
+            <th class="itmStick">@Resource.Invoice <br /> @Resource.Number</th>
+            <th>@Resource.Invoice <br /> @Resource.Date</th>
+            <th style="display:none;">@Resource.Invoice <br /> @Resource.Date</th>
+            <th width="18%">@Resource.Supplier <br /> @Resource.Name</th>
+            <th>@Resource.Currency</th>
+            <th>@Resource.Invoice <br /> @Resource.Value</th>
+            <th width="8%">@Resource.BillNumber</th>
+            <th width="8%">@Resource.BillDate</th>
+            <th>@Resource.Status</th>
+            <th width="8%">@Resource.CreatedBy</th>
+            <th width="8%">@Resource.Createdon</th>
+            <th width="8%">@Resource.ApprovedBy</th>
+            <th width="8%">@Resource.ApprovedOn</th>
+            <th width="8%">@Resource.AmendedBy</th>
+            <th width="8%">@Resource.AmendedOn</th>
+        </tr>
+    </thead>
+    <tbody id="">
+        @if (ViewBag.ListDetail != null)
+                    {
+                        int Srno = 1;
+                        foreach (System.Data.DataRow dr in ViewBag.ListDetail.Rows)
+                        {
+                <tr role="row" class="odd">
+                    <td class="sorting_1">@Srno</td>
+                    <td id="InvoiceNo" class="ItmNameBreak itmStick tditemfrz">@dr["inv_no"].ToString()</td>
+                    <td>@dr["inv_dt"].ToString()</td>
+                    <td style="display: none;" id="InvDate">@dr["inv_date"].ToString()</td>
+                    <td>@dr["supp_name"].ToString()</td>
+                    <td class="center">@dr["Curr"].ToString()</td>
+                    <td>@dr["net_val_bs"].ToString()</td>
+                    <td class="num_right">@dr["bill_no"].ToString()</td>
+                    <td>@dr["bill_dt"].ToString()</td>
+                    <td id="Doc_Status">@dr["OrderStauts"].ToString()</td>
+                    <td>@dr["create_by"].ToString()</td>
+                    <td>@dr["CreateDate"].ToString()</td>
+                    <td>@dr["mod_by"].ToString()</td>
+                    <td>@dr["ApproveDate"].ToString()</td>
+                    <td>@dr["app_by"].ToString()</td>
+                    <td>@dr["ModifyDate"].ToString()</td>
+                </tr>
+                Srno = Srno + 1;
+            }
+        }
+
+    </tbody>
+</table>
+@if (ViewBag.ListSearch != null)
+{
+    if (ViewBag.ListSearch == "ListSearch")
+    {
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+        @Scripts.Render("~/Content/Scripts/DatatablesJs")
+        ViewBag.ListSearch = null;
+    }
+}

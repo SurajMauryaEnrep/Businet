@@ -1,0 +1,282 @@
+﻿@using EnRepMobileWeb.Resources;
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<div class="modal-content">
+    <div class="modal-header">
+        <h2>@Resource.Order @Resource.Detail</h2>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body ">
+        <div class="row">
+            <div class="col-md-12 col-sm-12">
+                <div class="col-md-3 col-sm-12 pl-0">
+                    <label class="col-form-label label-align"> @Resource.SupplierName </label>
+                    <input class="form-control" id="QA_SupplierName" name="QA_SupplierName" placeholder="@Resource.SupplierName" readonly="readonly" type="text" value="@ViewBag.POSupplier"/>
+                </div>
+                <div class="col-md-2 col-sm-12 pl-0">
+                    <label class="col-form-label label-align">@Resource.Order @Resource.Number </label>
+                    <input class="form-control" id="QA_OrderNo" name="QA_OrderNo" placeholder="@Resource.Order @Resource.Number" readonly="readonly" type="text" value="@ViewBag.PONO"/>
+                </div>
+                <div class="col-md-2 col-sm-12 pl-0">
+                    <label class="col-form-label label-align">@Resource.Order @Resource.Date </label>
+                     <input class="form-control" id="QA_OrderDate" name="QA_OrderDate" placeholder="@Resource.Order @Resource.Date" readonly="readonly" value="@ViewBag.PODate"/>
+                </div>
+
+            </div>
+
+        </div>
+        <div class="card-box table-responsive dy_table margin15 price_item_detail">
+            <div id="" class="sticky-table sticky-ltr-cells sb-container container-example1 OrderHistory height30VH">
+                <table id="Tbl_list_POItemDetails" data-order="" class="table table-striped table-bordered width1800 itmfrz" style="width:100%">
+                    <thead>
+                        <tr class="headings">
+                            <th width="3%">@Resource.SrNo</th>
+                            <th width="15%" class="ItmNameBreak itmStick tditemfrz"> @Resource.ItemName</th>
+                            <th width="5%" title="@Resource.UnitOfMeasure"> @Resource.UOM</th>
+                            <th width="5%"> @Resource.ItemType</th>
+                            <th width="9%">@Resource.Order @Resource.Quantity </th>
+                            <th width="5%">@Resource.Rate</th>
+                            <th width="5%">@Resource.Discount <br /> @Resource.InPercentage</th>
+                            <th width="5%">@Resource.Discount <br /> @Resource.InAmount</th>
+                            <th width="5%">@Resource.Discount <br /> @Resource.Value</th>
+                            <th width="5%">@Resource.GrossValue</th>
+                            <th width="4%">@Resource.TaxExempted</th>
+                            <th width="4%">@Resource.Manual @Resource.GST</th>
+                            <th width="5%">@Resource.TaxAmount</th>
+                            <th width="5%">@Resource.OtherCharges</th>
+                            <th width="5%">@Resource.NetValue </th>
+                            <th width="13%">@Resource.remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (ViewBag.POItemDetailsList != null)
+                        {
+                            int j = 0;
+                            foreach (System.Data.DataRow dr in ViewBag.POItemDetailsList.Rows)
+                            {
+                                j++;
+                                var subitmDisable = "";
+                                if (dr["sub_item"].ToString() != "Y")
+                                {
+                                    subitmDisable = "disabled";
+                                }
+                                //subitmDisable = "disabled";
+                                <tr>
+                                    <td id="srno" class="sr_padding">@j</td>
+                                    <td class="ItmNameBreak itmStick tditemfrz">
+                                        <div class="col-sm-11 lpo_form no-padding" id="multiWrapper">
+                                            <input id="PPItemName" class="form-control" type="text" name="PPItemName" readonly value="@dr["item_name"]" />
+                                            <input type="hidden" id="Hdn_Item_ID" value="@dr["item_id"].ToString()" />
+                                            <input type="hidden" id="Hdn_PONO" value="@dr["po_no"].ToString()" />
+                                            <input type="hidden" id="Hdn_PO_DT" value="@dr["po_dt"].ToString()" />
+                                        </div>
+                                        <div class="col-sm-1 no-padding i_Icon">
+                                            <button type="button" id="ItmInfoBtnIcon" class="calculator" onclick="OnClickIconBtn(event);" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="Item Information"> </button>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <input id="UOM" class="form-control" type="text" name="UOM" readonly value="@dr["uom_name"]" placeholder="@Resource.UOM" />
+                                        <input type="hidden" id="Hdn_UOM_ID" value="@dr["uom_id"].ToString()" />
+                                    </td>
+                                    <td>
+                                        <input id="IDItemtype" class="form-control" type="text" name="IDItemtype" readonly value="@dr["ItemType"]" placeholder="@Resource.ItemType" />
+                                    </td>
+                                    <td>
+                                        
+                                        <div class="col-sm-10 lpo_form no-padding">
+                                            <input id="ord_qty_spec" class="form-control num_right" type="text" name="ord_qty_spec" readonly value="@dr["ord_qty_spec"]" placeholder="0000.00" />
+                                        </div>
+                                        <div class="col-sm-2 i_Icon  pl-0" id="div_SubItemQTQty">
+                                            @*<input hidden type="text" id="sub_item" value="@dr["sub_item"]" />*@
+                                            <button type="button" id="SubItemQTQty" class="calculator subItmImg" @subitmDisable onclick="return POSubItemDetailsPopUp('Quantity',event)" data-toggle="modal" data-target="#SubItem" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <input id="item_rate" class="form-control num_right" type="text" name="item_rate" readonly value="@dr["item_rate"]" placeholder="0000.00" />
+                                    </td>
+                                    <td>
+                                        <input id="item_disc_perc" class="form-control num_right" type="text" name="item_disc_perc" readonly value="@dr["item_disc_perc"]" placeholder="0000.00" />
+                                    </td>
+                                    <td>
+                                        <input id="item_disc_amt" class="form-control num_right" type="text" name="item_disc_amt" readonly value="@dr["item_disc_amt"]" placeholder="0000.00" />
+                                    </td>
+                                    <td>
+                                        <input id="item_disc_val" class="form-control num_right" type="text" name="item_disc_val" readonly value="@dr["item_disc_val"]" placeholder="0000.00" />
+                                    </td>
+                                    <td>
+                                        <input id="item_gr_val" class="form-control num_right" type="text" name="item_gr_val" readonly value="@dr["item_gr_val"]" placeholder="0000.00" />
+                                    </td>
+                                    <td>
+                                        <div class="custom-control custom-switch sample_issue">
+                                            @if (dr["tax_expted"].ToString() == "Y")
+                                            {
+                                                <input type="checkbox" disabled checked class="custom-control-input margin-switch" id="TaxExempted">
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" disabled class="custom-control-input margin-switch" id="TaxExempted">
+                                            }
+                                            <label class="custom-control-label" disabled for="" style="padding: 3px 0px;"> </label>
+                                        </div>
+                                    </td>
+                                    <td class="qt_to">
+                                        <div class="custom-control custom-switch sample_issue">
+                                            @if (dr["manual_gst"].ToString() == "Y")
+                                            {
+                                                <input type="checkbox" disabled checked class="custom-control-input margin-switch" id="ManualGST">
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" disabled class="custom-control-input margin-switch" id="ManualGST">
+                                            }
+                                            <label class="custom-control-label" disabled for="" style="padding: 3px 0px;"> </label>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <input id="item_tax_amt" class="form-control num_right" type="text" name="item_tax_amt" readonly value="@dr["item_tax_amt"]" placeholder="0000.00" />
+
+                                    </td>
+                                    <td>
+                                        <input id="item_oc_amt" class="form-control num_right" type="text" name="item_oc_amt" readonly value="@dr["item_oc_amt"]" placeholder="0000.00" />
+                                    </td>
+                                    <td>
+                                        <input id="item_net_val_bs" class="form-control num_right" type="text" name="item_net_val_bs" readonly value="@dr["item_net_val_bs"]" placeholder="0000.00" />
+                                    </td>
+                                    <td>
+                                        <textarea id="remarks" class="form-control remarksmessage" name="remarks" onmouseover="OnMouseOver(this)" placeholder="Remarks" title="remarks" readonly>@dr["it_remarks"]</textarea>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                    <tfoot>
+                        @*<tr>
+                                <td>&nbsp;</td>
+                                <td class="num_right" style="padding:5px 5px 0px 0px;"><strong> @Resource.Total</strong></td>
+                                <td hidden></td>
+                                <td class="num_right"><span id="SubItemTotalQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotal</span></td>
+                            </tr>*@
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 margin10">
+                <table class="table table-bordered po_total_th" style="margin-bottom:0px; width:100%;">
+                    <thead>
+                        @if (ViewBag.POItemTotalList != null)
+                        {
+                            int j = 0;
+                            foreach (System.Data.DataRow dr in ViewBag.POItemTotalList.Rows)
+                            {
+                                <tr class="">
+                                    <th width="15%" class="right_aligh text_normal">
+                                        Gross Value
+                                        <input autocomplete="off" class="form-control tax_cal text_bold" id="TxtGrossValue" name="GrVal" placeholder="0000.00" readonly="readonly" type="text" value="@dr["TotGrVal"]">
+                                    </th>
+
+                                    <th width="16%" class="right_aligh text_normal">
+                                        Tax Amount
+                                        <input autocomplete="off" class="form-control tax_cal text_bold" id="TxtTaxAmount" name="TaxAmt" placeholder="0000.00" readonly="readonly" type="text" value="@dr["Tot_tax_amt"]">
+
+                                    </th>
+                                    <th width="16%" class="right_aligh text_normal ">
+                                        Other Charges
+                                        @if (Convert.ToDecimal(dr["Tot_oc_amt"]) > 0)
+                                        {
+                                            <button type="button" class="calculator" data-toggle="modal" id="BtnOC_Amount" onclick="POItemOCInfoBtnClick();" data-target="#OtherChargesCalculator" data-backdrop="static" data-keyboard="false"><i class="fa fa-calculator" aria-hidden="true" title="Other Charges Calculator" data-original-title="Other Charges Calculator" disabled="disabled"></i></button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="calculator" data-toggle="modal" id="BtnOC_Amount" disabled data-backdrop="static" data-keyboard="false"><i class="fa fa-calculator" aria-hidden="true" title="Other Charges Calculator" data-original-title="Other Charges Calculator" disabled="disabled"></i></button>
+                                        }
+                                        <input autocomplete="off" class="form-control tax_cal text_bold" id="TxtOtherCharges" name="OcAmt" placeholder="0000.00" readonly="readonly" type="text" value="@dr["Tot_oc_amt"]" />
+                                    </th>
+                                    <th width="18%" class="right_aligh text_normal" style="display:none">
+                                        Net Order Value (In Specific)
+                                        <input autocomplete="off" class="form-control tax_cal text_bold" id="NetOrderValueSpe" name="NetValSpec" placeholder="0000.00" readonly="readonly" type="text" value="@dr["item_net_val_spec"]" />
+                                    </th>
+                                    <th width="20%" class="right_aligh text_normal">
+                                        Net Order Value
+                                        <input autocomplete="off" class="form-control tax_cal text_bold" id="NetOrderValueInBase" name="NetValBs" placeholder="0000.00" readonly="readonly" type="text" value="@dr["Tot_net_val_bs"]" />
+                                    </th>
+                                </tr>
+                            }
+                        }
+
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" id="" onclick="OnClickSerialDiscardAndExit()">@Resource.Close</button>
+    </div>
+</div>
+
+
+<table class="table table-bordered po_total_th" style="margin-bottom:0px; width:100%;" id="ht_Tbl_OC_Deatils">
+
+    @if (ViewBag.POOCList != null)
+    {
+
+        foreach (System.Data.DataRow dr in ViewBag.POOCList.Rows)
+        {
+            <tbody>
+                <tr id="R1">
+                    <td id="deletetext" class="red center">
+                        <i class="fa fa-trash" id="OCDelIcon" aria-hidden="true" title="Delete" disabled="" style="filter: grayscale(100%);"></i>
+                    </td>
+                    <td id="OCName">CHA Charges</td>
+                    <td id="OCHSNCode">73049000</td>
+                    <td id="OCCurr" class="center">INR</td>
+                    <td id="HdnOCCurrId" hidden=""></td>
+                    <td id="td_OCSuppName" style="display:none"></td>
+                    <td id="td_OCSuppID" hidden=""></td>
+                    <td id="td_OCSuppType" hidden=""></td>
+                    <td id="OCConv" class="num_right">1.0000</td>
+                    <td hidden="hidden" id="OCValue">1006</td>
+                    <td class="num_right" id="OCAmount" style="display:none;">1000.00</td>
+                    <td class="num_right" id="OcAmtBs">1000.00</td>
+                    <td class="num_right">
+                        <div class="col-sm-10 lpo_form" id="OCTaxAmt">120.00</div>
+                        <div class="col-md-2 col-sm-12" style="padding:0px;"><button type="button" id="OCTaxBtnCal" class="calculator" data-toggle="modal" onclick="OnClickOCTaxCalculationBtn(event)" data-target="#ItemCalculate" data-backdrop="static" data-keyboard="false"><i class="fa fa-calculator" aria-hidden="true" title="Tax Calculator"></i></button></div>
+                    </td>
+                    <td class="num_right" id="OCTotalTaxAmt">1120.00</td>
+                    <td style="width:160px" hidden="">
+                        <div class="col-lg-12 no-padding spi">
+                            <div class="col-lg-4 pl-3">
+                                <div class="custom-control custom-switch sample_issue">
+                                    <input type="checkbox" class="custom-control-input margin-switch" disabled="disabled" onclick="Cmn_OnClickOcRoundOffCheckBox(event)" id="oc_chk_roundoff">
+                                    <label class="custom-control-label" for="" style="padding: 3px 0px;"> </label>
+                                </div>
+                            </div>
+                            <div class="col-lg-8 no-padding">
+                                <div class="col-md-12 col-sm-12 no-padding">
+                                    <div class="col-md-6 col-sm-12 no-padding" id="div_oc_pchkbox">
+                                        <i class="fa fa-plus float-left pr-2 pt-1" aria-hidden="true"></i>
+                                        <input class="float-left" type="radio" name="oc_p_round1006" id="oc_p_round" disabled="disabled" onchange="Cmn_click_Oc_chkroundoff(event)" value="P" style="height:20px;">
+                                    </div>
+                                    <div class="col-md-6 col-sm-12 no-padding" id="div_oc_mchkbox">
+                                        <i class="fa fa-minus float-left pr-2 pt-1" aria-hidden="true"></i>
+                                        <input class="float-left" type="radio" name="oc_p_round1006" id="oc_m_round" disabled="disabled" onchange="Cmn_click_Oc_chkroundoff(event)" value="M" style="height:20px;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td id="OCAccId" hidden=""></td>
+                    <td id="OCSuppAccId" hidden=""></td>
+                    <td id="OCFor" hidden=""></td>
+                    <td id="OCSuppStateCode" hidden=""></td>
+                </tr>
+            </tbody>
+        }
+    }
+
+    <tbody>
+    </tbody>
+</table>
+<table hidden="hidden">
+</table>

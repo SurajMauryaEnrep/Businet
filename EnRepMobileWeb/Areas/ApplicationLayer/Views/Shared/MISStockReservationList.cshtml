@@ -1,0 +1,67 @@
+﻿@model  EnRepMobileWeb.MODELS.ApplicationLayer.InventoryManagement.MIS.MISStockReservation.MISStockReservation_Model
+@using EnRepMobileWeb.Resources;
+
+<table id="datatable-buttons" class="table table-striped itmfrz" cellspacing="0" width="100%">
+    <thead>
+        <tr class="sticky-header">
+            <th width="3%"> @Resource.SrNo</th>
+            <th width="26%" class="itmStick">@Resource.ItemName</th>
+            <th width="10%">@Resource.UOM</th>
+            <th width="15%">@Resource.Branch</th>
+            <th width="16%">@Resource.Warehouse</th>
+            <th width="10%">@Resource.Reserved @Resource.Quantity</th>
+            <th width="10%">@Resource.TotalStock</th>
+            <th width="10%">@Resource.AvailableStock</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (ViewBag.StockReservationData != null)
+        {
+            var srno = 1;
+            foreach (System.Data.DataRow dtr in ViewBag.StockReservationData.Rows)
+            {
+                <tr id="1" role="row" class="odd">
+                    <td class="sr_padding sorting_1"><span id="SpanRowId">@srno</span><input type="hidden" id="hdSpanRowId" value="1" style="display: none;"></td>
+                    <td class="ItmNameBreak itmStick tditemfrz">
+                        <div class="col-sm-11">
+                            <label id="lblitemname" >@dtr["item_name"].ToString()</label>
+                            <input type="hidden" id="hdItemId" value="@dtr["item_id"].ToString()" style="display: none;">
+                            <input type="hidden" id="ReshdWhId" value="@dtr["wh_id"].ToString()" style="display: none;">
+                            <input type="hidden" id="hdmListSubItem" value="@dtr["sub_item"].ToString()" style="display: none;">
+                        </div>
+                        <div class="col-sm-1 i_Icon">
+                            <button type="button" class="calculator" onclick="BindItemInfoBtnClick(event);" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="Item Information">  </button>
+                        </div>
+                    </td>
+                    <td>
+                        <label id="lbluom">@dtr["uom_alias"].ToString()</label>
+                        <input type="hidden" id="hduomid" value="@dtr["uom"].ToString()" style="display: none;">
+                    </td>
+                    <td><label id="lblcompname">@dtr["comp_nm"].ToString()</label></td>
+                    <td>
+                        <div class="col-sm-11"><label id="lblwhname">@dtr["wh_name"].ToString()</label></div>
+                    </td>
+                    <td>
+                        <div class="col-sm-11 num_right"><label id="lblresqty">@dtr["res_qty"].ToString()</label></div>
+                        <div class="col-sm-1 i_Icon">
+                            <button type="button" class="calculator" data-toggle="modal" onclick="OnClickReservedQtyIconBtn(event);" data-target="#UnReservedStockDetail" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="Reserved Stock Detail">  </button>
+                        </div>
+                    </td>
+                    <td class="num_right"><label id="lblwhtotstk">@dtr["wh_tot_stk"].ToString()</label></td>
+                    <td class="num_right"><label id="lblwhavltstk">@dtr["wh_avl_stk"].ToString()</label></td>
+
+                </tr>
+                srno = srno + 1;
+            }
+        }
+    </tbody>
+</table>
+
+@if (Model.SearchStatus != null)
+{
+    if (Model.SearchStatus == "Searched")
+    {
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+        @Scripts.Render("~/Content/Scripts/DatatablesJs")
+    }
+}

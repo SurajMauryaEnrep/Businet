@@ -1,0 +1,51 @@
+﻿@using EnRepMobileWeb.Resources;
+@{
+    decimal TotalIssueQty = 0;
+}
+<div id="ItemStockWareHouseWise" class="price_item_detail tableFixHead height30VH margin10">
+    <table class="table table-bordered">
+        <thead>
+
+            <tr>
+
+                <th width="70%"> @Resource.Warehouse</th>
+
+                <th>@Resource.AvailableQuantity</th>
+            </tr>
+
+        </thead>
+        <tbody>
+        
+        @if (ViewBag.ItemStockWareHouselWise != null)
+        {
+
+            foreach (System.Data.DataRow Row in ViewBag.ItemStockWareHouselWise.Rows)
+            {
+                if (Row["wh_avl_stk_bs"].ToString() != "" && Row["wh_avl_stk_bs"].ToString() != null)
+                {
+                    //   IssueQty = Convert.ToDecimal(Row["IssueQty"].ToString());
+                    TotalIssueQty = Convert.ToDecimal(TotalIssueQty) + Convert.ToDecimal(Row["wh_avl_stk_bs"].ToString());
+                }
+                <tr>
+
+                    <td>
+                        <input id="ExpiryDate" value="@Row["wh_name"].ToString()" disabled class="form-control" autocomplete="off" type="text" name="ExpiryDate" placeholder="Expiry Date"  onblur="this.placeholder='Expiry Date'">
+                    </td>
+                    <td>
+                        <input id="ExpiryDate" value="@Row["wh_avl_stk_bs"].ToString()" disabled class="form-control" autocomplete="off" type="text" name="ExpiryDate" placeholder="Expiry Date"  onblur="this.placeholder='Expiry Date'">
+                    </td>
+                </tr>
+            }
+        }
+        </tbody>
+    </table>
+    </div>
+    <table class="table table-bordered" id="ItemDetailsTbl">
+        <tr>
+            <th width="70%"><strong> Total</strong></th>
+            <th>
+                <div id="TotalIssuedQuantity" value="@TotalIssueQty" disabled autocomplete="off" type="text" name="txtItemTotolQty" required="required" placeholder="@Resource.IssuedQuantity"  onblur="this.placeholder='Issued Quantity'" readonly></div>
+                @*<input id="TotalIssuedQuantity" value="@TotalIssueQty" disabled class="form-control" autocomplete="off" type="text" name="txtItemTotolQty" required="required" placeholder="Issued Quantity"  onblur="this.placeholder='Issued Quantity'" readonly>*@
+            </th>
+        </tr>
+    </table>

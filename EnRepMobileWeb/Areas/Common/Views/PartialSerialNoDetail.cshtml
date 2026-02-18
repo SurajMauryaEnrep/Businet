@@ -1,0 +1,95 @@
+﻿@using EnRepMobileWeb.Resources;
+
+<div class="modal-content">
+    <div class="modal-header">
+        <h2>@Resource.SerialDetail</h2>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body">
+        <div class="col-md-4 col-sm-12" style="padding-left:0px;">
+            <label class="col-form-label label-align">
+                @Resource.ItemName
+            </label>
+            <input id="SerialItemName" class="form-control" autocomplete="off" type="text" name="SerialItemName" placeholder="Item Name" onblur="this.placeholder='Item Name'" disabled="">
+            <input type="hidden" id="hfSItemID" />
+            <input type="hidden" id="hfSItemSNo" />
+            <input type="hidden" id="hfSCostPrice" />
+            <input type="hidden" id="hfSeriable" />
+
+        </div>
+        <div class="col-md-4 col-sm-12" style="padding-left:0px;">
+            <label class="col-form-label label-align">
+                @Resource.UOM
+            </label>
+            <input id="serialUOM" class="form-control" autocomplete="off" type="text" name="serialUOM" placeholder="@Resource.UOM" disabled="">
+            <input type="hidden" id="SerialUOMId" />
+        </div>
+        <div class="col-md-4 col-sm-12" style="padding-left:0px;">
+            <label class="col-form-label label-align">
+                @Resource.Received @Resource.Quantity
+            </label>
+            <input id="SerialReceivedQuantity" class="form-control num_right" autocomplete="off" type="text" name="SerialReceivedQuantity" placeholder="Received Quantity"  onblur="this.placeholder='Received Quantity'" disabled="">
+        </div>
+
+        <div class="clearfix"></div>
+
+        <div class="col-md-4 col-sm-12" style="padding-left:0px;">
+            <label class="table_label col-form-label label-align">@Resource.Serial @Resource.Number <span class="required">*</span></label>
+            @if (ViewBag.DocumentMenuId == "105102115120")/*This condition is Added by Suraj on 07-10-2024 for OMR*/
+            {
+        <input id="SerialNo" class="form-control" autocomplete="off" type="text" name="SerialNo" maxlength="25" onkeypress="OnKeyPressSerialNo()" placeholder="Serial No" onblur="this.placeholder='Serial No'">
+            }
+            else
+            {
+        <input id="SerialNo" class="form-control" autocomplete="off" type="text" name="SerialNo" maxlength="25" onkeypress="OnKeyPressSerialNoSTK()" placeholder="Serial No" onblur="this.placeholder='Serial No'">
+            }
+            
+            <span id="SpanSerialNo" class="error_message"></span>
+        </div>
+        <div id="DivAddNewSerial" class="col-md-1 col-sm-12" style="padding-left:0px; ">
+            @if (ViewBag.DocumentMenuId == "105102115120")/*This condition is Added by Suraj on 07-10-2024 for OMR*/
+            {
+                <div class="plus_icon1" style="float: right; margin-top:25px"> <i class="fa fa-plus" onclick="OnClickAddNewSerialDetail()" id="Btn_AddNewSerialDetail" title="Add New"></i> </div>
+            }
+            else
+            {
+                <div class="plus_icon1" style="float: right; margin-top:25px"> <i class="fa fa-plus" onclick="OnClickAddNewSerialDetailSTK()" id="Btn_AddNewSerialDetail" title="Add New"></i> </div>
+            }
+
+
+        </div>
+
+        <table id="SerialDetailTbl" class="table table-bordered margin15">
+            <thead>
+                <tr class="headings">
+                    <th width="1%"> &nbsp;</th>
+                    <th width="10%">@Resource.SrNo</th>
+                    <th width="89%"> @Resource.Serial @Resource.Number</th>
+                </tr>
+            </thead>
+            <tbody>
+                @*<tr>
+                    <td class=" red center"> <i class="fa fa-trash" aria-hidden="true" title="Delete" disabled="disabled"></i></td>
+                    <td>01</td>
+                    <td>PRAK123</td>
+                </tr>*@
+            </tbody>
+        </table>
+
+    </div>
+    <div class="modal-footer">
+        @if (ViewBag.DocumentMenuId == "105102115120")/*This condition is Added by Suraj on 07-10-2024 for OMR*/
+        {
+            <button type="button" class="btn btn-primary btn-sm" onclick="OnClickSerialResetBtn()" id="SerialResetBtn"> @Resource.Reset</button>
+            <button type="button" class="btn btn-primary btn-sm" id="SerialSaveAndExitBtn" onclick="OnClickSerialSaveAndClose()">@Resource.SaveAndExit</button>
+            <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" id="SerialDiscardAndExitBtn" onclick="OnClickSerialDiscardAndExit()">@Resource.DiscardAndExit</button>
+        }
+        else
+        {
+            <button type="button" class="btn btn-primary btn-sm" onclick="OnClickSerialResetBtnSTK()" id="SerialResetBtn"> @Resource.Reset</button>
+            <button type="button" class="btn btn-primary btn-sm" id="SerialSaveAndExitBtn" onclick="OnClickSerialSaveAndCloseSTK()">@Resource.SaveAndExit</button>
+            <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" id="SerialDiscardAndExitBtn" onclick="OnClickSerialDiscardAndExitSTK()">@Resource.DiscardAndExit</button>
+        }
+
+    </div>
+</div>

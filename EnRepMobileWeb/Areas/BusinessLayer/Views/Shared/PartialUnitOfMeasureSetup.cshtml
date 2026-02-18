@@ -1,0 +1,88 @@
+﻿@using EnRepMobileWeb.Resources;
+@{
+    var i = 0;
+}
+<style>
+    #datatable-buttons_filter {
+        right: 10%;
+    }
+</style>
+
+@{
+    var EditFlag = "N";
+    var DeleteFlag = "N";
+    if (ViewBag.VBRoleList != null)
+    {
+        foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+        {
+            if (Row["feature_id"].ToString() == "103110002")
+            {
+                EditFlag = "Y";
+            }
+            if (Row["feature_id"].ToString() == "103110004")
+            {
+                DeleteFlag = "Y";
+            }
+        }
+    }
+}
+<table id="datatable-buttons" class="table table-bordered rowhighlighttbl" style="width:100%;">
+    <thead>
+        <tr class="sticky-header">
+            <th class="two_per"> &nbsp;</th>
+            <th class="two_per"> &nbsp;</th>
+            <th class="two_per">@Resource.SrNo</th>
+            <th hidden="hidden"></th>
+            <th> @Resource.UOM @Resource.Name </th>
+            <th>@Resource.Notation</th>
+        </tr>
+    </thead>
+    <tbody id="">
+        @if (ViewBag.UomNo != null)
+        {
+            foreach (System.Data.DataRow dr in ViewBag.UomNo.Rows)
+            {
+                i = i + 1;
+
+
+                <tr role="row" class="odd">
+                    @if (EditFlag == "Y")
+                    {
+                        <td class="center">
+                            <i type="submit" class="fa fa-edit" onclick="EditUOM(event)" aria-hidden="true" title="@Resource.Edit"></i>
+                        </td>
+                    }
+                    else
+                    {
+                        <td class="center">
+                        </td>
+                    }
+                    @if (DeleteFlag == "Y")
+                    {
+                        if (dr["Flag"].ToString() == "N")
+                        {
+                            <td class="center">
+                                <i class="fa fa-trash red" aria-hidden="true" title="@Resource.Delete" onclick="return functionConfirm(event)"></i>
+                            </td>
+                        }
+                        else
+                        {
+                            <td class="center">
+                                <i class="fa fa-trash" style="filter: grayscale(100%)" aria-hidden="true" title="@Resource.Delete" Disabled="Disabled"></i>
+                            </td>
+                        }
+                    }
+                    else
+                    {
+                        <td class="center">
+                        </td>
+                    }
+                    <td class="sorting_1">@i</td>
+                    <td hidden="hidden"><input hidden="hidden" id="HdnUOM_Id" value="@dr["uom_id"].ToString()" /> </td>
+                    <td id="UOMname2">@dr["uom_name"].ToString()</td>
+                    <td id="UOMname3">@dr["uom_alias"].ToString()</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

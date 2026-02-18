@@ -1,0 +1,71 @@
+﻿@using EnRepMobileWeb.Resources;
+@{
+    var EditFlag = "N";
+    var DeleteFlag = "N";
+    if (ViewBag.VBRoleList != null)
+    {
+        foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+        {
+            if (Row["feature_id"].ToString() == "103205115002")
+            {
+                EditFlag = "Y";
+            }
+            if (Row["feature_id"].ToString() == "103205115004")
+            {
+                DeleteFlag = "Y";
+            }
+        }
+    }
+}
+<table id="datatable-buttons11" class="table table-bordered data_table_full_width rowhighlighttbl">
+    <thead>
+        <tr class="sticky-header">
+            <th class="wi">@Resource.SrNo</th>
+            <th style="display:none"></th>
+            <th> @Resource.SalesExecutiveName</th>
+            <th> @Resource.ContactNumber</th>
+            <th> @Resource.ContactEmailID</th>
+            <th> @Resource.Sales @Resource.Regions</th>
+            <th style="display:none"></th>
+            <th> </th>
+            <th> </th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            var i = 0;
+        }
+        @if (ViewBag.SalesExecutiveList != null)
+        {
+            foreach (System.Data.DataRow dr in ViewBag.SalesExecutiveList.Rows)
+            {
+                i = i + 1;
+
+                <tr role="row" class="odd">
+                    <td class="sorting_1">@i</td>
+                    <td id="salesPersonId" style="display:none">@dr["sls_pers_id"].ToString()</td>
+                    <td id="salesPersonName">@dr["sls_pers_name"].ToString()</td>
+                    <td id="salesPersonContNo">@dr["sls_cont_no"].ToString()</td>
+                    <td id="salesPersonEmailId">@dr["sls_email"].ToString()</td>
+                    <td id="sls_reg">@dr["sls_reg"].ToString()</td>
+                    <td id="sr_id" style="display:none">@dr["sr_id"].ToString()</td>
+                    <td class="center">
+                        @if (EditFlag == "Y")
+                        {
+                            <i type="submit" class="fa fa-edit" onclick="EditSalesExecutiveName(event); CheckSeBranchStatusWhenUpdate();" aria-hidden="true" title="@Resource.Edit"></i>
+                        }
+                    </td>
+                    <td class="center">
+                        @if (DeleteFlag == "Y")
+                        {
+                            <i class="fa fa-trash red" aria-hidden="true" title="@Resource.Delete" onclick="return functionConfirm(event,'SalesExecutive')"></i>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+
+

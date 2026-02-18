@@ -1,0 +1,92 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.ProductionAndPlanning.WorkstationSetup.WorkstationSetupModel
+@using EnRepMobileWeb.Resources;
+@using System.Data
+@if (Session["UserId"] == null)
+{
+    Response.Redirect("~/Login");
+}
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+<script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+<script src="~/Content/Css/build/js/sweetalert.js"></script>
+@*/*start Add by Hina on 19-02-2024 to chk Financial year exist or not*/*@
+@{
+    if (TempData["Message"] != null)
+    {
+        if (TempData["Message"] == "Financial Year not Exist")
+        {
+            <script type="text/javascript">
+                swal("", $("#FinancialYearDoesNotExistTransactionCanNotBeDone").text(), "warning");
+            </script>
+        }
+
+    }
+}
+@*/*End to chk Financial year exist or not*/*@
+<script src="~/Content/Scripts/ApplicationLayer/ProductionAndPlanning/WorkstationSetup/WorkstationSetup.js"></script>
+<title>@Model.Title</title>
+@using (Html.BeginForm("WorkstationSetup", "WorkstationSetup", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    {
+        <div class="row">
+            <div class="col-md-12 col-sm-12 ">
+                <div class="x_panel mar_pad1 ">
+                    <div class="x_content mar_pad1">
+
+                        <h2 class="col-md-8 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                        <!-- Smart Wizard -->
+                        @if (ViewBag.VBRoleList != null)
+                        {
+                            foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                            {
+                                if (Row["feature_id"].ToString() == "105105105001")
+                                {
+                                    <div id="" class="col-md-4 col-sm-12 heading_right_padding">
+                                        <ul>
+                                            <li>
+                                                <a class="tooltip-test"
+                                                   title=" @Resource.AddNew" href="@Url.Action("AddWorkstationSetupDetail","WorkstationSetup")"><img src="~/Content/Images/addgreen.png" width="32" height="32" id="Btn_AddCust" alt="Add"></a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                }
+                            }
+                        }
+                        <div class="x_title pad_mar ">
+                            <div class="col-md-12 col-sm-12 icon_tool padding_zero">
+                                <form class="available_stock pad_mar" action="" method="post" novalidate="">
+                                    <div class="col-md-12 col-sm-12 padding_zero">
+                                        <div class="col-md-55 col-sm-12">
+                                            <label class="col-form-label label-align">@Resource.ShopfloorName</label>
+                                            @Html.DropDownListFor(model => model.Status, new SelectList(Model.StatusList, "status_id", "status_name"), new { @class = "form-control", id = "ddl_ShopfloorNameList" })
+                                        </div>
+                                        <div class="col-md-1 col-sm-12">
+                                            <button type="submit" class="btn btn-primary btn-sm margintop20" id="BtnSearch" name="Command" value="Search"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                        </div>
+                                    </div>
+                                    @*@Html.HiddenFor(m => m.ListFilterData, new { @id = "ListFilterData", @value = ViewBag.ListData })*@
+                                    <input hidden="hidden" id="ListFilterData" value="@ViewBag.ListData" />
+                                </form>
+
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 col-sm-12 ">
+                <div class="x_panel mar_pad1 ">
+                    <div class="x_content mar_pad1">
+                        <div class="card-box table-responsive dy_table">
+                            <div id="WSTbody" class="sticky-table sticky-ltr-cells sb-container container-example1">
+                                @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialWorkstationSetup.cshtml")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}

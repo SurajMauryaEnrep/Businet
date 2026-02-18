@@ -1,0 +1,75 @@
+﻿@using EnRepMobileWeb.Resources;
+@{
+    string ValDigit = "0.";
+    var VD = Convert.ToInt32(Session["ValDigit"].ToString());
+    for (var i = 0; i < VD; i++)
+    {
+        ValDigit += "0";
+    }
+    //decimal total = 0;
+}
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<script src="~/Content/Scripts/Common/CommonJS.js"></script>
+
+<table id="datatable-buttons1" class="table table-striped rowhighlighttbl width2200" cellspacing="0" width="100%">
+    <thead>
+        <tr class="sticky-header">
+            <th width="3%"> @Resource.SrNo</th>
+            <th width="11%">@Resource.Customer <br /> @Resource.Name</th>
+
+            <th width="8%">@Resource.Shipment <br /> @Resource.Number</th>
+            <th width="6%">@Resource.Shipment <br /> @Resource.Date</th>
+            <th width="6%">@Resource.Shipment <br /> @Resource.Type</th>
+            <th width="8%">@Resource.Destination</th>
+            @*<th width="8%">@Resource.Order <br /> @Resource.Number</th>
+                <th width="6%">@Resource.Order <br /> @Resource.Date</th>*@
+            <th width="6%">@Resource.Shipped <br /> @Resource.Quantity</th>
+            <th width="8%">@Resource.Packing <br /> @Resource.List @Resource.Number</th>
+            <th width="6%">@Resource.Packing <br /> @Resource.Date</th>
+            <th width="6%">@Resource.NumberOfPacks</th>
+            <th width="6%">@Resource.NetWeight</th>
+            <th width="6%">@Resource.GrossWeight</th>
+            <th width="6%">@Resource.Total <br /> @Resource.CBM</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (ViewBag.ShipmentSummary != null)
+        {
+            var srno = 1;
+            foreach (System.Data.DataRow dr in ViewBag.ShipmentSummary.Rows)
+            {
+                <tr>
+                    <td>@srno</td>
+                    <td>@dr["cust_name"].ToString()</td>
+
+                    <td>@dr["ship_no"].ToString()</td>
+                    <td>@dr["ship_dt"].ToString()</td>
+
+                    @*<td>B1/08/23/DSH0000065</td>
+                        <td>28-07-2023</td>*@
+                    <td>@dr["ship_type"].ToString()</td>
+                    <td>@dr["destination_port"].ToString()</td>
+                    <td class="num_right">@Convert.ToDecimal(dr["ship_qty"]).ToString(ValDigit)</td>
+                    <td>@dr["pack_no"].ToString()</td>
+                    <td>@dr["pack_dt"].ToString()</td>
+                    <td class="num_right">@Convert.ToDecimal(dr["pack_qty"]).ToString(ValDigit)</td>
+                    <td class="num_right">@Convert.ToDecimal(dr["tot_net_wght"]).ToString(ValDigit)</td>
+                    <td class="num_right">@Convert.ToDecimal(dr["tot_gr_wght"]).ToString(ValDigit)</td>
+                    <td class="num_right">@Convert.ToDecimal(dr["tot_cbm"]).ToString(ValDigit)</td>
+                </tr>
+                srno = srno + 1;
+            }
+        }
+    </tbody>
+</table>
+@{
+    if (Model.SearchStatus != null)
+    {
+        if (Model.SearchStatus == "SEARCH")
+        {
+            @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+            @Scripts.Render("~/Content/Scripts/DatatablesJs")
+            Model.SearchStatus = null;
+        }
+    }
+}

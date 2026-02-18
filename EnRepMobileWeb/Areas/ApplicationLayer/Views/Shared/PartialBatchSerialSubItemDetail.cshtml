@@ -1,0 +1,131 @@
+﻿@using EnRepMobileWeb.Resources;
+@using System.Data;
+<div class="modal-content">
+    <div class="modal-header">
+        @if (ViewBag.Name == "BatchDetail")
+        {
+            <h2>@Resource.BatchDetail</h2>
+        }
+        @if (ViewBag.Name == "SerialDetail")
+        {
+            <h2>@Resource.SerialDetail</h2>
+        }
+        @if (ViewBag.Name == "SubItemDetail")
+        {
+            <h2>@Resource.SubItem @Resource.Detail</h2>
+        }
+        <button type="button" class="close" data-dismiss="modal" onclick="Close_modal();">&times;</button>
+    </div>
+    <div class="modal-body">
+        <table id="BatchDetailTbl" class="table table-bordered margin15 rowhighlighttbl">
+            @if (ViewBag.Name == "BatchDetail")
+            {
+                <thead>
+                    <tr class="headings" disabled="disabled">
+                        <th width="40%" disabled="disabled">@Resource.Item @Resource.Name</th>
+                        <th width="20%"> @Resource.Batch @Resource.Nunber</th>
+                        <th width="15%" disabled="disabled"> @Resource.Quantity</th>
+                        <th width="20%"> @Resource.Manufacturer @Resource.Name</th>
+                        <th width="20%"> @Resource.MRP</th>
+                        <th width="20%"> @Resource.Manufacturer  @Resource.Date</th>
+                        <th width="20%"> @Resource.ExpiryDate </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (ViewBag.BatchDetail != null)
+                    {
+                        foreach (DataRow rw in ViewBag.BatchDetail.Rows)
+                        {
+                    <tr>
+                        <td>@rw.ItemArray[0]</td>
+                        <td>@rw.ItemArray[1]</td>
+                        <td class="num_right">@rw.ItemArray[2]</td>
+                        <td>@rw.ItemArray[3]</td>
+                        <td class="num_right">@rw.ItemArray[4]</td>
+                        @*<td>@rw.ItemArray[5]</td>
+        <td>@rw.ItemArray[6]</td>*@
+                        <td>
+                            @{
+                                DateTime dt1;
+                                var val1 = rw.ItemArray[5]?.ToString();
+                                var result1 = DateTime.TryParse(val1, out dt1) ? dt1.ToString("dd/MM/yyyy") : "";
+                            }
+                            @result1
+                        </td>
+
+                        <td>
+                            @{
+                                DateTime dt2;
+                                var val2 = rw.ItemArray[6]?.ToString();
+                                var result2 = DateTime.TryParse(val2, out dt2) ? dt2.ToString("dd/MM/yyyy") : "";
+                            }
+                            @result2
+                        </td>
+                    </tr>
+                        }
+                    }
+
+                </tbody>
+            }
+            @if (ViewBag.Name == "SerialDetail")
+            {
+                <thead>
+                    <tr class="headings" disabled="disabled">
+                        <th width="70%" disabled="disabled">@Resource.Item @Resource.Name</th>
+                        <th width="30%"> @Resource.Serial @Resource.Nunber</th>
+                        <th width="20%"> @Resource.Manufacturer @Resource.Name</th>
+                        <th width="20%"> @Resource.MRP</th>
+                        <th width="20%"> @Resource.Manufacturer  @Resource.Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (ViewBag.SerialDetail != null)
+                    {
+                        foreach (DataRow rw in ViewBag.SerialDetail.Rows)
+                        {
+                    <tr>
+                        <td>@rw.ItemArray[0]</td>
+                        <td>@rw.ItemArray[1]</td>
+                        <td>@rw.ItemArray[2]</td>
+                        <td class="num_right">@rw.ItemArray[3]</td>
+                        @*<td>@rw.ItemArray[4]</td>*@
+                    <td>
+                        @{
+                            DateTime dt1;
+                            var val1 = rw.ItemArray[4]?.ToString();
+                            var result1 = DateTime.TryParse(val1, out dt1) ? dt1.ToString("dd/MM/yyyy") : "";
+                                            }
+                                            @result1
+                                        </td>
+                    </tr>
+                        }
+                    }
+                </tbody>
+            }
+            @if (ViewBag.Name == "SubItemDetail")
+            {
+                <thead>
+                    <tr class="headings" disabled="disabled">
+                        <th width="50%" disabled="disabled">@Resource.Item @Resource.Name</th>
+                        <th width="30%" disabled="disabled"> @Resource.SubItem @Resource.Name</th>
+                        <th width="20%"> @Resource.Quantity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (ViewBag.SubItemDetail != null)
+                    {
+                        foreach (DataRow rw in ViewBag.SubItemDetail.Rows)
+                        {
+                            <tr>
+                                <td>@rw.ItemArray[0]</td>
+                                <td>@rw.ItemArray[1]</td>
+                                <td class="num_right">@rw.ItemArray[2]</td>
+                            </tr>
+                        }
+                    }
+
+                </tbody>
+            }
+        </table>
+    </div>
+</div>

@@ -1,0 +1,85 @@
+﻿@using EnRepMobileWeb.Resources;
+@{
+    decimal ProducedQty = 0;
+    decimal AccQty = 0;
+    decimal RejQty = 0;
+    decimal RewQty = 0;
+}
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<div class="modal-content">
+    <div class="modal-header">
+        <h2>@Resource.Production @Resource.Detail</h2>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body">
+        <div class="col-md-3 col-sm-12" style="padding-left:0px;">
+            <label class="col-form-label label-align">@Resource.ProductName</label>
+            <input id="PrdQ_ProductName" class="form-control " autocomplete="off" type="text" name="ProductName" placeholder="@Resource.ProductName" disabled="">
+        </div>
+        <div class="col-md-2 col-sm-12" style="padding-left:0px;">
+            <label class="col-form-label label-align ">@Resource.UOM</label>
+            <input id="PrdQ_UOM" class="form-control" autocomplete="off" type="text" name="UOM" placeholder="@Resource.UOM" disabled="">
+        </div>
+        <div class="col-md-3 col-sm-12" style="padding-left:0px;">
+            <label class="col-form-label label-align ">@Resource.Date</label>
+            <input id="PrdQ_Date" class="form-control" autocomplete="off" type="date" name="Date" placeholder="@Resource.Date" disabled="">
+        </div>
+        <div class="card-box table-responsive dy_table margin15">
+            <div id="" class="sticky-table sticky-ltr-cells sb-container container-example1 OrderHistory height30VH">
+                <table id="" data-order="" class="table table-striped table-bordered rowhighlighttbl" style="width:100%">
+                    <thead>
+                        <tr class="sticky-header">
+                            <th width="10%"> @Resource.SrNo</th>
+                            <th width="15%">@Resource.Confirmation <br /> @Resource.Number</th>
+                            <th width="15%">@Resource.Confirmation <br /> @Resource.Date</th>
+                            <th width="15%">@Resource.Produced <br /> @Resource.Quantity</th>
+                            <th width="15%">@Resource.Accepted <br /> @Resource.Quantity</th>
+                            <th width="15%">@Resource.Rejected <br /> @Resource.Quantity</th>
+                            <th width="15%">@Resource.Reworkable <br /> @Resource.Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (ViewBag.DailyPP_ProducedQtyDetail != null)
+                        {
+                            var srNo = 1;
+                            foreach (System.Data.DataRow dr in ViewBag.DailyPP_ProducedQtyDetail.Rows)
+                            {
+                                <tr>
+                                    <td>@srNo</td>
+                                    <td>@dr["cnf_no"]</td>
+                                    <td>@dr["cnf_dt"]</td>
+                                    <td class="num_right">@dr["prod_qty"]</td>
+                                    <td class="num_right">@dr["accept_qty"]</td>
+                                    <td class="num_right">@dr["reject_qty"]</td>
+                                    <td class="num_right">@dr["rework_qty"]</td>
+                                </tr>
+                                ProducedQty = ProducedQty + Convert.ToDecimal(@dr["prod_qty"]);
+                                AccQty = AccQty + Convert.ToDecimal(@dr["accept_qty"]);
+                                RejQty = RejQty + Convert.ToDecimal(@dr["reject_qty"]);
+                                RewQty = RewQty + Convert.ToDecimal(@dr["rework_qty"]);
+                                srNo++;
+                            }
+                        }
+                      
+
+                    </tbody>
+                    <tfoot>
+                        <tr class="total">
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td class="num_right font-weight-bold">@Resource.Total</td>
+                            <td class="num_right font-weight-bold">@ProducedQty</td>
+                            <td class="num_right font-weight-bold">@AccQty</td>
+                            <td class="num_right font-weight-bold">@RejQty</td>
+                            <td class="num_right font-weight-bold">@RewQty</td>
+                        </tr>
+                    </tfoot>
+
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" id="" onclick="">@Resource.Close</button>
+    </div>
+</div>

@@ -1,0 +1,180 @@
+﻿@using EnRepMobileWeb.Resources;
+@{
+    //string ValDigit = "0.";
+    //var VD = Convert.ToInt32(Session["ValDigit"].ToString());
+    //for (var i = 0; i < VD; i++)
+    //{
+    //    ValDigit += "0";
+    //}
+    //string QtyDigit = "0.";
+    //var QD = Convert.ToInt32(Session["QtyDigit"].ToString());
+    //for (var i = 0; i < QD; i++)
+    //{
+    //    QtyDigit += "0";
+    //}
+    //string RateDigit = "0.";
+    //var RD = Convert.ToInt32(Session["ValDigit"].ToString());
+    //for (var i = 0; i < RD; i++)
+    //{
+    //    RateDigit += "0";
+    //}
+    //decimal totalsale_amt_spec = 0;
+    //decimal totalsale_amt = 0;
+    //decimal totaltax_amt_spec = 0;
+    //decimal totaltax_amt = 0;
+    //decimal totalOC_amt_spec = 0;
+    //decimal totalOC_amt = 0;
+    //decimal totalInvoice_amt = 0;
+    //decimal totalInvoice_amt_spec = 0;
+}
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<div class="modal-content">
+    <div class="modal-header">
+        <h2>@Resource.OrderDetail</h2>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body" style="padding-top:0px;">
+        <div class="col-md-2 col-sm-12" style="padding-left:0px;">
+            <label class="col-form-label label-align">@Resource.Product @Resource.Name</label>
+            <input id="PGWP_ProductName" class="form-control" autocomplete="off" type="text" name="ProductName" placeholder="@Resource.ProductName" disabled="">
+        </div>
+        <div class="col-md-2 col-sm-12" style="padding-left:0px;">
+            <label class="col-form-label label-align">@Resource.UOM</label>
+            <input id="PGWP_UOM" class="form-control" autocomplete="off" type="text" name="UOM" placeholder="@Resource.UOM" disabled="">
+        </div>
+        <div class="col-md-2 col-sm-12" style="padding-left:0px;">
+            <label class="col-form-label label-align">@Resource.Currency</label>
+            <input id="PGWP_Currency" class="form-control" autocomplete="off" type="text" name="Currency" placeholder="@Resource.Currency" disabled="">
+        </div>
+        <div class="col-md-2 col-sm-12" style="padding-left:0px;">
+            <label class="col-form-label label-align">@Resource.Quantity</label>
+            <input id="PGWP_Quantity" class="form-control" autocomplete="off" type="text" name="Quantity" placeholder="@Resource.Quantity" disabled="">
+        </div>
+
+        <div class="col-md-2 col-sm-12" style="padding-left:0px;">
+            <label class="col-form-label label-align">@Resource.FromDate</label>
+            <input id="PGWP_FromDate" class="form-control" value="" autocomplete="off" type="date" name="FromDate" placeholder="" disabled="">
+        </div>
+
+        <div class="col-md-2 col-sm-12" style="padding-left:0px;">
+            <label class="col-form-label label-align">@Resource.ToDate</label>
+            <input id="PGWP_ToDate" class="form-control" value="" autocomplete="off" type="date" name="ToDate" placeholder="" disabled="">
+        </div>
+
+        <div class="clearfix"></div>
+        @*<div class="tableFixHead height30VH margin10">
+            <table id="" class="table table-striped width2200 rowhighlighttbl" cellspacing="0" width="100%">
+                <thead>
+                    <tr class="headings">*@
+        <div class="card-box table-responsive dy_table margin15">
+            <div id="" class="sticky-table sticky-ltr-cells sb-container container-example1 height30VH">
+                <table id="Datatable16" data-order="" class="table table-striped width2200 table-bordered rowhighlighttbl itmfrz" style="width:100%">
+                    <thead>
+                        <tr class="sticky-header">
+                            <th width="3%">@Resource.SrNo</th>
+                            <th class="itmStick">@Resource.Order @Resource.Number</th>
+                            <th>@Resource.Order @Resource.Date</th>
+                            <th width="5%">@Resource.Customer @Resource.ReferenceNumber</th>
+                            <th width="12%">@Resource.CustomerName</th>
+                            <th>@Resource.RegionName</th>
+                            <th>@Resource.Quantity</th>
+                            <th>@Resource.Price <br /> @Resource.InSpecific</th>
+                            <th>@Resource.Price <br /> @Resource.InBase</th>
+                            <th>@Resource.GrossValue <br /> @Resource.InSpecific</th>
+                            <th>@Resource.GrossValue <br /> @Resource.InBase</th>
+                            <th>@Resource.TaxAmount <br /> @Resource.InSpecific</th>
+                            <th>@Resource.TaxAmount <br /> @Resource.InBase</th>
+                            <th>@Resource.OtherCharges <br /> @Resource.InSpecific</th>
+                            <th>@Resource.OtherCharges <br /> @Resource.InBase</th>
+                            <th>@Resource.Order @Resource.Amount  <br /> @Resource.InSpecific </th>
+                            <th>@Resource.Order @Resource.Amount  <br /> @Resource.InBase </th>
+                            @*<th>@Resource.InvoiceAmount <br /> @Resource.InSpecific</th>
+        <th>@Resource.InvoiceAmount <br /> @Resource.InBase</th>*@
+                            <th>@Resource.ApprovedOn</th>
+                        </tr>
+                    </thead>
+                    <tbody id="">
+                        @if (ViewBag.SalesDetailProductWiseInvoiceList != null)
+                        {
+                            var srno = 1;
+                            foreach (System.Data.DataRow dr in ViewBag.SalesDetailProductWiseInvoiceList.Rows)
+                            {
+
+                                <tr>
+                                    <td>@srno</td>
+                                    <td class="ItmNameBreak itmStick tditemfrz">@dr["app_so_no"].ToString()</td>
+                                    <td>@dr["so_dt"].ToString()</td>
+                                    <td>@dr["ref_doc_no"].ToString()</td>
+                                    <td>@dr["cust_name"].ToString()</td>
+                                    <td>@dr["cust_region"].ToString()</td>
+                                    <td class="num_right">@dr["item_qty"].ToString()</td>
+                                    <td class="num_right">@dr["item_rate_spec"].ToString()</td>
+                                    <td class="num_right">@dr["item_rate_bs"].ToString()</td>
+                                    <td class="num_right">@dr["item_gr_val_spec"].ToString()</td>
+                                    <td class="num_right">@dr["item_gr_val_bs"].ToString()</td>
+                                    <td class="num_right">@dr["item_tax_amt_spec"].ToString()</td>
+                                    <td class="num_right">@dr["item_tax_amt_bs"].ToString()</td>
+                                    <td class="num_right">@dr["item_oc_amt_spec"].ToString()</td>
+                                    <td class="num_right">@dr["item_oc_amt_bs"].ToString()</td>
+                                    <td class="num_right">@dr["item_net_val_spec"].ToString()</td>
+                                    <td class="num_right">@dr["item_net_val_bs"].ToString()</td>
+                                    <td>@dr["app_dt"].ToString()</td>
+                                </tr>
+
+
+                                srno = srno + 1;
+                                //totalsale_amt_spec = totalsale_amt_spec + dr["item_gr_val_spec"]);
+                                //totalsale_amt = totalsale_amt + dr["item_gr_val_bs"]);
+                                //totaltax_amt_spec = totaltax_amt_spec + dr["item_tax_amt_spec"]);
+                                //totaltax_amt = totaltax_amt + dr["item_tax_amt_bs"]);
+                                //totalOC_amt_spec = totalOC_amt_spec + dr["item_oc_amt_spec"]);
+                                //totalOC_amt = totalOC_amt + dr["item_oc_amt_bs"]);
+                                //totalInvoice_amt = totalInvoice_amt + dr["item_net_val_bs"]);
+                                //totalInvoice_amt_spec = totalInvoice_amt_spec + dr["item_net_val_spec"]);
+                            }
+
+                        }
+
+                    </tbody>
+                    <tfoot>
+                        @if (ViewBag.TotalODProductWiseInvoce != null)
+                        {
+                            foreach (System.Data.DataRow dr in ViewBag.TotalODProductWiseInvoce.Rows)
+                            {
+                                <tr class="total">
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>&nbsp;</td>
+                                    <td align="right"><strong>@Resource.Total</strong></td>
+                                    <td class="num_right"><strong>@dr["item_gr_val_spec"].ToString()</strong></td>
+                                    <td class="num_right"><strong>@dr["item_gr_val_bs"].ToString()</strong></td>
+                                    <td class="num_right"><strong>@dr["item_tax_amt_spec"].ToString()</strong></td>
+                                    <td class="num_right"><strong>@dr["item_tax_amt_bs"].ToString()</strong></td>
+                                    <td class="num_right"><strong>@dr["item_oc_amt_spec"].ToString()</strong></td>
+                                    <td class="num_right"><strong>@dr["item_oc_amt_bs"].ToString()</strong></td>
+                                    <td class="num_right"><strong>@dr["item_net_val_spec"].ToString()</strong></td>
+                                    <td class="num_right"><strong>@dr["item_net_val_bs"].ToString()</strong></td>
+                                    <td align="right"></td>
+                                </tr>
+                            }
+                        }
+
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" id="" onclick="OnClickSerialDiscardAndExit()">@Resource.Close</button>
+    </div>
+</div>
+
+
+
+
+

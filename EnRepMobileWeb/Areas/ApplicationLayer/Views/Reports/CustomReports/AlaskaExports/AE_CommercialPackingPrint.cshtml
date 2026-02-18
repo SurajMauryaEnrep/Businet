@@ -1,0 +1,509 @@
+﻿@using System.Data;
+@using EnRepMobileWeb.MODELS.ApplicationLayer.SalesAndDistribution.Shipment;
+@{
+    string QtyDigit = "0.";
+    var QD = Convert.ToInt32(Session["QtyDigit"].ToString());
+    for (var i = 0; i < QD; i++)
+    {
+        QtyDigit += "0";
+    }
+    string doc_status = "";
+    string BackGroundImgUrl = "";
+    if (ViewBag.DocStatus != null)
+    {
+        doc_status = ViewBag.DocStatus;
+    }
+    if (doc_status == "D" || doc_status == "F")
+    {
+        BackGroundImgUrl = Server.MapPath("~/Content/Images/draft.png");
+    }
+    decimal ShipQty = 0;
+    decimal PackNos = 0;
+    decimal tot_cbm = 0;
+    decimal tot_ntwt = 0;
+    decimal tot_gwt = 0;
+
+    var Options = ViewBag.ProntOption as PrintOptionsList;
+
+
+}
+
+<style>
+    table.main {
+        width: 100%;
+        font-weight: normal;
+        padding: 0px 0px;
+        line-height: 18px;
+        border: 1px solid #000000;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 12px;
+    }
+
+        table.main tr th {
+            paddingtop: 5px;
+            paddingbottom: 3px;
+            text-align: center;
+            border-bottom: 1px solid #000000;
+        }
+
+        table.main tr td {
+            font-size: 10px;
+            font-family: Arial, Helvetica, sans-serif;
+            paddingleft: 5px;
+            paddingright: 5px;
+            paddingbottom: 3px;
+        }
+
+    .pt_top {
+        paddingtop: 5px;
+    }
+
+    .bor_left {
+        border-left: 1px solid #000000;
+    }
+
+    .bor_right {
+        border-right: 1px solid #000000;
+    }
+
+    .bor_top {
+        border-top: 1px solid #000000;
+    }
+
+    .bor_bottom {
+        border-bottom: 1px solid #000000;
+    }
+
+    .fon_bol {
+        font-weight: bold !important;
+    }
+
+    .fon_nor {
+        font-weight: normal;
+    }
+
+    .all_td {
+        padding-left: 5px;
+        padding-top: 0px;
+        padding-bottom: 0px;
+        height: 15px;
+        max-height: 15px;
+        line-height: 15px;
+    }
+
+    .ver_bot {
+        vertical-align: bottom;
+    }
+
+    .ver_top {
+        vertical-align: top;
+    }
+
+    .thight50 {
+        height: 50px;
+    }
+
+    .thight100 {
+        height: 100px;
+    }
+
+    .right_text {
+        text-align: right;
+    }
+
+    .center_text {
+        text-align: center;
+    }
+
+    .left_pd {
+        paddingleft: 0px !important
+    }
+    /*.right_pd {
+        paddingright:10px;
+
+    }*/
+
+</style>
+
+<div style='backgroundposition: center center;'>
+    
+    <table width='100%'>
+        <tr>
+            <td>
+                <table style='width:100%;'>
+
+                    <tr>
+                        <td style='width:10px;'></td>
+                        <td style=' paddingleft:0px;'>
+                            <table class="main" cellspacing='0' cellpadding='0'>
+                                <tr>
+                                    <td style='width: 40%; paddingleft: 0px;' valign="top" >
+                                        <table class="" cellspacing='0' cellpadding='0' width="100%">
+                                            <tr>
+                                                <td colspan="2" class=" fon_bol bor_right pt_top bor_bottom">                                                  
+                                                    Exporter,<br />
+                                                    @ViewBag.Details.Tables[0].Rows[0]["comp_nm"].ToString()<br />
+                                                    @if (@ViewBag.Details.Tables[0].Rows[0]["exp_addr"] != null && ViewBag.Details.Tables[0].Rows[0]["exp_addr"].ToString() != "")
+                                                    {
+                                                        @ViewBag.Details.Tables[0].Rows[0]["exp_addr"].ToString()
+                                                    }
+                                                    else
+                                                    {
+                                                <span>
+                                                    @ViewBag.Details.Tables[0].Rows[0]["Comp_Add"].ToString()
+                                                    @ViewBag.Details.Tables[0].Rows[0]["state"].ToString()
+                                                    - @ViewBag.Details.Tables[0].Rows[0]["pin"].ToString()
+                                                    (@ViewBag.Details.Tables[0].Rows[0]["country"].ToString())
+                                                </span>
+                                                       
+                                                    }
+                                                  
+                                                </td>
+
+                                            </tr>
+                                            @*<tr>/*Commented by Hina on 09-06-2025 with refrence of Ticket id=0002170*/
+
+                                                <td class=" pt_top"><span class="fon_bol">STATE CODE </span> - @ViewBag.Details.Tables[0].Rows[0]["comp_state_code"].ToString()</td>
+                                                <td class=" bor_right"><span class="fon_bol"> PAN NO. </span>@ViewBag.Details.Tables[0].Rows[0]["pan_no"].ToString()</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="  bor_bottom"><span class="fon_bol">GSTIN NO. </span> @ViewBag.Details.Tables[0].Rows[0]["gst_no"].ToString()</td>
+                                                <td class="bor_bottom bor_right"><span class="fon_bol"> IEC. </span> @ViewBag.Details.Tables[0].Rows[0]["iec_no"].ToString()</td>
+                                            </tr>*@
+
+                                            <tr>
+                                                <td colspan="2" class=" bor_right thight50 bor_bottom ver_top">
+                                                    <span class="fon_bol">
+                                                        CONSIGNEE :
+                                                        
+                                                    </span> <br />
+                                                            <span>
+
+                                                                @if (@ViewBag.Details.Tables[0].Rows[0]["consig_name"] != null && @ViewBag.Details.Tables[0].Rows[0]["consig_name"].ToString() != "")
+                                                                {
+                                                                    @ViewBag.Details.Tables[0].Rows[0]["consig_name"]
+                                                                }
+                                                                else
+                                                                {
+                                                                    @ViewBag.Details.Tables[0].Rows[0]["cust_name"]
+                                                                }
+                                                            </span>
+                                                    <br />
+                                                    @if (@ViewBag.Details.Tables[0].Rows[0]["consig_addr"] != null && @ViewBag.Details.Tables[0].Rows[0]["consig_addr"].ToString() != "")
+                                                    {
+                                                        @*<span class="fon_bol">*@
+                                                        <span>
+                                                            @ViewBag.Details.Tables[0].Rows[0]["consig_addr"].ToString()
+                                                        </span>
+                                                    }
+                                                    else
+                                                    {
+                                                        @*<span class="fon_bol">*@
+                                                        <span>
+                                                            @ViewBag.Details.Tables[0].Rows[0]["S_cust_add"].ToString(),
+                                                            @ViewBag.Details.Tables[0].Rows[0]["S_cust_state"].ToString(),
+                                                            @ViewBag.Details.Tables[0].Rows[0]["S_cust_cntry"].ToString()
+                                                        </span>
+                                                    }
+                                                </td>
+
+                                            </tr>
+                                            <tr>
+                                                <td class="bor_bottom ver_top">
+                                                    <span class="fon_bol">Pre Carriage By</span><br />
+                                                   <span>@ViewBag.Details.Tables[0].Rows[0]["pre_carr_by"].ToString()</span>
+                                                </td>
+                                                <td class=" bor_right  bor_bottom ver_top">
+                                                    <span class="fon_bol">PI Of Recpt by Pre carrier</span><br />
+                                                    <span>@ViewBag.Details.Tables[0].Rows[0]["pi_rcpt_carr"].ToString()</span>
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td class="bor_bottom pt_top"><span class="fon_bol">Vessel/Flight No</span><br />
+                                                 <span>@ViewBag.Details.Tables[0].Rows[0]["ves_fli_no"].ToString()</span>
+                                                </td>
+                                                <td class="bor_bottom bor_right pt_top">
+                                                    <span class="fon_bol">Port Of Loading</span><br /> @ViewBag.Details.Tables[0].Rows[0]["loading_port"].ToString()
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="pt_top" style="height:55px;"><span class="fon_bol">Port Of Discharge</span> <br />
+                                                @ViewBag.Details.Tables[0].Rows[0]["discharge_port"].ToString()</td>
+                                                <td class="bor_right"><span class="fon_bol">Final Destination</span><br />
+                                                @ViewBag.Details.Tables[0].Rows[0]["destination_port"].ToString()</td>
+                                            </tr>
+                                            @*<tr>
+                                                <td class="bor_bottom pt_top"><span class="fon_bol">Line Seal Number</span> <br />
+                                                @ViewBag.Details.Tables[0].Rows[0]["line_seal_no"].ToString()</td>
+                                                <td class="bor_bottom bor_right"><span class="fon_bol">Self Seal Number</span><br />
+                                                @ViewBag.Details.Tables[0].Rows[0]["self_seal_no"].ToString()</td>
+                                            </tr>
+                                            <tr>
+                                                <td class=" pt_top"><span class="fon_bol">Container Net Weight</span> <br />
+                                                @ViewBag.Details.Tables[0].Rows[0]["cntr_net_wt"].ToString()</td>
+                                                <td class=" bor_right"><span class="fon_bol">Container Gross Weight</span><br />
+                                                @ViewBag.Details.Tables[0].Rows[0]["cntr_gross_wt"].ToString()</td>
+                                            </tr>*@
+
+                                        </table>
+                                    </td>
+                                    <td style='width: 60%; paddingleft: -5px; paddingright: 0px; paddingtop: -8px; ' class="ver_top">
+
+                                        @*<td style='width: 60%;' class="ver_top">*@
+                                        <table cellspacing='0' cellpadding='0' width="100%">
+                                            <tr>
+                                                <td colspan="3" class=" pt_top bor_bottom bor_right ">
+                                                    <span class="fon_bol"> Invoice No & Date </span><br />
+                                                    @*@ViewBag.Details.Tables[0].Rows[0]["ship_no"].ToString()*@
+                                                    @ViewBag.Details.Tables[0].Rows[0]["custom_inv_no"].ToString()
+                                                    &nbsp;
+                                                    @ViewBag.Details.Tables[0].Rows[0]["custom_inv_dt"].ToString()
+                                                </td>
+
+                                                <td colspan="2" class=" pt_top bor_bottom " valign="top">
+                                                    <span class="fon_bol">Exporter's Ref</span> @ViewBag.Details.Tables[0].Rows[0]["ext_ref"].ToString()
+                                                </td>
+                                            </tr>
+                                            @*<tr>
+            <td colspan="2" class=" pt_top bor_bottom ">
+                <span class="fon_bol"> Pack No & Date </span><br />
+                @ViewBag.Details.Tables[0].Rows[0]["pack_no"].ToString()
+                &nbsp;
+                @ViewBag.Details.Tables[0].Rows[0]["pack_dt"].ToString()
+            </td>
+
+        </tr>*@
+                                            <tr>
+                                                <td colspan="5" class=" pt_top bor_bottom">
+                                                    <span class="fon_bol">Buyer's Ord No & Dt.</span>
+
+                                                    <table cellspacing='0' cellpadding='0' width="100%" class="">
+                                                        <tr>
+                                                            <td>
+                                                                <span>@ViewBag.Details.Tables[0].Rows[0]["buyer_ord_no_dt"]</span>
+
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+
+                                            </tr>
+                                            @*<tr>/*Commented by Hina on 09-06-2025 with refrence of Ticket id=0002170*/
+            <td colspan="5" class=" pt_top bor_bottom">
+                <span class="fon_bol"> Other Reference(s)</span> <br />
+                @{
+                    var txt1 = ViewBag.Details.Tables[0].Rows[0]["other_ref"].ToString();
+                    ViewBag.TextData = txt1;
+                    @Html.Partial("~/Areas/Common/Views/Cmn_PartialMultilineSpacedData.cshtml")
+
+                }
+
+            </td>
+        </tr>*@
+                                            <tr>
+                                                <td colspan="5" class=" pt_top bor_bottom">
+                                                    <span class="fon_bol">Buyer if other then Consignee</span>
+                                                    <span>@ViewBag.Details.Tables[0].Rows[0]["buyer_consig"].ToString()</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="3" class=" pt_top bor_bottom">
+                                                    <span class="fon_bol"> Country Of Origin of Goods</span>
+                                                    <br /><span>@ViewBag.Details.Tables[0].Rows[0]["cntry_origin"].ToString()</span>
+                                                </td>
+                                                <td colspan="2" class=" pt_top bor_bottom">
+                                                    <span class="fon_bol">
+                                                        Country Of Final Destination
+                                                    </span>
+                                                    <br />
+                                                    <span>@ViewBag.Details.Tables[0].Rows[0]["cntry_dest"].ToString()</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="5" class=" pt_top ">
+                                                    <span class="fon_bol">
+                                                        Term of Delivery & Payment
+                                                    </span>
+                                                    <br />
+                                                    @{
+                                                        var txt = ViewBag.Details.Tables[0].Rows[0]["term_del_pay"].ToString();
+                                                        ViewBag.TextData = txt;
+                                                        @Html.Partial("~/Areas/Common/Views/Cmn_PartialMultilineSpacedData.cshtml")
+
+                                                    }
+                                                </td>
+                                            </tr>
+
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td style='width:10px;'></td>
+                    </tr>
+
+
+
+
+
+                    <tr>
+                        <td style='width:10px;'></td>
+                        <td style=''>
+                            <table class="main" cellspacing='0' cellpadding='0'>
+                                <tr>
+                                    <td style='width:40%;'>
+                                        <table class="" cellspacing='0' cellpadding='0' width="100%">
+                                            <tr>
+                                                @*<td width="50%" class="fon_bol bor_right pt_top">
+                                                    Container No.
+
+                                                </td>*@
+                                                <td width="100%" align="center" class="fon_bol bor_right pt_top">
+                                                    No & Kind Of Pkgs.
+
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                @*<td width="50%" class="fon_nor bor_right">
+                                                    @ViewBag.Details.Tables[0].Rows[0]["container_no"]
+                                                </td>*@
+                                                <td width="100%" class="fon_nor bor_right" align="center">
+                                                    @ViewBag.Details.Tables[0].Rows[0]["NoOfPacks"]
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td style='width:60%;'>
+                                        <table class="" cellspacing='0' cellpadding='0' width="100%">
+                                            <tr>
+                                                <td class="fon_bol pt_top">
+                                                    Description of Goods
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="fon_nor">
+                                                    <div class="data_div">@ViewBag.Details.Tables[0].Rows[0]["des_good"]</div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td style='width:10px;'></td>
+                    </tr>
+                    <tr>
+                        <td style='width:10px;'></td>
+                        <td>
+                            <table class="main" cellspacing='0' cellpadding='0'>
+                                <tr>
+                                    <th class="bor_right" width='60%'>&nbsp; </th>
+                                    <th class="bor_right" width='10%'>QTY. </th>
+                                    <th class="bor_right" width='8%'> UNIT </th>
+                                    <th class="bor_right" width='11%'>NT WT.(Kgs)</th>
+                                    <th width='11%'>GR.WT.(Kgs)</th>
+                                </tr>
+                                <tr>
+                                    <td class="bor_right" width='60%'>&nbsp; </td>
+                                    <td class="bor_right" width='10%'>&nbsp; </td>
+                                    <td class="bor_right" width='8%'> &nbsp; </td>
+                                    <td class="bor_right" width='11%'>&nbsp; </td>
+                                    <td width='11%'>&nbsp; </td>
+                                </tr>
+
+
+                                @if (ViewBag.Details.Tables[0].Rows != null)
+                                {
+                                    string prehsn = "";
+                                    string bordertop = "";
+                                    var i = 1;
+                                    foreach (DataRow dr in ViewBag.Details.Tables[0].Rows)
+                                    {
+
+                                        <tr>
+                                            <td class="bor_right all_td">
+                                                <table width="100%" cellpadding="0" cellspacing="0" border="0" style='font-size:12px;'>
+                                                    <tr>
+                                                        <td width="15%" align="center" class="all_td">@dr["sr_from"].ToString() - @dr["sr_to"].ToString()</td>
+                                                        @if (Options.PrtOpt_catlog_number)
+                                                        {
+                                                            <td width="20%" align="left" class="all_td">@dr["item_cat_no"].ToString()</td>
+                                                        }
+                                                        @if (Options.PrtOpt_item_code)
+                                                        {
+                                                            <td width="25%" align="left" class="all_td">@dr["cust_item_code"].ToString()</td>
+                                                        }
+                                                        @if (Options.PrtOpt_item_desc)
+                                                        {
+                                                            <td width="50%" align="left" class="all_td">@dr["cust_item_des"].ToString()</td>
+                                                        }
+
+                                                    </tr>
+
+                                                </table>
+                                            </td>
+                                            <td class="bor_right all_td right_text">@dr["ship_qty"].ToString()</td>
+                                            <td class="bor_right all_td ">@dr["uom_id"].ToString()</td>
+                                            <td class="bor_right all_td right_text">@dr["net_wght"].ToString()</td>
+                                            <td class="all_td right_text">@dr["gr_wght"].ToString()</td>
+                                        </tr>
+
+                                        prehsn = dr["HSN_code"].ToString();
+                                        i++;
+                                        ShipQty = ShipQty + Convert.ToDecimal(dr["ship_qty"]);
+                                        PackNos = PackNos + Convert.ToDecimal(dr["pack_nos"]);
+                                        tot_cbm = tot_cbm + Convert.ToDecimal(dr["tot_cbm"]);
+                                        tot_ntwt = tot_ntwt + Convert.ToDecimal(dr["net_wght"]);
+                                        tot_gwt = tot_gwt + Convert.ToDecimal(dr["gr_wght"]);
+                                    }
+                                    <tr>
+                                        <td class="bor_right all_td bor_top pt_top">
+                                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style='font-size:12px;'>
+                                                <tr>
+                                                    <td width="5%"></td>
+                                                    <td width="25%" align="right" class="all_td fon_bol">NO OF PKGS. : </td>
+                                                    <td width="25%" align="right" class="all_td">@ViewBag.Details.Tables[0].Rows[0]["NoOfPacks"] @*@PackNos.ToString()*@</td>
+                                                    <td width="45%"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td width="5%"></td>
+                                                    <td width="25%" align="right" class="all_td fon_bol">TOTAL QTY. : </td>
+                                                    <td width="25%" align="right" class="all_td">@ShipQty.ToString()</td>
+                                                    <td width="45%"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td width="5%"></td>
+                                                    <td width="25%" align="right" class="all_td fon_bol">TOTAL NT. WT. : </td>
+                                                    <td width="25%" align="right" class="all_td">@tot_ntwt.ToString()</td>
+                                                    <td width="45%"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td width="5%"></td>
+                                                    <td width="25%" align="right" class="all_td fon_bol">TOTAL G. WT. : </td>
+                                                    <td width="25%" align="right" class="all_td">@tot_gwt.ToString()</td>
+                                                    <td width="45%"></td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                        <td class="bor_right all_td bor_top fon_bol ver_top right_text">@ShipQty.ToString()</td>
+                                        <td class="bor_right all_td bor_top ver_top "></td>
+                                        <td class="bor_right all_td bor_top fon_bol ver_top right_text">@tot_ntwt.ToString()</td>
+                                        <td class="all_td bor_top ver_top fon_bol right_text">@tot_gwt.ToString()</td>
+                                    </tr>
+                                }
+
+
+                            </table>
+                        </td>
+                        <td style='width:10px;'></td>
+                    </tr>
+                   
+                </table>
+            </td>
+        </tr>
+
+    </table>
+
+
+</div>

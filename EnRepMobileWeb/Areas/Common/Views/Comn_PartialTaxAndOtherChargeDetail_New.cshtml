@@ -1,0 +1,308 @@
+﻿@using EnRepMobileWeb.Resources;
+@using System.Data;
+
+@* This Partial is Used in
+    Purchase Order, Sales Order, Purchase Invoice, Sales Invoice, Purchase Quotation, Sales Quotation  *@
+@{
+    decimal TotalTaxAmt = 0;
+    decimal TotalOCAmt = 0;
+    decimal TotalOCTaxAmt = 0;
+    decimal TotalOCWTAmt = 0;
+    string Taxable = "Y";
+    string DocTaxable = "N";
+    if (ViewBag.curr_id != null && ViewBag.bs_curr_id != null)
+    {
+        if (ViewBag.DocumentMenuId == "105101140125")
+        {
+            Taxable = "Y";
+        }
+        else
+        {
+            if (ViewBag.curr_id == ViewBag.bs_curr_id)
+            {
+                Taxable = "Y";
+            }
+            else
+            {
+                Taxable = "N";
+            }
+        }
+
+
+    }
+    string taxAccIdReq = "N";
+    string ShowSupplier = "";
+    string ShowRecov = "";
+    if (ViewBag.DocumentMenuId == "105101140125" || ViewBag.DocumentMenuId == "105101145" || ViewBag.DocumentMenuId == "105101150" || ViewBag.DocumentMenuId == "105103147"
+|| ViewBag.DocumentMenuId == "105101152" || ViewBag.DocumentMenuId == "105103140" || ViewBag.DocumentMenuId == "105103148" || ViewBag.DocumentMenuId == "105108123" || ViewBag.DocumentMenuId == "105101154" || ViewBag.DocumentMenuId == "105101147" || ViewBag.DocumentMenuId == "105103149" || ViewBag.DocumentMenuId == "105101153")
+    /*Added by Surbhi on 03/07/2025 for Inter Branch Purchase(105101153)*/
+    {
+        taxAccIdReq = "Y";
+        ShowSupplier = "Y";
+    }
+    if (ViewBag.DocumentMenuId == "105101150" || ViewBag.DocumentMenuId == "105101145" || ViewBag.DocumentMenuId == "105101152" || ViewBag.DocumentMenuId == "105108123" || ViewBag.DocumentMenuId == "105101154" || ViewBag.DocumentMenuId == "105101147" || ViewBag.DocumentMenuId == "105101153")
+    /*Added by Surbhi on 03/07/2025 for Inter Branch Purchase(105101153)*/
+    {
+        ShowRecov = "Y";
+    }
+    if (ViewBag.DocumentMenuId == "105103125" || ViewBag.DocumentMenuId == "105103120" /*add 105103120 for SQ by Hina sharma on 22-05-2025*/|| ViewBag.DocumentMenuId == "105101130" /*add 105101130 for PO by Hina sharma on 09-07-2025*/|| ViewBag.DocumentMenuId == "105103140" || ViewBag.DocumentMenuId == "105101145" || ViewBag.DocumentMenuId == "105101152" || ViewBag.DocumentMenuId == "105101150" || ViewBag.DocumentMenuId == "105103147" || ViewBag.DocumentMenuId == "105108123" || ViewBag.DocumentMenuId == "105103148" || ViewBag.DocumentMenuId == "105101140125" || ViewBag.DocumentMenuId == "105101154" || ViewBag.DocumentMenuId == "105101147" || ViewBag.DocumentMenuId == "105103149" || ViewBag.DocumentMenuId == "105101153"/* || ViewBag.DocumentMenuId == "105103145125" || ViewBag.DocumentMenuId == "105103145110"*//*Commented by Suraj on 07-12-2022*/)/*Added by Surbhi on 03/07/2025 for Inter Branch Purchase(105101153)*/
+    {
+        DocTaxable = "Y";
+    }
+
+
+}
+
+<section class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingTwo">
+        @if (ViewBag.DocumentMenuId == "105103142" || ViewBag.DocumentMenuId == "105102150")
+        {
+            <h4 class="panel-title"><a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" class="collapsed" aria-controls="collapseTwo">  @Resource.TaxDetail <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a></h4>
+        }
+        else
+        {
+            <h4 class="panel-title"><a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" class="collapsed" aria-controls="collapseTwo">  @Resource.TaxAndOtherCharges <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a></h4>
+        }
+    </div>
+    <div id="collapseTwo" class="panel-collapse in collapse" role="tabpanel" aria-labelledby="headingTwo" style="">
+
+        <div class="panel-body">
+            <table width="100%">
+                <tr>
+                    <td>
+                        <div class="table-responsive">
+                            <div id="" class="col-md-4 col-sm-12" style="margin-top:10px;">
+                                <table class="table table-striped jambo_table bulk_action rowhighlighttbl" id="Tbl_ItemTaxAmountList">
+                                    <thead>
+                                        <tr class="headings">
+                                            <th class="column-title">@Resource.TaxName</th>
+                                            @if (ShowRecov == "Y")
+                                            {
+                                                <th class="column-title">@Resource.Recoverable</th>
+                                            }
+
+                                            <th class="column-title" style="text-align: right;">@Resource.Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (ViewBag.ItemTaxDetailsList != null)
+                                        {
+                                            foreach (DataRow dr in ViewBag.ItemTaxDetailsList.Rows)
+                                            {
+
+                                                <tr>
+                                                    <td>@dr["tax_name"]</td>
+                                                    @if (ShowRecov == "Y")
+                                                    {
+
+                                                        <td class="center">
+                                                            @if (dr["tax_recov"].ToString() == "Y")
+                                                            {
+                                                                <i class="fa fa-check text-success " aria-hidden="true"></i>
+                                                            }
+                                                            else
+                                                            {
+                                                                <i class="fa fa-times-circle text-danger" aria-hidden="true"></i>
+                                                            }
+                                                        </td>
+                                                    }
+                                                    <td id="TotalTaxAmount" class="num_right">@Convert.ToDecimal(dr["tax_val"]).ToString(ViewBag.ValDigit)</td>
+                                                    <td hidden="hidden" id="taxID">@dr["tax_id"]</td>
+                                                    @if (taxAccIdReq == "Y")
+                                                    {
+                                                        <td hidden="hidden" id="taxAccID">@dr["tax_acc_id"]</td>
+                                                    }
+                                                </tr>
+                                                TotalTaxAmt = TotalTaxAmt + Convert.ToDecimal(dr["tax_val"]);
+                                            }
+                                        }
+
+                                    </tbody>
+                                    <tfoot>
+                                        <tr style="background-color: #e4e4e4;">
+                                            @if (ShowRecov == "Y")
+                                            {
+                                                <td></td>
+                                            }
+
+                                            <td colspan="1"><strong> @Resource.TotalTax</strong></td>
+                                            <td align="right"><strong> <span id="_ItemTaxAmountTotal">@TotalTaxAmt.ToString(ViewBag.ValDigit)</span></strong></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            @{ string OCHidden = ViewBag.DocumentMenuId == "105103145127" ? ViewBag.OcHidden : "";}
+                            @if (ViewBag.DocumentMenuId != "105103142" && ViewBag.DocumentMenuId != "105102150")
+                            {
+                                if (ViewBag.DocumentMenuId == "105101147")
+                                { /*Added by Surbhi on 25/05/2025 for Supplementary Purchase Invoice(105101147)*/
+                                    <div id="" class="col-md-8 col-sm-12" style="margin-top:10px;" @OCHidden>
+                                        <table class="table table-striped jambo_table bulk_action rowhighlighttbl" id="Tbl_OtherChargeList">
+                                            <thead>
+
+                                                <tr class="headings">
+                                                    <th class="column-title">@Resource.OtherCharges</th>
+                                                    @if (ShowSupplier == "Y")
+                                                    {
+                                                        <th class="column-title">@Resource.SupplierName</th>
+                                                    }
+                                                    <th class="column-title no-link last" style="text-align: right;"><span class="nobr">@Resource.Amount</span> </th>
+                                                    @if (DocTaxable == "Y" && Taxable == "Y")
+                                                    {
+                                                        <th>@Resource.TaxAmount</th>
+                                                        <th>@Resource.Total</th>
+                                                    }
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @if (ViewBag.OtherChargeDetails != null)
+                                                {
+
+                                                    foreach (DataRow dr in ViewBag.OtherChargeDetails.Rows)
+                                                    {
+                                                        if (@dr["DetailsShowStatus"].ToString() == "R")
+                                                        {
+                                                            <tr>
+                                                                <td id="othrChrg_Name">@dr["oc_name"]</td>
+                                                                @if (ShowSupplier == "Y")
+                                                                {
+                                                                    <td>@dr["supp_name"]</td>
+                                                                }
+                                                                <td align="right" id="OCAmtSp1">@Convert.ToDecimal(dr["oc_val"]).ToString(ViewBag.ValDigit)</td>
+
+                                                                <td hidden="hidden" id="OCID">@dr["oc_id"].ToString()</td>
+                                                                @if (DocTaxable == "Y" && Taxable == "Y")
+                                                                {
+                                                                    <td align="right">@Convert.ToDecimal(dr["tax_amt"]).ToString(ViewBag.ValDigit)</td>
+                                                                    <td align="right">@Convert.ToDecimal(dr["total_amt"]).ToString(ViewBag.ValDigit)</td>
+                                                                }
+
+                                                                @if (DocTaxable == "Y" && Taxable == "Y")
+                                                                {
+                                                                    TotalOCTaxAmt = TotalOCTaxAmt + @Convert.ToDecimal(dr["tax_amt"]);
+                                                                    TotalOCWTAmt = TotalOCWTAmt + @Convert.ToDecimal(dr["total_amt"]);
+                                                                }
+
+                                                            </tr>
+
+                                                            TotalOCAmt = TotalOCAmt + Convert.ToDecimal(dr["oc_val"]);
+                                                        }
+
+                                                    }
+                                                }
+                                            </tbody>
+                                            <tfoot>
+                                                <tr style="background-color: #e4e4e4;">
+                                                    <td><strong>@Resource.TotalOtherCharges</strong></td>
+                                                    @if (ShowSupplier == "Y")
+                                                    {
+                                                        <td></td>
+                                                    }
+                                                    <td align="right"><strong><span id="_OtherChargeTotal">@TotalOCAmt.ToString(ViewBag.ValDigit)</span></strong></td>
+                                                    @if (DocTaxable == "Y" && Taxable == "Y")
+                                                    {
+                                                        <td align="right"><strong><span id="_OtherChargeTotalTax">@TotalOCTaxAmt.ToString(ViewBag.ValDigit)</span></strong></td>
+                                                        <td align="right"><strong><span id="_OtherChargeTotalAmt">@TotalOCWTAmt.ToString(ViewBag.ValDigit)</span></strong></td>
+                                                    }
+
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div id="" class="col-md-8 col-sm-12" style="margin-top:10px;" @OCHidden>
+                                        <table class="table table-striped jambo_table bulk_action rowhighlighttbl" id="Tbl_OtherChargeList">
+                                            <thead>
+
+                                                <tr class="headings">
+                                                    <th class="column-title">@Resource.OtherCharges</th>
+                                                    @if (ShowSupplier == "Y")
+                                                    {
+                                                        <th class="column-title">@Resource.SupplierName</th>
+                                                    }
+                                                    <th class="column-title no-link last" style="text-align: right;"><span class="nobr">@Resource.Amount</span> </th>
+                                                    @if (DocTaxable == "Y" && Taxable == "Y")
+                                                    {
+                                                        <th>@Resource.TaxAmount</th>
+                                                        <th>@Resource.Total</th>
+                                                    }
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @if (ViewBag.OtherChargeDetails != null)
+                                                {
+
+                                                    foreach (DataRow dr in ViewBag.OtherChargeDetails.Rows)
+                                                    {
+
+                                                        <tr>
+                                                            <td id="othrChrg_Name">@dr["oc_name"]</td>
+                                                            @if (ShowSupplier == "Y")
+                                                            {
+                                                                <td>@dr["supp_name"]</td>
+                                                            }
+                                                            @if (ViewBag.DocumentMenuId == "105103145127" || ViewBag.DocumentMenuId == "105101140125")
+                                                            {
+                                                                <td align="right" id="OCAmtSp1">@Convert.ToDecimal(dr["OCValBs"]).ToString(ViewBag.ValDigit)</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td align="right" id="OCAmtSp1">@Convert.ToDecimal(dr["oc_val"]).ToString(ViewBag.ValDigit)</td>
+                                                            }
+
+                                                            <td hidden="hidden" id="OCID">@dr["oc_id"].ToString()</td>
+                                                            @if (DocTaxable == "Y" && Taxable == "Y")
+                                                            {
+                                                                <td align="right">@Convert.ToDecimal(dr["tax_amt"]).ToString(ViewBag.ValDigit)</td>
+                                                                <td align="right">@Convert.ToDecimal(dr["total_amt"]).ToString(ViewBag.ValDigit)</td>
+                                                            }
+
+                                                            @if (DocTaxable == "Y" && Taxable == "Y")
+                                                            {
+                                                                TotalOCTaxAmt = TotalOCTaxAmt + @Convert.ToDecimal(dr["tax_amt"]);
+                                                                TotalOCWTAmt = TotalOCWTAmt + @Convert.ToDecimal(dr["total_amt"]);
+                                                            }
+
+                                                        </tr>
+                                                        if (ViewBag.DocumentMenuId == "105103145127" || ViewBag.DocumentMenuId == "105101140125")
+                                                        {
+                                                            TotalOCAmt = TotalOCAmt + Convert.ToDecimal(dr["OCValBs"]);
+                                                        }
+                                                        else
+                                                        {
+                                                            TotalOCAmt = TotalOCAmt + Convert.ToDecimal(dr["oc_val"]);
+                                                        }
+
+                                                    }
+                                                }
+                                            </tbody>
+                                            <tfoot>
+                                                <tr style="background-color: #e4e4e4;">
+                                                    <td><strong>@Resource.TotalOtherCharges</strong></td>
+                                                    @if (ShowSupplier == "Y")
+                                                    {
+                                                        <td></td>
+                                                    }
+                                                    <td align="right"><strong><span id="_OtherChargeTotal">@TotalOCAmt.ToString(ViewBag.ValDigit)</span></strong></td>
+                                                    @if (DocTaxable == "Y" && Taxable == "Y")
+                                                    {
+                                                        <td align="right"><strong><span id="_OtherChargeTotalTax">@TotalOCTaxAmt.ToString(ViewBag.ValDigit)</span></strong></td>
+                                                        <td align="right"><strong><span id="_OtherChargeTotalAmt">@TotalOCWTAmt.ToString(ViewBag.ValDigit)</span></strong></td>
+                                                    }
+
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+    </div>
+</section>

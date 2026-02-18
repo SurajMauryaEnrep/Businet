@@ -1,0 +1,158 @@
+﻿@using EnRepMobileWeb.Resources;
+@{
+    var rowId = 0;
+    int expRowCount = 0;
+    int revRowCount = 0;
+    if (ViewBag.ExpenceDt != null)
+    {
+        expRowCount = ViewBag.ExpenceDt.Rows.Count;
+    }
+    if (ViewBag.RevenueDt != null)
+    {
+        revRowCount = ViewBag.RevenueDt.Rows.Count;
+    }
+    decimal TotalExpence = 0;
+    decimal TotalRevenue = 0;
+}
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<div class="col-md-12 col-sm-12 no-padding">
+    <div class="col-md-6 col-sm-12 no-padding">
+        <table id="" class="table table-striped table-bordered rowhighlighttbl">
+            <thead>
+                <tr class="sticky-header">
+                    <th width="34%">@Resource.Expense</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <table id="" class="table table-striped table-bordered rowhighlighttbl">
+                            <thead>
+                                <tr>
+                                    <th>@Resource.GLName</th>
+                                    <th>@Resource.Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (ViewBag.ExpenceDt != null)
+                                {
+                                    foreach (System.Data.DataRow dr in ViewBag.ExpenceDt.Rows)
+                                    {
+                                        <tr>
+                                            <td>@dr["acc_name"]</td>
+                                            <td>
+                                                <div class="col-md-11 col-sm-12 no-padding num_right">@dr["cc_amt"]</div>
+                                                <div class="col-sm-1 i_Icon">
+                                                    <button type="button" class="calculator" id="" onclick="onClickTransactionDetails(event,'Exp')" data-toggle="modal" data-target="#MISCostCenterTransactionDetail" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Transaction @Resource.Detail">  </button>
+                                                    <input hidden="hidden" id="hdn_acc_id" value="@dr["acc_id"]">
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        TotalExpence = TotalExpence + Convert.ToDecimal(@dr["cc_amt"]);
+
+                                    }
+                                    var emptyRows = revRowCount - expRowCount - 1;
+                                    for (var i = 0; i < emptyRows; i++)
+                                    {
+                                        <tr>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                        </tr>
+                                    }
+                                    foreach (System.Data.DataRow dr in ViewBag.ProfitAndLoss.Rows)
+                                    {
+                                        <tr>
+                                            <td class="font-weight-bold">@dr["acc_name"]</td>
+                                            <td>
+                                                <div class="col-md-12 col-sm-12 no-padding num_right font-weight-bold">@dr["cc_amt"]</div>
+                                            </td>
+                                        </tr>
+                                        TotalExpence = TotalExpence + Convert.ToDecimal(@dr["cc_amt"]);
+
+                                    }
+                                }
+                                @*<tr>
+                                    <td>Profit/Loss</td>
+                                    <td>
+                                        <div class="col-md-11 col-sm-12 no-padding num_right"><span id="spn_ProfitAndLoss"></span></div>
+                                        <div class="col-sm-1 i_Icon">
+                                            <button type="button" class="calculator" id="" onclick="onClickTransactionDetails(evt,'Exp')" data-toggle="modal" data-target="#MISCostCenterTransactionDetail" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Transaction @Resource.Detail">  </button>
+                                            <input hidden="hidden" id="hdn_acc_id" value="">
+                                        </div>
+                                    </td>
+                                </tr>*@
+                                <tr>
+                                    <td>&nbsp;</td>
+                                    <td>
+                                        <div class="col-md-12 col-sm-12 no-padding num_right font-weight-bold"><span id="spn_TotalExpence">@TotalExpence</span></div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-6 col-sm-12 no-padding">
+        <table id="" class="table table-striped table-bordered rowhighlighttbl">
+            <thead>
+                <tr class="sticky-header">
+                    <th width="34%">@Resource.Revenue</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <table id="" class="table table-striped table-bordered rowhighlighttbl">
+                            <thead>
+                                <tr>
+                                    <th>@Resource.GLName</th>
+                                    <th>@Resource.Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (ViewBag.RevenueDt != null)
+                                {
+                                    foreach (System.Data.DataRow dr in ViewBag.RevenueDt.Rows)
+                                    {
+                                        <tr>
+                                            <td>@dr["acc_name"]</td>
+                                            <td>
+                                                <div class="col-md-11 col-sm-12 no-padding num_right">@dr["cc_amt"]</div>
+                                                <div class="col-sm-1 i_Icon">
+                                                    <button type="button" class="calculator" id="" onclick="onClickTransactionDetails(event,'Rev')" data-toggle="modal" data-target="#MISCostCenterTransactionDetail" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Transaction @Resource.Detail">  </button>
+                                                    <input hidden="hidden" id="hdn_acc_id" value="@dr["acc_id"]">
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        TotalRevenue = TotalRevenue + Convert.ToDecimal(@dr["cc_amt"]);
+                                    }
+                                    var emptyRows = expRowCount - revRowCount+1;
+                                    for (var i = 0; i < emptyRows; i++)
+                                    {
+                                        <tr>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                        </tr>
+                                    }
+
+                                }
+
+                                <tr>
+                                    <td>&nbsp;</td>
+                                    <td>
+                                        <div class="col-md-12 col-sm-12 no-padding num_right font-weight-bold"><span id="spn_TotalRevenue">@TotalRevenue</span></div>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+

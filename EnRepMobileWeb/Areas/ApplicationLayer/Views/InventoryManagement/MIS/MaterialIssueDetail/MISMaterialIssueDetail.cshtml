@@ -1,0 +1,182 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.InventoryManagement.MIS.MaterialIssueDetail.MaterialIssueDetail_Model
+@using EnRepMobileWeb.Resources;
+@using EnRepMobileWeb.MODELS.Common;
+@using System.Data
+
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+
+<script>
+
+    $(document).ready(function () {
+
+        onchangeShowAs();
+    });
+
+    const onchangeShowAs = () => {
+        debugger
+        const ShowAs = $("#IssueType").val();
+        if (ShowAs == "I" || ShowAs == "E" || ShowAs == "S") {
+            $('#ddlReqArea').val('');
+            $("#MIS_InternalIssue").css("display", "block");
+            $("#MIS_MaterialTransferIssue").css("display", "none");
+            $("#MIS_ExternalIssue").css("display", "none");
+            $("#MIS_SampleIssue").css("display", "none");
+        }
+        else if (ShowAs == "M") {
+            $("#MIS_InternalIssue").css("display", "none");
+            $("#MIS_MaterialTransferIssue").css("display", "block");
+            $("#MIS_ExternalIssue").css("display", "none");
+            $("#MIS_SampleIssue").css("display", "none");
+        }
+
+        else {
+            $("#MIS_InternalIssue").css("display", "block");
+            $("#MIS_MaterialTransferIssue").css("display", "none");
+            $("#MIS_ExternalIssue").css("display", "none");
+            $("#MIS_SampleIssue").css("display", "none");
+        }
+    }
+    //function onchangeShowAs() {
+    //    const ShowAs = $("#ShowAs").val();
+    //    if (ShowAs == "S") {
+    //        $("#ShipmentSummary").css("display", "block");
+    //        $("#ShipmentDetail").css("display", "none");
+    //    }
+    //    else {
+    //        $("#ShipmentSummary").css("display", "none");
+    //        $("#ShipmentDetail").css("display", "block");
+    //    }
+    //}
+</script>
+<script src="~/Content/Scripts/ApplicationLayer/InventoryManagement/MIS/MaterialIssueDetail/MISMaterialIssueDetail.js"></script>
+@*<script src="~/Content/Scripts/ApplicationLayer/InventoryManagement/MIS/MaterialIssueDetail/MaterialIssueDetail.js"></script>*@
+
+<title>@Model.title</title>
+<div class="row">
+    <div id="ItemInfo" class="modal fade show" role="dialog" aria-modal="true">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/Common/Views/_ItemInfomation.cshtml")
+
+        </div>
+    </div>
+    <!-- Sub Item Detail -->
+    <div id="SubItem" class="modal fade" role="dialog">
+        <div class="modal-dialog" id="SubItemPopUp" style=" max-width:600px;">
+            <!-- Modal content-->
+            @{
+                SubItemPopupDt mdl = new SubItemPopupDt();
+            }
+            @Html.Partial("~/Areas/Common/Views/Cmn_PartialSubItemDetail.cshtml", mdl)
+        </div>
+    </div>
+    <input type="hidden" id="DocumentMenuId" value="@ViewBag.DocumentMenuId" />
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <h2 class="col-md-10 col-sm-12 heading_left_padding mb-0" id="Abc">@ViewBag.MenuPageName</h2>
+                <div id="" class="col-md-2 col-sm-12 no-margin no-padding ">
+                    <div class="col-md-4 col-sm-12 no-margin no-padding ">
+                        <label class="col-form-label label-align">@Resource.Issue @Resource.Type </label>
+                    </div>
+                    <div class="col-md-8 col-sm-12 no-margin no-padding ">
+                        <select class="form-control" id="IssueType" name="IssueType" onchange="onchangeShowAs(); OnChangeIssueType(); BindRequirementAreaList(); BindReport();">
+                            <option value="I">Internal Issue</option>
+                            <option value="E">External Issue</option>
+                            <option value="M">Material Transfer Issue</option>
+                            <option value="S">Sample Issue</option>
+                        </select>
+                    </div>
+                </div>
+                <!--<div class="col-md-2 col-sm-12">
+                <label class="col-form-label label-align">@Resource.ShowAs </label>
+                <select class="form-control" id="ShowAs" name="" onchange="">-->
+                @*<option value="0">Select</option>*@
+                <!--<option value="S">Summary</option>
+                        <option value="D">Detailed</option>
+                    </select>
+                </div>-->
+                <!-- Smart Wizard -->
+                <div id="wizard" class="form_wizard wizard_horizontal col-md-3 col-sm-12 work_flow"> &nbsp;</div>
+                <div class="x_title pad_mar">
+                    <div class="col-md-12 col-sm-12 icon_tool mb-1 p-b-1">
+                        <div id="divItems" class="col-md-2 col-sm-12">
+                            <label class="col-form-label label-align">@Resource.ItemName </label>
+                            <select class="form-control " id="ddlItems" name="ItemId" tabindex="-1" aria-hidden="">
+                                <option value="0">---All---</option>
+                                <option value="ITM0000100">Item 100</option>
+                                <option value="ITM0000101">Item 101</option>
+                                <option value="ITM0000145">Item 145</option>
+                                <option value="ITM0000146">Item 146</option>
+                            </select>
+                        </div>
+                        <div id="divReqAreas" class="col-md-2 col-sm-12">
+                            <label class="col-form-label label-align">@Resource.RequirementArea </label>
+                            <select class="form-control " id="ddlReqArea" name="requirementArea" tabindex="" multiple>
+                                @*<option value="0">---All---</option>*@
+                            </select>
+                        </div>
+                        <div class="col-md-2 col-sm-12">
+                            <label class="col-form-label label-align">@Resource.FromDate</label>
+                            @Html.TextBoxFor(model => model.fromDate, new { @class = "form-control", @id = "txtfromdate", @type = "date", @max = DateTime.Now.ToString("yyyy-MM-dd") })
+                        </div>
+                        <div class="col-md-2 col-sm-12">
+                            <label class="col-form-label label-align">@Resource.ToDate</label>
+                            @Html.TextBoxFor(model => model.toDate, new { @class = "form-control", @id = "txttodate", @placeholder = "dd-MM-yyyy", @type = "date", @max = DateTime.Now.ToString("yyyy-MM-dd") })
+                        </div>
+                        <div id="divTransferType" style="display:none" class="col-md-2 col-sm-12">
+                            <label class="col-form-label label-align">@Resource.Transfer @Resource.Type </label>
+                            <select class="form-control" id="ddlTransferType" name="transferType" multiple>
+                                @*<option value="0">---All---</option>*@
+                                <option value="B">Branch Transfer</option>
+                                <option value="W">Warehouse Transfer</option>
+                            </select>
+                        </div>
+                        <div id="divDestinationBranch" style="display:none" class="col-md-2 col-sm-12">
+                            <label class="col-form-label label-align">@Resource.Destination @Resource.Branch </label>
+                            <select class="form-control" id="ddlDstnBranch" name="destinationBranch" multiple>
+                                @*<option value="0">---All---</option>
+                                <option value="B">Branch Transfer</option>
+                                <option value="W">Warehouse Transfer</option>*@
+                            </select>
+                        </div>
+                        <div id="divDestinationWarehouse" style="display:none" class="col-md-2 col-sm-12 pb-2">
+                            <label class="col-form-label label-align">@Resource.Destination @Resource.Warehouse </label>
+                            <select class="form-control" id="ddlDstnWarehouse" name="destinationWarehouse" multiple>
+                            </select>
+                        </div>
+                        <div id="divIssueTo" style="display:none" class="col-md-2 col-sm-12 pb-2">
+                            <label class="col-form-label label-align">@Resource.Issued @Resource.to1 </label>
+                            <select class="form-control" id="ddlIssueTo" name="issuedTo" multiple>
+                                @*<option value="0">---All---</option>
+                                <option value="">Branch Transfer</option>
+                                <option value="">Warehouse Transfer</option>*@
+                            </select>
+                        </div>
+                        <div class="col-md-2 col-sm-12">
+                            <button type="button" class="btn btn-primary btn-sm margintop20" id="BtnSearch" onclick="BindReport();"><i class="fa fa-search" aria-hidden="true"></i></button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12">
+        <div class="x_panel margin_top_zero">
+            <div class="x_content">
+                <div class="card-box table-responsive dy_table">
+                    <div id="" class="sticky-table sticky-ltr-cells sb-container container-example1">
+                        <div id="MIS_InternalIssue">@Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialMISInternalIssue.cshtml")</div>
+                        <div id="MIS_MaterialTransferIssue" style="display:none"> @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialMISMaterialTransferIssue.cshtml")</div>
+                        @*<div id="MIS_ExternalIssue" style="display:none"> @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialMISExternalIssue.cshtml")</div>
+                            <div id="MIS_SampleIssue" style="display:none"> @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialMISSampleIssue.cshtml")</div>*@
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

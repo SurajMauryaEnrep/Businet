@@ -1,0 +1,62 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.FixedAssetManagement.AssetGroup.AssetGroupModel
+<div id="mytree"></div>
+
+@Html.HiddenFor(m => m.Asset_grp_id, new { @id = "hdnAssetSelectedGrpId" })
+<script>
+    debugger;
+    var RequestedUrl = window.location.protocol + "//" + window.location.host + "/ApplicationLayer/AssetGroup/GetAllItemGrp";
+    $.ajax({
+        type: 'POST',
+        url: RequestedUrl,
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        async: false,
+        data: JSON.stringify(),
+        success: function (Objdata) {
+
+            if (Objdata !== null && Objdata !== "") {
+                var arr = [];
+                arr = JSON.parse(Objdata);
+                FinalData = []
+                $.each(arr, function (i, n) {
+                    FinalData.push(n);
+                });
+
+                debugger;
+
+                var options = {
+                    // Optionally provide here the jQuery element that you use as the search box for filtering the tree. simpleTree then takes control over the provided box, handling user input
+                    searchBox: $('#tree_menu'),
+
+                    // Search starts after at least 3 characters are entered in the search box
+                    searchMinInputLength: 1,
+
+                    // Number of pixels to indent each additional nesting level
+                    indentSize: 25,
+
+                    // Show child count badges?
+                    childCountShow: true,
+
+                    // Symbols for expanded and collapsed nodes that have child nodes
+                    symbols: {
+                        collapsed: '▶',
+                        expanded: '▼'
+                    },
+
+                    // these are the CSS class names used on various occasions. If you change these names, you also need to provide the corresponding CSS class
+                    css: {
+                        childrenContainer: 'simpleTree-childrenContainer',
+                        highlight: 'simpleTree-highlight',
+                        indent: 'simpleTree-indent',
+                        label: 'simpleTree-label',
+                        mainContainer: 'simpleTree-mainContainer',
+                        nodeContainer: 'simpleTree-nodeContainer',
+                        selected: 'simpleTree-selected',
+                        toggle: 'simpleTree-toggle'
+                    },
+                };
+                $('#mytree').simpleTree(options, FinalData);
+            }
+        }
+    });
+</script>

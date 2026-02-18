@@ -1,0 +1,143 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.InventoryManagement.MIS.StockMovement.StockMovement_Model
+@using EnRepMobileWeb.Resources;
+
+@if (Session["UserId"] == null)
+{
+    Response.Redirect("~/Login");
+}
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+<script src="~/Content/Scripts/ApplicationLayer/InventoryManagement/MIS/StockMovement/StockMovementJs.js"></script>
+<title>@Model.Title</title>
+<div class="row">
+    <div id="ItemInfo" class="modal fade show" aria-modal="true" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/Common/Views/_ItemInfomation.cshtml")
+        </div>
+    </div>
+    <!-- Search Item Start-->
+    <div id="SearchItem" class="modal fade show" role="dialog" aria-modal="true">
+        <div class="modal-dialog pop_csv" id="" style="min-width:500px;">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/Common/Views/Cmn_PartialSearchItemDetails.cshtml")
+        </div>
+    </div>
+    <!-- Search Item End-->
+    <div id="Receipts" class="modal fade show" role="dialog" aria-modal="true">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2><span id="SpanItemDescription"></span></h2>
+                    <button type="button" class="close" data-dismiss="modal">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="card-box table-responsive dy_table margin15">
+                        <div id="" class="sticky-table sticky-ltr-cells sb-container container-example1 OrderHistory height30VH">
+                            <table id="ItemDetailsTbl" data-order="" class="table table-striped table-bordered rowhighlighttbl" style="width:100%">
+                                <thead>
+                                    <tr class="sticky-header">
+                                        <th>@Resource.SrNo</th>
+                                        <th>@Resource.Document</th>
+                                        <th>@Resource.DocumentNumber</th>
+                                        <th>@Resource.DocumentDate</th>
+                                        <th>@Resource.Quantity</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td width="3%">1   </td>
+                                        <td>Document   </td>
+                                        <td>ASDF234  </td>
+                                        <td>22/04/2021   </td>
+                                        <td class="num_right">159  </td>
+                                    </tr>
+                                    <tr>
+                                        <td width="3%">2   </td>
+                                        <td>Document1   </td>
+                                        <td>XYZ2348  </td>
+                                        <td>21/04/2021   </td>
+                                        <td class="num_right">445</td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr class="total">
+                                        <td colspan="4" class="num_right"><strong> Total</strong></td>
+
+                                        <td class="num_right"><strong> 1434:00 </strong> </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <h2 class="col-md-10 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                <div class="x_title pad_mar ">
+                    <div class="col-md-12 col-sm-12 icon_tool padding_zero">
+                        <div class="col-md-3 col-sm-12">
+                            <div class="col-md-11 col-sm-12 pr-0">
+                                <label class="col-form-label label-align">@Resource.ItemName <span class="required">*</span></label>
+                                @Html.DropDownListFor(model => model.ItemDescription, new SelectList(Model.itemNameList, "Id", "Name"), new { @class = "form-control", @id = "Item_name", @onchange = "OnChangeItemName();" })
+                                @Html.ValidationMessageFor(model => model.ItemDescription, String.Empty, new { @style = "color:red;!important", @id = "vmitem_id" })
+                            </div>
+                            <div class="col-sm-1 i_Icon margin25">
+                                <button type="button" id="SearchItem" class="calculator" data-toggle="modal" onclick="Cmn_itemSearchPartial('stkMovement')" data-target="#SearchItem" data-backdrop="static" data-keyboard="false"><i class="fa fa-search SearchItem" title="@Resource.Search @Resource.Item "></i> @*<img src="/Content/Images/iIcon1.png" alt="">*@  </button>
+                            </div>
+                        </div>
+                        <div class="col-md-1 col-sm-12">
+                            <label class="col-form-label label-align">@Resource.UOM</label>
+                            @Html.TextBoxFor(Model => Model.UOM, new { @class = "form-control", @id = "txtuom", disabled = "disabled", @placeholder = @Resource.UOM })
+                        </div>
+                        <div class="col-md-2 col-sm-12">
+                            <label class="col-form-label label-align">@Resource.Batch1</label>
+                            @Html.DropDownListFor(Model => Model.BatchNo, new SelectList(Model.batcheList, "Id", "Name"), new { @class = "form-control", @id = "Batch_no" })
+                        </div>
+                        <div class="col-md-2 col-sm-12">
+                            <label class="col-form-label label-align">@Resource.Serial1</label>
+                            @Html.DropDownListFor(Model => Model.SerialNo, new SelectList(Model.SerialList, "Id", "Name"), new { @class = "form-control", @id = "Serial_no" })
+                        </div>
+                        <div class="col-md-3 col-sm-12">
+                            <div class="col-md-6 col-sm-12 no-padding">
+                                <label class="col-form-label label-align">@Resource.From @Resource.Date</label>
+                                @Html.TextBoxFor(Model => Model.FromDate, new { @class = "form-control", @id = "from_dt", @type = "date" })
+                            </div>
+                            <div class="col-md-6 col-sm-12 padding_right">
+                                <label class="col-form-label label-align">@Resource.ToDate</label>
+                                @Html.TextBoxFor(Model => Model.ToDate, new { @class = "form-control", @id = "To_dt", @type = "date" })
+                            </div>
+                        </div>
+                        <div class="col-md-1 col-sm-12">
+                            <button type="button" class="btn btn-primary btn-sm margintop20" id="Btn_Search" onclick="BtnSearch();"><i class="fa fa-search" aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <div class="card-box table-responsive dy_table">
+                    <div class="sticky-table sticky-ltr-cells sb-container container-example1">
+                        <div id="div_movementlist">
+                            @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/_PartialStockMovementList.cshtml")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- page content end -->

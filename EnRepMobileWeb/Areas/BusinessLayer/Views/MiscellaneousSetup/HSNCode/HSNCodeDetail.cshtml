@@ -1,0 +1,322 @@
+﻿@model EnRepMobileWeb.MODELS.BusinessLayer.MiscellaneousSetup.HSNCode_Model
+@using EnRepMobileWeb.Resources;
+@using System.Data
+
+@if (Session["UserId"] == null)
+{
+    Response.Redirect("~/Login");
+}
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+<script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+<script src="~/Content/Css/build/js/sweetalert.js"></script>
+<script src="~/Content/Scripts/BusinessLayer/MiscellaneousSetup/HSNCode.js"></script>
+@*<style>
+        .HSNDes {
+            min-width: 500px !important;
+        }
+
+    </style>*@
+
+@*<script>
+        $(document).ready(function () {
+            $(".HSNDes").css("width", 1000px !important")
+        })
+    </script>*@
+@{
+    if (Model.Message != null)
+    {
+        //if (ViewBag.Message != null)
+        if (Model.Message != null)
+        {
+            var str = Model.Message;
+            <script>
+                if ("@str" == "Save") {
+                   swal("", $("#savemsg").text(), "success");
+                }
+                if ("@str" == "Duplicate") {
+                     $(document).ready(function () {
+                        $("#HSNNumber").css("border-color", "red");
+                        document.getElementById("vmHSNNumber").innerHTML = $("#valueduplicate").text();
+                    })
+                }
+
+            </script>
+        }
+    }
+    var AddNew = "N";
+    var EditFlag = "N";
+    var Deleteflag = "N";
+    if (ViewBag.VBRoleList != null)
+    {
+        foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+        {
+            if (Row["feature_id"].ToString() == "103205103001")
+            {
+                AddNew = "Y";
+
+            }
+            if (Row["feature_id"].ToString() == "103205103002")
+            {
+                EditFlag = "Y";
+
+            }
+            if (Row["feature_id"].ToString() == "103205103004")
+            {
+                Deleteflag = "Y";
+
+            }
+        }
+    }
+    <input hidden="hidden" id="AddNewData" value="@AddNew" />
+}
+<title>@Model.Title</title>
+@using (Html.BeginForm("SaveDetail", "HSNCode", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    {
+        <div class="row">
+            <div class="col-md-12 col-sm-12 ">
+                <div class="x_panel mar_pad1 ">
+                    <div class="x_content mar_pad1">
+                        <h2 class="col-md-6 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 col-sm-12 ">
+                <div class="x_panel mar_pad1 ">
+                    <div class="x_content mar_pad1">
+                        <article class="panel-group bs-accordion" id="accordion" role="tablist" aria-multiselectable="true">
+                            <section class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="headingOne">
+                                    <h4 class="panel-title"><a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne"> @Resource.HSNDetail<span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a></h4>
+                                </div>
+                                <div id="collapseOne" class="panel-collapse in collapse show" role="tabpanel" aria-labelledby="headingOne" style="">
+                                    @*<form class="accordian_form_bg" action="" method="post" novalidate style="padding-bottom:10px;">*@
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <div class="col-md-12 col-sm-12">
+                                                <div class="col-md-2 col-sm-12">
+                                                    <label class="col-form-label label-align">@Resource.HSNNumber <span class="required">*</span></label>
+                                                    @if (AddNew == "Y"|| Model.Message== "Duplicate")
+                                                    {
+                                                        @Html.TextBoxFor(m => m.HSNNumber, new { @id = "HSNNumber", @class = "form-control optional", @maxlength = "25", @autocomplete = "off", onchange = "OnChangeHSNNumber()", onkeypress = "OnChangeHSNNumber()", @name = "HSNNumber", @type = "text", @placeholder = @Resource.HSNNumber })
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.TextBoxFor(m => m.HSNNumber, new { @id = "HSNNumber", @disabled="disabled", @class = "form-control optional", @maxlength = "25", @autocomplete = "off", onchange = "OnChangeHSNNumber()", onkeypress = "OnChangeHSNNumber()", @name = "HSNNumber", @type = "text", @placeholder = @Resource.HSNNumber })
+                                                    }
+                                                    @Html.ValidationMessageFor(model => model.HSNNumber, "", new { @class = "text-danger", @id = "vmHSNNumber" })
+                                                    @Html.HiddenFor(model => model.HSN_id, new { @id = "hdnHSNNumber" })
+                                                    @*<input id="HSNNumber" class="form-control optional" maxlength="20" autocomplete="off" name="HSNNumber" type="text" placeholder="@Resource.HSNNumber" />*@
+                                                </div>
+                                                <div class="col-md-2 col-sm-12">
+                                                    <label class="col-form-label label-align">@Resource.HSNDescription <span class="required">*</span></label>
+                                                    @if (AddNew == "Y" || Model.Message == "Duplicate")
+                                                    {
+                                                        @Html.TextBoxFor(m => m.HSNDescription, new { @id = "HSNDescription", @class = "form-control optional", @maxlength = "500", @autocomplete = "off", @onchange = "OnChangeHSNDescription()", @onkeypress = "OnChangeHSNDes()", @name = "HSNDescription", @type = "text", @placeholder = @Resource.HSNDescription })
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.TextBoxFor(m => m.HSNDescription, new { @id = "HSNDescription", @disabled = "disabled", @class = "form-control optional", @maxlength = "500", @autocomplete = "off", @onchange = "OnChangeHSNDescription()", @onkeypress = "OnChangeHSNDes()", @name = "HSNDescription", @type = "text", @placeholder = @Resource.HSNDescription })
+                                                    }
+                                                    @Html.ValidationMessageFor(model => model.HSNDescription, "", new { @class = "text-danger", @id = "vmHSNDescription" })
+                                                    @*<input autocomplete="off" class="form-control optional" id="HSNDescription" maxlength="25" name="HSNDescription" onchange="OnChangeHSNNumber()" onkeypress="OnChangeHSNNumber()" placeholder="@Resource.HSNNumber" type="text" value="">*@
+
+                                                </div>
+                                                <div class="col-md-2 col-sm-12">
+                                                    <label class="col-form-label label-align">@Resource.DBKCode</label>
+                                                    @if (AddNew == "Y" || Model.Message == "Duplicate")
+                                                    {
+                                                        @Html.TextBoxFor(m => m.DBKCode, new { @id = "DBKCode", @class = "form-control optional", @maxlength = "50", @autocomplete = "off", onchange = "", onkeypress = "", @name = "DBKCode", @type = "text", @placeholder = @Resource.DBKCode })
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.TextBoxFor(m => m.DBKCode, new { @id = "DBKCode", @disabled = "disabled", @class = "form-control optional", @maxlength = "50", @autocomplete = "off", onchange = "", onkeypress = "", @name = "DBKCode", @type = "text", @placeholder = @Resource.DBKCode })
+                                                    }
+                                                    @*<input autocomplete="off" class="form-control optional" id="DBKCode" maxlength="25" name="DBKCode" onchange="" onkeypress="" placeholder="@Resource.DBKCode" type="text" value="">*@
+                                                </div>
+                                                <div class="col-md-3 col-sm-12">
+                                                    <label class="col-form-label label-align">@Resource.remarks</label>
+                                                    @if (AddNew == "Y" || Model.Message == "Duplicate")
+                                                    {
+                                                        @Html.TextAreaFor(m => m.Remarks, new { @id = "remarks", @class = "form-control remarksmessage", @maxlength = "100", @autocomplete = "off", @name = "message", @placeholder = @Resource.remarks })
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.TextAreaFor(m => m.Remarks, new { @id = "remarks", @disabled="disabled", @class = "form-control remarksmessage", @maxlength = "100", @autocomplete = "off", @name = "message", @placeholder = @Resource.remarks })
+                                                    }
+                                                    @*<textarea id="remarks" class="form-control" maxlength="100" name="" placeholder="@Resource.remarks" ></textarea>*@
+                                                </div>
+                                                <div class="col-md-1 col-sm-12">
+                                                    @if (AddNew == "Y" || Model.Message == "Duplicate")
+                                                    {
+                                                        if (Model.Message == "Duplicate")
+                                                        {
+                                                            if (Model.HSN_id != "")
+                                                            {
+                                                                <button class="margin22 address_save" title="Save" type="submit" onclick="return BinSaveBtnClick()" id="btn_save" name="Command" value="@Model.BtnName"></button>
+                                                            }
+                                                            else
+                                                            {
+                                                                Model.BtnName = "Save";
+                                                                <button class="margin22 address_save" title="Save" type="submit" onclick="return BinSaveBtnClick()" id="btn_save" name="Command" value="@Model.BtnName"></button>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <button class="margin22 address_save" title="Save" type="submit" onclick="return BinSaveBtnClick()" id="btn_save" name="Command" value="@Model.BtnName"></button>
+
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <div id="SaveBtnEnable" style="display:none">
+                                                            @if (Model.Message == "Duplicate")
+                                                            {
+                                                                if (Model.HSN_id != "")
+                                                                {
+                                                                    <button class="margin22 address_save" title="Save" type="submit" onclick="return BinSaveBtnClick()" id="btn_save" name="Command" value="@Model.BtnName"></button>
+                                                                }
+                                                                else
+                                                                {
+                                                                    Model.BtnName = "Save";
+                                                                    <button class="margin22 address_save" title="Save" type="submit" onclick="return BinSaveBtnClick()" id="btn_save" name="Command" value="@Model.BtnName"></button>
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                <button class="margin22 address_save" title="Save" type="submit" onclick="return BinSaveBtnClick()" id="btn_save" name="Command" value="@Model.BtnName"></button>
+
+                                                            }
+                                                        </div>
+                                                    }
+
+                                                </div>
+                                                <div class="col-md-12 col-sm-12 margin20">
+                                                    <div class="x_panel">
+                                                        <div class="x_content">
+                                                            <div class="card-box table-responsive dy_table">
+                                                                <div class="sticky-table sticky-ltr-cells sb-container container-example1 height30VH">
+                                                                    <table id="datatable-buttons" class="table table-bordered rowhighlighttbl ">
+                                                                        <thead>
+                                                                            <tr class="sticky-header">
+                                                                                <th class="two_per">@Resource.SrNo</th>
+                                                                                <th class="fif_per"> @Resource.HSNNumber</th>
+                                                                                <th class="HSNDes"> @Resource.HSNDescription</th>
+                                                                                <th class="fif_per"> @Resource.DBKCode</th>
+                                                                                <th class="HSNDes">@Resource.remarks</th>
+                                                                                <th class="two_per"> &nbsp;</th>
+                                                                                <th class="two_per"> &nbsp;</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            @if (ViewBag.HsnList != null)
+                                                                            {
+                                                                                var i = 1;
+                                                                                foreach (System.Data.DataRow dr in ViewBag.HsnList.Rows)
+                                                                                {
+                                                                                    <tr role="row" class="odd">
+                                                                                        <td class="sorting_1">@i</td>
+                                                                                        <td id="hsnno">@dr["hsn_no"].ToString()</td>
+                                                                                        <td id="hsndec">@dr["hsn_desc"].ToString()</td>
+                                                                                        <td id="dbkcd">@dr["dbk_cd"].ToString()</td>
+                                                                                        <td id="hsnrem">@dr["hsn_rem"].ToString()</td>
+                                                                                        <td>
+                                                                                            @if (EditFlag == "Y")
+                                                                                            {
+                                                                                                <i type="submit" class="fa fa-edit editrecord" aria-hidden="true" onclick="EditHSNNumber(event,'@dr["Editable"]')" title="@Resource.Edit"></i>
+                                                                                            }
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            @if (Deleteflag == "Y")
+                                                                                            {
+                                                                                                if (@dr["Editable"].ToString() == "Y")
+                                                                                                {
+                                                                                                    <i class="fa fa-trash red" aria-hidden="true" title="@Resource.Delete" onclick="return functionConfirm(event)"></i>
+                                                                                                }
+                                                                                                else
+                                                                                                {
+
+                                                                                                }
+                                                                                            }
+
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    i = i + 1;
+                                                                                }
+                                                                            }
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                            <section class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="headingTwo">
+                                    <h4 class="panel-title"><a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo"> @Resource.TaxDetail<span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a></h4>
+                                </div>
+                                <div id="collapseTwo" class="panel-collapse in collapse" role="tabpanel" aria-labelledby="headingTwo" style="">
+                                    <div class="panel-body" style="padding-bottom:0PX;">
+                                        <table width="100%">
+                                            <tr>
+                                                <td>
+                                                    <div class="col-md-2 col-sm-12">
+                                                        <label class="col-form-label label-align num_right_label" title="Purchase Unit Of Measure">
+                                                            @Resource.BaseAmount <span class="required">*</span>
+                                                        </label>
+                                                        <input autocomplete="off" class="form-control num_right" disabled="disabled" id="BaseAmount" name="BaseAmount" placeholder="0000.00" type="text" value="">
+                                                        <input id="TaxDetails" name="TaxDetails" type="hidden" value="">
+                                                    </div>
+                                                    <div class="clear"></div>
+                                                    <div class="row">
+                                                        <div class="col-md-12 col-sm-12">
+                                                            <div class="x_panel margin10">
+                                                                <div class="x_content">
+                                                                    <div class="card-box table-responsive dy_table">
+                                                                        <div class="sticky-table sticky-ltr-cells sb-container container-example1 height30VH">
+                                                                            <table id="TaxCalculatorTbl" class="table table-bordered rowhighlighttbl">
+                                                                                <thead>
+                                                                                    <tr class="sticky-header">
+                                                                                        <th>@Resource.TaxName</th>
+                                                                                        <th>@Resource.TaxPercentage</th>
+                                                                                        <th> @Resource.Level</th>
+                                                                                        <th> @Resource.ApplyOn</th>
+                                                                                        <th>@Resource.TaxAmount</th>
+                                                                                    </tr>
+                                                                                </thead>
+                                                                                <tbody>
+                                                                                </tbody>
+                                                                                <tfoot>
+                                                                                    <tr class="total">
+                                                                                        <td align="right" colspan="4"><strong> Total Tax </strong></td>
+                                                                                        <td align="right"><strong><span id="TotalTaxAmount">₹2074.0000</span></strong></td>
+                                                                                    </tr>
+                                                                                </tfoot>
+                                                                            </table>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </section>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}

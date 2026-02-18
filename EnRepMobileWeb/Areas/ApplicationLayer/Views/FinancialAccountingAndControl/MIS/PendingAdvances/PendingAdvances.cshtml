@@ -1,0 +1,124 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.FinancialAccountingAndControl.MIS.PendingAdvances.PendingAdvancesModel
+@using EnRepMobileWeb.Resources;
+@using System.Data
+
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+<script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+<script src="~/Content/Css/build/js/sweetalert.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/FinancialAccountingAndControl/MIS/PendingAdvances/PendingAdvances.js"></script>
+
+@{
+    if (Model.Message != null)
+    {
+        if (Model.Message == "Save")
+        {
+            <script type="text/javascript">
+                swal("", $("#savemsg").text(), "success");
+            </script>
+        }
+        Model.Message = null;
+    }
+}
+<title>@Model.Title</title>
+@using (Html.BeginForm("UserRangeSave", "PendingAdvances", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <div class="row">
+        <div class="col-md-12 col-sm-12 ">
+            <!-- Advance Payment Details Start -->
+            <div id="AdvancePaymentDetails" class="modal fade" role="dialog">
+                <div class="modal-dialog" style=" max-width:800px;">
+                    <div id="AdvancePaymentDetailsPopup">
+                        @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialAdvancePaymentDetails.cshtml")
+                    </div>
+                    <!-- Modal content-->
+                </div>
+            </div>
+            <!-- Advance Payment Details End -->
+            <div class="x_panel mar_pad1 ">
+                <div class="x_content mar_pad1">
+                    <h2 class="col-md-9 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                    <div class="po col-md-3 col-sm-12 no-padding  domestic num_right ">
+                        <label class="col-form-label label-align font-weight-bold" style="padding-right:10px;">@Resource.ReportType :</label>
+                        @Resource.Summary
+                        @Html.RadioButtonFor(m => m.ReportType, "S", new { @class = "", @id = "ReportTypeS", onclick = "SearchAgingDetail()", @checked = "checked", @name = "ReportTypeS" })
+                        @Resource.Detail
+                        @Html.RadioButtonFor(m => m.ReportType, "D", new { @class = "", @id = "ReportTypeD", onclick = "SearchAgingDetail()", @name = "ReportTypeD" })
+                    </div>
+                    <div class="x_title pad_mar ">
+                        <div class="col-md-12 col-sm-12 icon_tool padding_zero mb-2">
+                            <div class="col-md-12 col-sm-12 padding_zero margin10">
+                                <div class="col-md-8 col-sm-12 padding_zero margin5">
+                                    <div class="col-md-1 col-sm-12 text-right">
+                                        <label class="col-form-label label-align">@Resource.Range</label>
+                                    </div>
+                                    <div class="col-md-1 col-sm-12">
+                                        @Html.TextBoxFor(model => model.Range1, new { id = "range1", Type = "text", @class = "form-control num_right", autocomplete = "off", @maxlength = "4", onkeypress = "return numValueOnly(this,event)", @placeholder = "00" })
+                                        @Html.ValidationMessageFor(model => model.Range1, String.Empty, new { @style = "color:red;!important", @id = "vmrange1" })
+                                    </div>
+                                    <div class="col-md-1 col-sm-12">
+                                        @Html.TextBoxFor(model => model.Range2, new { id = "range2", Type = "text", @class = "form-control num_right", autocomplete = "off", @maxlength = "4", onkeypress = "return numValueOnly(this,event)", @placeholder = "00" })
+                                        @Html.ValidationMessageFor(model => model.Range2, String.Empty, new { @style = "color:red;!important", @id = "vmrange2" })
+                                    </div>
+                                    <div class="col-md-1 col-sm-12">
+
+                                        @Html.TextBoxFor(model => model.Range3, new { id = "range3", Type = "text", @class = "form-control num_right", autocomplete = "off", @maxlength = "4", onkeypress = "return numValueOnly(this,event)", @placeholder = "00" })
+                                        @Html.ValidationMessageFor(model => model.Range3, String.Empty, new { @style = "color:red;!important", @id = "vmrange3" })
+                                    </div>
+                                    <div class="col-md-1 col-sm-12">
+
+                                        @Html.TextBoxFor(model => model.Range4, new { id = "range4", Type = "text", @class = "form-control num_right", autocomplete = "off", @maxlength = "4", onkeypress = "return numValueOnly(this,event)", @placeholder = "00" })
+                                        @Html.ValidationMessageFor(model => model.Range4, String.Empty, new { @style = "color:red;!important", @id = "vmrange4" })
+                                    </div>
+                                    <div class="col-md-1 col-sm-12">
+                                        @Html.TextBoxFor(model => model.Range5, new { id = "range5", Type = "text", @class = "form-control num_right", autocomplete = "off", @maxlength = "4", onkeypress = "return numValueOnly(this,event)", @placeholder = "00" })
+                                        @Html.ValidationMessageFor(model => model.Range5, String.Empty, new { @style = "color:red;!important", @id = "vmrange5" })
+                                    </div>
+                                    <div class="col-md-1 col-sm-12">
+                                        <button class="save"
+                                                title="@Resource.Save" onclick="return  InsertRangeDetail();" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 col-sm-12">
+                                    <label class="col-form-label label-align">@Resource.EntityType</label>
+                                    <select class="form-control" id="EntityType" name="category">
+                                        <option value="Cust">Customer</option>
+                                        <option value="Supp">Supplier</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2 col-sm-12 no-padding">
+                                    <div class="col-md-9 col-sm-12">
+                                        <label class="col-form-label label-align">@Resource.Upto</label>
+                                        @Html.TextBoxFor(model => model.To_dt, new { @class = "form-control", @id = "AsDate", @type = "date", @Value = System.DateTime.Now.ToString("yyyy-MM-dd"), @max = System.DateTime.Now.ToString("yyyy-MM-dd") })
+                                    </div>
+                                    <div class="col-md-3 col-sm-12">
+                                        <button type="button" class="btn btn-primary btn-sm margintop20" id="BtnSearch" onclick="SearchAgingDetail()"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                    </div>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 ">
+                    <div class="x_panel mar_pad1 ">
+                        <div class="x_content mar_pad1">
+                            <div class="card-box table-responsive dy_table">
+                                <div id="Pend_table" class="sticky-table sticky-ltr-cells sb-container container-example1">
+                                    @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialPendingAdvancesDetail.cshtml")
+                                </div>
+                                @Html.HiddenFor(model => model.hdnCSVPrint, new { @id = "hdnCSVPrint" })
+                                @Html.HiddenFor(model => model.hdnPDFPrint, new { @id = "hdnPDFPrint" })
+                                @Html.HiddenFor(model => model.HdnEntityType, new { @id = "HdnEntityType" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- page content end -->
+}

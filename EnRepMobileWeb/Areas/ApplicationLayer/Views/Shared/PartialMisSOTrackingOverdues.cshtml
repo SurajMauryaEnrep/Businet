@@ -1,0 +1,270 @@
+﻿@using EnRepMobileWeb.Resources;
+@{
+    string ValDigit = "0.";
+    var VD = Convert.ToInt32(Session["ValDigit"].ToString());
+    for (var i = 0; i < VD; i++)
+    {
+        ValDigit += "0";
+    }
+    //decimal total = 0;
+}
+<style>
+  /*  div.dataTables_wrapper div.dataTables_filter label {
+        margin-left: -3.5em;
+    }
+
+    #datatable-buttons2_wrapper .btn-group a:nth-child(3) {
+        display: inline-block;
+        position: absolute;
+    }*/
+    #Tbl_SoTrackingOverDue_wrapper .dt-buttons {
+        position: absolute;
+        margin-left: 15%;
+    }
+
+    #Tbl_SoTrackingOverDue_filter {
+        position: absolute;
+        right: 5px;
+        top: 0px;
+    }
+
+    #Tbl_SoTrackingOverDue_wrapper {
+        padding-left: 2px !important;
+    }
+</style>
+
+<script src="~/Content/Scripts/Common/CommonJS.js"></script>
+<table id="Tbl_SoTrackingOverDue" class="table table-striped width2200 rowhighlighttbl itmfrz" cellspacing="0">
+    <thead>
+        <tr class="sticky-header">
+            <th width="2%" class="">@Resource.SrNo</th>
+            <th width="7%" class="itmStick">@Resource.Order <br /> @Resource.Number</th>
+            <th width="6%">@Resource.Order <br /> @Resource.Date</th>
+            <th width="13%">@Resource.Customer <br /> @Resource.Name</th>
+            <th width="6%">@Resource.Sale <br /> @Resource.Type</th>
+            <th>@Resource.ReferenceNumber</th>
+            <th width="3%">@Resource.Category</th>
+            <th width="3%">@Resource.Portfolio</th>
+            <th width="3%">@Resource.Customer @Resource.Zone</th>
+            <th width="3%">@Resource.Customer @Resource.Group</th>
+            <th>@Resource.State</th>
+            <th>@Resource.City</th>
+            <th width="5%">@Resource.Currency </th>
+            <th width="8%">@Resource.Sales <br /> @Resource.Representative</th>
+            <th hidden="hidden">@Resource.ItemID</th>
+            <th width="16%">@Resource.Product <br /> @Resource.Name</th>
+            <th width="5%">@Resource.UOM</th>
+            <th width="7%">@Resource.Quantity </th>
+            <th width="7%">@Resource.Pending @Resource.Quantity </th>
+            <th width="6%">@Resource.ForceClosed </th>
+            <th width="6%">@Resource.Due <br />@Resource.Date </th>
+            <th width="6%">@Resource.Overdue <br />@Resource.Days </th>
+            @*<th hidden="hidden">@Resource.Branch</th>*@
+        </tr>
+    </thead>
+
+
+    <tbody>
+        @*@if (ViewBag.SOTrackingDetailsOverdue != null)
+        {
+            var srno = 1;
+            foreach (System.Data.DataRow dr in ViewBag.SOTrackingDetailsOverdue.Rows)
+            {
+        <tr>
+            <td class="">@srno</td>
+            <td id="orderNo" class="ItmNameBreak itmStick tditemfrz">@dr["app_so_no"].ToString()</td>
+
+            <td class="">@dr["so_dt"].ToString()</td>
+            <td class="">@dr["cust_name"].ToString()</td>
+            <td id="orderType" class="">@dr["OrderType"].ToString()</td>
+            <td class="">@dr["curr_logo"].ToString()</td>
+            <td class="">@dr["sls_pers_name"].ToString()</td>
+            <td class="" id="hdnItemId" hidden="hidden">@dr["item_id"].ToString()</td>
+            <td class="">
+                <div class="col-sm-11 no-padding" id=""><span id=""> @dr["item_name"].ToString()</span></div>
+                <div class="col-sm-1 i_Icon">
+                    <button type="button" id="" class="calculator" onclick="BindItemInfoBtnClick(event);" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.ProductInformation"></button>
+                </div>
+            </td>
+            <td class="">@dr["uom_alias"].ToString()</td>
+            <td class="num_right"> @Convert.ToDecimal(@dr["ord_qty_base"]).ToString(ValDigit)</td>
+            <td class="num_right">@dr["Pending_qty"].ToString()</td>
+            @if (dr["ForceClosed"].ToString() == "Yes")
+            {
+                <td class="center"><i class="fa fa-check text-success" aria-hidden="true"></i><span hidden="hidden">@dr["ForceClosed"].ToString()</span></td>
+            }
+            else if (dr["ForceClosed"].ToString() == "No")
+            {
+                <td class="center"><i class="fa fa-times-circle text-danger" aria-hidden="true"></i><span hidden="hidden">@dr["ForceClosed"].ToString()</span></td>
+            }
+            <td class="">@dr["sch_date"].ToString()</td>
+            <td class="num_right">@dr["overduedays"].ToString()</td>
+        </tr>
+                srno = srno + 1;
+            }
+        }*@
+
+    </tbody>
+</table>
+<script type="text/javascript">
+    $(document).ready(function () {
+        POTrackingDtList();
+    });
+    function POTrackingDtList() {
+        //var OldOrderType1 = $("#hdnOrdertype1_old").val();
+        var NotFillterOrderType = $("#OrderType").val();
+        //var orderNumber = $('#ddlOrderNumberlist').val();
+        var orderNumber = cmn_getddldataasstring('#ddlOrderNumberlist');
+        var fromDate = $("#txtFromdate").val();
+        var toDate = $("#txtTodate").val();
+        //var custId = $('#ddlCustomersList').val();
+        var custId = cmn_getddldataasstring('#ddlCustomersList');
+       // var slsPersId = $('#ddlSalesPerson').val();
+        var slsPersId = cmn_getddldataasstring('#ddlSalesPerson');
+        //var itemId = $("#ddlItemsList").val();
+        var itemId = cmn_getddldataasstring('#ddlItemsList');
+        //var currId = $('#ddlCurrencylist').val();
+        var currId = cmn_getddldataasstring('#ddlCurrencylist');
+       // var orderType = $('#ddlOrderType').val();
+        var orderType = cmn_getddldataasstring('#ddlOrderType');
+        var custCat = cmn_getddldataasstring("#CustomerCategory");
+        var custPort = cmn_getddldataasstring("#CustomerPortfolio");
+        var orderType = cmn_getddldataasstring('#ddlOrderType');
+        var cust_zone = cmn_getddldataasstring("#ddlcustzone");
+        var cust_group = cmn_getddldataasstring("#ddlcustgroup");
+        var brid_list = cmn_getddldataasstring("#ddl_branch");
+        var state = $("#ddl_state").val();
+        var city = $("#ddl_city").val();
+        if (orderNumber == 'undefined') {
+            orderNumber = '0';
+        }
+        $("#Tbl_SoTrackingOverDue").DataTable().destroy();
+        $("#Tbl_SoTrackingOverDue").DataTable({
+            dom: "Blfrtip",
+            "pageLength": 50,
+            "processing": true, // for show progress bar
+            "serverSide": true, // for process server side
+            "filter": true, // this is for disable filter (search box)
+            "orderMulti": false, // for disable multiple column at once
+            "ajax": {
+                "url": "/ApplicationLayer/SalesTracking/LoadSoTrackingDetailsData",
+                "data": {
+                    soNo: orderNumber, custId: custId, slsPersId: slsPersId, orderType: orderType
+                    , itemId: itemId, currId: currId, fromDate: fromDate, toDate: toDate,
+                    NotFillterOrderType: NotFillterOrderType, custCat: custCat, custPort: custPort, cust_zone: cust_zone, cust_group: cust_group, state: state, city: city,brlist: brid_list
+                },
+                "type": "POST",
+                "datatype": "json",
+            },
+            "columns": StkDtldataColumns(),
+            columnDefs: StkDtlDataColumnRenders(),
+            buttons: [
+                {
+                    extend: "csv",
+                    className: "btn-sm",
+                    action: function (e, dt, button, config) {
+                        var csvUrl = "/ApplicationLayer/SalesTracking/ExportCsv";
+                        let CsvName = $("title").text() + "_" + moment().format('YYYYMMDDhhmmss');
+                        Cmn_importDataToCSV(e, dt, button, config, csvUrl, CsvName);
+
+                    }
+
+                }],
+        });
+        //var exportbtn = `<button type="submit" class="btn btn-default buttons-csv buttons-html5 btn-sm" id='' tabindex="0" aria-controls="datatable-buttons"
+        //        name="Command" value="CSV">
+        //        <span>CSV</span></button>`;
+        ////$("#export").remove();
+        ////$("#hdnFiltersData").val(filters);
+        //$("#Tbl_SoTrackingOverDue_length").append(exportbtn);
+        //Export();
+    }
+    function StkDtldataColumns() {
+        var Array = [];
+
+        Array = [
+            { "data": "SrNo", "name": "SrNo", "autoWidth": true },
+            { "data": "app_so_no", "name": "app_so_no", "autoWidth": true, "id": "tditem", className: "ItmNameBreak itmStick tditemfrz" },
+            { "data": "so_dt", "name": "so_dt", "autoWidth": true },
+            { "data": "cust_name", "name": "cust_name", "autoWidth": true, "id": "poNo", className: "" },
+            { "data": "OrderType", "name": "OrderType", "autoWidth": true, "id": "poDt" },
+            { "data": "ref_doc_no", "name": "ref_doc_no", "autoWidth": true },
+            { "data": "cust_catg", "name": "cust_catg", "autoWidth": true },
+            { "data": "cust_port", "name": "cust_port", "autoWidth": true },
+            { "data": "cust_zone", "name": "cust_zone", "autoWidth": true },
+            { "data": "cust_group", "name": "cust_group", "autoWidth": true },
+            { "data": "state", "name": "state", "autoWidth": true },
+            { "data": "city", "name": "city", "autoWidth": true },
+            { "data": "curr_logo", "name": "curr_logo", "autoWidth": true },
+            { "data": "sls_pers_name", "name": "sls_pers_name", "autoWidth": true },
+            { "data": "item_id", "name": "item_id", "autoWidth": true, className: "center" },
+            { "data": "item_name", "name": "item_name", "autoWidth": true, className: "truncate-text" },
+            { "data": "uom_alias", "name": "uom_alias", "autoWidth": true },
+            { "data": "ord_qty_base", "name": "ord_qty_base", "autoWidth": true, className: "num_right" },
+            { "data": "Pending_qty", "name": "Pending_qty", "autoWidth": true, className: "num_right" },
+            { "data": "ForceClosed", "name": "ForceClosed", "autoWidth": true, className:"center" },
+            { "data": "sch_date", "name": "sch_date", "autoWidth": true, className: "" },
+            { "data": "overduedays", "name": "overduedays", "autoWidth": true, className: "num_right" },
+            //{ "data": "br_id", "name": "br_id", "autoWidth": true }
+        ]
+        return Array;
+    }
+    function StkDtlDataColumnRenders() {
+        debugger;
+        var array = [];
+        array = [
+
+
+            {
+                'createdCell': function (td, cellData, rowData, row, col) {
+                    $(td).attr('id', 'orderNo');
+                },
+                targets: 1
+            },
+            {
+                'createdCell': function (td, cellData, rowData, row, col) {
+                    $(td).attr('id', 'orderType');
+                },
+                targets: 4
+            },
+            {
+                'createdCell': function (td, cellData, rowData, row, col) {
+                    $(td).attr('id', 'hdnItemId');
+                    $(td).attr('hidden', 'hidden');
+                },
+                targets: 12
+            },
+            {
+                 render: (data, type, row) => `<div class="col-sm-11 no-padding" id=""><span id="">${data}</span></div>
+                                                 <div class="col-sm-1 i_Icon">
+                                                    <button type="button" id="" class="calculator" onclick="BindItemInfoBtnClick(event);" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.ProductInformation"></button>
+                                                </div>`,
+                targets: 15
+            },
+            
+            {
+                render: (data, type, row) => `<i class="fa fa-check ${data == "Yes" ? 'fa-check text-success' :'fa-times-circle text-danger'}" aria-hidden="true"></i><span hidden="hidden">${data}</span>`,
+                targets: 19
+            }
+            //{
+            //    'createdCell': function (td, cellData, rowData, row, col) {
+            //        $(td).attr('id', 'br_id');
+            //        $(td).attr('hidden', 'hidden');
+            //    },
+            //    targets: 22
+            //}
+        ]
+        return array;
+    }
+</script>
+@*@{
+    if (Model.SearchStatus != null)
+    {
+        if (Model.SearchStatus == "SEARCH")
+        {
+            @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+            @Scripts.Render("~/Content/Scripts/DatatablesJs")
+            Model.SearchStatus = null;
+        }
+    }
+}*@

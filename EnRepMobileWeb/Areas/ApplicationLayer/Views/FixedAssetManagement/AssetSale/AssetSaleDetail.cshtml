@@ -1,0 +1,1156 @@
+﻿@using EnRepMobileWeb.Resources;
+@using System.Data
+@*@if (Session["UserId"] == null)
+    {
+        Response.Redirect("~/Login");
+    }*@
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+@*<title>@Model.Title</title>*@
+<div class="row">
+    <!-- Value Addition Start -->
+    <div id="ValueAddition" class="modal fade" role="dialog">
+        <div class="modal-dialog" style="min-width:800px;">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialValueAdditionDetail.cshtml")
+        </div>
+    </div>
+    <!-- Value Addition End -->
+    <!-- Transfer Detail Start -->
+    <div id="TransferDetail" class="modal fade" role="dialog">
+        <div class="modal-dialog" style="min-width:1000px;">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialTransferDetail.cshtml")
+        </div>
+    </div>
+    <!-- Transfer Detail End -->
+    <!-- Depreciation Detail Start -->
+    <div id="DepreciationDetail" class="modal fade" role="dialog">
+        <div class="modal-dialog" style="min-width:1000px;">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialDepreciationDetailDetail.cshtml")
+        </div>
+    </div>
+    <!-- Depreciation Detail End -->
+    <div id="SaleHistory" class="modal fade show" aria-modal="true" role="dialog">
+        <div class="modal-dialog ui-draggable ui-draggable-handle" style="min-width:800px;">
+            <!-- Modal content-->
+            <div class="modal-content" id="tbody_ItemHistory">
+                <div class="modal-content" id="tbody_ItemHistory">
+                    <div class="modal-header">
+                        <h2> @Resource.Order @Resource.History</h2>
+                        <button type="button" class="close" data-dismiss="modal">×</button>
+                    </div>
+                    <div class="modal-body pop_top">
+                        <div class="row">
+                            <div class="col-md-4 col-sm-12">
+                                <label class="col-form-label label-align">@Resource.Item @Resource.Name</label>
+                                <input id="HistoryItemName" class="form-control" autocomplete="off" type="text" name="ItemName" placeholder="Item Name" onblur="this.placeholder = 'Item Name'" disabled="">
+                                <input type="hidden" id="hfHistoryItemID" value="ITM0002315">
+                                <input type="hidden" id="hfHistoryItemName" value="1021">
+                            </div>
+
+                            <div class="col-md-55 ">
+                                <label class="col-form-label label-align">@Resource.UOM</label>
+                                <input id="HistoryUOM" class="form-control" autocomplete="off" type="text" name="UOM" placeholder="UOM" onblur="this.placeholder = 'UOM'" disabled="">
+                                <input type="hidden" id="hfHistoryUOM" value="Pcs">
+                            </div>
+                            <div class="col-md-55 ">
+                                <label class="col-form-label label-align">
+                                    @Resource.FromDate
+                                </label>
+
+                                <input type="date" class="form-control" id="HistoryFrom_date" name="HistoryFrom_date">
+
+                            </div>
+                            <div class="col-md-55 ">
+                                <label class="col-form-label label-align">
+                                    @Resource.ToDate
+                                </label>
+
+                                <input type="date" class="form-control" id="HistoryTo_date" value="2025-07-21" name="HistoryTo_date">
+
+                            </div>
+                            <div class="col-md-1 col-sm-12" style="max-width:6%;">
+                                <button type="button" class="btn btn-primary btn-sm margintop20" id="BtnSearch" onclick="OnclickHistorySearchBtn();"><i class="fa fa-search" aria-hidden="true"></i></button>
+                            </div>
+                        </div>
+                        <div class="card-box table-responsive dy_table">
+                            <div id="LSOListTbody" class="sticky-table sticky-ltr-cells sb-container container-example1 OrderHistory height30VH">
+                                <table id="datatable-buttons9" data-order="" class="table table-striped table-bordered rowhighlighttbl itmfrz" style="width:100%">
+                                    <thead>
+                                        <tr class="sticky-header">
+                                            <th width="40%" class="sorting" tabindex="0" aria-controls="datatable-buttons9" rowspan="1" colspan="1" aria-label="Supplier  Name: activate to sort column ascending" style="width: 245.2px;">Supplier <br> Name</th>
+                                            <th width="15%" class="sorting" tabindex="0" aria-controls="datatable-buttons9" rowspan="1" colspan="1" aria-label="Order  Number: activate to sort column ascending" style="width: 117.2px;">Order <br> Number</th>
+                                            <th width="15%" class="sorting" tabindex="0" aria-controls="datatable-buttons9" rowspan="1" colspan="1" aria-label="Date: activate to sort column ascending" style="width: 68.2px;">Date</th>
+                                            <th style="display: none; width: 0px;" class="sorting" tabindex="0" aria-controls="datatable-buttons9" rowspan="1" colspan="1" aria-label="Date: activate to sort column ascending">Date</th>
+                                            <th width="15%" class="sorting" tabindex="0" aria-controls="datatable-buttons9" rowspan="1" colspan="1" aria-label="Quantity: activate to sort column ascending" style="width: 69.2px;">Quantity</th>
+                                            <th width="15%" class="sorting" tabindex="0" aria-controls="datatable-buttons9" rowspan="1" colspan="1" aria-label="Price: activate to sort column ascending" style="width: 64px;">Price</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr role="row" class="odd">
+                                            <td width="40%">	AB Supplier Test</td>
+                                            <td width="15%">B1/07/25/DPO0000018</td>
+                                            <td width="15%">16-07-2025</td>
+                                            <td style="display:none;">16-07-2025</td>
+                                            <td width="15%" class="num_right">100.00</td>
+                                            <td width="15%" class="num_right">100.00</td>
+                                        </tr>
+                                        <tr role="row" class="even">
+                                            <td width="40%">	AB Supplier Test</td>
+                                            <td width="15%">B1/06/25/DPO0000015</td>
+                                            <td width="15%">17-06-2025</td>
+                                            <td style="display:none;">17-06-2025</td>
+                                            <td width="15%" class="num_right">100.00</td>
+                                            <td width="15%" class="num_right">185.00</td>
+                                        </tr>
+                                        <tr role="row" class="odd">
+                                            <td width="40%">SUPP 12 APR 1248</td>
+                                            <td width="15%">B1/05/25/DPO0000008</td>
+                                            <td width="15%">12-05-2025</td>
+                                            <td style="display:none;">12-05-2025</td>
+                                            <td width="15%" class="num_right">1000.00</td>
+                                            <td width="15%" class="num_right">12.00</td>
+                                        </tr>
+                                        <tr role="row" class="even">
+                                            <td width="40%">Apex India Pvt. Ltd.</td>
+                                            <td width="15%">B1/05/25/DPO0000005</td>
+                                            <td width="15%">03-05-2025</td>
+                                            <td style="display:none;">03-05-2025</td>
+                                            <td width="15%" class="num_right">12.00</td>
+                                            <td width="15%" class="num_right">11.00</td>
+                                        </tr>
+                                        <tr role="row" class="odd">
+                                            <td width="40%">Apex India Pvt. Ltd.</td>
+                                            <td width="15%">B1/03/25/DPO0000001</td>
+                                            <td width="15%">21-03-2025</td>
+                                            <td style="display:none;">21-03-2025</td>
+                                            <td width="15%" class="num_right">5000.00</td>
+                                            <td width="15%" class="num_right">1000.00</td>
+                                        </tr>
+                                        <tr role="row" class="even">
+                                            <td width="40%">A.ASWIN1</td>
+                                            <td width="15%">B1/02/25/IPO0000003</td>
+                                            <td width="15%">06-02-2025</td>
+                                            <td style="display:none;">06-02-2025</td>
+                                            <td width="15%" class="num_right">10.00</td>
+                                            <td width="15%" class="num_right">2000.00</td>
+                                        </tr>
+                                        <tr role="row" class="odd">
+                                            <td width="40%">Apex India Pvt. Ltd.</td>
+                                            <td width="15%">B1/12/24/DPO0000001</td>
+                                            <td width="15%">02-12-2024</td>
+                                            <td style="display:none;">02-12-2024</td>
+                                            <td width="15%" class="num_right">12.00</td>
+                                            <td width="15%" class="num_right">11.00</td>
+                                        </tr>
+                                        <tr role="row" class="even">
+                                            <td width="40%">Apex India Pvt. Ltd.</td>
+                                            <td width="15%">B1/11/24/DPO0000002</td>
+                                            <td width="15%">12-11-2024</td>
+                                            <td style="display:none;">12-11-2024</td>
+                                            <td width="15%" class="num_right">500.00</td>
+                                            <td width="15%" class="num_right">20.00</td>
+                                        </tr>
+                                        <tr role="row" class="odd">
+                                            <td width="40%">Apex India Pvt. Ltd.</td>
+                                            <td width="15%">B1/09/24/DPO0000001</td>
+                                            <td width="15%">05-09-2024</td>
+                                            <td style="display:none;">05-09-2024</td>
+                                            <td width="15%" class="num_right">13.00</td>
+                                            <td width="15%" class="num_right">12.00</td>
+                                        </tr>
+                                        <tr role="row" class="even">
+                                            <td width="40%">Apex India Pvt. Ltd.</td>
+                                            <td width="15%">B1/08/24/DPO0000001</td>
+                                            <td width="15%">28-08-2024</td>
+                                            <td style="display:none;">28-08-2024</td>
+                                            <td width="15%" class="num_right">8.00</td>
+                                            <td width="15%" class="num_right">300.00</td>
+                                        </tr>
+                                        <tr role="row" class="odd">
+                                            <td width="40%">Apex India Pvt. Ltd.</td>
+                                            <td width="15%">B1/07/24/DPO0000012</td>
+                                            <td width="15%">29-07-2024</td>
+                                            <td style="display:none;">29-07-2024</td>
+                                            <td width="15%" class="num_right">120.00</td>
+                                            <td width="15%" class="num_right">11.00</td>
+                                        </tr>
+                                        <tr role="row" class="even">
+                                            <td width="40%">Apex India Pvt. Ltd.</td>
+                                            <td width="15%">B1/07/24/DPO0000011</td>
+                                            <td width="15%">29-07-2024</td>
+                                            <td style="display:none;">29-07-2024</td>
+                                            <td width="15%" class="num_right">12.00</td>
+                                            <td width="15%" class="num_right">11.00</td>
+                                        </tr>
+                                        <tr role="row" class="odd">
+                                            <td width="40%">Apex India Pvt. Ltd.</td>
+                                            <td width="15%">B1/07/24/DPO0000002</td>
+                                            <td width="15%">08-07-2024</td>
+                                            <td style="display:none;">08-07-2024</td>
+                                            <td width="15%" class="num_right">100.00</td>
+                                            <td width="15%" class="num_right">500.00</td>
+                                        </tr>
+                                        <tr role="row" class="even">
+                                            <td width="40%">Apex India Pvt. Ltd.</td>
+                                            <td width="15%">B1/05/24/DPO0000006</td>
+                                            <td width="15%">21-05-2024</td>
+                                            <td style="display:none;">21-05-2024</td>
+                                            <td width="15%" class="num_right">20.00</td>
+                                            <td width="15%" class="num_right">22.00</td>
+                                        </tr>
+                                        <tr role="row" class="odd">
+                                            <td width="40%">0000004092023</td>
+                                            <td width="15%">B1/04/24/DPO0000005</td>
+                                            <td width="15%">22-04-2024</td>
+                                            <td style="display:none;">22-04-2024</td>
+                                            <td width="15%" class="num_right">10.00</td>
+                                            <td width="15%" class="num_right">100.00</td>
+                                        </tr>
+                                        <tr role="row" class="even">
+                                            <td width="40%">Apex India Pvt. Ltd.</td>
+                                            <td width="15%">B1/04/24/DPO0000004</td>
+                                            <td width="15%">20-04-2024</td>
+                                            <td style="display:none;">20-04-2024</td>
+                                            <td width="15%" class="num_right">100.00</td>
+                                            <td width="15%" class="num_right">1000.00</td>
+                                        </tr>
+                                        <tr role="row" class="odd">
+                                            <td width="40%">Apex India Pvt. Ltd.</td>
+                                            <td width="15%">B1/04/24/DPO0000003</td>
+                                            <td width="15%">20-04-2024</td>
+                                            <td style="display:none;">20-04-2024</td>
+                                            <td width="15%" class="num_right">100.00</td>
+                                            <td width="15%" class="num_right">1000.00</td>
+                                        </tr>
+                                        <tr role="row" class="even">
+                                            <td width="40%">Apex India Pvt. Ltd.</td>
+                                            <td width="15%">B1/03/24/DPO0000003</td>
+                                            <td width="15%">13-03-2024</td>
+                                            <td style="display:none;">13-03-2024</td>
+                                            <td width="15%" class="num_right">3.00</td>
+                                            <td width="15%" class="num_right">800.00</td>
+                                        </tr>
+                                        <tr role="row" class="odd">
+                                            <td width="40%">Apex India Pvt. Ltd.</td>
+                                            <td width="15%">B1/03/24/DPO0000001</td>
+                                            <td width="15%">01-03-2024</td>
+                                            <td style="display:none;">01-03-2024</td>
+                                            <td width="15%" class="num_right">100.00</td>
+                                            <td width="15%" class="num_right">12.00</td>
+                                        </tr>
+                                        <tr role="row" class="even">
+                                            <td width="40%">Apex India Pvt. Ltd.</td>
+                                            <td width="15%">B1/02/24/DPO0000009</td>
+                                            <td width="15%">19-02-2024</td>
+                                            <td style="display:none;">19-02-2024</td>
+                                            <td width="15%" class="num_right">99.00</td>
+                                            <td width="15%" class="num_right">100.00</td>
+                                        </tr>
+                                        <tr role="row" class="odd">
+                                            <td width="40%">Apex India Pvt. Ltd.</td>
+                                            <td width="15%">B1/02/24/DPO0000007</td>
+                                            <td width="15%">13-02-2024</td>
+                                            <td style="display:none;">13-02-2024</td>
+                                            <td width="15%" class="num_right">10.00</td>
+                                            <td width="15%" class="num_right">100.00</td>
+                                        </tr>
+                                        <tr role="row" class="even">
+                                            <td width="40%">Apex India Pvt. Ltd.</td>
+                                            <td width="15%">B1/02/24/DPO0000005</td>
+                                            <td width="15%">08-02-2024</td>
+                                            <td style="display:none;">08-02-2024</td>
+                                            <td width="15%" class="num_right">6.00</td>
+                                            <td width="15%" class="num_right">400.00</td>
+                                        </tr>
+                                        <tr role="row" class="odd">
+                                            <td width="40%">	AB Supplier Test</td>
+                                            <td width="15%">B1/02/24/DPO0000003</td>
+                                            <td width="15%">07-02-2024</td>
+                                            <td style="display:none;">07-02-2024</td>
+                                            <td width="15%" class="num_right">10.00</td>
+                                            <td width="15%" class="num_right">122.00</td>
+                                        </tr>
+                                        <tr role="row" class="even">
+                                            <td width="40%">Apex India Pvt. Ltd.</td>
+                                            <td width="15%">B1/02/24/DPO0000001</td>
+                                            <td width="15%">03-02-2024</td>
+                                            <td style="display:none;">03-02-2024</td>
+                                            <td width="15%" class="num_right">10.00</td>
+                                            <td width="15%" class="num_right">1500.00</td>
+                                        </tr>
+                                        <tr role="row" class="odd">
+                                            <td width="40%">	AB Supplier Test</td>
+                                            <td width="15%">B1/01/24/DPO0000013</td>
+                                            <td width="15%">23-01-2024</td>
+                                            <td style="display:none;">23-01-2024</td>
+                                            <td width="15%" class="num_right">10.00</td>
+                                            <td width="15%" class="num_right">1549.00</td>
+                                        </tr>
+                                    </tbody>
+                                </table><div class="dataTables_info" id="datatable-buttons9_info" role="status" aria-live="polite">Showing 1 to 25 of 94 entries</div><div class="dataTables_paginate paging_simple_numbers" id="datatable-buttons9_paginate"><ul class="pagination"><li class="paginate_button previous disabled" id="datatable-buttons9_previous"><a href="#" aria-controls="datatable-buttons9" data-dt-idx="0" tabindex="0">Previous</a></li><li class="paginate_button active"><a href="#" aria-controls="datatable-buttons9" data-dt-idx="1" tabindex="0">1</a></li><li class="paginate_button "><a href="#" aria-controls="datatable-buttons9" data-dt-idx="2" tabindex="0">2</a></li><li class="paginate_button "><a href="#" aria-controls="datatable-buttons9" data-dt-idx="3" tabindex="0">3</a></li><li class="paginate_button "><a href="#" aria-controls="datatable-buttons9" data-dt-idx="4" tabindex="0">4</a></li><li class="paginate_button next" id="datatable-buttons9_next"><a href="#" aria-controls="datatable-buttons9" data-dt-idx="5" tabindex="0">Next</a></li></ul></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="ItemInfo" class="modal fade show" role="dialog" aria-modal="true">
+        <div class="modal-dialog ui-draggable ui-draggable-handle">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2><span id="SpanItemDescription">1021</span></h2>
+                    <button type="button" class="close" data-dismiss="modal" id="btnCrossItemInfo">×</button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-bordered" id="ItemDetailsTbl">
+                        <thead>
+                            <tr>
+                                <th width="15%">OEM No.</th>
+                                <td width="35%">
+                                    <input id="Txt_ItmOEMNo" class="form-control" autocomplete="off" type="text" name="Txt_ItmOEMNo" placeholder="OEM No." onblur="this.placeholder='OEM No.'" disabled="">
+                                </td>
+                                <th width="15%">Alias Name</th>
+                                <td width="35%">
+                                    <input id="Txt_ItmSampCode" class="form-control" autocomplete="off" type="text" name="Txt_ItmSampCode" placeholder="Sample Code" onblur="this.placeholder='Sample Code'" disabled="">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th width="15%">Ref. No.</th>
+                                <td width="35%">
+                                    <input id="Txt_ItmRefNo" class="form-control" autocomplete="off" type="text" name="Txt_ItmRefNo" placeholder="Ref No." onblur="this.placeholder='Ref No.'" disabled="">
+                                </td>
+                                <th width="15%">HSN/SAC Code  </th>
+                                <td width="35%">
+                                    <input id="Txt_ItmHSNCode" class="form-control" autocomplete="off" type="text" name="Txt_ItmHSNCode" placeholder="HSN Code" onblur="this.placeholder='HSN Code'" disabled="">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th width="15%">Technical <br> Description</th>
+                                <td width="35%">
+                                    <textarea id="TechnicalDescription" class="form-control remarksmessage" autocomplete="off" type="text" name="TechnicalDescription" maxlength="500" placeholder="Technical Description" disabled="" onmouseover="OnMouseOver(this)" title="STARTER DRIVE"></textarea>
+                                </td>
+                                <th width="15%">Technical <br> Specification  </th>
+                                <td width="35%">
+                                    <textarea id="TechnicalSpecification" class="form-control remarksmessage" autocomplete="off" type="text" name="TechnicalSpecification" maxlength="500" placeholder="Technical Specification" disabled="" onmouseover="OnMouseOver(this)"></textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4" class="no-padding">
+                                    <table width="100%" cellpadding="0" cellspacing="0">
+                                        <tbody>
+                                            <tr>
+                                                <th width="15%">Weight In Kg</th>
+                                                <td><input id="WeightInKgItem" class="form-control num_right" autocomplete="off" type="text" name="WeightInKg" placeholder="0000.00" disabled=""></td>
+                                                <th>Net Weight</th>
+                                                <td><input id="NetWeightItem" class="form-control num_right" autocomplete="off" type="text" name="NetWeight" placeholder="0000.00" disabled=""></td>
+                                                <th>Gross Weight</th>
+                                                <td><input id="GrossWeightItem" class="form-control num_right" autocomplete="off" type="text" name="GrossWeight" placeholder="0000.00" disabled=""></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    <div class="col-sm-12" style="margin-top: 20px; margin-bottom: 30px;" id="DivMyCarousel">
+                                        <div id="myCarousel" class="carousel slide" data-ride="carousel"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" id="btnCloseItemInfo">Close</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <div id="WorkflowInformation" class="modal fade" role="dialog">
+                    <div class="modal-dialog" style="max-width:700px;">
+                        <div class="price_item_detail">
+                            <!-- Modal content-->
+                            @Html.Partial("~/Areas/Common/Views/_WorkFlow.cshtml")
+                        </div>
+                    </div>
+                </div>
+                <h2 class="col-md-6 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                <div id="wizard" class="form_wizard wizard_horizontal col-md-2 col-sm-12 work_flow">
+                    @*@if (ViewBag.AppLevel.Rows.Count > 0)
+                        {*@
+                    @Html.Partial("~/Areas/Common/Views/_PartialWorkflowBar.cshtml")
+                </div>
+                <div id="" class="col-md-4 col-sm-12 work_flow heading_right_padding">
+                    <ul>
+                        <li>
+                            <button class="add" title="@Resource.AddNew" type="submit" id="btn_add" name="Command" value="AddNew"></button>
+                        </li>
+                        <li>
+                            <button class="edit" title="@Resource.Edit" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                        </li>
+                        <li>
+                            <button class="delete" title="@Resource.Delete" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                        </li>
+                        <li>
+                            <button class="save" title="@Resource.Save" type="submit" onclick="return CheckFormValidation();" id="btn_save" name="Command" value="Save"></button>
+                        </li>
+                        <li>
+                            <button class="forward" title="@Resource.Forward" type="submit" id="btn_forward" name="Command" value="Forward"></button>
+                        </li>
+                        <li>
+                            <button class="approve" title="@Resource.Approve" type="submit" id="btn_approve" name="Command" value="Approve"></button>
+                        </li>
+                        <li>
+                            <button class="workflow" title="@Resource.Workflow" type="submit" id="btn_workflow" name="Command" value="Workflow"></button>
+                        </li>
+                        <li>
+                            <button class="refresh" title="@Resource.Refresh" type="submit" id="btn_refresh" name="Command" value="Refresh" onclick="EnableRefreshBtn()"></button>
+                        </li>
+                        <li>
+                            <button class="print" title="@Resource.Print" type="submit" id="btn_print" name="Command" value="Print"></button>
+                        </li>
+                        <li>
+                            <button class="email_tool" title="@Resource.Email" type="submit" id="Btn_Mail" name="Command" value="Mail"></button>
+                        </li>
+                        <li>
+                            <button class="back" title="@Resource.Back" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="clearfix"></div>
+                <div class="x_title pad_mar ">
+                    <div class="col-md-12 col-sm-12 icon_tool ">
+                        <!--<span>Collapsible / Accordion </span>-->
+                        <div class="approved_by">
+                            <ul>
+                                <li><span>@Resource.CreatedBy<br><b>Suraj</b></span></li>
+                                <li><span>@Resource.Createdon<br><b>08-07-2025 17:36</b></span></li>
+                                <li><span>@Resource.ApprovedBy<br><b>Admin</b></span></li>
+                                <li><span>@Resource.ApprovedOn<br><b>08-07-2025 17:40</b></span></li>
+                                <li><span>@Resource.AmendedBy<br><b>Suraj</b></span></li>
+                                <li><span>@Resource.AmendedOn<br><b>08-07-2025 17:42</b></span></li>
+                                <li><span>@Resource.Status<br><b> Cancelled</b></span></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <article class="panel-group bs-accordion" id="accordion" role="tablist" aria-multiselectable="true">
+                    <section class="panel panel-default">
+                        <div class="panel-heading" role="tab" id="headingOne">
+                            <h4 class="panel-title">  <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">@Resource.Invoice @Resource.Detail<span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span></a></h4>
+                        </div>
+                        <div id="collapseOne" class="panel-collapse in collapse show" role="tabpanel" aria-labelledby="headingOne" style="">
+                            @*<form class="accordian_form_bg" action="" method="post" novalidate>*@
+                            <div class="panel-body">
+                                <div class="col-md-12 col-sm-12 pl-0  " id="">
+                                    <div class="custom-control custom-switch  float-right">
+                                        <input class="custom-control-input col-md-3 col-sm-12 margin-switch" data-val="true" data-val-required="" id="Cancel_PQ" name="Cancelled" type="checkbox" value="true">
+                                        <label class="custom-control-label col-md-9 col-sm-12" for="" style="padding: 3px 0px;">Cancelled</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 col-sm-12">
+                                    <label class="col-form-label label-align">@Resource.Invoice @Resource.Number</label>
+                                    <input class="form-control" disabled="disabled" id="InvoiceNumber" maxlength="20" name="InvoiceNumber" placeholder="@Resource.Invoice @Resource.Number" type="text" value="">
+                                </div>
+                                <div class="col-md-2 col-sm-12 pl-0">
+                                    <label class="col-form-label label-align">@Resource.Invoice @Resource.Date</label>
+                                    <input class="form-control" disabled="disabled" id="InvoiceDate" maxlength="20" name="InvoiceDate" placeholder="@Resource.Invoice  @Resource.Date" type="date" value="">
+                                </div>
+                                <div class="col-md-2 col-sm-12 pl-0">
+                                    <label class="col-form-label label-align">@Resource.Customer @Resource.Name</label>
+                                    <select class="form-control" id="CustomerName" name="CustomerName">
+                                        <option selected="selected" value="">Customer Name</option>
+                                        <option value="">Customer Name 1</option>
+                                        <option value="">Customer Name 2</option>
+                                        <option value="">Customer Name 3</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3 col-sm-12 pl-0 pr-0">
+                                    <div class="col-sm-11 no-padding">
+                                        <label class="col-form-label label-align">@Resource.BillingAddress</label>
+                                        <textarea class="form-control remarksmessage" cols="20" id="TxtBillingAddr" maxlength="100" name="SO_BillingAddress" placeholder="Billing Address" readonly="readonly" rows="2" onmouseover="OnMouseOver(this)" title="wasdse, Aadityana-7845287456, Porbandar, Gujarat, India">wasdse, Aadityana-7845287456, Porbandar, Gujarat, India</textarea>
+                                    </div>
+                                    <div class="col-sm-1 margin25 i_Icon">
+                                        <button type="button" id="AddInfoBtnIcon" class="calculator available_credit_limit" onclick="OnClickbillingAddressIconBtn(event);" data-toggle="modal" data-target="#AddressInfo" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="Address Information">  </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-12 pl-0 pr-0">
+                                    <div class="col-sm-11 no-padding">
+                                        <label class="col-form-label label-align">@Resource.ShippingAddress</label>
+                                        <textarea class="form-control remarksmessage" cols="20" id="TxtShippingAddr" maxlength="100" name="SO_ShippingAddress" placeholder="Shipping Address" readonly="readonly" rows="2" onmouseover="OnMouseOver(this)">wasdse, Aadityana-7845287456, Porbandar, Gujarat, India</textarea>
+
+                                    </div>
+                                    <div class="col-sm-1 margin25 i_Icon">
+                                        <button type="button" id="AddInfoBtnIcon" class="calculator available_credit_limit" onclick="OnClickShippingAddressIconBtn(event);" data-toggle="modal" data-target="#AddressInfo" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="Address Information"> </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 col-sm-12 ">
+                                    <label class="col-form-label label-align">@Resource.IRN @Resource.Number</label>
+                                    <input class="form-control" disabled id="IRNNumber" maxlength="20" name="IRNNumber" placeholder="@Resource.IRN @Resource.Number" type="text" value="">
+                                </div>
+                                <div class="col-md-4 col-sm-12 pl-0">
+                                    <label class="col-form-label label-align">@Resource.remarks</label>
+                                    <textarea class="form-control remarksmessage" cols="20" id="Address" maxlength="300" name="Address" placeholder="Address" readonly="readonly" rows="2" onmouseover="OnMouseOver(this)" title="127, INDUSTRIAL AREA PH-1, CHANDIGARH, Chandigarh, Chandigarh, 160002, Chandigarh-160002, Chandigarh,
+		Chandigarh, India"> &nbsp;</textarea>
+                                </div>
+
+
+
+
+
+
+                            </div>
+                           
+                            <div class="clear"></div>
+                            <div class="card-box table-responsive dy_table">
+                                <div class="col-md-12">
+                                    <div class="price_item_detail">
+                                        <div class="tableFixHead height30VH">
+                                            <h2 class="col-md-9 col-sm-12">@Resource.Product @Resource.Detail</h2>
+                                            <div class="col-md-3 col-sm-12 no-padding num_right"><label class="label pt-1 col-md-4 col-sm-12 num_right pr-0" for="SearchItmDetailsTbl">@Resource.Search @Resource.Item : </label><input type="text" class="form-control col-md-7 col-sm-12" id="SearchItmDetailsTbl" onkeyup="FilterItemDetail(event)" /> </div>
+
+                                           
+                                            <table id="" class="table table-bordered width1500">
+                                                <thead>
+                                                    <tr class="headings">
+                                                        <th width="3%">@Resource.SrNo</th>
+                                                        @*<th width="13%">@Resource.Asset <br /> @Resource.Description</th>*@
+                                                        <th width="13%" class="itmStick">
+                                                            <div class="col-md-2 col-sm-12"></div>
+                                                            <div class="col-md-8 col-sm-12">
+                                                                <span class="item_add">
+                                                                    @Resource.Asset <br /> @Resource.Description<span class="required">*</span>
+                                                                </span>
+                                                                <a href="#" class="">
+                                                                    <div class="plus_icon1 mt-2"> <i class="fa fa-plus" id="BtnAddItem" onclick="AddNewRow()" title="Add New"></i> </div>
+                                                                </a>
+                                                            </div>
+                                                            <div class="col-md-2 col-sm-12"></div>
+                                                        </th>
+                                                        <th width="8%">@Resource.Asset @Resource.Label</th>
+                                                        <th width="8%">@Resource.Serial <br /> @Resource.Number</th>
+                                                        <th width="8%">@Resource.Quantity</th>
+                                                        <th width="8%">@Resource.Scrap @Resource.Value</th>
+                                                        <th width="7%">@Resource.Sale @Resource.Price</th>
+                                                        <th width="7%">@Resource.Discount %</th>
+                                                        <th width="7%">@Resource.Price @Resource.After @Resource.Discount</th>
+                                                        <th width="7%">@Resource.Value</th>
+                                                        <th width="7%">@Resource.Taxes</th>
+                                                        <th width="10%">@Resource.Other @Resource.Charges</th>
+                                                        <th width="7%">@Resource.Net @Resource.Value</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td><input id="SrNo" class="form-control" autocomplete="off" type="text" name="SrNo" placeholder="01"></td>
+                                                        <td>
+                                                            <select class="form-control" id="AssetDescription" name="AssetDescription">
+                                                                <option value="">Asset Description 1</option>
+                                                                <option value="">Asset Description 2</option>
+                                                                <option value="">Asset Description 3</option>
+                                                                <option value="">Asset Description 4</option>
+                                                                <option value="">Asset Description 5</option>
+                                                                <option value="">Asset Description 6</option>
+                                                            </select>
+                                                        </td>
+                                                        <td><input id="AssetLabel" class="form-control" disabled="disabled" autocomplete="off" type="text" name="AssetLabel" placeholder="@Resource.Asset @Resource.Label"></td>
+                                                        <td><input id="SerialNumber" class="form-control num_right" disabled="disabled" autocomplete="off" type="text" name="SerialNumber" placeholder="@Resource.Serial @Resource.Number"></td>
+                                                        <td><input id="Quantity" class="form-control num_right" disabled="disabled" autocomplete="off" type="text" name="Quantity" placeholder="0000.00"></td>
+                                                        <td><input id="ScrapValue" class="form-control num_right" disabled="disabled" autocomplete="off" type="text" name="ScrapValue" placeholder="0000.00"></td>
+                                                        <td><input id="SalePrice" class="form-control num_right" autocomplete="off" type="text" name="SalePrice" placeholder="0000.00"></td>
+                                                        <td><input id="Discount" class="form-control num_right" autocomplete="off" type="text" name="Discount" placeholder="0000.00"></td>
+                                                        <td><input id="PriceAfterDiscount" class="form-control num_right" disabled="disabled" autocomplete="off" type="text" name="PriceAfterDiscount" placeholder="0000.00"></td>
+                                                        <td><input id="Value" class="form-control num_right" disabled="disabled" autocomplete="off" type="text" name="Value" placeholder="0000.00"></td>
+                                                        <td>
+                                                            <div class="col-sm-10 no-padding">
+                                                                <input id="item_tax_amt" class="form-control num_right" value="420.39" autocomplete="off" type="text" name="item_tax_amt" placeholder="0000.00" disabled="">
+                                                            </div>
+                                                            <div class="col-sm-2 no-padding">
+                                                                <button type="button" class="calculator" id="BtnTxtCalculation" onclick="OnClickTaxCalculationBtn(event)" data-toggle="modal" data-target="#ItemCalculate" data-backdrop="static" data-keyboard="false"><i class="fa fa-calculator" aria-hidden="true" title="Tax Calculator" data-original-title="Tax Calculator"></i></button>
+                                                            </div>
+
+                                                        </td>
+                                                        @*<td><input id="Taxes" class="form-control num_right" disabled="disabled" autocomplete="off" type="text" name="Taxes" placeholder="0000.00"></td>*@
+                                                        <td><input id="OtherCharg   es" class="form-control num_right" disabled="disabled" autocomplete="off" type="text" name="OtherCharg" placeholder="0000.00"></td>
+                                                        <td><input id="NetValue" class="form-control num_right" disabled="disabled" autocomplete="off" type="text" name="NetValue" placeholder="0000.00"></td>
+
+                                                    </tr>
+
+                                                </tbody>
+                                            </table>
+
+                                        </div>
+                                    </div>
+                                    @*<div class="sticky-table sticky-ltr-cells sb-container container-example1" style="max-height:200px;">
+                <table class="table table-bordered price_item_detail" style="margin-top:10px; ">*@
+                                    <div id="" class="sticky-table sticky-ltr-cells sb-container container-example1 ver_bom">
+                                        <table class="table table-bordered price_item_detail mt-2">
+                                            <thead>
+
+                                                <tr>
+                                                    <th class="right_aligh text_normal">
+                                                        @Resource.GrossValue
+                                                        <input class="form-control tax_cal text_bold" id="TxtGrossValue" name="GrossValue" placeholder="0000.00" readonly="readonly" type="text" value="1200.00">
+                                                    </th>
+                                                    <th class="right_aligh text_normal">
+                                                        @Resource.TaxAmount
+                                                        <input class="form-control tax_cal text_bold" id="TxtTaxAmount" name="TaxAmount" placeholder="0000.00" readonly="readonly" type="text" value="144.00">
+                                                    </th>
+                                                    <th class="right_aligh text_normal" width="14%">
+                                                        <div class="col-md-10 col-sm-12 pl-0">  @Resource.OtherCharges <br /> @Resource.WithThirdParty </div>
+                                                        <div class="col-md-2 col-sm-12 pt-2"><button type="button" id="BtnOC_Amount" class="calculator_lso" data-toggle="modal" onclick="OnClickOtherChargeBtnWithSupp();" data-target="#OtherChargesCalculator" data-backdrop="static" data-keyboard="false" style="margin:0px; padding:0px;"><i class="fa fa-calculator" aria-hidden="true" title="@Resource.OtherChargesCalculator"></i>@*<img src="~/Content/Images/Calculator.png" width="12" height="12" title="@Resource.OtherChargesCalculator" />*@</button></div>
+                                                        <!--@Resource.OtherCharges  <button type="button" id="BtnOC_Amount" class="calculator_lso" data-toggle="modal" onclick="OnClickOtherChargeBtnWithSupp();" data-target="#OtherChargesCalculator" data-backdrop="static" data-keyboard="false" style="margin:0px; padding:0px;"><i class="fa fa-calculator" aria-hidden="true" title="@Resource.OtherChargesCalculator"></i>-->@*<img src="~/Content/Images/Calculator.png" width="12" height="12" title="@Resource.OtherChargesCalculator" />*@<!--</button>-->
+                                                        <input class="form-control tax_cal text_bold" id="TxtOtherCharges" name="OtherCharges" placeholder="0000.00" readonly="readonly" type="text" value="0.00">
+                                                    </th>
+                                                    <th class="right_aligh text_normal">
+                                                        @Resource.TCS @Resource.Amount   <button type="button" id="BtnTDS_Amount" class="calculator_lso" data-toggle="modal" onclick="OnClickTDSCalculationBtn();" data-target="#TDSCalculate" data-backdrop="static" data-keyboard="false" style="margin:0px; padding:0px;"><i class="fa fa-calculator" aria-hidden="true" title="@Resource.TCS @Resource.Calculator"></i>@*<img src="~/Content/Images/Calculator.png" width="12" height="12" title="@Resource.OtherChargesCalculator" />*@</button>
+                                                                                         <input class="form-control tax_cal text_bold" id="TxtTDS_Amount" name="TDS_Amount" placeholder="0000.00" readonly="readonly" type="text" value="0.00"></th>
+                                                    <th class="right_aligh text_normal" width="35%">
+
+                                                        <div class="col-md-2 col-sm-12 no-padding text-left">Round Off</div>
+                                                        <div class="col-md-2 col-sm-12 no-padding text-left">
+                                                            <div class="custom-control custom-switch">
+                                                                <input class="js-switch" data-val="true" data-val-required="The RoundOffFlag field is required." disabled="disabled" id="chk_roundoff" name="RoundOffFlag" type="checkbox" value="true" data-switchery="true" readonly="" style="display: none;"><span class="switchery switchery-default" style="box-shadow: rgb(223, 223, 223) 0px 0px 0px 0px inset; border-color: rgb(223, 223, 223); background-color: rgb(255, 255, 255); transition: border 0.4s, box-shadow 0.4s; opacity: 0.5;"><small style="left: 0px; transition: background-color 0.4s, left 0.2s;"></small></span><input name="RoundOffFlag" type="hidden" value="false">
+                                                            </div>
+
+                                                        </div>
+                                                        <div class="col-md-3 col-sm-12 no-padding">
+                                                            <div class="col-md-6 col-sm-12 no-padding" id="div_pchkbox" style="display:none">
+                                                                <i class="fa fa-plus float-left pr-2 pt-1" aria-hidden="true"></i>
+                                                                <input class="float-left" type="radio" name="p_round" id="p_round" disabled="" value="P" style="height:20px;">
+
+                                                            </div>
+                                                            <div class="col-md-6 col-sm-12 no-padding" id="div_mchkbox" style="display:none">
+                                                                <i class="fa fa-minus float-left pr-2 pt-1" aria-hidden="true"></i>
+                                                                <input class="float-left" type="radio" name="p_round" id="m_round" disabled="" value="M" style="height:20px;">
+
+                                                            </div>
+
+
+                                                            <input id="pm_flagval" name="pmflagval" type="hidden" value="">
+                                                        </div>
+                                                        <div class="col-md-5 col-sm-12 num_right no-padding"> Total Net Amount (In Base)</div>
+                                                        <div class="col-md-12 col-sm-12 num_right no-padding">
+                                                            <input class="form-control tax_cal text_bold" id="NetOrderValueInBase" name="NetAmountInBase" placeholder="0000.00" readonly="readonly" type="text" value="1344.00">
+                                                        </div>
+                                                    </th>
+
+
+
+
+                                                </tr>
+                                            </thead>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                           
+                           
+                        </div>
+                    </section>
+                    <section class="panel panel-default">
+                        <div class="panel-heading" role="tab" id="HeadingSeven">
+                            <h4 class="panel-title">
+                                <a class="" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseSeven" aria-expanded="true" aria-controls="collapseSeven">
+                                    Dispatch Detail
+                                    <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapseSeven" class="panel-collapse collapse" role="tabpanel" aria-labelledby="HeadingSeven" style="">
+                            <div class="panel-body">
+                                <div class="col-md-55 col-sm-12">
+                                    <label class="col-form-label label-align">Address 1<span class="required"> *</span></label>
+
+                                    <textarea autocomplete="off" class="form-control remarksmessage" cols="20" id="Dispatch_address1" maxlength="200" name="Address1" placeholder="Address 1" readonly="readonly" rows="2" tabindex="18" onmouseover="OnMouseOver(this)">URBTECH SECTOR -132</textarea>
+                                </div>
+                                <div class="col-md-55 col-sm-12 pl-0">
+                                    <label class="col-form-label label-align">Address 2 (Optional)</label>
+                                    <textarea autocomplete="off" class="form-control remarksmessage" cols="20" id="Dispatch_address2" maxlength="200" name="Address2" placeholder="Address" readonly="readonly" rows="2" tabindex="18" onmouseover="OnMouseOver(this)"></textarea>
+                                </div>
+                                <div class="col-md-55 col-sm-12 pl-0">
+                                    <label class="col-form-label label-align">Country <span class="required">*</span></label>
+                                    <select class="form-control" disabled="true" id="dispatchCountry" name="Country">
+                                        <option value="0">---Select---</option>
+                                        <option selected="selected" value="102">United States of America</option>
+                                    </select>
+                                    <input id="HdndispatchContry" name="Country" type="hidden" value="102">
+                                    <span class="field-validation-valid" data-valmsg-for="Country" data-valmsg-replace="true" id="vmdispatchCountryname" style="color:red;!important"></span>
+                                </div>
+                                <div class="col-md-55 col-sm-12 pl-0">
+                                    <label class="col-form-label label-align">State <span class="required">*</span></label>
+                                    <select class="form-control select2-hidden-accessible" disabled="" id="dispatch_State" name="State" onchange="OnChangeState()" tabindex="-1" aria-hidden="true">
+                                        <option value="0">---Select---</option>
+                                        <option selected="selected" value="137">ARIZONA</option>
+                                        <option value="139">New York</option>
+                                        <option value="140">Nevada</option>
+                                        <option value="143">Los Angeles</option>
+                                        <option value="146">California</option>
+                                        <option value="151">Michigan</option>
+                                        <option value="152">Florida</option>
+                                        <option value="172">North Corolina</option>
+                                        <option value="174">Alaska</option>
+                                    </select><span class="select2 select2-container select2-container--default select2-container--disabled" dir="ltr" style="width: 100px;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="-1" aria-labelledby="select2-dispatch_State-container"><span class="select2-selection__rendered" id="select2-dispatch_State-container" title="ARIZONA">ARIZONA</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>                                            <input id="HdndispatchState" name="State" type="hidden" value="137">
+                                    <span class="field-validation-valid" data-valmsg-for="State" data-valmsg-replace="true" id="vmdispatchStatename" style="color:red;!important"></span>
+                                </div>
+                                <div class="col-md-55 col-sm-12 pl-0">
+                                    <label class="col-form-label label-align">District <span class="required">*</span></label>
+                                    <select class="form-control select2-hidden-accessible" disabled="" id="dispatch_District" name="District" onchange="OnChangeDistrict()" tabindex="-1" aria-hidden="true">
+                                        <option value="0">---Select---</option>
+                                        <option selected="selected" value="683">ARIZONA</option>
+                                    </select><span class="select2 select2-container select2-container--default select2-container--disabled" dir="ltr" style="width: 100px;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="-1" aria-labelledby="select2-dispatch_District-container"><span class="select2-selection__rendered" id="select2-dispatch_District-container" title="ARIZONA">ARIZONA</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>                                            <span class="field-validation-valid" data-valmsg-for="District" data-valmsg-replace="true" id="vmdispatchDistname" style="color:red;!important"></span>
+                                    <input id="HdndispatchDistrict" name="District" type="hidden" value="683">
+                                </div>
+                                <div class="col-md-55 col-sm-12">
+                                    <label class="col-form-label label-align">City <span class="required">*</span></label>
+                                    <select class="form-control select2-hidden-accessible" disabled="" id="dispatch_City" name="City" onchange="OnChangeCity()" tabindex="-1" aria-hidden="true">
+                                        <option value="0">---Select---</option>
+                                        <option selected="selected" value="5277">PHOENIX</option>
+                                    </select><span class="select2 select2-container select2-container--default select2-container--disabled" dir="ltr" style="width: 100px;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="-1" aria-labelledby="select2-dispatch_City-container"><span class="select2-selection__rendered" id="select2-dispatch_City-container" title="PHOENIX">PHOENIX</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>                                            <span class="field-validation-valid" data-valmsg-for="City" data-valmsg-replace="true" id="vmdispatchCityname" style="color:red;!important"></span>
+                                    <input id="HdndispatchCity" name="City" type="hidden" value="5277">
+                                </div>
+                                <div class="col-md-55 col-sm-12 pl-0">
+                                    <label class="col-form-label label-align">Pin <span id="custinvalid" class="required">*</span></label>
+                                    <input autocomplete="off" class="form-control" id="dispatch_Pin" maxlength="12" minlength="4" name="Pin" onkeypress="return AmtFloatValueonly(this,event)" placeholder="Pin" readonly="true" type="text" value="56789">                                            
+                                    <span class="field-validation-valid " data-valmsg-for="Pin" data-valmsg-replace="true" id="vmdispatchPin"></span>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+                        </div>
+                    </section>
+                    <section class="panel panel-default">
+                        <div class="panel-heading" role="tab" id="headingFour">
+                            <h4 class="panel-title"> <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour"> Transport Detail <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a> </h4>
+                        </div>
+                        <div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-md-12 col-sm-12">
+                                        <div class="col-md-55 col-sm-12">
+                                            <label class="col-form-label label-align">G/R Number <span class="required">*</span></label>
+                                            <input class="form-control" disabled="disabled" id="GRNumber" maxlength="50" name="GR_No" placeholder="G/R Number" type="text" value="12213">
+                                            <span id="Span_GRNumber" class="error_message"></span>
+
+                                        </div>
+                                        <div class="col-md-55 col-sm-12">
+                                            <label class="col-form-label label-align"> G/R Date <span class="required">*</span></label>
+                                            <input class="form-control" disabled="disabled" id="GRDate" maxlength="50" name="GR_Dt" placeholder="G/R Date" type="date" value="2025-08-28">                                                    <input id="hdnGrDt" name="HdnGRDate" type="hidden" value="2025-08-28">
+                                            <span id="Span_GRDate" class="error_message"></span>
+
+                                        </div>
+
+                                        <div class="col-md-55 col-sm-12">
+                                            <label class="col-form-label label-align">Number of Packs <span class="required">*</span></label>
+                                            <input class="form-control num_right" disabled="disabled" id="NoOfPacks" maxlength="15" name="No_Of_Packages" placeholder="0000.00" type="text" value="133.00">                                                    <span id="Span_No_Of_Packages" class="error_message"></span>
+                                        </div>
+                                        <div class="col-md-55 col-sm-12">
+                                            <label class="col-form-label label-align">Transporter Name <span class="required">*</span></label>
+                                            <select class="form-control select2-hidden-accessible" disabled="" id="DdlTranspt_Name" name="Transpt_NameID" tabindex="-1" aria-hidden="true">
+                                                <option value="0">---Select--</option>
+                                                <option value="1001">adaequare</option>
+                                                <option value="1002">adaequare</option>
+                                                <option value="1003">test</option>
+                                                <option value="1004">ssm</option>
+                                                <option value="1005">rter</option>
+                                                <option value="1006">SDFGHJHJK</option>
+                                                <option selected="selected" value="1007">Transport Name ABC</option>
+                                                <option value="1008">cvbcbc</option>
+                                                <option value="1009">As Trnsport</option>
+                                                <option value="1010">1125522</option>
+                                                <option value="1011">AK Transport Comapany</option>
+                                                <option value="1012">admin</option>
+                                                <option value="1013">485969</option>
+                                                <option value="1014">Ak Trans</option>
+                                                <option value="1015">sdfsfs</option>
+                                                <option value="1016">ABc45</option>
+                                                <option value="1017">Across</option>
+                                                <option value="1018">HK Transport</option>
+                                                <option value="1019">Transport Name14525</option>
+                                                <option value="1020">dfhfghgjhjy</option>
+                                                <option value="1021">fdgfdgdf</option>
+                                                <option value="1022">Abc Ltd.</option>
+                                                <option value="1023">Export LTS</option>
+                                                <option value="1024">Exp </option>
+                                            </select><span class="select2 select2-container select2-container--default select2-container--disabled" dir="ltr" style="width: 100px;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="-1" aria-labelledby="select2-DdlTranspt_Name-container"><span class="select2-selection__rendered" id="select2-DdlTranspt_Name-container" title="Transport Name ABC">Transport Name ABC</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>                                                    <input id="hdnTrnasName" name="HdnTrnasportName" type="hidden" value="">
+                                            <span id="Span_TransporterName" class="error_message"></span>
+                                        </div>
+                                        <div class="col-md-55 col-sm-12">
+                                            <label class="col-form-label label-align">Vehicle Number </label>
+                                            <input class="form-control" disabled="disabled" id="TxtVeh_Number" maxlength="100" name="Veh_Number" placeholder="Vehicle Number" type="text" value="">                                                    <span id="Span_VehicleNumber" class="error_message"></span>
+                                        </div>
+                                        <div class="col-md-55 col-sm-12">
+                                            <label class="col-form-label label-align">Driver Name </label>
+                                            <input class="form-control" disabled="disabled" id="TxtDriver_Name" maxlength="100" name="Driver_Name" placeholder="Driver Name" type="text" value="">
+                                        </div>
+                                        <div class="col-md-55 col-sm-12">
+                                            <label class="col-form-label label-align"> Mobile Number</label>
+                                            <input class="form-control num_right" disabled="disabled" id="MobileNumber" maxlength="10" name="Mob_No" placeholder="Mobile Number" type="text" value="">
+                                        </div>
+                                        <div class="col-md-55 col-sm-12">
+                                            <label class="col-form-label label-align">Total Tonnage </label>
+                                            <input class="form-control num_left" disabled="disabled" id="TxtTot_Tonnage" maxlength="100" name="Tot_Tonnage" placeholder="Total Tonnage" type="text" value="">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    <section class="panel panel-default">
+                        <div class="panel-heading" role="tab" id="headingTwo">
+                            <h4 class="panel-title"><a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" class="collapsed" aria-controls="collapseTwo">  Tax &amp; Other Charges <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a></h4>
+                        </div>
+                        <div id="collapseTwo" class="panel-collapse in collapse" role="tabpanel" aria-labelledby="headingTwo" style="">
+
+                            <div class="panel-body">
+                                <table width="100%">
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <div class="table-responsive">
+                                                    <div id="" class="col-md-4 col-sm-12" style="margin-top:10px;">
+                                                        <table class="table table-striped jambo_table bulk_action rowhighlighttbl" id="Tbl_ItemTaxAmountList">
+                                                            <thead>
+                                                                <tr class="headings">
+                                                                    <th class="column-title">Tax Name</th>
+
+                                                                    <th class="column-title" style="text-align: right;">Amount</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>IGST - 18%</td>
+                                                                    <td id="TotalTaxAmount" class="num_right">3582.00</td>
+                                                                    <td hidden="hidden" id="taxID">161</td>
+                                                                    <td hidden="hidden" id="taxAccID">400040</td>
+                                                                </tr>
+
+                                                            </tbody>
+                                                            <tfoot>
+                                                                <tr style="background-color: #e4e4e4;">
+
+                                                                    <td colspan="1"><strong> Total Tax</strong></td>
+                                                                    <td align="right"><strong> <span id="_ItemTaxAmountTotal">3582.00</span></strong></td>
+                                                                </tr>
+                                                            </tfoot>
+                                                        </table>
+                                                    </div>
+
+                                                    <div id="" class="col-md-8 col-sm-12" style="margin-top:10px;">
+                                                        <table class="table table-striped jambo_table bulk_action rowhighlighttbl" id="Tbl_OtherChargeList">
+                                                            <thead>
+
+                                                                <tr class="headings">
+                                                                    <th class="column-title">Other Charges</th>
+                                                                    <th class="column-title">Supplier Name</th>
+                                                                    <th class="column-title no-link last" style="text-align: right;"><span class="nobr">Amount</span> </th>
+                                                                    <th>Tax Amount</th>
+                                                                    <th>Total</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            </tbody>
+                                                            <tfoot>
+                                                                <tr style="background-color: #e4e4e4;">
+                                                                    <td><strong>Total Other Charges</strong></td>
+                                                                    <td></td>
+                                                                    <td align="right"><strong><span id="_OtherChargeTotal">0.00</span></strong></td>
+                                                                    <td align="right"><strong><span id="_OtherChargeTotalTax">0.00</span></strong></td>
+                                                                    <td align="right"><strong><span id="_OtherChargeTotalAmt">0.00</span></strong></td>
+
+                                                                </tr>
+                                                            </tfoot>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                    </section>
+                    <section class="panel panel-default">
+                        <div class="panel-heading" role="tab" id="headingThree">
+                            <h4 class="panel-title"> <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">@Resource.GLAccountDetail <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a> </h4>
+                        </div>
+                        <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+                            <div id="GL_PartialDiv">
+                                <input value="Invoice No. B1/03/25/PDI0000001 Dated 2025-03-31 Created Against Bill Number _bill_no Date _bill_dt" id="hdn_Nurration" name="Nurration" type="hidden">
+                                <input value="Bank Charges Paid Against Invoice No. B1/03/25/PDI0000001 Invoice Date 2025-03-31 By Instrument Number _bill_no Dated _bill_dt" id="hdn_BP_Nurration" name="BP_Nurration" type="hidden">
+                                <input value="Debit Note for TDS raised Against Invoice No. B1/03/25/PDI0000001 Invoice Date 2025-03-31 Bill Number _bill_no Bill Date _bill_dt" id="hdn_DN_Nurration" name="DN_Nurration" type="hidden">
+                                <div class="card-box table-responsive dy_table">
+                                    <div class="col-md-12 col-sm-12">
+                                        <div id="" class="sticky-table sticky-ltr-cells sb-container container-example1 OrderHistory height60VH">
+                                            <table id="VoucherDetail" data-order="" class="table table-striped table-bordered rowhighlighttbl mt-2 width1400">
+                                                <thead>
+                                                    <tr class="sticky-header">
+                                                        <th width="3%">@Resource.SrNo</th>
+                                                        <th width="3%">@Resource.GL @Resource.SrNo</th>
+                                                        <th width="14%">@Resource.GLAccount</th>
+                                                        <th width="10%">@Resource.DrAmount @Resource.InSpecific</th>
+                                                        <th width="10%">@Resource.DrAmount @Resource.InBase</th>
+                                                        <th width="10%">@Resource.CrAmount @Resource.InSpecific</th>
+                                                        <th width="10%">@Resource.CrAmount @Resource.InBase</th>
+                                                        <th width="10%">@Resource.CostCenter</th>
+                                                        <th width="10%">@Resource.Voucher @Resource.Type</th>
+                                                        <th width="10%">@Resource.Voucher @Resource.Number</th>
+                                                        <th width="10%">@Resource.Voucher @Resource.Date</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td rowspan="6" id="td_SrNo">1</td>
+                                                        <td id="td_GlSrNo">1</td>
+                                                        <td id="td_vou_sr_no" hidden="">1</td>
+                                                        <td id="td_GlAccName" class="no-padding">
+                                                            Apex India Pvt. Ltd.
+                                                        </td>
+                                                        <td id="tdhdn_GlAccId" hidden="">200010</td>
+                                                        <td class="num_right" id="dramt">0.00</td>
+                                                        <td class="num_right" id="dramtInBase">0.00</td>
+                                                        <td class="num_right" id="cramt">19.60</td>
+                                                        <td class="num_right" id="cramtInBase">19.60</td>
+                                                        <td class="center" id="td_CC">
+                                                            <button type="button" disabled="" id="BtnCostCenterDetail" onclick="Onclick_CCbtn('type',event)" class="calculator subItmImg" data-toggle="modal" data-target="#CostCenterDetail" data-backdrop="static" data-keyboard="false"><i class="fa fa-eye" aria-hidden="true" title="Cost Center Detail"></i></button>
+                                                        </td>
+                                                        <td hidden="">
+                                                            <input type="hidden" id="SNohf" value="1">
+                                                            <input type="hidden" id="type" value="Supp">
+                                                            <input type="hidden" id="txthfAccID" value="Apex India Pvt. Ltd.">
+                                                            <input type="hidden" id="hfAccID" value="200010">
+                                                            <input type="hidden" id="glVouType" value="PV   ">
+                                                            <input type="hidden" id="gl_curr_id" value="1">
+                                                            <input type="hidden" id="gl_conv_rate" value="1">
+                                                            <input type="hidden" id="gl_bill_no" value="10000">
+                                                            <input type="hidden" id="gl_bill_date" value="2025-03-31">
+                                                            <input type="hidden" id="dramt1" value="0.00">
+                                                            <input type="hidden" id="dramtInBase1" value="0.00">
+                                                            <input type="hidden" id="cramt1" value="19.60">
+                                                            <input type="hidden" id="cramtInBase1" value="19.60">
+                                                        </td>
+                                                        <td rowspan="6" id="td_VouType">PV   </td>
+                                                        <td rowspan="6" id="td_VouNo">B1/03/25/PV0000086</td>
+                                                        <td rowspan="6" id="td_VouDate">31-03-2025</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td id="td_GlSrNo">2</td>
+                                                        <td id="td_vou_sr_no" hidden="">1</td>
+                                                        <td id="td_GlAccName" class="no-padding">
+                                                            <div class="col-sm-12 lpo_form no-padding">
+                                                                <select class="form-control" disabled="" id="Acc_name_2" onchange="OnChangeAccountName(2,event)">
+                                                                    <option value="400001">Purchase Account - Local</option>
+                                                                </select>
+                                                            </div>
+                                                        </td>
+                                                        <td id="tdhdn_GlAccId" hidden="">400001</td>
+                                                        <td class="num_right" id="dramt">19.60</td>
+                                                        <td class="num_right" id="dramtInBase">19.60</td>
+                                                        <td class="num_right" id="cramt">0.00</td>
+                                                        <td class="num_right" id="cramtInBase">0.00</td>
+                                                        <td class="center" id="td_CC">
+                                                            <button type="button" id="BtnCostCenterDetail" onclick="Onclick_CCbtn('type',event)" class="calculator subItmImg" data-toggle="modal" data-target="#CostCenterDetail" data-backdrop="static" data-keyboard="false"><i class="fa fa-eye" aria-hidden="true" title="Cost Center Detail"></i></button>
+                                                        </td>
+                                                        <td hidden="">
+                                                            <input type="hidden" id="SNohf" value="2">
+                                                            <input type="hidden" id="type" value="Itm">
+                                                            <input type="hidden" id="txthfAccID" value="Purchase Account - Local">
+                                                            <input type="hidden" id="hfAccID" value="400001">
+                                                            <input type="hidden" id="glVouType" value="PV   ">
+                                                            <input type="hidden" id="gl_curr_id" value="1">
+                                                            <input type="hidden" id="gl_conv_rate" value="1">
+                                                            <input type="hidden" id="gl_bill_no" value="10000">
+                                                            <input type="hidden" id="gl_bill_date" value="2025-03-31">
+                                                            <input type="hidden" id="dramt1" value="19.60">
+                                                            <input type="hidden" id="dramtInBase1" value="19.60">
+                                                            <input type="hidden" id="cramt1" value="0.00">
+                                                            <input type="hidden" id="cramtInBase1" value="0.00">
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td id="td_GlSrNo">3</td>
+                                                        <td id="td_vou_sr_no" hidden="">1</td>
+                                                        <td id="td_GlAccName" class="no-padding">
+                                                            CGST - 9%
+                                                        </td>
+                                                        <td id="tdhdn_GlAccId" hidden="">400041</td>
+                                                        <td class="num_right" id="dramt">1.76</td>
+                                                        <td class="num_right" id="dramtInBase">1.76</td>
+                                                        <td class="num_right" id="cramt">0.00</td>
+                                                        <td class="num_right" id="cramtInBase">0.00</td>
+                                                        <td class="center" id="td_CC">
+                                                            <button type="button" id="BtnCostCenterDetail" onclick="Onclick_CCbtn('type',event)" class="calculator subItmImg" data-toggle="modal" data-target="#CostCenterDetail" data-backdrop="static" data-keyboard="false"><i class="fa fa-eye" aria-hidden="true" title="Cost Center Detail"></i></button>
+                                                        </td>
+                                                        <td hidden="">
+                                                            <input type="hidden" id="SNohf" value="3">
+                                                            <input type="hidden" id="type" value="Tax">
+                                                            <input type="hidden" id="txthfAccID" value="CGST - 9%">
+                                                            <input type="hidden" id="hfAccID" value="400041">
+                                                            <input type="hidden" id="glVouType" value="PV   ">
+                                                            <input type="hidden" id="gl_curr_id" value="1">
+                                                            <input type="hidden" id="gl_conv_rate" value="1">
+                                                            <input type="hidden" id="gl_bill_no" value="10000">
+                                                            <input type="hidden" id="gl_bill_date" value="2025-03-31">
+                                                            <input type="hidden" id="dramt1" value="1.76">
+                                                            <input type="hidden" id="dramtInBase1" value="1.76">
+                                                            <input type="hidden" id="cramt1" value="0.00">
+                                                            <input type="hidden" id="cramtInBase1" value="0.00">
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td id="td_GlSrNo">4</td>
+                                                        <td id="td_vou_sr_no" hidden="">1</td>
+                                                        <td id="td_GlAccName" class="no-padding">
+                                                            SGST - 9%
+                                                        </td>
+                                                        <td id="tdhdn_GlAccId" hidden="">400042</td>
+                                                        <td class="num_right" id="dramt">1.76</td>
+                                                        <td class="num_right" id="dramtInBase">1.76</td>
+                                                        <td class="num_right" id="cramt">0.00</td>
+                                                        <td class="num_right" id="cramtInBase">0.00</td>
+                                                        <td class="center" id="td_CC">
+                                                            <button type="button" id="BtnCostCenterDetail" onclick="Onclick_CCbtn('type',event)" class="calculator subItmImg" data-toggle="modal" data-target="#CostCenterDetail" data-backdrop="static" data-keyboard="false"><i class="fa fa-eye" aria-hidden="true" title="Cost Center Detail"></i></button>
+                                                        </td>
+                                                        <td hidden="">
+                                                            <input type="hidden" id="SNohf" value="4">
+                                                            <input type="hidden" id="type" value="Tax">
+                                                            <input type="hidden" id="txthfAccID" value="SGST - 9%">
+                                                            <input type="hidden" id="hfAccID" value="400042">
+                                                            <input type="hidden" id="glVouType" value="PV   ">
+                                                            <input type="hidden" id="gl_curr_id" value="1">
+                                                            <input type="hidden" id="gl_conv_rate" value="1">
+                                                            <input type="hidden" id="gl_bill_no" value="10000">
+                                                            <input type="hidden" id="gl_bill_date" value="2025-03-31">
+                                                            <input type="hidden" id="dramt1" value="1.76">
+                                                            <input type="hidden" id="dramtInBase1" value="1.76">
+                                                            <input type="hidden" id="cramt1" value="0.00">
+                                                            <input type="hidden" id="cramtInBase1" value="0.00">
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td id="td_GlSrNo">5</td>
+                                                        <td id="td_vou_sr_no" hidden="">1</td>
+                                                        <td id="td_GlAccName" class="no-padding">
+                                                            RCM CGST 9%
+                                                        </td>
+                                                        <td id="tdhdn_GlAccId" hidden="">400072</td>
+                                                        <td class="num_right" id="dramt">0.00</td>
+                                                        <td class="num_right" id="dramtInBase">0.00</td>
+                                                        <td class="num_right" id="cramt">1.76</td>
+                                                        <td class="num_right" id="cramtInBase">1.76</td>
+                                                        <td class="center" id="td_CC">
+                                                            <button type="button" id="BtnCostCenterDetail" onclick="Onclick_CCbtn('type',event)" class="calculator subItmImg" data-toggle="modal" data-target="#CostCenterDetail" data-backdrop="static" data-keyboard="false"><i class="fa fa-eye" aria-hidden="true" title="Cost Center Detail"></i></button>
+                                                        </td>
+                                                        <td hidden="">
+                                                            <input type="hidden" id="SNohf" value="5">
+                                                            <input type="hidden" id="type" value="RCM">
+                                                            <input type="hidden" id="txthfAccID" value="RCM CGST 9%">
+                                                            <input type="hidden" id="hfAccID" value="400072">
+                                                            <input type="hidden" id="glVouType" value="PV   ">
+                                                            <input type="hidden" id="gl_curr_id" value="1">
+                                                            <input type="hidden" id="gl_conv_rate" value="1">
+                                                            <input type="hidden" id="gl_bill_no" value="10000">
+                                                            <input type="hidden" id="gl_bill_date" value="2025-03-31">
+                                                            <input type="hidden" id="dramt1" value="0.00">
+                                                            <input type="hidden" id="dramtInBase1" value="0.00">
+                                                            <input type="hidden" id="cramt1" value="1.76">
+                                                            <input type="hidden" id="cramtInBase1" value="1.76">
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td id="td_GlSrNo">6</td>
+                                                        <td id="td_vou_sr_no" hidden="">1</td>
+                                                        <td id="td_GlAccName" class="no-padding">
+                                                            RCM SGST 9%
+                                                        </td>
+                                                        <td id="tdhdn_GlAccId" hidden="">400073</td>
+                                                        <td class="num_right" id="dramt">0.00</td>
+                                                        <td class="num_right" id="dramtInBase">0.00</td>
+                                                        <td class="num_right" id="cramt">1.76</td>
+                                                        <td class="num_right" id="cramtInBase">1.76</td>
+                                                        <td class="center" id="td_CC">
+                                                            <button type="button" id="BtnCostCenterDetail" onclick="Onclick_CCbtn('type',event)" class="calculator subItmImg" data-toggle="modal" data-target="#CostCenterDetail" data-backdrop="static" data-keyboard="false"><i class="fa fa-eye" aria-hidden="true" title="Cost Center Detail"></i></button>
+                                                        </td>
+                                                        <td hidden="">
+                                                            <input type="hidden" id="SNohf" value="6">
+                                                            <input type="hidden" id="type" value="RCM">
+                                                            <input type="hidden" id="txthfAccID" value="RCM SGST 9%">
+                                                            <input type="hidden" id="hfAccID" value="400073">
+                                                            <input type="hidden" id="glVouType" value="PV   ">
+                                                            <input type="hidden" id="gl_curr_id" value="1">
+                                                            <input type="hidden" id="gl_conv_rate" value="1">
+                                                            <input type="hidden" id="gl_bill_no" value="10000">
+                                                            <input type="hidden" id="gl_bill_date" value="2025-03-31">
+                                                            <input type="hidden" id="dramt1" value="0.00">
+                                                            <input type="hidden" id="dramtInBase1" value="0.00">
+                                                            <input type="hidden" id="cramt1" value="1.76">
+                                                            <input type="hidden" id="cramtInBase1" value="1.76">
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                                <tfoot>
+                                                    <tr class="total">
+                                                        <td colspan="2"> &nbsp;</td>
+                                                        <td class="num_right"><strong>Total</strong></td>
+                                                        <td class="num_right"><strong><span></span></strong></td>
+                                                        <td class="num_right"><strong><span id="DrTotalInBase">23.12</span></strong></td>
+                                                        <td class="num_right"><strong><span></span></strong></td>
+                                                        <td class="num_right"><strong><span id="CrTotalInBase">23.12</span></strong></td>
+                                                        <td colspan="4"> &nbsp;</td>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    <section class="panel panel-default">
+                        <div class="panel-heading" role="tab" id="headingFive">
+                            <h4 class="panel-title"> <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive"> Attachment<span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a> </h4>
+                        </div>
+                        <div id="collapseFive" class="panel-collapse collapse hide" role="tabpanel" aria-labelledby="headingFive">
+                            <div class="panel-body">
+                                <div id="PartialImageBind">
+                                    <script src="/Content/Scripts/Common/CommonJS1.js"></script>
+                                    <table id="hdn_attatchment_list" style="display:none;">
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="form-group" id="FilesUpload">
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </article>
+            </div>
+        </div>
+    </div>
+</div>

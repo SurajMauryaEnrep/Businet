@@ -1,0 +1,209 @@
+﻿@model EnRepMobileWeb.MODELS.LOGIN.LOGIN_MODEL
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en" id="dataView">
+<head>
+    <script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+    <script src="~/Content/Css/build/js/sweetalert.js"></script>
+    <link href="~/Content/Css/build/css/sweetalert.css" rel="stylesheet" />
+    @*<link href="~/Content/Css/fonts/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" />*@
+    <link rel="stylesheet" href="~/Content/Css/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="~/Content/Css/fonts/iconic/css/material-design-iconic-font.min.css">
+    @*<script src="~/Content/Scripts/Common/CommonJS.js"></script>*@
+    <title>Welcome to Businet</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicons -->
+    <link href="~/Content/Images/favicon.png" rel="icon">
+    @Styles.Render("~/Content/Images")
+    @Styles.Render("~/Content/Css/Login")
+    
+</head>
+<body>
+    <div id="popup1" class="overlay">
+        <div class="popup">
+            <h4 id="heading_change_pass">Change Password</h4>
+            <h4 id="heading_forgot_pass">Forgot Password</h4>
+            <a class="close" href="#" onclick="DiscardClick();">&times;</a>
+            <div class="content">
+                <div class="wrap-input100 " data-validate="Enter username">
+                    <label class="label-input100">Username</label>
+                    <input id="txtusername" readonly class="" type="text" name="" placeholder="" onkeypress="" autocomplete="">
+                </div>
+                <div id="divoldpass" class="wrap-input100 validate-input" data-validate="Enter password">
+                    <label class="label-input100">Old Password&nbsp; <span id="validateOldPass" style="color:red"></span></label>
+                    <input id="txtoldpass" class="" type="password" name="pass" placeholder="" onchange="ValidateOldPassword();" autocomplete="">
+                </div>
+                <div class="wrap-input100 validate-input" data-validate="Enter password">
+                    <label class="label-input100">New Password</label>
+                    <input id="txtnewpass" class="" disabled type="password" name="pass" placeholder="" onchange="PasswordCompareValidator();" autocomplete="">
+                </div>
+                <div class="wrap-input100 validate-input" data-validate="Enter password">
+                    <label class="label-input100">Confirm Password &nbsp; <span id="comparevalidator" style="color:red"></span></label>
+                    <input id="txtconfpass" class="" disabled type="password" name="pass" placeholder="" onchange="PasswordCompareValidator();SendOTP();" autocomplete="">
+                </div>
+                <div id="divotp" class="wrap-input100 validate-input" data-validate="Enter password">
+                    <label class="label-input100">OTP</label>
+                    <input id="txtOtp" class="" disabled type="text" maxlength="6" name="pass" placeholder="" onkeypress="return Cmn_IntValueonly(this, event);" onchange="OnChangeOTP();" autocomplete="">
+                    <a class="resend" href="#popup1" style="width:100%; float:left; text-align:left; padding-top:10px;" onclick="SendOTP();">
+                        Resend OTP
+                    </a>
+                    <span id="timerDisplay" style="color:red; font-size:small"></span>
+                </div>
+                <div class="container-login100-form-btn">
+                    <input type="submit" id="ChangePassword" disabled class="login100-form-btn" value="Change Password" style="margin-right:10px;" onclick="PasswordCompareValidator(); ChangePassword();" />
+                    <input type="submit" id="Discard" class="login100-form-btn" value="Discard" onclick="DiscardClick();" />
+                    <input id="hfPassValidate" type="hidden" />
+                    <input id="hfAction" type="hidden" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*<div class="limiter">
+        <div class="container-login100">
+            <div class="wrap-login100">
+                <form class="login100-form validate-form">
+                    <span class="login100-form-title p-b-26">
+                        Welcome
+                    </span>
+                    <span class="login100-form-title p-b-48">
+                        <i class="zmdi zmdi-font"></i>
+                    </span>
+
+                    <div class="wrap-input100 validate-input" data-validate="Valid email is: a@b.c">
+                        <input class="input100" type="text" name="email">
+                        <span class="focus-input100" data-placeholder="Email"></span>
+                    </div>
+
+                    <div class="wrap-input100 validate-input" data-validate="Enter password">
+                        <span class="btn-show-pass">
+                            <i class="zmdi zmdi-eye"></i>
+                        </span>
+                        <input class="input100" type="password" name="pass">
+                        <span class="focus-input100" data-placeholder="Password"></span>
+                    </div>
+
+                    <div class="container-login100-form-btn">
+                        <div class="wrap-login100-form-btn">
+                            <div class="login100-form-bgbtn"></div>
+                            <button class="login100-form-btn">
+                                Login
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="text-center p-t-115">
+                        <span class="txt1">
+                            Don’t have an account?
+                        </span>
+
+                        <a class="txt2" href="#">
+                            Sign Up
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>*@
+
+
+    <div id="dropDownSelect1"></div>
+    <div class="limiter">
+        <div class="container-login100">
+            <div class="wrap-loginLeft">
+                <div class="d-flex align-items-center" style="height: 100vh; padding-left:10%;">
+                    <div class="text-start">
+                        <img src="~/Content/Images/BusinetLogo.png" width="250" height="auto" alt="EnRepLogo">
+                        <p>Where Vision Meets Execution</p>
+                        <a class="learnMore" href="https://businet.in/" target="_blank">
+                            Learn More
+                        </a>
+
+                    </div>
+                </div>
+            </div>
+           
+               
+                    <div class="wrap-login100">
+                        @using (Html.BeginForm("LoginUser", "Home", FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+                            {
+                                <div class="loginHeading">
+                                    <div class="loginHeadingTxt"> Hello Again! </div>
+                                    <span class="loginHeadingSpan">Welcome Back</span>
+                                </div>
+                                <div class="wrap-input100 validate-input" data-validate="Enter username">
+                                    <span class="label-input100">Login ID</span>
+                                    @Html.TextBoxFor(model => model.UserName, new { @class = "input100 " + Model.UserBorder, @type = "text", @placeholder = "Login ID", autocomplete = "off", @id = "txtUserName", @onkeypress = "OnkeypressUser()" })
+                                    <span class="focus-input100" data-symbol="&#xf206;"></span>
+                                    <div id="spanUserName" class="field-validation-valid"></div>
+                                    <div id="spanUser" class="@Model.ClassForUser">@Model.UserMessage</div>
+                                </div>
+                                @*<div class="wrap-input100 validate-input" data-validate="Enter password">
+                                    <span class="btn-show-pass">
+                                        <i class="zmdi zmdi-eye"></i>
+                                    </span>
+                                    <input class="input100" type="password" name="pass">
+                                    <span class="focus-input100" data-placeholder="Password"></span>
+                                </div>*@
+                                <div class="wrap-input100 validate-input wrapRemSec" data-validate="Enter password">
+                                    <span class="label-input100">Password</span>
+                                    <input style="display:none;" type="password" id="HdnPw" />
+                                    <input id="hdnAutoLog" value="1" type="hidden" class="input100" autocomplete="off">
+                                    @Html.TextBoxFor(model => model.UserPassword, new
+                                     {
+                                         @class = "input100 " + Model.PassBorder,
+                                         @type = "password",
+                                         @placeholder = "Password",
+                                        autocompletetype = "disable",
+                    autocomplete = "new-password",
+                    @id = "txtPass",
+                    @onkeypress = "OnkeypressPassword()"
+                    })<span class="focus-input100" data-symbol="&#xf206;"></span>
+                                    <span class="btn-show-pass">
+                                        <i class="zmdi zmdi-eye"></i>
+                                    </span>
+
+                                    <div id="spanPass" class="field-validation-valid"></div>
+                                    <div id="spanInvalidPass" class="@Model.ClassForPass">@Model.PassMessage</div>
+                                </div>
+
+                                <div class="contact100-form-checkbox">
+                                    <div class="RememberMe">
+                                        <label for="Chk_RememberMe">
+                                            @Html.CheckBoxFor(x => x.RememberMe, new { @id = "Chk_RememberMe" })
+                                            Remember me
+                                        </label>
+                                    </div>
+                                    <div class="ForgotPassword">
+                                        <a class="txt1" href="#popup1" onclick="PreventIfUsernameEmpty(); onclickForgetPass();">
+                                            Forgot Password?
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div id="Languae">
+                                    @Html.Partial("~/Views/Shared/Home/_Indexlanguage.cshtml")
+                                </div>
+                                @Html.HiddenFor(m => m.BranchName, new { @id = "HdnBranchName" })
+
+
+                                <div class="container-login100-form-btn">
+                                    <input type="submit" id="LoginButton" class="login100-form-btn" value="Login" />
+                                </div>
+                            }
+                        }
+                    </div>
+                
+           
+        </div>
+    </div>    
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/Content/Scripts")
+</body>
+</html>

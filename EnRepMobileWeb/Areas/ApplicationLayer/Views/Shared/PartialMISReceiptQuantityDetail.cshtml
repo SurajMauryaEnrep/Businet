@@ -1,0 +1,87 @@
+﻿@using EnRepMobileWeb.Resources;
+<div class="modal-content">
+    <div class="modal-header">
+        <h2>@Resource.Receipt @Resource.Detail</h2>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body pop_top">
+        <div class="col-md-4 col-sm-12 pl-0">
+            <label class="col-form-label label-align">@Resource.Item @Resource.Name</label>
+            <input id="txtItmName" class="form-control" autocomplete="off" type="text" name="batchUOM" placeholder="@Resource.Item @Resource.Name" disabled="">
+        </div>
+        <div class="col-md-2 col-sm-12" style="padding-left:0px;">
+            <label class="col-form-label label-align">@Resource.UOM</label>
+            <input id="batchr_UOM" class="form-control" autocomplete="off" type="text" name="batchUOM" placeholder="UOM" onblur="this.placeholder='UOM'" disabled="">
+        </div>
+        <div class="col-md-3 col-sm-12" style="padding-left:0px;">
+            <label class="col-form-label label-align ">@Resource.SourceBranch</label>
+            <input id="txtSrcBr" class="form-control" autocomplete="off" type="text" name="batchUOM" placeholder="@Resource.SourceBranch" disabled="">
+
+        </div>
+        <div class="col-md-3 col-sm-12">
+            <label class="col-form-label label-align">@Resource.SourceWarehouse </label>
+            <input id="txtrSrcWh" class="form-control" autocomplete="off" type="text" name="batchUOM" placeholder="@Resource.SourceWarehouse" disabled="">
+
+        </div>
+        <div class="col-md-4 col-sm-12 pl-0">
+            <label class="col-form-label label-align">@Resource.DestinationBranch </label>
+            <input id="txtrDstnBr" class="form-control" autocomplete="off" type="text" name="batchUOM" placeholder="@Resource.DestinationBranch" disabled="">
+
+        </div>
+        <div class="col-md-4 col-sm-12 pl-0">
+            <label class="col-form-label label-align">@Resource.DestinationWarehouse </label>
+            <input id="txtrDstnWh" class="form-control" autocomplete="off" type="text" name="batchUOM" placeholder="@Resource.DestinationWarehouse" disabled="">
+
+        </div>
+
+        <div class="col-md-2 col-sm-12" style="padding-left:0px;">
+            <label class="col-form-label label-align">@Resource.ReceiptQuantity</label>
+            <input id="rReceiptQuantity" class="form-control num_right" autocomplete="off" type="text" name="ReceiptQuantity" placeholder="0000.00" disabled="">
+        </div>
+        <div class="card-box table-responsive dy_table margin15">
+            <div id="" class="sticky-table sticky-ltr-cells sb-container container-example1 OrderHistory height30VH">
+                <table id="BatchDetail_Tbl" data-order="" class="table table-striped table-bordered rowhighlighttbl" style="width:100%">
+                    <thead>
+                        <tr class="sticky-header">
+                            <th width="10%">@Resource.SrNo</th>
+                            <th width="30%">@Resource.ReceiptNumber</th>
+                            <th width="30%">@Resource.ReceiptDate</th>
+                            <th width="30%">@Resource.ReceiptQuantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (ViewBag.StkTrfPopupData != null)
+                        {
+                            foreach (var data in ViewBag.StkTrfPopupData.Rows)
+                            {
+                                <tr>
+                                    <td>@data["SrNo"].ToString()</td>
+                                    <td>@data["mr_no"].ToString()</td>
+                                    <td>@data["mr_dt"].ToString()</td>
+                                    <td class="num_right">@data["rec_qty"].ToString()</td>
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+                    @*<tfoot>
+                        <tr>
+                            <td>01</td>
+                            <td>MTR/24/100001</td>
+                            <td>10-05-2024</td>
+                            <td class="num_right">60</td>
+                        </tr>
+                    </tfoot>*@
+                </table>
+
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        @*<button type="button" class="btn btn-primary btn-sm" id="BatchReset_Btn" onclick="OnClickBatchResetBtnGRN()">@Resource.Reset</button>*@
+        @*<button type="button" class="btn btn-primary btn-sm" id="BatchSaveAndExit_Btn" onclick="OnClickSaveAndCloseGRN()">@Resource.SaveAndExit</button>*@
+        <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" id="BatchDiscardAndExit_Btn" >@Resource.Close</button>
+
+
+    </div>
+</div>

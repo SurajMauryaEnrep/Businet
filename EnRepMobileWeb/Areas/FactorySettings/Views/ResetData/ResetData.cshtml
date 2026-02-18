@@ -1,0 +1,168 @@
+﻿@using EnRepMobileWeb.MODELS.Common;
+@using EnRepMobileWeb.Resources;
+
+@if (Session["UserId"] == null)
+{
+    Response.Redirect("~/Login");
+}
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+
+<script src="~/Content/Scripts/FactorySettings/ResetData/ResetData_js.js"></script>
+
+<div class="row">
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <h2 class="col-md-5 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <label class="col-form-label label-align pb-2 font-weight-bold">@Resource.Reset @Resource.Type</label>
+                <div class="col-md-12 col-sm-12">
+                    <input type="hidden" id="DocumentMenuId" value="@ViewBag.DocumentMenuId" />
+                    <div class="col-md-4 col-sm-12">
+                        <div class="radio">
+                            <label>
+                                <input type="radio" checked="" value="FRT" id="rdo_freset" name="optionsRadios" onclick="OnChangeRadioBtn()"> @Resource.FactoryReset
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12 col-sm-12">
+                    <div class="col-md-4 col-sm-12 mt-4">
+                        <div class="radio">
+                            <label>
+                                <input type="radio" value="DHO" id="rdo_dho" name="optionsRadios" onclick="OnChangeRadioBtn()"> @Resource.DeleteHo
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-12">
+                        <label class="col-form-label label-align">@Resource.HO <span class="required">*</span></label>
+                        <select class="form-control" id="dho_ho" onchange="OnChangeHo_data('dho_ho');" disabled></select>
+                        <span class="error_message" id="span_dhoho" style="display: none;"></span>
+                    </div>
+                </div>
+                <div class="col-md-12 col-sm-12">
+                    <div class="col-md-4 col-sm-12 mt-4">
+                        <div class="radio">
+                            <label>
+                                <input type="radio" value="DBR" id="rdo_dbr" name="optionsRadios" onclick="OnChangeRadioBtn()"> @Resource.DeleteBranch
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-12">
+                        <label class="col-form-label label-align">@Resource.HO <span class="required">*</span></label>
+                        <select class="form-control" id="dbr_ho" onchange="OnChangeHo_data('dbr_ho');" disabled></select>
+                        <span class="error_message" id="span_dbrho" style="display: none;"></span>
+                    </div>
+                    <div class="col-md-4 col-sm-12">
+                        <label class="col-form-label label-align">@Resource.Branch <span class="required">*</span></label>
+                        <select class="form-control" id="dbr_br" onchange="onchangebr_ddl('dbr_br');" disabled>
+                            <option value="0">---Select---</option>
+                        </select>
+                        <span class="error_message" id="span_dbrbr" style="display: none;"></span>
+                    </div>
+                </div>
+                <div class="col-md-12 col-sm-12">
+                    <div class="col-md-4 col-sm-12 mt-4">
+                        <div class="radio">
+                            <label>
+                                <input type="radio" value="DTD" id="rdo_dtd" name="optionsRadios" onclick="OnChangeRadioBtn()"> @Resource.DeleteTransactionData
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-12">
+                        <label class="col-form-label label-align">@Resource.HO <span class="required">*</span></label>
+                        <select class="form-control" id="dtd_ho" onchange="OnChangeHo_data('dtd_ho');" disabled></select>
+                        <span class="error_message" id="span_dtdho" style="display: none;"></span>
+                    </div>
+                    <div class="col-md-4 col-sm-12">
+                        <label class="col-form-label label-align">@Resource.Branch <span class="required">*</span></label>
+                        <select class="form-control" id="dtd_br" onchange="onchangebr_ddl('dtd_br');" disabled>
+                            <option value="0">---Select---</option>
+                        </select>
+                        <span class="error_message" id="span_dtdbr" style="display: none;"></span>
+                    </div>
+                </div>
+                <div class="col-md-12 col-sm-12">
+                    <div class="col-md-4 col-sm-12 mt-4">
+                        <div class="radio">
+                            <label>
+                                <input type="radio" value="DMTD" id="rdo_dmtd" name="optionsRadios" onclick="OnChangeRadioBtn()"> @Resource.DeleteMasterAndTransactionData
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-12">
+                        <label class="col-form-label label-align">@Resource.HO <span class="required">*</span></label>
+                        <select class="form-control" id="dmtd_ho" onchange="OnChangeHo_data('dmtd_ho');" disabled></select>
+                        <span class="error_message" id="span_dmtdho" style="display: none;"></span>
+                    </div>
+                    <div class="col-md-4 col-sm-12">
+                        <label class="col-form-label label-align">@Resource.Branch</label>
+                        <select class="form-control" id="dmtd_br" disabled>
+                            <option value="0">---Select---</option>
+                        </select>
+                        
+                    </div>
+                </div>
+
+                <div class="col-md-12 col-sm-12 mb-4 center mt-4 ">
+                    <button type="button" class="btn btn-primary btn-sm" id="btn_reset" onclick="onclick_resetdatabtn();">@Resource.Reset</button>
+                    <button type="button" class="btn btn-danger btn-sm" id="btn_clear" onclick="OnClickClearBtn();">@Resource.Clear</button>
+                </div>
+                <div id="divotpcofm" class="col-md-12 col-sm-12 mb-4" style="display:none;">
+                    <div class="col-md-4 col-sm-12 mb-4 "> &nbsp; </div>
+                    <div class="col-md-4 col-sm-12 mb-4 border pb-4  ">
+                        @*<h2 class="heading_left_padding ">@Resource.OTPSentTo vishal.varshney@enrep.biz</h2>*@
+                        <h2 class="heading_left_padding ">@Resource.OTPSentTo vixxxx.xxxxxxey@enxxx.biz</h2>
+                        <div class="col-md-12 col-sm-12">
+                            <label class="col-form-label label-align col-md-3 col-sm-12 pl-0 left">@Resource.OTPNumber </label>
+                            <input class="form-control col-md-9 col-sm-12" id="txt_otpnumber" maxlength="10" name="txt_otpnumber" onkeypress="onotpkeypress();" placeholder="OTP Number" autocomplete="off" type="text" value="">
+                            @*<span class="error_message" id="span_otpverify" style="display: none;"></span>
+            <button type="button" class="btn btn-primary btn-sm float-right mt-2" id="btn_verify" onclick="onclick_varify_otpbtn();">@Resource.Verify</button>*@
+                        </div>
+                        <div class="col-md-12 col-sm-12">
+                            <span class="error_message" id="span_otpverify" style="display: none;"></span>
+                        </div>
+                        <div class="col-md-12 col-sm-12" style="padding-top:10px;">
+                            <button type="button" class="btn btn-primary btn-sm float-right mt-2" id="btn_verify" onclick="onclick_varify_otpbtn();">@Resource.Verify</button>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-12 mb-4 "> &nbsp; </div>
+                </div>
+                <div class="col-md-12 col-sm-12 mb-4">
+
+                    <p id="para_freset">
+                        <strong>@Resource.FactoryReset</strong> <br />
+                        Factory Reset will erase all the transactions and business layer data for entire ERP of all the HO and Branches.
+                        Also it will remove all the Head Offices and branches other than default head office and associated branch permanently.
+                    </p>
+                    <p id="para_DHO" style="display:none;">
+                        <strong>@Resource.DeleteHo</strong> <br />
+                        This will erase all the transactions and business layer data for the selected Head Office and associated
+                        branches. Also it will remove the selected head office and associated branches permanently.
+                    </p>
+                    <p id="para_DBR" style="display:none;">
+                        <strong>@Resource.DeleteBranch</strong> <br />
+                        This will erase all the transactions and business layer data for the selected branch.
+                        Also it will remove the selected branch permanently.
+                    </p>
+                    <p id="para_DALD" style="display:none;">
+                        <strong>@Resource.DeleteTransactionData</strong> <br />
+                        This will erase all the transactions data of all modules for the selected branch.
+                    </p>
+                    <p id="para_BLAPD" style="display:none;">
+                        <strong>@Resource.DeleteMasterAndTransactionData</strong> <br />
+                        This will erase all the transactions and business layer data for the selected head office and branch.
+                        if no branch is selected then entire data of selected head office and associated branches permanently.
+                    </p>
+                </div>
+            </div>
+            </div>
+    </div>
+</div>

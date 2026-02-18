@@ -1,0 +1,71 @@
+﻿<script src="~/Content/Scripts/Common/CommonJS.js"></script>
+@using EnRepMobileWeb.Resources;
+<div class="modal-content">
+    <div class="modal-header">
+        <h2>@Resource.Delivery   @Resource.Schedule</h2>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="col-md-12 col-sm-12 mt-2">
+        <div class="x_panel margin_top_zero">
+            <div class="sticky-table sticky-ltr-cells sb-container container-example1">
+                <div id="">
+                    <table id="tdlDeliverySchedule" class="table table-striped rowhighlighttbl width1000 itmfrz" cellspacing="0" width="100%">
+                        <thead>
+                            <tr class="sticky-header">
+                                <th style="display:none;"></th>
+                                <th width="25%" class="itmStick">@Resource.ItemName</th>
+                                <th width="15%">@Resource.DeliveryDate </th>
+                                <th width="15%">@Resource.Quantity</th>
+                                <th style="display:none;"></th>
+                                @if (ViewBag.DocumentMenuId == "105103190105" || ViewBag.DocumentMenuId == "105103190120")
+                                {
+                                    <th width="15%">@Resource.ShippedQuantity</th>
+                                }
+                                else
+                                {
+                                    <th width="15%">@Resource.ReceivedQuantity</th>
+                                }
+
+                                <th width="15%">@Resource.PendingQuantity</th>
+                                <th width="15%">@Resource.OverdueDays</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (ViewBag.ItemDelSchdetails != null)
+                            {
+                                foreach (System.Data.DataRow dr in ViewBag.ItemDelSchdetails.Rows)
+                                {
+                                    <tr id="R1" class="even pointer">
+                                        <td hidden="hidden" id="Hd_ItemIdFrDS">@dr["item_id"].ToString()</td>
+                                        <td class="a-center ItmNameBreak itmStick tditemfrz">@dr["item_name"].ToString()</td>
+                                        <td>@dr["delivery_dt"].ToString()</td>
+                                        <td class="num_right" id="delv_qty">@dr["delv_qty"].ToString()</td>
+                                        <td hidden="hidden" id="sch_date">@dr["delivery_dt"].ToString()</td>
+                                        <td class="num_right" id="SRQty">@dr["rec_qty"].ToString()</td>
+                                        <td class="num_right" id="PenQty">@dr["pending_qty"].ToString()</td>
+                                        @* <td class="num_right" id="OdDays">@dr["overduedays"].ToString()</td>*@
+                                        <td class="num_right" id="OdDays">@dr["overduedays"].ToString()</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*@{
+        if (Model.SearchStatus != null)
+        {
+            if (Model.SearchStatus == "SEARCHDS")
+            {
+                @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+                @Scripts.Render("~/Content/Scripts/DatatablesJs")
+                Model.SearchStatus = null;
+            }
+        }
+    }*@
+
+
+

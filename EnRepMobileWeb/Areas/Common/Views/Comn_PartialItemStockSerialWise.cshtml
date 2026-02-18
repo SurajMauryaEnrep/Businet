@@ -1,0 +1,341 @@
+﻿@using EnRepMobileWeb.Resources;
+@*          Important
+       This Partial is used in
+    1.Material Issue(Done)
+    2.Production Confirmation(Done)
+    3.Material Transfer Issue(Done)
+    4.Shopfloor Stock Transfer(Done)
+    5.Shipment(105103135,105103145120)(Done)
+    6.Goods Reciept Note(Not Use)
+    7.Material Dispatch
+    8.Packing List*@
+@{
+
+    //var rowId = 0;
+    decimal TotalIssueQty = 0;
+    var Disable = true;
+    ViewBag.QtyDigit = "0.";
+    //var QtyDigit = Convert.ToInt32(Session["QtyDigit"].ToString());
+    int QtyDigit = 0;
+    if (ViewBag.DocID == "105103145115"|| ViewBag.DocID == "105103145120")
+    {
+        QtyDigit = Convert.ToInt32(Session["ExpImpQtyDigit"].ToString());
+    }
+    else
+    {
+        QtyDigit = Convert.ToInt32(Session["QtyDigit"].ToString());
+    }
+    for (var i = 0; i < QtyDigit; i++)
+    {
+        ViewBag.QtyDigit += "0";
+    }
+    //if (ViewBag.DocID != "105102130101" && ViewBag.DocID != "105102130105" && ViewBag.DocID != "105102130108" && ViewBag.DocID != "105108105" && ViewBag.DocID != "105103130" && ViewBag.DocID != "105103145115" && ViewBag.DocID != "105103145115")
+    //{
+    //    ViewBag.Command = Session["Command"] == null ? "" : Session["Command"].ToString();
+    //    ViewBag.TransType = Session["TransType"] == null ? "" : Session["TransType"].ToString();
+    //}
+    if (ViewBag.TransType != null)
+    {
+        if (ViewBag.TransType == "Update")
+        {
+            if (ViewBag.Command == "Edit")
+            {
+                Disable = false;
+            }
+            else
+            {
+                Disable = true;
+            }
+        }
+        else
+        {
+            if (ViewBag.Command == "Refresh")
+            {
+                Disable = true;
+            }
+            else
+            {
+                Disable = false;
+            }
+        }
+    }
+    string disableS = "";
+    if (Disable)
+    {
+        disableS = "disabled";
+    }
+    else
+    {
+        if (ViewBag.Command == "Edit" && (ViewBag.DocumentCode == "A" || ViewBag.DocumentCode == null))
+        {
+            disableS = "disabled";
+        }
+    }
+
+}
+
+
+<div class="modal-content">
+    <div class="modal-header">
+        <h2>@Resource.SerialDetail</h2>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body" style="padding-top: 0px;">
+        <div class="col-md-4 col-sm-12" style="padding-left:0px;">
+            <label class="col-form-label label-align">
+                @Resource.ItemName
+            </label>
+            <input id="ItemNameSerialWise" class="form-control" type="text" name="ItemName" placeholder="@Resource.ItemName" disabled>
+            <input type="hidden" id="HDItemIDSerialWise" />
+            <input type="hidden" id="HDMatrlTypIdSerialWise" />
+        </div>
+        <div class="col-md-4 col-sm-12" style="padding-left:0px;">
+            <label class="col-form-label label-align">
+                @Resource.UOM
+            </label>
+            <input id="UOMSerialWise" class="form-control" type="text" name="UOM" placeholder="@Resource.UOM" disabled>
+            <input type="hidden" id="HDUOMIDSerialWise" />
+        </div>
+        <div class="col-md-4 col-sm-12" style="padding-left:0px;">
+            <label class="col-form-label label-align">
+                @if (ViewBag.DocID != null)
+                {
+                    if (ViewBag.DocID == "105103130" || ViewBag.DocID == "105103145115")
+                    {
+                        @Resource.PackedQuantity
+                    }
+                    if (ViewBag.DocID == "105103135" || ViewBag.DocID == "105103145120")
+                    {
+                        @Resource.ShippedQuantity
+                    }
+                    if (ViewBag.DocID == "105102130101" || ViewBag.DocID == "105102130105" || ViewBag.DocID == "105105130" ||
+                        ViewBag.DocID == "105102130103" || ViewBag.DocID == "105105140" || ViewBag.DocID == "105108105")
+                    {
+                        @Resource.IssuedQuantity
+                    }
+                    if (ViewBag.DocID == "105105127" || ViewBag.DocID == "105102160")
+                    {
+                        @Resource.ConsumedQuantity
+                    }
+                    if (ViewBag.DocID == "105102165")
+                    {
+                        @Resource.Swap @Resource.Quantity
+                    }
+                    if (ViewBag.DocID == "105101153")/*Added by Surbhi on 18/07/2025 for Inter Branch Purchase Invoice(105101153)*/
+                    {
+                        @Resource.ReceivedQuantity
+                    }
+                    if (ViewBag.DocID == "105103149")
+                    {
+                        @Resource.InvoicedQuantity
+                    }
+                    @*if (ViewBag.DocID == "105102130105")
+            {
+                @Resource.IssuedQuantity
+            }
+            if (ViewBag.DocID == "105102130103")
+            {
+                @Resource.IssuedQuantity
+            }*@
+                }
+            </label>
+            <input id="QuantitySerialWise" class="form-control num_right " type="text" name="Quantity" placeholder="0000.00" disabled>
+        </div>
+        <div class="clearfix"></div>
+        <div class="BatchDetail">
+            @*<div class="price_item_detail tableFixHead height30VH margin10">
+        <table id="ItemSerialwiseTbl" class="table table-bordered">
+            <thead>
+                <tr class="headings" disabled="disabled">*@
+            @if (ViewBag.DocID == "105102165")
+            {
+                <div class="form-group has-search imp_sear col-md-4 col-sm-12 pl-0 pr-2 mt-1">
+                    <span class="fa fa-search form-control-feedback pd_search"></span>
+                    <input type="text" class="form-control" placeholder="@Resource.Search" onkeyup="FilterSerialLotBatchPartial(event)">
+                </div>
+            }
+            else if (ViewBag.DocID != "105101153")
+            {
+                <div class="form-group has-search imp_sear col-md-4 col-sm-12 pl-0 pr-2 mt-2">
+                    <span class="fa fa-search form-control-feedback pd_search"></span>
+                    <input type="text" class="form-control" id="SearchSerialData" placeholder="@Resource.Search" onkeyup="Cmn_FilterSerialData(event)">
+                </div>
+            }
+            <div class="card-box table-responsive dy_table margin15">
+                <div id="" class="sticky-table sticky-ltr-cells sb-container container-example1 OrderHistory height30VH">
+                    <table id="ItemSerialwiseTbl" data-order="" class="table table-striped table-bordered rowhighlighttbl" style="width:100%">
+                        <thead>
+                            <tr class="sticky-header" disabled="disabled">
+                                <th width="33%" disabled="disabled"> @Resource.Lot</th>
+                                <th width="33%" disabled="disabled"> @Resource.Serial1</th>
+                                @*/*Added by Surbhi on 18/07/2025 for Inter Branch Purchase Invoice(105101153)*/*@
+                                @if (ViewBag.DocID != "105101153")
+                                {
+                                    <th width="34%">
+                                        <label class="select-all-container center-margin">
+
+                                            <span>@Resource.Select @Resource.All</span>
+                                            <br />
+                                            <input type="checkbox"  @disableS id="chkSelectAll" />
+                                        </label>
+                                    </th>
+                                    @*<th width="34%" disabled="disabled"> @Resource.Select</th>*@
+                                    @*<th width="34%" disabled="disabled"> @Resource.Select</th>*@
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (ViewBag.ItemStockSerialWise != null)
+                            {
+                                foreach (System.Data.DataRow Row in ViewBag.ItemStockSerialWise.Rows)
+                                {
+                                    <tr>
+                                        <td>
+                                            <input id="Lot" class="form-control" value="@Row["lot_id"].ToString()" type="text" name="Lot" disabled>
+                                        </td>
+                                        <td>
+                                            <input id="SerialNumberDetail" value="@Row["serial_no"].ToString()" class="form-control" type="text" name="SerialNumberDetail" disabled>
+                                        </td>
+                                        <td class="center">
+                                            <div class="checkbox" style="padding-top:7px;">
+                                                @*<label class="label_center">*@
+                                                @if (ViewBag.DocID != "105103135" && ViewBag.DocID != "105103145120")
+                                                {
+                                                    if (Disable)
+                                                    {
+                                                        if (Row["SerailSelected"].ToString() == "Y")
+                                                        {
+                                                            TotalIssueQty = TotalIssueQty + 1;
+                                                            <input id="ChkItemSerialWise" disabled checked type="checkbox" class="flat">
+                                                        }
+                                                        else
+                                                        {
+                                                            <input id="ChkItemSerialWise" disabled type="checkbox" class="flat">
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        if (ViewBag.DocID == "105105127" && ViewBag.DocumentCode == "I" && ViewBag.Command == "Edit")
+                                                        {
+                                                            if (Row["SerailSelected"].ToString() == "Y")
+                                                            {
+                                                                TotalIssueQty = TotalIssueQty + 1;
+                                                                <input id="ChkItemSerialWise" onchange="onchangeChkItemSerialWise()" checked type="checkbox" class="flat">
+                                                            }
+                                                            else
+                                                            {
+                                                                <input id="ChkItemSerialWise" onchange="onchangeChkItemSerialWise()" type="checkbox" class="flat">
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            if (ViewBag.Command == "Edit" && (ViewBag.DocumentCode == "A" || ViewBag.DocumentCode == null))
+                                                            {
+                                                                if (Row["SerailSelected"].ToString() == "Y")
+                                                                {
+                                                                    TotalIssueQty = TotalIssueQty + 1;
+                                                                    <input id="ChkItemSerialWise" disabled checked type="checkbox" class="flat">
+                                                                }
+                                                                else
+                                                                {
+                                                                    <input id="ChkItemSerialWise" disabled type="checkbox" class="flat">
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                if (Row["SerailSelected"].ToString() == "Y")
+                                                                {
+                                                                    TotalIssueQty = TotalIssueQty + 1;
+                                                                    <input id="ChkItemSerialWise" onchange="onchangeChkItemSerialWise()" checked type="checkbox" class="flat">
+                                                                }
+                                                                else
+                                                                {
+                                                                    <input id="ChkItemSerialWise" onchange="onchangeChkItemSerialWise()" type="checkbox" class="flat">
+                                                                }
+                                                            }
+                                                        }
+
+
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    if (Row["SerailSelected"].ToString() == "Y")
+                                                    {
+                                                        TotalIssueQty = TotalIssueQty + 1;
+                                                        <input id="ChkItemSerialWise" disabled checked type="checkbox" class="flat">
+                                                    }
+                                                    else
+                                                    {
+                                                        <input id="ChkItemSerialWise" disabled type="checkbox" class="flat">
+                                                    }
+                                                }
+                                                @*</label>*@
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <table class="table table-bordered" id="ItemDetailsTbl">
+                <tr class="total">
+                    <th class="num_right"><strong>@Resource.Total</strong></th>
+                    @if (ViewBag.DocID == "105101153")/*Added by Surbhi on 18/07/2025 for Inter Branch Purchase Invoice(105101153)*/
+                    {
+                        <th class="num_right" width="35%">
+                            <strong>
+                                <span id="TotalIssuedSerial">
+                                    @Convert.ToDecimal(TotalIssueQty).ToString(ViewBag.QtyDigit)
+                                </span>
+                            </strong>
+                        </th>
+                    }
+                    else
+                    {
+                        <th class="num_right" width="35%"><strong><span id="TotalIssuedSerial">@Convert.ToDecimal(TotalIssueQty).ToString(ViewBag.QtyDigit)</span></strong></th>
+                        @*<th class="num_right" width="35%"><strong><span id="TotalIssuedSerial">@Convert.ToDecimal(TotalIssueQty).ToString(ViewBag.QtyDigit)</span></strong></th>*@
+                    }
+
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="modal-footer">
+        @if (ViewBag.DocID != "105103135" && ViewBag.DocID != "105103145120")
+        {
+            if (Disable)
+            {
+
+            }
+            else
+            {
+                if (ViewBag.Command == "Edit" && (ViewBag.DocumentCode == "A" || ViewBag.DocumentCode == null))
+                {
+                    if ((ViewBag.DocID == "105108105" && ViewBag.DocumentCode == null) || ViewBag.DocID == "105105127")
+                    {
+                        <button type="button" id="btnItemSerialReset" onclick="onclickbtnItemSerialReset()" class="btn btn-primary btn-sm">@Resource.Reset</button>
+                        <button type="button" id="btnItemSerialSaveAndExit" onclick="onclickbtnItemSerialSaveAndExit()" class="btn btn-primary btn-sm">@Resource.SaveAndExit</button>
+                        <button type="button" id="btnItemSerialDiscardAndExit" onclick="onclickbtnItemSerialDiscardAndExit()" class="btn btn-primary btn-sm" data-dismiss="modal">@Resource.DiscardAndExit</button>
+
+                    }
+                    else if (ViewBag.Amend == "Amend")
+                    {
+                        <button type="button" id="btnItemSerialReset" onclick="onclickbtnItemSerialReset()" class="btn btn-primary btn-sm">@Resource.Reset</button>
+                        <button type="button" id="btnItemSerialSaveAndExit" onclick="onclickbtnItemSerialSaveAndExit()" class="btn btn-primary btn-sm">@Resource.SaveAndExit</button>
+                        <button type="button" id="btnItemSerialDiscardAndExit" onclick="onclickbtnItemSerialDiscardAndExit()" class="btn btn-primary btn-sm" data-dismiss="modal">@Resource.DiscardAndExit</button>
+                    }
+                }
+                else
+                {
+                    <button type="button" id="btnItemSerialReset" onclick="onclickbtnItemSerialReset()" class="btn btn-primary btn-sm">@Resource.Reset</button>
+                    <button type="button" id="btnItemSerialSaveAndExit" onclick="onclickbtnItemSerialSaveAndExit()" class="btn btn-primary btn-sm">@Resource.SaveAndExit</button>
+                    <button type="button" id="btnItemSerialDiscardAndExit" onclick="onclickbtnItemSerialDiscardAndExit()" class="btn btn-primary btn-sm" data-dismiss="modal">@Resource.DiscardAndExit</button>
+                }
+            }
+        }
+    </div>
+</div>
+

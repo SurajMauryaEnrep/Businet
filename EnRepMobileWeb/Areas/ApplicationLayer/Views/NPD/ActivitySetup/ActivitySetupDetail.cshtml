@@ -1,0 +1,967 @@
+﻿@using EnRepMobileWeb.MODELS.Common;
+@using EnRepMobileWeb.Resources;
+
+@if (Session["UserId"] == null)
+{
+    Response.Redirect("~/Login");
+}
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+
+<script>
+    $(document).ready(function () {
+
+        $('#SourceDocument').multiselect({
+            includeSelectAllOption: true,
+            enableFiltering: true,
+            enableCaseInsensitiveFiltering: true,
+            buttonWidth: '100%',
+            nonSelectedText: "---All---",
+            numberDisplayed: 1
+        });
+
+    });
+</script>
+<style>
+    button.multiselect {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    table#KickOffAttributes th, table#datatable-buttons1 th, table#parts th {
+        background-color: #ffffff;
+    }
+
+    textarea.form-control {
+        max-height: 26px !important;
+    }
+</style>
+<div class="row">
+    <!-- Description Information Start-->
+    <div class="modal fade" id="textareaModal" tabindex="-1">
+        <div class="modal-dialog" style="max-width:600px;">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/Common/Views/Comn_PartialDescription.cshtml")
+
+        </div>
+    </div>
+    <!-- Description Information End-->
+    <!-- Procurement Plan Order Detail Start -->
+    <div id="ProcurementPlanOrderDetail" class="modal fade" role="dialog">
+        <div class="modal-dialog" id="" style=" max-width:800px;">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialProcurementPlanOrderDetail.cshtml")
+        </div>
+    </div>
+    <!-- Procurement Plan Order Detail Start End -->
+
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <h2 class="col-md-5 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                @*<div id="wizard" class="form_wizard wizard_horizontal col-md-3 col-sm-12 work_flow">
+                        <ul class="wizard_steps">
+                            <li>
+                                <a href="#step-1" class="disabled" isdone="1" onclick="ForwardBarHistoryClick()" data-toggle="modal" data-target="#WorkflowInformation" data-backdrop="static" data-keyboard="false" rel="1" id="a_1">
+                                    <span class="step_no">1</span>
+                                </a>
+                            </li>
+                        </ul>
+                        <input type="hidden" id="hdDoc_No" value="">
+                    </div>*@
+                <div id="" class="col-md-7 col-sm-12 work_flow heading_right_padding">
+                    <ul>
+                        <li>
+                            <button class="add"
+                                    title="@Resource.AddNew" disabled type="submit" id="btn_add" name="Command" value="AddNew" onclick="RemoveSessionData()"></button>
+                        </li>
+                        <li>
+                            <button class="edit"
+                                    title="@Resource.Edit" disabled type="submit" id="btn_edit" name="Command" value="Edit" onclick="EnableEditkBtn()"></button>
+                        </li>
+                        <li>
+                            <button class="delete"
+                                    title="@Resource.Delete" disabled type="submit" id="btn_del" name="Command" value="Delete"></button>
+                        </li>
+                        <li>
+                            <button class="save"
+                                    title="@Resource.Save" type="submit" onclick="" id="btn_save" name="Command" value="Save"></button>
+                        </li>
+                        @*<li>
+                                <button class="forward"
+                                        title="@Resource.Forward" type="submit" id="btn_forward" name="Command" value="Forward"></button>
+                            </li>*@
+                        <li>
+                            <button class="approve"
+                                    title="@Resource.Approve" type="submit" id="btn_approve" name="Command" value="Approve"></button>
+                        </li>
+                        @*<li>
+                                <button class="workflow" title="@Resource.Workflow" type="button" id="btn_workflow" onclick="" name="Command" value="Workflow" data-toggle="modal" data-target="#WorkflowInformation" data-backdrop="static" data-keyboard="false"></button>
+                            </li>*@
+                        <li>
+                            <button class="refresh"
+                                    title="@Resource.Refresh" type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                        </li>
+                        <li>
+                            <button class="print"
+                                    title="@Resource.Print" type="submit" id="btn_print" name="Command" value="Print"></button>
+                        </li>
+                        <li>
+                            <a class="back" href="/ApplicationLayer/ActivitySetup/ActivitySetup"
+                                    title="@Resource.Back" type="submit" id="btn_back" name="Command" value="BacktoList"></a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="clearfix"></div>
+                <div class="x_title pad_mar ">
+                    <div class="col-md-12 col-sm-12 icon_tool ">
+                        <!--<span>Collapsible / Accordion </span>-->
+                        <div class="approved_by">
+                            <ul>
+                                <li>
+                                    <span>@Resource.CreatedBy<br><b>Neeraj</b></span>
+                                </li>
+                                <li>
+                                    <span>@Resource.Createdon<br><b>10-12-2025 15:43</b></span>
+                                </li>
+                                <li>
+                                    <span>@Resource.ApprovedBy<br><b>Surendar Singh</b></span>
+                                </li>
+                                <li>
+                                    <span>@Resource.ApprovedOn<br><b></b></span>
+                                </li>
+                                <li>
+                                    <span>@Resource.AmendedBy<br><b>12-12-2025 13:50</b></span>
+                                </li>
+                                <li>
+                                    <span>@Resource.AmendedOn<br><b></b></span>
+                                </li>
+                                <li>
+                                    <span>@Resource.Status<br /><b>Approved</b></span>
+                                </li>
+
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 ">
+                        @*<div class="col-md-10 col-sm-12 pl-0 pr-0">*@
+                            <div class="col-md-4 col-sm-12 pl-0">
+                                <label class="col-form-label label-align">Product Name</label>
+                                <select class="form-control" id="ProductName" name="ProductName">
+                                    <option value="">All</option>
+                                    <option value="" selected="selected">Engine Mount -TMT</option>
+                                </select>
+                            </div>
+                            <div class="col-md-55 col-sm-12 pl-0">
+                                <label class="col-form-label label-align">UOM</label>
+                                <input value="" class="form-control" id="UOM" maxlength="20" name="UOM" placeholder="UOM" type="text" disabled="disabled">
+                            </div>
+                            <div class="col-md-2 col-sm-12 ">
+                                <label class="col-form-label label-align col-md-12 col-sm-12">Image</label>
+                                <img src="/Content/Images/product1.png" height="150">
+                            </div>
+
+                        @*</div>*@
+                        @*<div class="col-md-2 col-sm-12 ">
+                            <label class="col-form-label label-align col-md-12 col-sm-12">Image</label>
+                            <img src="/Content/Images/product1.png" height="150">
+                        </div>*@
+                    </div>
+                </div>
+                
+                   
+                    <article class="panel-group bs-accordion" id="accordion" role="tablist" aria-multiselectable="true">
+                        <section class="panel panel-default">
+                            <div class="panel-heading" role="tab" id="headingOne">
+                                <h4 class="panel-title">  <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">Activity Detail<span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a></h4>
+                            </div>
+                            <div id="collapseOne" class="panel-collapse in collapse show" role="tabpanel" aria-labelledby="headingOne" style="">
+
+                                <div class="panel-body">
+                                    <div class="col-md-12 col-sm-12 pl-0 pr-0">
+                                        <div class="col-md-3 col-sm-12">
+                                            <label class="col-form-label label-align">Activity Sequence Number</label>
+                                            <input value="1" class="form-control" id="ActivitySequenceNumber" maxlength="20" name="ActivitySequenceNumber" placeholder="Activity Sequence Number" type="number">
+                                        </div>
+                                        <div class="col-md-3 col-sm-12 pl-0">
+                                            <label class="col-form-label label-align">Activity Name</label>
+                                            <input value="VIO" class="form-control" id="ActivityName" maxlength="20" name="ActivityName" placeholder="Activity Name" type="text">
+                                        </div>
+                                        <div class="col-md-3 col-sm-12 pl-0">
+                                            <label class="col-form-label label-align">Stakeholder Name</label>
+                                            <select class="form-control" id="StakeholderName" name="StakeholderName">
+                                                <option value="">All</option>
+                                                <option value="" selected="selected">Surender Singh</option>
+                                                <option value="">Amit Tyagi</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3 col-sm-12 pl-0">
+                                            <label class="col-form-label label-align">ExecutionType</label>
+                                            <select class="form-control" id="ExecutionType" name="ExecutionType">
+                                                <option value="">All</option>
+                                                <option value="" selected="selected">Sequencial</option>
+                                                <option value="">Parallel</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2 col-sm-12">
+                                            <label class="col-form-label label-align">Target Start Date</label>
+                                            <input value="01-06-2025" class="form-control" id="TargetStartDate" maxlength="20" name="TargetStartDate" placeholder="Target Start Date" type="date">
+                                        </div>
+                                        <div class="col-md-2 col-sm-12 pl-0">
+                                            <label class="col-form-label label-align col-md-12 col-sm-12">Target End Date</label>
+                                            <input value="03-06-2025" class="form-control" id="TargetEndDate" maxlength="20" name="TargetEndDate" placeholder="Target End Date" type="date">
+                                        </div>
+                                        <div class="col-md-3 col-sm-12 pl-0">
+                                            <label class="col-form-label label-align">Replicate With</label>
+                                            <select class="form-control" id="ReplicateWith" name="ReplicateWith">
+                                                <option value="">All</option>
+                                                <option value="">Replicate With</option>
+                                                <option value="">Replicate With</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-5 col-sm-12 pl-0">
+                                            <div class="col-md-11 col-sm-12 pl-0">
+                                                <label class="col-form-label label-align col-md-12 col-sm-12">Remarks</label>
+                                                <textarea id="Task" class="form-control TaskDescription remarksmessage"
+                                                          onclick="open_popupdes('Task')">Remarks</textarea>
+                                            </div>
+                                            <div class="col-md-1 col-sm-12 margin28">
+                                                <a href="#">
+                                                    <div class="plus_icon1"> <i class="fa fa-plus" id="BtnAttribute" onclick="OnClickAddButton()" title="Populate Item Detail" data-original-title=""></i> </div>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="clear"></div>
+                                    <div class="card-box table-responsive dy_table ">
+                                        <div class="">
+                                            <div class=" col-sm-12 mt-3">
+                                                <div class="tableFixHead">
+                                                    <table id="parts" class="table table-bordered rowhighlighttbl">
+                                                        <thead>
+                                                            <tr class="headings">
+                                                                <th width="3%">&nbsp;</th>
+                                                                <th width="3%">&nbsp;</th>
+                                                                <th width="10%">Sequence No.</th>
+                                                                <th width="18%">Activity Name</th>
+                                                                <th width="12%">Stakeholder Name</th>
+                                                                <th width="12%">ExecutionType</th>
+                                                                <th width="11%">Target Start Date</th>
+                                                                <th width="11%">Target End Date</th>
+                                                                <th width="20%">Remarks</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td class="center">
+                                                                    <i type="submit" class="fa fa-edit" onclick="EditCustomerPortFolio(event)" aria-hidden="true" title="Edit"></i>
+                                                                </td>
+                                                                <td class="center">
+                                                                    <i class="fa fa-trash red" aria-hidden="true" title="Delete" onclick="return functionConfirm(event,'CustPrf')"></i>
+                                                                </td>
+                                                                <td>1</td>
+                                                                <td>VIO</td>
+                                                                <td>Surender Singh</td>
+                                                                <td>Sequencial</td>
+                                                                <td>01-06-2025</td>
+                                                                <td>03-06-2025</td>
+                                                                <td>&nbsp;</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="center">
+                                                                    <i type="submit" class="fa fa-edit" onclick="EditCustomerPortFolio(event)" aria-hidden="true" title="Edit"></i>
+                                                                </td>
+                                                                <td class="center">
+                                                                    <i class="fa fa-trash red" aria-hidden="true" title="Delete" onclick="return functionConfirm(event,'CustPrf')"></i>
+                                                                </td>
+                                                                <td>2</td>
+                                                                <td>INTERCHANGE</td>
+                                                                <td>Surender Singh</td>
+                                                                <td>Sequencial</td>
+                                                                <td>04-06-2025</td>
+                                                                <td>05-06-2025</td>
+                                                                <td>&nbsp;</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="center">
+                                                                    <i type="submit" class="fa fa-edit" onclick="EditCustomerPortFolio(event)" aria-hidden="true" title="Edit"></i>
+                                                                </td>
+                                                                <td class="center">
+                                                                    <i class="fa fa-trash red" aria-hidden="true" title="Delete" onclick="return functionConfirm(event,'CustPrf')"></i>
+                                                                </td>
+                                                                <td>3</td>
+                                                                <td>KICK OFF DATES</td>
+                                                                <td>Surender Singh</td>
+                                                                <td>Sequencial</td>
+                                                                <td>06-06-2025</td>
+                                                                <td>07-06-2025</td>
+                                                                <td>&nbsp;</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="center">
+                                                                    <i type="submit" class="fa fa-edit" onclick="EditCustomerPortFolio(event)" aria-hidden="true" title="Edit"></i>
+                                                                </td>
+                                                                <td class="center">
+                                                                    <i class="fa fa-trash red" aria-hidden="true" title="Delete" onclick="return functionConfirm(event,'CustPrf')"></i>
+                                                                </td>
+                                                                <td>4</td>
+                                                                <td>SAMPLE AVAILABLITY STATUS</td>
+                                                                <td>Jyoti Sharma</td>
+                                                                <td>Sequencial</td>
+                                                                <td>08-06-2025</td>
+                                                                <td>08-06-2025</td>
+                                                                <td>&nbsp;</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="center">
+                                                                    <i type="submit" class="fa fa-edit" onclick="EditCustomerPortFolio(event)" aria-hidden="true" title="Edit"></i>
+                                                                </td>
+                                                                <td class="center">
+                                                                    <i class="fa fa-trash red" aria-hidden="true" title="Delete" onclick="return functionConfirm(event,'CustPrf')"></i>
+                                                                </td>
+                                                                <td>5</td>
+                                                                <td>IMAGE STATUS</td>
+                                                                <td>Amit Tyagi</td>
+                                                                <td>Parallel</td>
+                                                                <td>10-06-2025</td>
+                                                                <td>10-06-2025</td>
+                                                                <td>&nbsp;</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="center">
+                                                                    <i type="submit" class="fa fa-edit" onclick="EditCustomerPortFolio(event)" aria-hidden="true" title="Edit"></i>
+                                                                </td>
+                                                                <td class="center">
+                                                                    <i class="fa fa-trash red" aria-hidden="true" title="Delete" onclick="return functionConfirm(event,'CustPrf')"></i>
+                                                                </td>
+                                                                <td>6</td>
+                                                                <td>PACKAGING</td>
+                                                                <td>Pawan Gupta</td>
+                                                                <td>Parallel</td>
+                                                                <td>10-06-2025</td>
+                                                                <td>11-06-2025</td>
+                                                                <td>&nbsp;</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="center">
+                                                                    <i type="submit" class="fa fa-edit" onclick="EditCustomerPortFolio(event)" aria-hidden="true" title="Edit"></i>
+                                                                </td>
+                                                                <td class="center">
+                                                                    <i class="fa fa-trash red" aria-hidden="true" title="Delete" onclick="return functionConfirm(event,'CustPrf')"></i>
+                                                                </td>
+                                                                <td>7</td>
+                                                                <td>COSTING</td>
+                                                                <td>Harsh Aggarwal</td>
+                                                                <td>Sequencial</td>
+                                                                <td>12-06-2025</td>
+                                                                <td>15-06-2025</td>
+                                                                <td>&nbsp;</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </section>
+                        <section class="panel panel-default">
+                            <div class="panel-heading" role="tab" id="headingTwo">
+                                <h4 class="panel-title">  <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="true" class="collapsed" aria-controls="collapseTwo">Sub-Activity Detail<span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="false"></span> </a></h4>
+                            </div>
+                            <div id="collapseTwo" class="panel-collapse in collapse show" role="tabpanel" aria-labelledby="headingTwo" style="">
+                                <div class="panel-body">
+                                    <div class="col-md-55 col-sm-12">
+                                        <label class="col-form-label label-align">Activity Name</label>
+                                        <select class="form-control" id="ActivityName" name="ActivityName">
+                                            <option value="">All</option>
+                                            <option value="" selected="selected">VIO</option>
+                                            <option value="">INTERCHANGE</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-55 col-sm-12 pl-0">
+                                        <label class="col-form-label label-align">Sub-Activity Name</label>
+                                        <input value="US VIO" class="form-control" id="SubActivityName" maxlength="20" name="SubActivityName" placeholder="US VIO" type="text">
+                                    </div>
+                                    <div class="col-md-55 col-sm-12 pl-0">
+                                        <label class="col-form-label label-align">Sub-Activity Sequence Number</label>
+                                        <input value="1.1" class="form-control" id="Sub-ActivitySequenceNumber" maxlength="20" name="Sub-ActivitySequenceNumber" placeholder="1.1" type="number">
+                                    </div>
+                                    <div class="col-md-55 col-sm-12 pl-0">
+                                        <label class="col-form-label label-align">Target Start Date</label>
+                                        <input value="" class="form-control" id="TargetStartDate" maxlength="20" name="TargetStartDate" placeholder="Target Start Date" type="date">
+                                    </div>
+                                    <div class="col-md-55 col-sm-12 pl-0">
+                                        <label class="col-form-label label-align col-md-12 col-sm-12">Target End Date</label>
+                                        <input value="" class="form-control" id="TargetEndDate" maxlength="20" name="TargetEndDate" placeholder="Target End Date" type="date">
+                                    </div>
+                                    <div class="col-md-5 col-sm-12">
+                                        <div class="col-md-11 col-sm-12 pl-0">
+                                            <label class="col-form-label label-align col-md-12 col-sm-12">Remarks</label>
+                                            <textarea id="Task" class="form-control TaskDescription remarksmessage"
+                                                      onclick="open_popupdes('Task')">Remarks</textarea>
+                                        </div>
+                                        <div class="col-md-1 col-sm-12 margin28">
+                                            <a href="#">
+                                                <div class="plus_icon1"> <i class="fa fa-plus" id="BtnAttribute" onclick="OnClickAddButton()" title="Populate Item Detail" data-original-title=""></i> </div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="card-box table-responsive dy_table ">
+                                        <div class="">
+                                            <div class=" col-sm-12 mt-3">
+                                                <div class="tableFixHead">
+                                                    <table id="parts" class="table table-bordered rowhighlighttbl">
+                                                        <thead>
+                                                            <tr class="headings">
+                                                                <th width="4%">&nbsp;</th>
+                                                                <th width="4%">&nbsp;</th>
+                                                                <th width="12%">Activity Sequence Number</th>
+                                                                <th width="17%">Activity Name</th>
+                                                                <th width="17%">Sub-Activity Name</th>
+                                                                <th width="12%">Sub-Activity Sequence Number </th>
+                                                                <th width="9%">Target Start Date</th>
+                                                                <th width="9%">Target End Date</th>
+                                                                <th width="16%">Remarks</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td class="center">
+                                                                    <i type="submit" class="fa fa-edit" onclick="EditCustomerPortFolio(event)" aria-hidden="true" title="Edit"></i>
+                                                                </td>
+                                                                <td class="center">
+                                                                    <i class="fa fa-trash red" aria-hidden="true" title="Delete" onclick="return functionConfirm(event,'CustPrf')"></i>
+                                                                </td>
+                                                                <td>1</td>
+                                                                <td>VIO</td>
+                                                                <td>US VIO</td>
+                                                                <td>1.1</td>
+                                                                <td>01-06-2026</td>
+                                                                <td>01-06-2026</td>
+                                                                <td></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="center">
+                                                                    <i type="submit" class="fa fa-edit" onclick="EditCustomerPortFolio(event)" aria-hidden="true" title="Edit"></i>
+                                                                </td>
+                                                                <td class="center">
+                                                                    <i class="fa fa-trash red" aria-hidden="true" title="Delete" onclick="return functionConfirm(event,'CustPrf')"></i>
+                                                                </td>
+
+                                                                <td>1</td>
+                                                                <td>VIO</td>
+                                                                <td>CANADA VIO</td>
+                                                                <td>1.2</td>
+                                                                <td>02-06-2026</td>
+                                                                <td>02-06-2026</td>
+                                                                <td></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="center">
+                                                                    <i type="submit" class="fa fa-edit" onclick="EditCustomerPortFolio(event)" aria-hidden="true" title="Edit"></i>
+                                                                </td>
+                                                                <td class="center">
+                                                                    <i class="fa fa-trash red" aria-hidden="true" title="Delete" onclick="return functionConfirm(event,'CustPrf')"></i>
+                                                                </td>
+                                                                <td>1</td>
+                                                                <td>VIO</td>
+                                                                <td>MEXICO VIO</td>
+                                                                <td>1.3</td>
+                                                                <td>03-06-2026</td>
+                                                                <td>03-06-2026</td>
+                                                                <td></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="center">
+                                                                    <i type="submit" class="fa fa-edit" onclick="EditCustomerPortFolio(event)" aria-hidden="true" title="Edit"></i>
+                                                                </td>
+                                                                <td class="center">
+                                                                    <i class="fa fa-trash red" aria-hidden="true" title="Delete" onclick="return functionConfirm(event,'CustPrf')"></i>
+                                                                </td>
+                                                                <td>1</td>
+                                                                <td>VIO</td>
+                                                                <td>TOTAL VIO</td>
+                                                                <td>1.4</td>
+                                                                <td>03-06-2026</td>
+                                                                <td>03-06-2026</td>
+                                                                <td></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="center">
+                                                                    <i type="submit" class="fa fa-edit" onclick="EditCustomerPortFolio(event)" aria-hidden="true" title="Edit"></i>
+                                                                </td>
+                                                                <td class="center">
+                                                                    <i class="fa fa-trash red" aria-hidden="true" title="Delete" onclick="return functionConfirm(event,'CustPrf')"></i>
+                                                                </td>
+                                                                <td>2</td>
+                                                                <td>INTERCHANGE</td>
+                                                                <td>ANCHOR</td>
+                                                                <td>2.1</td>
+                                                                <td>04-06-2025</td>
+                                                                <td>04-06-2025</td>
+                                                                <td></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="center">
+                                                                    <i type="submit" class="fa fa-edit" onclick="EditCustomerPortFolio(event)" aria-hidden="true" title="Edit"></i>
+                                                                </td>
+                                                                <td class="center">
+                                                                    <i class="fa fa-trash red" aria-hidden="true" title="Delete" onclick="return functionConfirm(event,'CustPrf')"></i>
+                                                                </td>
+                                                                <td>2</td>
+                                                                <td>INTERCHANGE</td>
+                                                                <td>DEA</td>
+                                                                <td>2.2</td>
+                                                                <td>04-06-2025</td>
+                                                                <td>04-06-2025</td>
+                                                                <td></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="center">
+                                                                    <i type="submit" class="fa fa-edit" onclick="EditCustomerPortFolio(event)" aria-hidden="true" title="Edit"></i>
+                                                                </td>
+                                                                <td class="center">
+                                                                    <i class="fa fa-trash red" aria-hidden="true" title="Delete" onclick="return functionConfirm(event,'CustPrf')"></i>
+                                                                </td>
+                                                                <td>2</td>
+                                                                <td>INTERCHANGE</td>
+                                                                <td>VAZLO</td>
+                                                                <td>2.3</td>
+                                                                <td>04-06-2025</td>
+                                                                <td>04-06-2025</td>
+                                                                <td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="center">
+                                                                    <i type="submit" class="fa fa-edit" onclick="EditCustomerPortFolio(event)" aria-hidden="true" title="Edit"></i>
+                                                                </td>
+                                                                <td class="center">
+                                                                    <i class="fa fa-trash red" aria-hidden="true" title="Delete" onclick="return functionConfirm(event,'CustPrf')"></i>
+                                                                </td>
+                                                                <td>2</td>
+                                                                <td>INTERCHANGE</td>
+                                                                <td>DAI</td>
+                                                                <td>2.4</td>
+                                                                <td>05-06-2025</td>
+                                                                <td>05-06-2025</td>
+                                                                <td></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="center">
+                                                                    <i type="submit" class="fa fa-edit" onclick="EditCustomerPortFolio(event)" aria-hidden="true" title="Edit"></i>
+                                                                </td>
+                                                                <td class="center">
+                                                                    <i class="fa fa-trash red" aria-hidden="true" title="Delete" onclick="return functionConfirm(event,'CustPrf')"></i>
+                                                                </td>
+                                                                <td>2</td>
+                                                                <td>INTERCHANGE</td>
+                                                                <td>STAR</td>
+                                                                <td>2.5</td>
+                                                                <td>05-06-2025</td>
+                                                                <td>05-06-2025</td>
+                                                                <td></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="center">
+                                                                    <i type="submit" class="fa fa-edit" onclick="EditCustomerPortFolio(event)" aria-hidden="true" title="Edit"></i>
+                                                                </td>
+                                                                <td class="center">
+                                                                    <i class="fa fa-trash red" aria-hidden="true" title="Delete" onclick="return functionConfirm(event,'CustPrf')"></i>
+                                                                </td>
+                                                                <td>2</td>
+                                                                <td>INTERCHANGE</td>
+                                                                <td>WESTAR</td>
+                                                                <td>2.6</td>
+                                                                <td>05-06-2025</td>
+                                                                <td>05-06-2025</td>
+                                                                <td></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="center">
+                                                                    <i type="submit" class="fa fa-edit" onclick="EditCustomerPortFolio(event)" aria-hidden="true" title="Edit"></i>
+                                                                </td>
+                                                                <td class="center">
+                                                                    <i class="fa fa-trash red" aria-hidden="true" title="Delete" onclick="return functionConfirm(event,'CustPrf')"></i>
+                                                                </td>
+                                                                <td>2</td>
+                                                                <td>INTERCHANGE</td>
+                                                                <td>BECK ARNLEY NEW</td>
+                                                                <td>2.7</td>
+                                                                <td>05-06-2025</td>
+                                                                <td>05-06-2025</td>
+                                                                <td></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="center">
+                                                                    <i type="submit" class="fa fa-edit" onclick="EditCustomerPortFolio(event)" aria-hidden="true" title="Edit"></i>
+                                                                </td>
+                                                                <td class="center">
+                                                                    <i class="fa fa-trash red" aria-hidden="true" title="Delete" onclick="return functionConfirm(event,'CustPrf')"></i>
+                                                                </td>
+                                                                <td>3</td>
+                                                                <td>KICK OFF DATES</td>
+                                                                <td>KICK OFF DATE(NPD1)</td>
+                                                                <td>3.1</td>
+                                                                <td>06-06-2025</td>
+                                                                <td>06-06-2025</td>
+                                                                <td></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="center">
+                                                                    <i type="submit" class="fa fa-edit" onclick="EditCustomerPortFolio(event)" aria-hidden="true" title="Edit"></i>
+                                                                </td>
+                                                                <td class="center">
+                                                                    <i class="fa fa-trash red" aria-hidden="true" title="Delete" onclick="return functionConfirm(event,'CustPrf')"></i>
+                                                                </td>
+                                                                <td>3</td>
+                                                                <td>KICK OFF DATES</td>
+                                                                <td>KICK OFF DATE(NPD2)</td>
+                                                                <td>3.2</td>
+                                                                <td>07-06-2025</td>
+                                                                <td>07-06-2025</td>
+                                                                <td></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="center">
+                                                                    <i type="submit" class="fa fa-edit" onclick="EditCustomerPortFolio(event)" aria-hidden="true" title="Edit"></i>
+                                                                </td>
+                                                                <td class="center">
+                                                                    <i class="fa fa-trash red" aria-hidden="true" title="Delete" onclick="return functionConfirm(event,'CustPrf')"></i>
+                                                                </td>
+                                                                <td>3</td>
+                                                                <td>KICK OFF DATES</td>
+                                                                <td>KICK OFF DATE (NPD3)</td>
+                                                                <td>3.3</td>
+                                                                <td>07-06-2025</td>
+                                                                <td>07-06-2025</td>
+                                                                <td></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="center">
+                                                                    <i type="submit" class="fa fa-edit" onclick="EditCustomerPortFolio(event)" aria-hidden="true" title="Edit"></i>
+                                                                </td>
+                                                                <td class="center">
+                                                                    <i class="fa fa-trash red" aria-hidden="true" title="Delete" onclick="return functionConfirm(event,'CustPrf')"></i>
+                                                                </td>
+                                                                <td>3</td>
+                                                                <td>KICK OFF DATES</td>
+                                                                <td>COLOR CODE REMARKS</td>
+                                                                <td>3.4</td>
+                                                                <td>07-06-2025</td>
+                                                                <td>07-06-2025</td>
+                                                                <td></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="center">
+                                                                    <i type="submit" class="fa fa-edit" onclick="EditCustomerPortFolio(event)" aria-hidden="true" title="Edit"></i>
+                                                                </td>
+                                                                <td class="center">
+                                                                    <i class="fa fa-trash red" aria-hidden="true" title="Delete" onclick="return functionConfirm(event,'CustPrf')"></i>
+                                                                </td>
+                                                                <td>3</td>
+                                                                <td>KICK OFF DATES</td>
+                                                                <td>PART DESCRIPTION</td>
+                                                                <td>3.5</td>
+                                                                <td>07-06-2025</td>
+                                                                <td>07-06-2025</td>
+                                                                <td></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="center">
+                                                                    <i type="submit" class="fa fa-edit" onclick="EditCustomerPortFolio(event)" aria-hidden="true" title="Edit"></i>
+                                                                </td>
+                                                                <td class="center">
+                                                                    <i class="fa fa-trash red" aria-hidden="true" title="Delete" onclick="return functionConfirm(event,'CustPrf')"></i>
+                                                                </td>
+                                                                <td>3</td>
+                                                                <td>KICK OFF DATES</td>
+                                                                <td>CATEGORY</td>
+                                                                <td>3.6</td>
+                                                                <td>07-06-2025</td>
+                                                                <td>07-06-2025</td>
+                                                                <td></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="center">
+                                                                    <i type="submit" class="fa fa-edit" onclick="EditCustomerPortFolio(event)" aria-hidden="true" title="Edit"></i>
+                                                                </td>
+                                                                <td class="center">
+                                                                    <i class="fa fa-trash red" aria-hidden="true" title="Delete" onclick="return functionConfirm(event,'CustPrf')"></i>
+                                                                </td>
+                                                                <td>4</td>
+                                                                <td>SAMPLE AVAILABLITY STATUS</td>
+                                                                <td>OEM # PROCURED</td>
+                                                                <td>4.1</td>
+                                                                <td>08-06-2025</td>
+                                                                <td>08-06-2025</td>
+                                                                <td></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="center">
+                                                                    <i type="submit" class="fa fa-edit" onclick="EditCustomerPortFolio(event)" aria-hidden="true" title="Edit"></i>
+                                                                </td>
+                                                                <td class="center">
+                                                                    <i class="fa fa-trash red" aria-hidden="true" title="Delete" onclick="return functionConfirm(event,'CustPrf')"></i>
+                                                                </td>
+                                                                <td>4</td>
+                                                                <td>SAMPLE AVAILABLITY STATUS</td>
+                                                                <td>Invoice # Date</td>
+                                                                <td>4.2</td>
+                                                                <td>08-06-2025</td>
+                                                                <td>08-06-2025</td>
+                                                                <td></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="center">
+                                                                    <i type="submit" class="fa fa-edit" onclick="EditCustomerPortFolio(event)" aria-hidden="true" title="Edit"></i>
+                                                                </td>
+                                                                <td class="center">
+                                                                    <i class="fa fa-trash red" aria-hidden="true" title="Delete" onclick="return functionConfirm(event,'CustPrf')"></i>
+                                                                </td>
+                                                                <td>4</td>
+                                                                <td>SAMPLE AVAILABLITY STATUS</td>
+                                                                <td>Total Oem in SCIL</td>
+                                                                <td>4.3</td>
+                                                                <td>08-06-2025</td>
+                                                                <td>08-06-2025</td>
+                                                                <td></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="center">
+                                                                    <i type="submit" class="fa fa-edit" onclick="EditCustomerPortFolio(event)" aria-hidden="true" title="Edit"></i>
+                                                                </td>
+                                                                <td class="center">
+                                                                    <i class="fa fa-trash red" aria-hidden="true" title="Delete" onclick="return functionConfirm(event,'CustPrf')"></i>
+                                                                </td>
+                                                                <td>4</td>
+                                                                <td>SAMPLE AVAILABLITY STATUS</td>
+                                                                <td>Dismentle</td>
+                                                                <td>4.4</td>
+                                                                <td>08-06-2025</td>
+                                                                <td>08-06-2025</td>
+                                                                <td></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="center">
+                                                                    <i type="submit" class="fa fa-edit" onclick="EditCustomerPortFolio(event)" aria-hidden="true" title="Edit"></i>
+                                                                </td>
+                                                                <td class="center">
+                                                                    <i class="fa fa-trash red" aria-hidden="true" title="Delete" onclick="return functionConfirm(event,'CustPrf')"></i>
+                                                                </td>
+                                                                <td>4</td>
+                                                                <td>SAMPLE AVAILABLITY STATUS</td>
+                                                                <td>AZ SAMPLE</td>
+                                                                <td>4.5</td>
+                                                                <td>08-06-2025</td>
+                                                                <td>08-06-2025</td>
+                                                                <td></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="center">
+                                                                    <i type="submit" class="fa fa-edit" onclick="EditCustomerPortFolio(event)" aria-hidden="true" title="Edit"></i>
+                                                                </td>
+                                                                <td class="center">
+                                                                    <i class="fa fa-trash red" aria-hidden="true" title="Delete" onclick="return functionConfirm(event,'CustPrf')"></i>
+                                                                </td>
+                                                                <td>4</td>
+                                                                <td>SAMPLE AVAILABLITY STATUS</td>
+                                                                <td>2025 SALE</td>
+                                                                <td>4.6</td>
+                                                                <td>08-06-2025</td>
+                                                                <td>08-06-2025</td>
+                                                                <td></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="center">
+                                                                    <i type="submit" class="fa fa-edit" onclick="EditCustomerPortFolio(event)" aria-hidden="true" title="Edit"></i>
+                                                                </td>
+                                                                <td class="center">
+                                                                    <i class="fa fa-trash red" aria-hidden="true" title="Delete" onclick="return functionConfirm(event,'CustPrf')"></i>
+                                                                </td>
+                                                                <td>5</td>
+                                                                <td>IMAGE STATUS</td>
+                                                                <td>7 ANGLE IMAGE</td>
+                                                                <td>5.1</td>
+                                                                <td>10-06-2025</td>
+                                                                <td>10-06-2025</td>
+                                                                <td></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="center">
+                                                                    <i type="submit" class="fa fa-edit" onclick="EditCustomerPortFolio(event)" aria-hidden="true" title="Edit"></i>
+                                                                </td>
+                                                                <td class="center">
+                                                                    <i class="fa fa-trash red" aria-hidden="true" title="Delete" onclick="return functionConfirm(event,'CustPrf')"></i>
+                                                                </td>
+                                                                <td>5</td>
+                                                                <td>IMAGE STATUS</td>
+                                                                <td>360 ANGLE IMAGE</td>
+                                                                <td>5.2</td>
+                                                                <td>10-06-2025</td>
+                                                                <td>10-06-2025</td>
+                                                                <td></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="center">
+                                                                    <i type="submit" class="fa fa-edit" onclick="EditCustomerPortFolio(event)" aria-hidden="true" title="Edit"></i>
+                                                                </td>
+                                                                <td class="center">
+                                                                    <i class="fa fa-trash red" aria-hidden="true" title="Delete" onclick="return functionConfirm(event,'CustPrf')"></i>
+                                                                </td>
+                                                                <td>6</td>
+                                                                <td>PACKAGING</td>
+                                                                <td>Box #</td>
+                                                                <td>6.1</td>
+                                                                <td>10-06-2025</td>
+                                                                <td>11-06-2025</td>
+                                                                <td></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="center">
+                                                                    <i type="submit" class="fa fa-edit" onclick="EditCustomerPortFolio(event)" aria-hidden="true" title="Edit"></i>
+                                                                </td>
+                                                                <td class="center">
+                                                                    <i class="fa fa-trash red" aria-hidden="true" title="Delete" onclick="return functionConfirm(event,'CustPrf')"></i>
+                                                                </td>
+                                                                <td>6</td>
+                                                                <td>PACKAGING</td>
+                                                                <td>MC QTY</td>
+                                                                <td>6.2</td>
+                                                                <td>10-06-2025</td>
+                                                                <td>11-06-2025</td>
+                                                                <td></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="center">
+                                                                    <i type="submit" class="fa fa-edit" onclick="EditCustomerPortFolio(event)" aria-hidden="true" title="Edit"></i>
+                                                                </td>
+                                                                <td class="center">
+                                                                    <i class="fa fa-trash red" aria-hidden="true" title="Delete" onclick="return functionConfirm(event,'CustPrf')"></i>
+                                                                </td>
+                                                                <td>6</td>
+                                                                <td>PACKAGING</td>
+                                                                <td>DATE</td>
+                                                                <td>6.3	</td>
+                                                                <td>10-06-2025</td>
+                                                                <td>11-06-2025</td>
+                                                                <td></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="center">
+                                                                    <i type="submit" class="fa fa-edit" onclick="EditCustomerPortFolio(event)" aria-hidden="true" title="Edit"></i>
+                                                                </td>
+                                                                <td class="center">
+                                                                    <i class="fa fa-trash red" aria-hidden="true" title="Delete" onclick="return functionConfirm(event,'CustPrf')"></i>
+                                                                </td>
+                                                                <td>7</td>
+                                                                <td>COSTING</td>
+                                                                <td>Material Cost (Rs.)</td>
+                                                                <td>7.1</td>
+                                                                <td>12-05-2025</td>
+                                                                <td>12-05-2025</td>
+                                                                <td></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="center">
+                                                                    <i type="submit" class="fa fa-edit" onclick="EditCustomerPortFolio(event)" aria-hidden="true" title="Edit"></i>
+                                                                </td>
+                                                                <td class="center">
+                                                                    <i class="fa fa-trash red" aria-hidden="true" title="Delete" onclick="return functionConfirm(event,'CustPrf')"></i>
+                                                                </td>
+                                                                <td>7</td>
+                                                                <td>COSTING</td>
+                                                                <td>Process Cost</td>
+                                                                <td>7.2	</td>
+                                                                <td>13-05-2025</td>
+                                                                <td>13-05-2025</td>
+                                                                <td></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="center">
+                                                                    <i type="submit" class="fa fa-edit" onclick="EditCustomerPortFolio(event)" aria-hidden="true" title="Edit"></i>
+                                                                </td>
+                                                                <td class="center">
+                                                                    <i class="fa fa-trash red" aria-hidden="true" title="Delete" onclick="return functionConfirm(event,'CustPrf')"></i>
+                                                                </td>
+                                                                <td>7</td>
+                                                                <td>COSTING</td>
+                                                                <td>PLANT Overhead (Rs.)</td>
+                                                                <td>7.3</td>
+                                                                <td>14-05-2025</td>
+                                                                <td>14-05-2025</td>
+                                                                <td></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="center">
+                                                                    <i type="submit" class="fa fa-edit" onclick="EditCustomerPortFolio(event)" aria-hidden="true" title="Edit"></i>
+                                                                </td>
+                                                                <td class="center">
+                                                                    <i class="fa fa-trash red" aria-hidden="true" title="Delete" onclick="return functionConfirm(event,'CustPrf')"></i>
+                                                                </td>
+                                                                <td>7</td>
+                                                                <td>COSTING</td>
+                                                                <td>Tooling Cost</td>
+                                                                <td>7.4</td>
+                                                                <td>15-05-2025</td>
+                                                                <td>15-05-2025</td>
+                                                                <td></td>
+                                                            </tr>
+
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </article>
+                </div>
+            </div>
+    </div>
+</div>
+<script>
+    function open_popupdes(id) {
+        debugger;
+        const myModal = new bootstrap.Modal(document.getElementById("textareaModal"));
+        $("#hdn_txtdes").val(id);
+        var des = $("#" + id).val();
+        document.getElementById("modalTextarea").value = des;
+        myModal.show();
+    }
+    // Open modal when clicking the main textarea
+
+    function onclick_save_close() {
+        debugger
+        var id = $("#hdn_txtdes").val();
+        document.getElementById(id).value = document.getElementById("modalTextarea").value;
+    }
+</script>
+<script>
+    document.getElementById('imageUpload').addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (event) {
+            const img = document.getElementById('preview');
+            img.src = event.target.result;
+            img.classList.remove('d-none');
+        };
+        reader.readAsDataURL(file);
+    });
+</script>

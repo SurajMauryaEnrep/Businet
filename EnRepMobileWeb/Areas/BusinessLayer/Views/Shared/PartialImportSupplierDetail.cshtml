@@ -1,0 +1,245 @@
+﻿@using EnRepMobileWeb.Resources;
+@using System.Data;
+@{
+    var i = 0;
+    var TotalOk = 0;
+    var TotalNotOk = 0;
+}
+<style>
+    #DttblBtnssupplier_wrapper .dataTables_length {
+        position: absolute;
+    }
+
+    #DttblBtnssupplier_wrapper .dt-buttons {
+        width: 10%;
+        margin-left: 16%;
+    }
+
+    #DttblBtnssupplier_filter {
+        position: relative;
+        float: right;
+    }
+
+    .loader1 {
+        -webkit-animation: spin 2s linear infinite; /* Safari */
+        animation: spin 2s linear infinite;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        margin-top: -40px; /* Half of width */
+        margin-left: -40px; /* Half of height */
+        z-index: 9999; /* Make sure it's on top of other elements */
+        display: none; /* Initially hide the loader */
+        /*    position: fixed;*/
+    }
+
+    @@-webkit-keyframes spin {
+        0% {
+            -webkit-transform: rotate(0deg);
+        }
+
+        100% {
+            -webkit-transform: rotate(360deg);
+        }
+    }
+
+    @@keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    .loader1 div {
+        width: 100%;
+        height: 100%;
+    }
+    #PartialImportItemData thead tr > :nth-child(5) {
+        z-index: 100 !important;
+        position: sticky;
+        left: 0;
+        top: 0;
+    }
+
+    #PartialImportItemData tbody tr > :nth-child(5) {
+        background: #ffffff;
+        position: sticky;
+        z-index: 1;
+        left: 0;
+    }
+</style>
+<div id="loader1" class="loader1">
+    <img src="~/Content/Images/loader.gif" width="100" height="100" />
+</div>
+
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<div id="" class="sticky-table sticky-ltr-cells sb-container container-example1 OrderHistory height50VH">
+
+    <table id="DttblBtnssupplier" class="table table-striped table-bordered width4000 itmfrz">
+        <thead>
+            <tr class="sticky-header">
+                <th width="2%">@Resource.SrNo</th>
+                <th width="3%">@Resource.SupplierType</th>
+                <th width="2%">@Resource.TDS <br /> @Resource.Applicable</th>
+                <th width="3%">@Resource.ApplicableOn</th>
+                <th width="5%">@Resource.SupplierName</th>
+                <th width="3%">@Resource.Category</th>
+                <th width="3%">@Resource.Portfolio</th>
+                <th width="3%">@Resource.PaymentTermsInDays</th>
+                <th width="3%">@Resource.Payment @Resource.Alert</th>
+                <th width="4%">@Resource.GLAccount @Resource.Name </th>
+                <th width="4%">@Resource.GLAccount @Resource.Group</th>
+                <th width="4%">@Resource.GLReportingGroup</th>
+                <th width="3%">@Resource.DefaultCurrency</th>
+                <th width="3%">@Resource.GST @Resource.Category</th>
+                <th width="3%">@Resource.RegistrationNumber</th>
+                <th width="3%">@Resource.TANNumber</th>
+                <th width="3%">@Resource.PANNumber</th>
+                <th width="3%">@Resource.ContactPerson</th>
+                <th width="3%">@Resource.ContactEmailID</th>
+                <th width="3%">@Resource.ContactNumber</th>
+                <th width="3%">@Resource.Supplier @Resource.Address</th>
+                <th width="3%">@Resource.BankName</th>
+                <th width="3%">@Resource.BankBranch</th>
+                <th width="3%">@Resource.Address (Info)</th>
+                <th width="3%">@Resource.AccountNumber</th>
+                <th width="3%">@Resource.IFSC_Code</th>
+                <th width="3%">@Resource.SWIFT_Code</th>
+                <th width="3%">@Resource.BranchMapping</th>
+                <th width="3%">@Resource.Upload @Resource.Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (ViewBag.ImportItemsPreview != null)
+            {
+                var rowNo = 0;
+                foreach (DataRow dtr in ViewBag.ImportItemsPreview.Tables[0].Rows)
+                {
+                    rowNo = rowNo + 1;
+            <tr>
+                <td>@rowNo</td>
+                @if (dtr["supp_type"].ToString() == "D")
+                {
+                    dtr["supp_type"] = "Domestic";
+                }
+                @if (dtr["supp_type"].ToString() == "I")
+                {
+                    dtr["supp_type"] = "Import";
+                }
+                <td id="tdItmName">@dtr["supp_type"].ToString()</td>
+                <td class="center">
+                    @if (@dtr["tds_posting"].ToString().ToLower() == "y")
+                    {
+                        <i class="fa fa-check text-success " aria-hidden="true"></i>
+                    }
+                    else
+                    {
+                        <i class="fa fa-times-circle text-danger" aria-hidden="true"></i>
+                    }
+
+                </td>
+                @if (dtr["tds_app_on"].ToString() == "B")
+                {
+                    dtr["tds_app_on"] = "Bill Wise";
+                }
+                else if (dtr["tds_app_on"].ToString() == "M")
+                {
+                    dtr["tds_app_on"] = "Monthly Processing";
+                }
+                else
+                {
+                    dtr["tds_app_on"] = "";
+                }
+                <td>@dtr["tds_app_on"].ToString()</td>
+                <td id="supplierName" class="tditemfrz">@dtr["supp_name"].ToString()</td>
+                <td>@dtr["supp_catg"].ToString()</td>
+                <td>@dtr["supp_port"].ToString()</td>
+                <td>@dtr["paym_term"].ToString()</td>
+                <td>@dtr["paym_alrt"].ToString()</td>
+                <td>@dtr["acc_name"].ToString()</td>
+                <td>@dtr["acc_grp_id"].ToString()</td>
+                <td>@dtr["gl_rpt_id"].ToString()</td>
+                <td class="center">@dtr["def_curr_id"].ToString()  </td>
+                @switch (dtr["gst_cat"].ToString())
+                {
+                    case "RR":
+                        dtr["gst_cat"] = "Registered";
+                        break;
+                    case "EX":
+                        dtr["gst_cat"] = "Exempted";
+                        break;
+                    case "UR":
+                        dtr["gst_cat"] = "Un-Registered";
+                        break;
+                    case "CO":
+                        dtr["gst_cat"] = "Composition";
+                        break;
+                }
+                <td>@dtr["gst_cat"].ToString()</td>
+
+                <td>@dtr["supp_regn_no"].ToString()</td>
+                <td>@dtr["supp_tan_no"].ToString()</td>
+                <td>@dtr["supp_pan_no"].ToString()</td>
+                <td>@dtr["cont_pers"].ToString()</td>
+                <td>@dtr["cont_email"].ToString()</td>
+                <td class="num_right">@dtr["cont_num1"].ToString()</td>
+                <td class="center"><button type="button" class="calculator subItmImg" onclick="BindSupplierAdressDetails(event)" id="" data-toggle="modal" data-target="#PartialCustomerAddressDetail" data-backdrop="static" data-keyboard="false"><i class="fa fa-eye" aria-hidden="true" data-toggle="" title="@Resource.Address @Resource.Detail"></i></button></td>
+                <td>@dtr["bank_name"].ToString()</td>
+                <td>@dtr["bank_branch"].ToString()</td>
+                <td>@dtr["bank_add"].ToString()</td>
+                <td class="num_right">@dtr["bank_acc_no"].ToString()</td>
+                <td>@dtr["ifsc_code"].ToString()</td>
+                <td>@dtr["swift_code"].ToString()</td>
+                <td class="center"><button type="button" class="calculator subItmImg" onclick="BindSupplierBranchDetails(event)" id="" data-toggle="modal" data-target="#BranchMapping" data-backdrop="static" data-keyboard="false"><i class="fa fa-eye" aria-hidden="true" data-toggle="" title="@Resource.BranchMapping"></i></button></td>
+
+                <td>
+                    <div class="col-sm-10 no-padding">
+                        @if (@dtr["UploadStatus"].ToString().ToLower() == "ok")
+                        {
+                            <i class="fa fa-check text-success " aria-hidden="true"></i>
+                        }
+                        else
+                        {
+                            <i class="fa fa-times-circle text-danger" aria-hidden="true"></i>
+
+                        }
+                    </div>
+                    @if (@dtr["UploadStatus"].ToString().ToLower() != "ok")
+                    {
+                        <div class="col-sm-2 i_Icon">
+                            <button type="button" id="ItmInfoBtnIcon" class="calculator" onclick="OnClickErrorDetails(event);" data-toggle="modal" data-target="#ErrorDetail" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Error @Resource.Detail">  </button>
+                        </div>
+                    }
+                </td>
+            </tr>
+                }
+            }
+        </tbody>
+    </table>
+
+</div>
+<div>
+    <table id="tblstatus_id" class="table table-striped table-bordered">
+        <tbody>
+            @if (ViewBag.ImportItemsPreview != null)
+            {
+                TotalOk = Convert.ToInt32(@ViewBag.ImportItemsPreview.Tables[3].Rows[0]["TotalOk"].ToString());
+                TotalNotOk = Convert.ToInt32(@ViewBag.ImportItemsPreview.Tables[3].Rows[0]["TotalNotOk"].ToString());
+                <tr class="total">
+                    <td colspan="3" align="right" width="75%"><strong>@Resource.Total valid records</strong></td>
+                    <td class="num_right"><span id="TotCons"></span>@ViewBag.ImportItemsPreview.Tables[3].Rows[0]["TotalOk"].ToString()</td>
+                    <td colspan="1" align="right" width="75%"><strong>@Resource.Total invalid records</strong></td>
+                    <td class="num_right"><span id="TotCons">@ViewBag.ImportItemsPreview.Tables[3].Rows[0]["TotalNotOk"].ToString()</span></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <input id="hdnOk" type="hidden" value="@TotalOk" />
+    <input id="hdnNotOk" type="hidden" value="@TotalNotOk" />
+</div>
+
+
+

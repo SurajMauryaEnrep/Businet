@@ -1,0 +1,76 @@
+﻿@using EnRepMobileWeb.Resources;
+<div class="modal-content">
+    <div class="modal-header">
+        <button type="button" id="" class="close" data-dismiss="modal">×</button>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-md-12 col-sm-12">
+                <div class="tableFixHead height30VH margin10">
+                    @if (ViewBag.DocMenuId != "105103145125")
+                    {
+                        <table class="table table-bordered" id="Table_SelectPrintType">
+                            <thead>
+                                <tr>
+                                    <th colspan="2">@Resource.Select @Resource.Print @Resource.Type </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td width="15%">
+                                        <input id="Rdo_PackType" name="print_type" type="radio" value="Custom">
+                                    </td>
+                                    <td width="85%">@Resource.Export </td>
+                                </tr>
+                                <tr>
+                                    <td width="15%">
+                                        <input id="Rdo_PackType" name="print_type" type="radio" value="Commercial">
+                                    </td>
+                                    <td width="85%">@Resource.Commercial </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    }
+
+                    @if (ViewBag.PrintOptions == "Y")
+                    {
+                <div class="col-md-12 col-sm-12 border pt-1 pb-1" id="Div_CustomPrintOptions" style="display:@(ViewBag.DocMenuId == "105103145125"?"":"none");">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" checked id="ChkPrtOpt_item_desc"> @Resource.ItemDescription
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" id="ChkPrtOpt_catlog_number"> @Resource.CatalogueNumber
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" id="ChkPrtOpt_item_code"> @Resource.ItemCode
+                        </label>
+                    </div>
+                    <input hidden id="HdnPrintOptons" name="HdnPrintOptons" value="Y" />
+                    <input hidden type="text" name="PrtOpt_catlog_number" id="PrtOpt_catlog_number">
+                    <input hidden type="text" name="PrtOpt_item_code" id="PrtOpt_item_code">
+                    <input hidden type="text" name="PrtOpt_item_desc" id="PrtOpt_item_desc">
+                </div>
+                    }
+
+                </div>
+                </div>
+        </div>
+    </div>
+    <div id="PrintButtonDiv">
+        @*@if (ViewBag.PrintCommand == "Y")
+        {
+            <input name="Command" hidden value="Print" />
+        }*@
+    </div>
+   
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary btn-sm" id="OKBtn_PrintSelect" value="Print" name="Command" onclick="return OnClickPrint()">@Resource.Print</button>
+        <button type="button" class="btn btn-primary btn-sm" id="DiscardAndExit_FW" data-dismiss="modal">@Resource.Close</button>
+    </div>
+</div>

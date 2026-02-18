@@ -1,0 +1,1662 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.SalesAndDistribution.SalesEnquiry.SalesEnquiryModel
+@using EnRepMobileWeb.MODELS.Common;
+@using EnRepMobileWeb.Resources;
+@using System.Data
+@using System.Web.Mvc.Html;
+@if (Session["UserId"] == null)
+{
+    Response.Redirect("~/Login");
+}
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+    //MvcForm form = null;
+}
+<style>
+    input#tgl_QuotationCreated {
+        left:-7px;
+    }
+</style>
+
+<script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+<script src="~/Content/Css/build/js/sweetalert.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/SalesAndDistribution/SalesEnquiry/SalesEnquiryDetail.js"></script>
+@*/*start Add by Hina on 16-02-2024 to chk Financial year exist or not*/*@
+@{
+    if (TempData["Message"] != null)
+    {
+        if (TempData["Message"] == "Financial Year not Exist")
+        {
+            <script type="text/javascript">
+                swal("", $("#FinancialYearDoesNotExistTransactionCanNotBeDone").text(), "warning");
+            </script>
+        }
+
+    }
+}
+@*/*End to chk Financial year exist or not*/*@
+@{
+    var disablePrintbtn = "";
+    var ForDisableOCDlt = "Enable";
+
+    ViewBag.Disable = true;
+    var Disable = true;
+
+    if (Model.Command != null)
+    {
+        var cmd = Model.Command;
+    }
+    if (Model.TransType == "Update")
+    {
+
+        if (Model.Command == "Edit")
+        {
+            //if (Model.DocumentStatus == "A" )
+            //{
+            //    Disable = true;
+            //}
+            //else
+            //{
+            Disable = false;
+            ViewBag.Disable = false;
+            //}
+        }
+        else
+        {
+            Disable = true;
+            ViewBag.Disable = true;
+        }
+    }
+    else
+    {
+        if (Model.Command == "Refresh")
+        {
+            Disable = true;
+            ViewBag.Disable = true;
+        }
+        if (Model.Command == "New")
+        {
+            Disable = false;
+            ViewBag.Disable = false;
+        }
+    }
+    if (Disable)
+    {
+        ViewBag.Disable = true;
+        ForDisableOCDlt = "Disable";
+    }
+    else
+    {
+        ViewBag.Disable = false;
+        ForDisableOCDlt = "Enable";
+
+    }
+    if (Model.DocumentStatus == "C" || Model.EnquiryNo == null || ((Model.DocumentStatus == "D" || Model.DocumentStatus == "A") && Model.Command == "Edit"))/*Add || ((Model.DocumentStatus == "D" || Model.DocumentStatus == "A") && Model.Command == "Edit") by Hina on 11-10-2024*/
+    {
+        disablePrintbtn = "disabled style=filter:grayscale(100%)";
+    }
+    if (Model.BtnName == "BtnEdit" && Model.Command == "Edit" && Model.DocumentStatus == "D")
+    {
+        <script type="text/javascript">
+            $(document).ready(function () {
+                debugger;
+                var gst_number = $("#ship_add_gstNo").val();
+                var GstApplicable = $("#Hdn_GstApplicable").text();
+                //if (GstApplicable == "Y") {
+                //    Cmn_OnSaveAddressApplyGST(gst_number, "SlsEnqryItmDetailsTbl", "hfItemID", "SNohiddenfiled", "item_net_val_bs", "", "", "", "AddressSave", "")
+                //}
+            });
+        </script>
+    }
+}
+@{
+    if (Model.Message != null)
+    {
+        var message = Model.Message;
+        Model.hdnsaveApprovebtn = null;
+        if (message == "Save")
+        {
+            <script type="text/javascript">
+                swal("", $("#savemsg").text(), "success");
+            </script>
+        }
+        if (message == "Deleted")
+        {
+            <script type="text/javascript">
+                swal("", $("#deletemsg").text(), "success");
+            </script>
+        }
+
+        if (message == "Used")
+        {
+            <script type="text/javascript">
+                swal("", $("#salesorderunderprocess").text(), "warning");
+            </script>
+        }
+        //Session["Message"] = "";
+    }
+}
+<title>@Model.Title</title>
+@using (Html.BeginForm("SalesEnquiryBtnCommand", "SalesEnquiry", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    {
+        <div class="row">
+            <!-- Item Information -->
+            <div id="ItemInfo" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                    <div class="price_item_detail">
+                        <!-- Modal content-->
+                        @Html.Partial("~/Areas/Common/Views/_ItemInfomation.cshtml")
+                    </div>
+                </div>
+            </div>
+            <!-- Customer Information -->
+            <div id="CustomerInformation" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                    <div class="price_item_detail">
+                        <!-- Modal content-->
+                        @Html.Partial("~/Areas/Common/Views/_CustomerInformation.cshtml")
+                    </div>
+                </div>
+            </div>
+            <!-- Address Information -->
+            <div id="AddressInfo" class="modal fade" role="dialog">
+                <div id="address" class="modal-dialog" style=" max-width:900px;">
+                    <!-- Modal content-->
+                    <input type="hidden" id="hd_bill_id" />
+                    <input type="hidden" id="hd_ship_id" />
+                    <input type="hidden" id="hd_add_type" />
+                    <input type="hidden" id="hd_TxtBillingAddr" />
+                    <input type="hidden" id="hd_bill_add_id" />
+                    <div id="tbodyAddressBodyNew">
+
+                    </div>
+
+                </div>
+            </div>
+            <!-- Discussion Remarks -->
+            <div id="DiscussionRemarks" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                    <!-- Modal content-->
+                    @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialDiscussionRemarksForSalesEnquiry.cshtml", Model)
+                </div>
+            </div>
+            <!-- Sub Item Detail -->
+            <div id="SubItem" class="modal fade" role="dialog">
+                <div class="modal-dialog" id="SubItemPopUp" style=" max-width:600px;">
+                    <!-- Modal content-->
+                    @{
+                        SubItemPopupDt mdl = new SubItemPopupDt();
+                    }
+                    @Html.Partial("~/Areas/Common/Views/Cmn_PartialSubItemDetail.cshtml", mdl)
+                </div>
+                <table id="hdn_Sub_ItemDetailTbl" hidden>
+                    <tbody>
+                        @if (ViewBag.SubItemDetails != null)
+                        {
+                            foreach (System.Data.DataRow dr in ViewBag.SubItemDetails.Rows)
+                            {
+                                <tr>
+                                    <td><input type="text" id="ItemId" value='@dr["item_id"]'></td>
+                                    <td><input type="text" id="subItemId" value='@dr["sub_item_id"]'></td>
+                                    <td><input type="text" id="subItemQty" value='@Convert.ToDecimal(dr["Qty"]).ToString(Model.QtyDigit)'></td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+                @Html.HiddenFor(model => model.SubItemDetailsDt, new { @id = "SubItemDetailsDt" })
+            </div>
+            <div class="col-md-12 col-sm-12 ">
+                <div class="x_panel mar_pad1 ">
+                    <div class="x_content mar_pad1">
+                        <h2 class="col-md-8 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                        @*@Html.HiddenFor(Model => Model.Enquiry_type, new { @id = "CustType" })*@
+                        @Html.HiddenFor(Model => Model.DocumentMenuId, new { @id = "DocumentMenuId" })
+                        @Html.HiddenFor(Model => Model.Title, new { @id = "hdn_title" })
+                        @Html.HiddenFor(model => model.hdnsaveApprovebtn, new { @id = "hdnsavebtn" })
+                        @Html.HiddenFor(model => model.GstApplicable, new { @id = "hdnSEGstApplicable" })
+                        @Html.HiddenFor(model => model.Createid, new { @id = "Create_ID" })
+                        @Html.HiddenFor(m => m.ListFilterData1, new { @id = "ListFilterData1", value = Model.ListFilterData1 })
+                        @Html.HiddenFor(model => model.TransType, new { @id = "hdn_TransType" })
+                        @Html.HiddenFor(model => model.hdnQuationCreated, new { @id = "hdQuationCreated", value = Model.TransType })
+                        <input id="ForDisableOCDlt" value="@ForDisableOCDlt" hidden="hidden" />
+                        <div id="" class="col-md-4 col-sm-12 work_flow heading_right_padding">
+                            @*<ul>
+                                    <li>
+                                        <button class="add" title="@Resource.AddNew" type="submit" id="btn_add" name="Command" value="AddNew" onclick=""></button>
+                                    </li>
+                                    <li>
+                                        <button class="edit" title="@Resource.Edit" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                    </li>
+                                    <li>
+                                        <button class="delete" title="@Resource.Delete" onclick="" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                    </li>
+                                    <li>
+                                        <button class="save" title="@Resource.Save" type="submit" onclick="" id="btn_save" name="Command" value="Save"></button>
+                                    </li>
+
+                                    <li>
+                                        <button class="refresh" title="@Resource.Refresh" type="submit" id="btn_refresh" name="Command" value="Refresh" onclick=""></button>
+                                    </li>
+                                    <li>
+                                        <button class="print" title="@Resource.Print" type="submit" id="btn_print" name="Command" value="Print"></button>
+                                    </li>
+                                    <li>
+                                        <button class="back" title="@Resource.Back" type="submit" id="btn_back" name="Command" onclick="" value="BacktoList"></button>
+                                    </li>
+                                </ul>*@
+
+                            @{
+                                var btnName = Model.BtnName;
+                                switch (btnName)
+                                {
+                                    case "BtnAddNew":
+                                        <ul>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "105103117001")
+                                                    {
+                                                        <li>
+                                                            <button class="add"
+                                                                    title="@Resource.AddNew" disabled style="filter: grayscale(100%)" type="submit" id="btn_add" name="Command" value="AddNew" onclick="RemoveSessionData()"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "105103117002")
+                                                    {
+                                                        <li>
+                                                            <button class="edit"
+                                                                    title="@Resource.Edit" disabled style="filter: grayscale(100%)" type="submit" id="btn_edit" name="Command" value="Edit" onclick="EnableEditkBtn()"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "105103117004")
+                                                    {
+                                                        <li>
+                                                            <button class="delete"
+                                                                    title="@Resource.Delete" disabled style="filter: grayscale(100%)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                        </li>
+                                                    }
+
+                                                }
+                                            }
+                                            <li>
+                                                <button class="save"
+                                                        title="@Resource.Save" type="submit" onclick="return InsertSalesEnquiryDetail()" id="btn_save" name="Command" value="Save"></button>
+                                            </li>
+
+                                            <li>
+                                                <button class="refresh"
+                                                        title="@Resource.Refresh" type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                                            </li>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "105103117005")
+                                                    {
+                                                        <li>
+                                                            <button class="print"
+                                                                    title="@Resource.Print" @disablePrintbtn type="submit" id="btn_print" name="Command" value="Print"></button>
+                                                        </li>
+                                                    }
+                                                }
+                                            }
+                                            <li>
+                                                <button class="back"
+                                                        title="@Resource.Back" disabled style="filter: grayscale(100%)" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                                            </li>
+                                        </ul>
+                                        break;
+                                    case "BtnEdit":
+                                        <ul>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "105103117001")
+                                                    {
+                                                        <li>
+                                                            <button class="add"
+                                                                    title="@Resource.AddNew" disabled style="filter: grayscale(100%)" type="submit" id="btn_add" name="Command" value="AddNew"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "105103117002")
+                                                    {
+                                                        <li>
+
+                                                            <button class="edit"
+                                                                    title="@Resource.Edit" disabled style="filter: grayscale(100%)" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "105103117004")
+                                                    {
+                                                        <li>
+                                                            @if (Model.DocumentStatus == "D")
+                                                            {
+                                                                <button class="delete"
+                                                                        title="@Resource.Delete" disabled style="filter: grayscale(100%)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                            }
+                                                            else
+                                                            {
+                                                                if (Model.Command == "Edit")
+                                                                {
+                                                                    <button class="delete"
+                                                                            title="@Resource.Delete" disabled style="filter: grayscale(100%)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <button class="delete"
+                                                                            title="@Resource.Delete" onclick="return functionConfirm(this)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                                }
+                                                            }
+                                                            @Html.HiddenFor(m => m.DeleteCommand, new { @id = "HdDeleteCommand" })
+                                                        </li>
+                                                    }
+
+                                                }
+                                            }
+                                            <li>
+                                                @if (Model.Command == "Edit" && Model.DocumentStatus == "D")
+
+                                                {
+                                                    <button class="save"
+                                                            onclick="return InsertSalesEnquiryDetail()" title="@Resource.Save" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                                }
+                                                else
+                                                {
+                                                    <button class="save"
+                                                            title="@Resource.Save" disabled style="filter: grayscale(100%)" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                                }
+                                            </li>
+
+                                            <li>
+                                                <button class="refresh"
+                                                        title="@Resource.Refresh" type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                                            </li>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "105103117005")
+                                                    {
+                                                        <li>
+                                                            <button class="print"
+                                                                    title="@Resource.Print" @disablePrintbtn type="submit" id="btn_print" name="Command" value="Print"></button>
+                                                        </li>
+                                                    }
+                                                }
+                                            }
+                                            <li>
+                                                <button class="back"
+                                                        title="@Resource.Back" disabled style="filter: grayscale(100%)" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                                            </li>
+                                        </ul>
+                                        break;
+                                    case "BtnDelete":
+                                        <ul>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "105103117001")
+                                                    {
+                                                        <li>
+                                                            <button class="add"
+                                                                    title="@Resource.AddNew" type="submit" id="btn_add" name="Command" value="AddNew"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "105103117002")
+                                                    {
+                                                        <li>
+                                                            <button class="edit"
+                                                                    title="@Resource.Edit" disabled style="filter: grayscale(100%)" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "105103117004")
+                                                    {
+                                                        <li>
+                                                            <button class="delete"
+                                                                    title="@Resource.Delete" disabled style="filter: grayscale(100%)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                        </li>
+                                                        @Html.HiddenFor(m => m.DeleteCommand, new { @id = "HdDeleteCommand" })
+                                                    }
+
+                                                }
+                                            }
+                                            <li>
+                                                <button class="save"
+                                                        title="@Resource.Save" disabled style="filter: grayscale(100%)" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                            </li>
+
+                                            <li>
+                                                <button class="refresh"
+                                                        title="@Resource.Refresh" disabled style="filter: grayscale(100%)" type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                                            </li>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "105103117005")
+                                                    {
+                                                        <li>
+                                                            <button class="print"
+                                                                    title="@Resource.Print" @disablePrintbtn type="submit" id="btn_print" name="Command" value="Print"></button>
+                                                        </li>
+                                                    }
+                                                }
+                                            }
+                                            <li>
+                                                <button class="back"
+                                                        title="@Resource.Back" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                                            </li>
+                                        </ul>
+                                        break;
+                                    case "Refresh":
+                                        <ul>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "105103117001")
+                                                    {
+                                                        <li>
+                                                            <button class="add"
+                                                                    title="@Resource.AddNew" type="submit" id="btn_add" name="Command" value="AddNew"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "105103117002")
+                                                    {
+                                                        <li>
+                                                            <button class="edit"
+                                                                    title="@Resource.Edit" disabled style="filter: grayscale(100%)" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "105103117004")
+                                                    {
+
+                                                        <li>
+                                                            <button class="delete"
+                                                                    title="@Resource.Delete" disabled style="filter: grayscale(100%)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                        </li>
+                                                        @Html.HiddenFor(m => m.DeleteCommand, new { @id = "HdDeleteCommand" })
+                                                    }
+
+                                                }
+                                            }
+                                            <li>
+                                                <button class="save"
+                                                        title="@Resource.Save" disabled style="filter: grayscale(100%)" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                            </li>
+
+                                            <li>
+                                                <button class="refresh"
+                                                        title="@Resource.Refresh" disabled style="filter: grayscale(100%)" type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                                            </li>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "105103117005")
+                                                    {
+                                                        <li>
+                                                            <button class="print"
+                                                                    title="@Resource.Print" @disablePrintbtn type="submit" id="btn_print" name="Command" value="Print"></button>
+                                                        </li>
+                                                    }
+                                                }
+                                            }
+
+                                            <li>
+                                                <button class="back"
+                                                        title="@Resource.Back" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                                            </li>
+                                        </ul>
+                                        break;
+                                    case "BtnToDetailPage":
+                                        <ul>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "105103117001")
+                                                    {
+
+                                                        <li>
+                                                            <button class="add"
+                                                                    title="@Resource.AddNew" type="submit" id="btn_add" name="Command" value="AddNew"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "105103117002")
+                                                    {
+                                                        if (Model.DocumentStatus == "D")
+                                                        {
+                                                            <li>
+                                                                <button class="edit"
+                                                                        title="@Resource.Edit" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                            </li>
+                                                        }
+                                                        else
+                                                        {
+                                                            <li>
+                                                                <button class="edit" disabled style="filter: grayscale(100%)"
+                                                                        title="@Resource.Edit" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                            </li>
+                                                        }
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "105103117004")
+                                                    {
+                                                        if (Model.DocumentStatus == "D")
+                                                        {
+                                                            <li>
+                                                                <button class="delete"
+                                                                        title="@Resource.Delete" onclick="return functionConfirm(this)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                            </li>
+                                                        }
+                                                        else
+                                                        {
+                                                            <li>
+                                                                <button class="delete"
+                                                                        title="@Resource.Delete" disabled style="filter: grayscale(100%)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                            </li>
+                                                        }
+                                                        @Html.HiddenFor(m => m.DeleteCommand, new { @id = "HdDeleteCommand" })
+                                                    }
+
+                                                }
+                                            }
+
+
+
+                                            <li>
+                                                <button class="save"
+                                                        title="@Resource.Save" disabled style="filter: grayscale(100%)" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                            </li>
+
+
+                                            <li>
+                                                <button class="refresh"
+                                                        title="@Resource.Refresh" disabled style="filter: grayscale(100%)" type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                                            </li>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "105103117005")
+                                                    {
+                                                        <li>
+                                                            <button class="print"
+                                                                    title="@Resource.Print" @disablePrintbtn type="submit" id="btn_print" name="Command" value="Print"></button>
+                                                        </li>
+                                                    }
+                                                }
+                                            }
+
+                                            <li>
+                                                <button class="back"
+                                                        title="@Resource.Back" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                                            </li>
+                                        </ul>
+                                        break;
+                                    case "BtnSave":
+                                        <ul>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "105103117001")
+                                                    {
+                                                        <li>
+                                                            <button class="add"
+                                                                    title="@Resource.AddNew" type="submit" id="btn_add" name="Command" value="AddNew"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "105103117002")
+                                                    {
+                                                        <li>
+
+                                                            <button class="edit"
+                                                                    title="@Resource.Edit" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "105103117004")
+                                                    {
+                                                        if (Model.DocumentStatus == "A")
+                                                        {
+                                                            <li>
+                                                                <button class="delete"
+                                                                        title="@Resource.Delete" onclick="return functionConfirm(this)" type="submit" id="btn_del" disabled style="filter: grayscale(100%)" name="Command" value="Delete"></button>
+                                                            </li>
+                                                        }
+                                                        else
+                                                        {
+                                                            <li>
+                                                                <button class="delete"
+                                                                        title="@Resource.Delete" onclick="return functionConfirm(this)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                            </li>
+
+                                                        }
+                                                        @Html.HiddenFor(m => m.DeleteCommand, new { @id = "HdDeleteCommand" })
+                                                    }
+
+                                                }
+                                            }
+                                            <li>
+                                                <button class="save"
+                                                        title="@Resource.Save" disabled style="filter: grayscale(100%)" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                            </li>
+
+
+
+                                            <li>
+                                                <button class="refresh"
+                                                        title="@Resource.Refresh" type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                                            </li>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "105103117005")
+                                                    {
+                                                        <li>
+                                                            <button class="print"
+                                                                    title="@Resource.Print" @disablePrintbtn type="submit" id="btn_print" name="Command" value="Print"></button>
+                                                        </li>
+                                                    }
+                                                }
+                                            }
+
+                                            <li>
+                                                <button class="back"
+                                                        title="@Resource.Back" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                                            </li>
+                                        </ul>
+                                        break;
+
+
+                                }
+                            }
+                        </div>
+                        <div class="x_title pad_mar ">
+                            <div class="col-md-12 col-sm-12 icon_tool ">
+                                <div class="approved_by">
+                                    <ul>
+                                        <li>
+                                            <span>@Resource.CreatedBy<br><b>@Html.DisplayFor(model => model.CreatedBy)</b></span>
+                                        </li>
+                                        <li>
+                                            <span>@Resource.Createdon<br><b>@Html.DisplayFor(model => model.CreatedOn)</b></span>
+                                        </li>
+                                        @*<li>
+                                                <span>@Resource.ApprovedBy<br><b>@Html.DisplayFor(model => model.ApprovedBy)</b></span>
+                                            </li>
+                                            <li>
+                                                <span>@Resource.ApprovedOn<br><b>@Html.DisplayFor(model => model.ApprovedOn)</b></span>
+                                            </li>*@
+                                        <li>
+                                            <span>@Resource.AmendedBy<br><b>@Html.DisplayFor(model => model.AmmendedBy)</b></span>
+                                        </li>
+                                        <li>
+                                            <span>@Resource.AmendedOn<br><b>@Html.DisplayFor(model => model.AmmendedOn)</b></span>
+                                        </li>
+                                        <li><span>@Resource.Status<br><b>@Html.DisplayFor(model => model.SEStatus)</b></span></li>
+                                        <li>  <b>@Html.HiddenFor(model => model.Status, new { @id = "hfStatus" })</b></li>
+                                        <li><b>@Html.HiddenFor(model => model.Createid, new { @id = "Create_ID" })</b></li>
+                                    </ul>
+                                </div>
+                                @if ((Model.Status == "D" || Model.Status == "SQR" || string.IsNullOrEmpty(Model.Status) == true))
+                                {
+                                    if (Disable)
+                                    {
+                                        <input id="DisableSubItem" value="Y" hidden />
+                                    }
+                                    else
+                                    {
+                                        <input id="DisableSubItem" value="N" hidden />
+                                    }
+
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 col-sm-12 ">
+                <div class="x_panel mar_pad1 ">
+                    <div class="x_content mar_pad1">
+                        <article class="panel-group bs-accordion" id="accordion" role="tablist" aria-multiselectable="true">
+                            <section class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="headingOne">
+                                    <h4 class="panel-title"> <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne"> @Resource.Enquiry @Resource.Detail <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a></h4>
+                                </div>
+                                <div id="collapseOne" class="panel-collapse in collapse show" role="tabpanel" aria-labelledby="headingOne" style="">
+                                    <div class="row">
+                                        <div class="col-md-12 col-sm-12">
+                                            <div class="panel-body">
+                                                <div class="col-md-12 col-sm-12 no-padding">
+                                                    <div class="col-md-4 col-sm-6 domestic_SE">
+                                                        <label id="" class="col-form-label label-align col-md-4 col-sm-12 no-padding margin10">@Resource.Enquiry @Resource.Type</label>
+                                                        @if (Model.Command == "New")
+                                                        {
+                                                            <div class="input-group col-md-8 col-sm-12 margin15">
+                                                                @*<span>@Resource.Domestic</span>
+                                                                    <input checked="checked" id="Domestic" name="Enquiry_type" onclick="GetProspectcurr(),currvalidationstar()" type="radio" value="D">
+                                                                    <span>@Resource.Export</span>
+                                                                    <input id="Export" name="Enquiry_type" onclick="GetProspectcurr(),currvalidationstar()" type="radio" value="E">*@
+                                                                @Resource.Domestic
+                                                                @Html.RadioButtonFor(model => model.Enquiry_type, "D", new { @id = "EnquiryTypeD", @name = "EnquiryType", @onchange = "OnChangeEnquiryType();", @checked = "checked", @onclick = "BindCustomerList();" })
+                                                                &nbsp;  @Resource.Export
+                                                                @Html.RadioButtonFor(model => model.Enquiry_type, "E", new { @id = "EnquiryTypeE", @name = "EnquiryType", @onchange = "OnChangeEnquiryType();", @onclick = "BindCustomerList();" })
+                                                                @*@Html.HiddenFor(model => model.Enquiry_type, new { @id = "hdn_Enquiry_type" })*@
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <div class="input-group col-md-8 col-sm-12 margin15">
+                                                                @Resource.Domestic
+                                                                @Html.RadioButtonFor(model => model.Enquiry_type, "D", new { @id = "EnquiryTypeD", @disabled = "disabled", @name = "EnquiryType", @onchange = "OnChangeEnquiryType();", @checked = "checked", @onclick = "BindCustomerList();" })
+                                                                &nbsp;  @Resource.Export
+                                                                @Html.RadioButtonFor(model => model.Enquiry_type, "E", new { @id = "EnquiryTypeE", @disabled = "disabled", @name = "EnquiryType", @onchange = "OnChangeEnquiryType();", @onclick = "BindCustomerList();" })
+                                                                @*@Html.HiddenFor(model => model.Enquiry_type, new { @id = "hdn_Enquiry_type" })*@
+                                                            </div>
+                                                        }
+                                                        @Html.HiddenFor(model => model.Enquiry_type, new { @id = "hdn_Enquiry_type" })
+                                                    </div>
+
+                                                    @*<div class="col-md-4 col-sm-6 no-padding domestic float-right">
+                                                            <label id="" class="col-form-label label-align col-md-4 col-sm-12 no-padding margin10">@Resource.Customer @Resource.Type</label>
+                                                            <div class="input-group col-md-8 col-sm-12 margin10">
+                                                                <span>@Resource.Customer</span>
+                                                                <input checked="checked" id="Customer" name="Customer_type" onclick="GetProspectcurr(),currvalidationstar()" type="radio" value="D">
+                                                                <span>@Resource.Prospect</span>
+                                                                <input id="Prospect" name="Customer_type" onclick="GetProspectcurr(),currvalidationstar()" type="radio" value="E">
+
+                                                            </div>
+                                                        </div>*@
+                                                    @if (Model.ProspectFromEnquiry != null)
+                                                    {
+                                                        if (Model.ProspectFromEnquiry == "Y")
+                                                        {
+                                                            <p class="po col-md-3 col-sm-12">
+                                                                <label class="col-form-label label-align" style="padding-right:10px;">@Resource.CustomerType</label>
+                                                                @Resource.Customer
+                                                                @Html.RadioButtonFor(model => model.CustPros_type, "C", new { @id = "CustomerTypeC", @onchange = "OnChangeCustProsType();", @name = "CustomerType", @onclick = "BindCustomerList();" })
+                                                                &nbsp;  @Resource.Prospect
+                                                                @Html.RadioButtonFor(model => model.CustPros_type, "P", new { @id = "CustomerTypeP", @onchange = "OnChangeCustProsType();", @name = "CustomerType", @checked = "checked", @onclick = "BindCustomerList();" })
+                                                            </p>
+                                                        }
+                                                        else
+                                                        {
+                                                            <p class="po col-md-3 col-sm-12">
+                                                                <label class="col-form-label label-align" style="padding-right:10px;">@Resource.CustomerType</label>
+                                                                @Resource.Customer
+                                                                @Html.RadioButtonFor(model => model.CustPros_type, "C", new { @id = "CustomerTypeC", @disabled = "disabled", @name = "CustomerType", @onchange = "OnChangeCustProsType();", @checked = "checked", @onclick = "BindCustomerList();" })
+                                                                &nbsp;  @Resource.Prospect
+                                                                @Html.RadioButtonFor(model => model.CustPros_type, "P", new { @id = "CustomerTypeP", @disabled = "disabled", @name = "CustomerType", @onchange = "OnChangeCustProsType();", @onclick = "BindCustomerList();" })
+                                                            </p>
+                                                        }
+                                                        @Html.HiddenFor(model => model.CustPros_type, new { @id = "hdn_CustPros_type" })
+                                                    }
+                                                    else
+                                                    {
+                                                        if (Model.Command == "New")
+                                                        {
+                                                            <p class="po col-md-3 col-sm-12">
+                                                                <label class="col-form-label label-align" style="padding-right:10px;">@Resource.CustomerType</label>
+                                                                @Resource.Customer
+                                                                @Html.RadioButtonFor(model => model.CustPros_type, "C", new { @id = "CustomerTypeC", @name = "CustomerType", @onchange = "OnChangeCustProsType();", @checked = "checked", @onclick = "BindCustomerList();" })
+                                                                &nbsp;  @Resource.Prospect
+                                                                @Html.RadioButtonFor(model => model.CustPros_type, "P", new { @id = "CustomerTypeP", @name = "CustomerType", @onchange = "OnChangeCustProsType();", @onclick = "BindCustomerList();" })
+                                                            </p>
+                                                        }
+                                                        else
+                                                        {
+                                                            <p class="po col-md-3 col-sm-12">
+                                                                <label class="col-form-label label-align" style="padding-right:10px;">@Resource.CustomerType</label>
+                                                                @Resource.Customer
+                                                                @Html.RadioButtonFor(model => model.CustPros_type, "C", new { @id = "CustomerTypeC", @disabled = "disabled", @onchange = "OnChangeCustProsType();", @name = "CustomerType", @checked = "checked", @onclick = "BindCustomerList();" })
+                                                                &nbsp;  @Resource.Prospect
+                                                                @Html.RadioButtonFor(model => model.CustPros_type, "P", new { @id = "CustomerTypeP", @disabled = "disabled", @onchange = "OnChangeCustProsType();", @name = "CustomerType", @onclick = "BindCustomerList();" })
+                                                            </p>
+                                                        }
+                                                        @Html.HiddenFor(model => model.CustPros_type, new { @id = "hdn_CustPros_type" })
+                                                    }
+                                                    <div class="col-md-2 col-sm-12">
+                                                        <div class="custom-control custom-switch margin10">
+                                                            @if (Model.DocumentStatus == "D" && Model.Command == "Edit")
+                                                            {
+                                                                @Html.CheckBoxFor(model => model.QuotationCreated, new { @class = "custom-control-input col-md-3 col-sm-12 margin-switch", onclick = "CheckedQuotCret()", @id = "tgl_QuotationCreated" })
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.CheckBoxFor(model => model.QuotationCreated, new { @class = "custom-control-input col-md-3 col-sm-12 margin-switch", @id = "tgl_QuotationCreated", @disabled = "disabled" })
+                                                            }
+                                                            <label class="custom-control-label col-md-9 col-sm-12" for="QuotationCreated" style="padding: 3px 0px;"> @Resource.Raise @Resource.Quotation </label>
+
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3 col-sm-12 pl-0">
+                                                        <label class="col-form-label label-align">@Resource.QuotationNumber  / @Resource.Date</label>
+                                                        @*<input class="form-control" id="ContactWebsite" max="" name="ContactWebsite" type="text" value="" placeholder="@Resource.ContactWebsite">*@
+                                                        @Html.TextBoxFor(model => model.QuotationNumDt, new { @class = "form-control", @readonly = "readonly", @id = "txt_QuotationNumDt", maxlength = "50", @name = "QuotationNumDt", @autocomplete = "off", @placeholder = @Resource.QuotationNumber, type = "text", @onblur = "this.placeholder='Quotation Number'" })
+                                                        @Html.HiddenFor(model => model.QuotationNumDt, new { @id = "hd_QuotationNumDt" })
+                                                    </div>
+                                                    <div class="clearfix"></div>
+                                                    <div class="col-md-2 col-sm-12">
+                                                        <label class="col-form-label label-align">@Resource.Enquiry  @Resource.Number</label>
+                                                        @*<input class="form-control" id="EnquiryNumber" max="" name="EnquiryNumber" type="text" value="" disabled="" placeholder="@Resource.Enquiry  @Resource.Number">*@
+                                                        @Html.TextBoxFor(model => model.EnquiryNo, new { @class = "form-control", @readonly = "readonly", @id = "txt_EnquiryNo", @maxlength = "20", @name = "EnquiryNo", @autocomplete = "off", @placeholder = @Resource.Enquiry, type = "text", @onblur = "this.placeholder='Enquiry Number'" })
+                                                        @Html.HiddenFor(model => model.EnquiryNo, new { @id = "hd_EnquiryNo" })
+                                                        @Html.HiddenFor(model => model.EnquiryNo, new { @id = "HdnDocNo_ForAttach" })
+                                                    </div>
+                                                    <div class="col-md-2 col-sm-12 pl-0">
+                                                        <label class="col-form-label label-align">@Resource.Enquiry @Resource.Date</label>
+                                                        @*<input class="form-control" id="EnquiryDate" max="" name="EnquiryDate" type="date" value="" placeholder="@Resource.Enquiry @Resource.Date">*@
+                                                        @if (Model.EnquiryDt != null)
+                                                        {
+                                                            @Html.TextBoxFor(model => model.EnquiryDt, "{0:yyyy-MM-dd}", new { @class = "form-control", @id = "txt_EnquiryDate", @name = "sqdate", @type = "date", onblur = "this.placeholder='SQ Date'", @readonly = "readonly" })
+                                                        }
+                                                        else
+                                                        {
+                                                            @Html.TextBoxFor(model => model.EnquiryDt, "{0:yyyy-MM-dd}", new { @class = "form-control", @id = "txt_EnquiryDate", @name = "sedate", @type = "date", @Value = System.DateTime.Now.ToString("yyyy-MM-dd"), onblur = "this.placeholder='SE Date'", @readonly = "readonly" })
+                                                        }
+                                                    </div>
+                                                    <div class="col-md-2 col-sm-12 pl-0">
+                                                        <label class="col-form-label label-align">@Resource.Enquiry  @Resource.Source<span class="required"> *</span></label>
+
+                                                        @*@Html.DropDownListFor(model => model.EnquirySource, new SelectList(new List<Object>
+                                                                                    {
+                                                                                      new { value = "0", text = "---Select---" },
+                                                                                      new { value = "EM", text = "Email"  },
+                                                                                      new { value = "TL", text = "Telephonic"  },
+                                                                                      new { value = "RF" , text = "Reference" },
+                                                                                      new { value = "WS" , text = "Website" },
+                                                                                      new { value = "SP", text = "Sales Person"  },
+                                                                                      new { value = "SM" , text = "Social Media" },
+
+                                                                                    },
+                                                            "value",
+                                                            "text"
+                                                            ), new { @id = "ddl_EnquirySource", @class = "form-control" })*@
+                                                        @if (Disable)
+                                                        {
+                                                            @Html.DropDownListFor(model => model.EnquirySource, new SelectList(new List<SelectListItem> {
+
+                                                                                                            new SelectListItem {Text="--Select--",Value="0" },
+                                                                                                            new SelectListItem {Text="Email",Value="EM" },
+                                                                                                            new SelectListItem {Text="Telephonic",Value="TL" },
+                                                                                                             new SelectListItem {Text="Reference",Value="RF" },
+                                                                                                            new SelectListItem {Text="Website",Value="WS" },
+                                                                                                             new SelectListItem {Text="Sales Person",Value="SP" },
+                                                                                                            new SelectListItem {Text="Social Media",Value="SM" },
+                                                                                                            }, "Value", "Text"
+                                                            ), new { @class = "form-control", disabled = "disabled", @id = "ddl_EnquirySource", @name = "mrs_type", onchange = "OnChangeEnquirySource()" })
+                                                            @Html.ValidationMessageFor(model => model.EnquirySource, String.Empty, new { @style = "color:red;!important", @id = "vmEnquirySource" })
+                                                            @Html.HiddenFor(model => model.EnquirySource, new { @id = "hdnEnquirySource" })
+                                                        }
+                                                        else
+                                                        {
+                                                            //if (Model.EnquiryNo == null)
+                                                            //{
+                                                            @Html.DropDownListFor(model => model.EnquirySource, new SelectList(new List<SelectListItem> {
+                                                                                                new SelectListItem {Text="--Select--",Value="0" },
+                                                                                                new SelectListItem {Text="Email",Value="EM" },
+                                                                                                new SelectListItem {Text="Telephonic",Value="TL" },
+                                                                                                 new SelectListItem {Text="Reference",Value="RF" },
+                                                                                                new SelectListItem {Text="Website",Value="WS" },
+                                                                                                 new SelectListItem {Text="Sales Person",Value="SP" },
+                                                                                                new SelectListItem {Text="Social Media",Value="SM" },
+                                                                                                }, "Value", "Text"
+                                                            ), new { @class = "form-control", @id = "ddl_EnquirySource", @name = "mrs_type", onchange = "OnChangeEnquirySource()" })
+                                                            @Html.ValidationMessageFor(model => model.EnquirySource, String.Empty, new { @style = "color:red;!important", @id = "vmEnquirySource" })
+                                                            @Html.HiddenFor(model => model.EnquirySource, new { @id = "hdnEnquirySource" })
+                                                            @*}*@
+
+                                                        }
+
+                                                    </div>
+                                                    <div class="col-md-3 col-sm-12 no-padding pl-0">
+                                                        <div class="col-md-10 col-sm-12 pl-0 pr-0">
+                                                            <label class="col-form-label label-align">@Resource.Customer  @Resource.Name<span class="required"> *</span></label>
+                                                            @*<select class="form-control" id="CustomerName" name="Status">
+                                                                    <option value="">---Select---</option>
+                                                                    <option value="">Customer Name</option>
+                                                                    <option value="">Customer Name 1</option>
+                                                                    <option value="">Customer Name 2</option>
+                                                                </select>*@
+                                                            @if (Model.Command == "New")
+                                                            {
+                                                                @Html.DropDownListFor(model => model.Cust_id, new SelectList(Model.CustomerNameList, "Cust_id", "Cust_name"), new { @class = "form-control", @onchange = "OnChangeCustomer(this)", @id = "Customer_Name" })
+                                                                @Html.ValidationMessageFor(model => model.Cust_id, String.Empty, new { @style = "color:red;!important; position:relative;", @id = "vmcust_id" })
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.DropDownListFor(model => model.Cust_id, new SelectList(Model.CustomerNameList, "Cust_id", "Cust_name"), new { @class = "form-control", @onchange = "OnChangeCustomer(this)", @id = "Customer_Name", @disabled = "disabled" })
+                                                                @Html.ValidationMessageFor(model => model.Cust_id, String.Empty, new { @style = "color:red;!important; position:relative;", @id = "vmcust_id" })
+                                                            }
+                                                            @Html.HiddenFor(model => model.Cust_id, new { @id = "hdn_Cust_Name" })
+                                                            <span id="SpanCustNameErrorMsg" class="error_message"></span>
+                                                            <input type="hidden" id="hdnCustNameList" value='@Url.Action("GetAutoCompleteSearchCustList", "SalesEnquiry")' />
+                                                        </div>
+
+                                                        <div class="col-md-2 col-sm-12 mt-4" id="Div_ProspectSetup" style="display:none">
+                                                            <a>
+                                                                <div id="Prosbtn" class="plus_icon4" >
+                                                                    <i class="fa fa-user-plus" aria-hidden="true" id="BtnAddNewProspect" onclick="AddNewProspect();" title="@Resource.AddNewProspect"></i>
+                                                                </div>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                    @*<div class="col-md-3 col-sm-12 pl-0">
+                                                             <label class="col-form-label label-align">@Resource.Address</label>
+                                                             <textarea class="form-control remarksmessage" cols="20" id="SED_Address" maxlength="50" name="SED_Address" placeholder="@Resource.Address" rows="2" onmouseover="OnMouseOver(this)" title="" disabled=""></textarea>
+                                                             @Html.TextAreaFor(model => model.BillingAddress, new
+                                                        {
+                                                            @id = "TxtBillingAddr",
+                                                            @class = "form-control remarksmessage",
+                                                            @maxlength = "100",
+                                                            @name = "Billing_Address",
+                                                            @placeholder = @Resource.BillingAddress,
+                                                            @readonly = "readonly"
+                                                        })
+
+                                                             @Html.HiddenFor(model => model.Billing_id, new { @id = "bill_add_id" })
+                                                         </div>*@
+                                                    <div class="col-md-3 col-sm-12 pl-0">
+                                                        <div class="col-md-11 col-sm-12 pl-0 pr-0">
+                                                            <label class="col-form-label label-align" id="AddressInfo_BillAdd" title="Base Unit Of Measure">
+                                                                @Resource.Address <span class="required"> *</span>
+                                                            </label>
+
+                                                            @Html.TextAreaFor(model => model.BillingAddress, new
+                                                       {
+                                                           @id = "TxtBillingAddr",
+                                                           @class = "form-control remarksmessage",
+                                                           @maxlength = "100",
+                                                           @name = "Billing_Address",
+                                                           @placeholder = @Resource.Address,
+                                                           @readonly = "readonly"
+                                                       })
+                                                            @*<input type="hidden" id="bill_add_id" />*@
+                                                            @Html.HiddenFor(model => model.Billing_id, new { @id = "bill_add_id" })
+                                                        </div>
+                                                        <div class="col-sm-1 margin25 i_Icon">
+                                                            <button type="button" id="AddInfoBtnIcon" class="calculator" onclick="OnClickbillingAddressIconBtn(event);" data-toggle="modal" data-target="#AddressInfo" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.AddressInformation"> </button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-2 col-sm-12">
+                                                        <label class="col-form-label label-align">@Resource.ContactPerson</label>
+                                                        @*<input class="form-control" id="ContactPerson" max="" name="ContactPerson" type="text" value="" placeholder="@Resource.ContactPerson">*@
+                                                        @if (Disable)
+                                                        {
+                                                            @Html.TextBoxFor(model => model.cont_pers, new { @class = "form-control", @id = "txt_ContactPerson", maxlength = "150", @placeholder = "Contact Person", disabled = "disabled" })
+                                                        }
+                                                        else
+                                                        {
+                                                            @Html.TextBoxFor(model => model.cont_pers, new
+                                                            {
+                                                                @class = "form-control",
+                                                                @id = "txt_ContactPerson",
+                                                                maxlength = "150",
+                                                                autocomplete = "off",
+                                                                @placeholder = "Contact Person"@*, onpaste = "return CopyPasteData(event);", @onkeypress = "return lettersOnly(event)",*@})
+                                                        }
+                                                    </div>
+                                                    <div class="col-md-2 col-sm-12 pl-0">
+                                                        <label class="col-form-label label-align">@Resource.ContactEmailID</label>
+                                                        @*<input class="form-control" id="ContactEmailID" max="" name="ContactEmailID" type="text" value="" placeholder="@Resource.ContactEmailID">*@
+                                                        @if (Disable)
+                                                        {
+                                                            @Html.TextBoxFor(model => model.cont_email, new { @class = "form-control", @id = "txt_ContactEmailID", maxlength = "150", @placeholder = "Contact email id", disabled = "disabled" })
+                                                        }
+                                                        else
+                                                        {
+                                                            @Html.TextBoxFor(model => model.cont_email, new { @class = "form-control", @id = "txt_ContactEmailID", @onchange = "return ValidateEmail()", maxlength = "150", autocomplete = "off", @placeholder = "Contact email id" })
+                                                        }
+                                                        @Html.ValidationMessageFor(model => model.cont_email, String.Empty, new { @style = "color:red;!important", @id = "vmEmail" })
+                                                    </div>
+                                                    <div class="col-md-2 col-sm-12 pl-0">
+                                                        <label class="col-form-label label-align">@Resource.ContactNumber</label>
+                                                        @*<input class="form-control" id="ContactNumber" max="" name="ContactNumber" type="text" value="" placeholder="@Resource.ContactNumber">*@
+                                                        @if (Disable)
+                                                        {
+                                                            @Html.TextBoxFor(model => model.cont_num, new { @class = "form-control", maxlength = "150", @id = "txt_ContactNumber", @placeholder = "Contact Number", disabled = "disabled" })
+                                                        }
+                                                        else
+                                                        {
+                                                            if (ViewBag.GstApplicable == "Y")
+                                                            {
+                                                                @Html.TextBoxFor(model => model.cont_num, new { @class = "form-control", maxlength = "150", @id = "txt_ContactNumber", @minlength = "10", autocomplete = "off", @placeholder = "9999999999", @onkeypress = "return OnkeyPressConNumber(event)", @onchange = "return OnchangeCustomerNUm()", onpaste = "return CopyPasteData(event);" })
+                                                                @Html.ValidationMessageFor(model => model.cont_num, String.Empty, new { @id = "vmcont_num1" })
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.TextBoxFor(model => model.cont_num, new { @class = "form-control", maxlength = "150", @id = "txt_ContactNumber", autocomplete = "off", @placeholder = "9999999999", onpaste = "return CopyPasteData(event);" })
+                                                            }
+                                                        }
+                                                    </div>
+                                                    <div class="col-md-3 col-sm-12 pl-0">
+                                                        <label class="col-form-label label-align">@Resource.ContactWebsite</label>
+                                                        @*<input class="form-control" id="ContactWebsite" max="" name="ContactWebsite" type="text" value="" placeholder="@Resource.ContactWebsite">*@
+                                                        @if (Disable)
+                                                        {
+                                                            @Html.TextBoxFor(model => model.cont_web, new { @class = "form-control", @id = "txt_ContactWebsite", maxlength = "150", @placeholder = "ContactWebsite", disabled = "disabled" })
+                                                        }
+                                                        else
+                                                        {
+                                                            @Html.TextBoxFor(model => model.cont_web, new { @class = "form-control", @id = "txt_ContactWebsite", maxlength = "150", autocomplete = "off", @placeholder = "ContactWebsite" })
+                                                        }
+                                                    </div>
+                                                    <div class="clearfix"></div>
+                                                    <div class="col-md-2 col-sm-12">
+                                                        <label class="col-form-label label-align">@Resource.Currency <span class="required"> *</span></label>
+                                                        @*<select class="form-control" id="currency" name="Status">
+                                                                <option>select currency</option>
+                                                                <option value="AFN">Afghan Afghani</option>
+                                                                <option value="ALL">Albanian Lek</option>
+                                                                <option value="DZD">Algerian Dinar</option>
+                                                                <option value="AOA">Angolan Kwanza</option>
+                                                            </select>*@
+                                                        @Html.TextBoxFor(model => model.Currency, new { @class = "form-control", @readonly = "readonly", @id = "txtCurrency", type = "text", @placeholder = @Resource.Currency })
+                                                        @Html.HiddenFor(model => model.curr_id, new { @id = "hdcurr" })
+                                                        @Html.HiddenFor(model => model.curr_name, new { @id = "hdcurr" })
+                                                        <span id="SpanCustCurrErrorMsg" class="error_message"></span>
+                                                    </div>
+                                                    <div class="col-md-2 col-sm-12 pl-0">
+                                                        <label class="col-form-label label-align">@Resource.ExchangeRate <span class="required"> *</span></label>
+                                                        @*<input class="form-control num_right" id="ExchangeRate" max="" name="ExchangeRate" type="text" value="" placeholder="0000.00">*@
+                                                        @Html.TextBoxFor(model => model.convrate, new { @id = "conv_rate", @class = "form-control num_right", @readonly = "readonly", @placeholder = "0000.00", onkeypress = "return RateFloatValueonlyConvRate(this,event);", onchange = "OnchangeConvRate(event);", autocomplete = "off", @type = "text", name = "conver_rate" })
+                                                        @Html.HiddenFor(model => model.convrate, new { @id = "hdnconv_rate" })
+                                                        <span id="SpanExRateErrorMsg" class="error_message"></span>
+                                                    </div>
+                                                    <div class="col-md-2 col-sm-12 pl-0">
+                                                        <label class="col-form-label label-align"> @Resource.Sales @Resource.Person <span class="required"> *</span></label>
+
+                                                        @if (Model.Command == "New" || (Model.DocumentStatus == "D" && Model.Command == "Edit"))
+                                                        {
+                                                            @Html.DropDownListFor(model => model.SE_SalePerson, new SelectList(Model.SalePersonList, "salep_id", "salep_name"), new { @class = "form-control", @onchange = "OnChangeSalesPerson()", @id = "sales_person" })
+                                                            @Html.ValidationMessageFor(model => model.SE_SalePerson, String.Empty, new { @style = "color:red;!important; position:relative;", @id = "vmslprsn_id" })
+                                                        }
+                                                        else
+                                                        {
+                                                            @Html.DropDownListFor(model => model.SE_SalePerson, new SelectList(Model.SalePersonList, "salep_id", "salep_name"), new { @class = "form-control", @onchange = "OnChangeSalesPerson()", @id = "sales_person", @disabled = "disabled" })
+                                                            @Html.ValidationMessageFor(model => model.SE_SalePerson, String.Empty, new { @style = "color:red;!important; position:relative;", @id = "vmslprsn_id" })
+                                                        }
+                                                        @Html.HiddenFor(model => model.SE_SalePersonID, new { @id = "hdn_Salpersn_id" })
+                                                        @Html.HiddenFor(model => model.SE_SalePersonName, new { @id = "hdn_Salpersn_name" })
+                                                        <input type="hidden" id="salespersonList" value='@Url.Action("GetSalesPersonList", "DomesticSalesQuotation")' />
+                                                        <span id="SpanSalesPersonErrorMsg" class="error_message"></span>
+                                                    </div>
+                                                    <div class="col-md-3 col-sm-12 pl-0">
+                                                        <label class="col-form-label label-align"> @Resource.remarks</label>
+                                                        @*<textarea class="form-control remarksmessage" cols="20" id="remarks" maxlength="50" name="remarks" placeholder="@Resource.remarks" rows="2" onmouseover="OnMouseOver(this)" title=""></textarea>*@
+                                                        @if (Model.Command == "New" || (Model.DocumentStatus == "D" && Model.Command == "Edit"))
+                                                        {
+                                                            @Html.TextAreaFor(model => model.Remarks, new { @class = "form-control remarksmessage", @cols = "20", @id = "txt_remarks", @maxlength = "250", @name = "detailremarks", @placeholder = @Resource.remarks, @rows = "2", })
+                                                        }
+                                                        else
+                                                        {
+                                                            @Html.TextAreaFor(model => model.Remarks, new { @class = "form-control remarksmessage", @cols = "20", @id = "txt_remarks", @maxlength = "250", @name = "detailremarks", @placeholder = @Resource.remarks, @rows = "2", @readonly = "readonly" })
+                                                        }
+                                                    </div>
+                                                </div>
+                                                @Html.HiddenFor(model => model.SE_ItemDetail, new { @id = "hdItemDetailList" })
+                                                @Html.HiddenFor(model => model.Communicationdetails, new { @id = "hdCommunicatnDetailList" })
+
+                                                @{ var disableForDomestic = Model.Enquiry_type == "D" ? "none" : "";}
+                                                <div class="card-box table-responsive dy_table">
+                                                    <div class="col-md-12">
+                                                        <div class="price_item_detail">
+                                                            <div class="tableFixHead height30VH">
+                                                                <h2 class="col-md-9 col-sm-12 no-padding mt-3">@Resource.Item @Resource.Detail</h2>
+                                                                <div class="col-md-3 col-sm-12 no-padding num_right mt-3 mb-2"><label class="label pt-1 col-md-4 col-sm-12 num_right pr-0" for="SearchItmDetailsTbl">@Resource.Search @Resource.Item : </label><input type="text" class="form-control col-md-7 col-sm-12" id="SearchItmDetailsTbl" onkeyup="FilterItemDetail(event)" /> </div>
+                                                                @{
+                                                                    var displayaddRow = "none";
+                                                                    if (!Disable && Model.EnquiryNo != null)
+                                                                    {
+                                                                        displayaddRow = "";
+                                                                    }
+                                                                    else
+                                                                    {
+
+                                                                    }
+                                                                }
+                                                                <table id="SlsEnqryItmDetailsTbl" class="table table-bordered itmfrz">
+                                                                    <thead>
+                                                                        <tr class="headings">
+                                                                            <th width="2%">&nbsp;</th>
+                                                                            <th width="2%">@Resource.SrNo</th>
+                                                                            @*<th width="26%">@Resource.Item @Resource.Name</th>*@
+                                                                            <th width="26%">
+                                                                                <div class="col-md-2 col-sm-12"> </div>
+                                                                                <div class="col-md-8 col-sm-12">
+                                                                                    <span class="item_add">
+                                                                                        @Resource.ItemName <span class="required"> *</span>
+                                                                                    </span><a href="#">
+                                                                                        <div class="plus_icon1" style="display:@displayaddRow;"> <i class="fa fa-plus" id="BtnAddItem" onclick="AddNewRow()" title="Add New"></i> </div>
+                                                                                    </a>
+                                                                                </div>
+
+                                                                                <div class="col-md-2 col-sm-12"> </div>
+                                                                            </th>
+                                                                            <th width="6%" title="@Resource.UnitOfMeasure">@Resource.UOM</th>
+                                                                            <th width="12%">@Resource.Quantity <span class="required"> *</span></th>
+                                                                            <th width="10%">@Resource.Estimated @Resource.Price <span class="required"> *</span></th>
+                                                                            <th width="10%">@Resource.NetValue <br /> @Resource.InBase</th>
+                                                                            <th width="12%" style="display:@disableForDomestic;" id="tbl_hdr_Netvalspecfic">@Resource.NetValue <br /> @Resource.InSpecific</th>
+                                                                            <th width="20%">@Resource.remarks</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        @*<tr>
+                    <td class="red center">
+                        <i class="fa fa-trash" aria-hidden="false" title="@Resource.Delete"></i>
+                    </td>
+                    <td> <input id="" class="form-control" name="SrNo" placeholder="@Resource.SrNo" readonly="readonly"></td>
+                    <td>
+                        <input id="ItemName" value="" class="form-control" autocomplete="off" type="text" name="ItemName" placeholder="@Resource.Item @Resource.Name" disabled="">
+                    </td>
+                    <td>
+                        <input id="UOM" value="" class="form-control" autocomplete="off" type="text" name="UOM" placeholder="@Resource.UOM" disabled="">
+                    </td>
+                    <td>
+                        <input id="Quantity" class="form-control num_right" max="2024-09-17" name="Quantity" onchange="FromToDateValidation()" type="text" value="" placeholder="0000.00" disabled="">
+                    </td>
+                    <td>
+                        <input id="EstimatedPrice" value="" class="form-control num_right" autocomplete="off" type="text" name="EstimatedPrice" placeholder="0000.00" disabled="">
+                    </td>
+                    <td>
+                        <input id="Value" class="form-control num_right" max="2024-09-17" name="Value" onchange="FromToDateValidation()" type="text" value="" placeholder="0000.00" disabled="">
+                    </td>
+                    <td>
+                        <textarea class="form-control remarksmessage" cols="20" id="SEremarks" maxlength="50" name="SEremarks" placeholder="@Resource.remarks" rows="2" onmouseover="OnMouseOver(this)" title="" disabled=""></textarea>
+                    </td>
+
+                </tr>*@
+                                                                        @if (ViewBag.ItemDetailsList != null)
+                                                                        {
+                                                                            var disabled = "";
+                                                                            var grey = "0%";
+
+                                                                            if (Disable)
+                                                                            {
+                                                                                disabled = "disabled";
+                                                                                grey = "100%";
+                                                                            }
+                                                                            var RowId = 0;
+
+                                                                            foreach (System.Data.DataRow dr in ViewBag.ItemDetailsList.Rows)
+                                                                            {
+
+                                                                                RowId = RowId + 1;
+                                                                                var subitmDisable = "";
+                                                                                if (dr["sub_item"].ToString() != "Y")
+                                                                                {
+                                                                                    subitmDisable = "disabled";
+                                                                                }
+                                                                                <tr id="R1">
+
+                                                                                    @if (disabled == "disabled")
+                                                                                    {
+                                                                                        <td class="red center"> <i class="fa fa-trash" style="filter: grayscale(@grey)" aria-hidden="true" id="delBtnIcon" title="@Resource.Delete"></i></td>
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        <td class="red center"> <i class="fa fa-trash deleteIcon" aria-hidden="true" id="delBtnIcon" title="@Resource.Delete"></i></td>
+                                                                                    }
+                                                                                    <td id="SRNO" class="sr_padding">@RowId</td>
+                                                                                    <td style="display: none;"><input type="hidden" id="SNohiddenfiled" value="@RowId" /></td>
+                                                                                    <td style="display: none;"><input type="hidden" id="hfItemID" value="@dr["item_id"].ToString()" /></td>
+                                                                                    <td>
+                                                                                        <div class="col-sm-11 lpo_form no-padding">
+                                                                                            <select class="form-control" id="@("SEItemListName"+RowId)" onchange="OnChangeSEItemName(1,event)" @disabled name="SQItemListName">
+                                                                                                <option value="@dr["item_id"].ToString()">@dr["item_name"].ToString()</option>
+                                                                                            </select>
+                                                                                            <span id="SEItemListNameError" class="error-message is-visible"></span>
+                                                                                        </div>
+                                                                                        <div class="col-sm-1 i_Icon"><button type="button" id="ItmInfoBtnIcon" class="calculator" onclick="OnClickIconBtn(event);" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.ItemInformation"> </button></div>
+
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <input id="UOM" class="form-control" value="@dr["uom_name"].ToString()" autocomplete="off" type="text" name="UOM" placeholder="@Resource.UOM" disabled>
+                                                                                        <input id="UOMID" type="hidden" value="@dr["uom_id"].ToString()" />
+                                                                                        @*<input type="hidden" id="ItemHsnCode" value="@dr["hsn_code"].ToString()" />*@
+
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <div class="col-sm-10 lpo_form no-padding">
+                                                                                            <input id="SE_Quantity" class="form-control date num_right" value="@Convert.ToDecimal(dr["qty"]).ToString(Model.QtyDigit)" @disabled autocomplete="off" onchange="OnChangeSEItemQty(event)" onpaste="return CopyPasteData(event);" onkeypress="return QtyFloatValueonly(this,event);" type="text" name="QuotQty_name" placeholder="0000.00">
+                                                                                            <span id="SE_qty_Error" class="error-message is-visible"></span>
+                                                                                        </div>
+                                                                                        <div class="col-sm-2 i_Icon no-padding" id="div_SubItemEnqQty">
+                                                                                            <input hidden type="text" id="sub_item" value="@dr["sub_item"].ToString()" />
+                                                                                            <button type="button" id="SubItemEnqQty" @subitmDisable class="calculator subItmImg" onclick="return SubItemDetailsPopUp('Quantity',event)" data-toggle="modal" data-target="#SubItem" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+                                                                                        </div>
+                                                                                    </td>
+
+                                                                                    <td>
+                                                                                        <div class="lpo_form">
+                                                                                            @*@if (Model.SpanCustPricePolicy == "P")
+                                    {
+                                        <input id="item_rate" class="form-control date num_right" disabled value="@Convert.ToDecimal(dr["rate"]).ToString(Model.RateDigit)" onchange="OnChangeSEItemRate(event)" autocomplete="off" onpaste="return CopyPasteData(event);" onkeypress="return RateFloatValueonly(this,event);" type="text" name="item_rate_name" placeholder="0000.00">
+                                    }
+                                    else
+                                    {*@
+                                                                                            <input id="item_rate" class="form-control date num_right" @disabled value="@Convert.ToDecimal(dr["rate"]).ToString(Model.RateDigit)" onchange="OnChangeSEItemRate(event)" autocomplete="off" onpaste="return CopyPasteData(event);" onkeypress="return RateFloatValueonly(this,event);" type="text" name="item_rate_name" placeholder="0000.00">
+                                                                                            @*}*@
+                                                                                            <span id="item_rateError" class="error-message is-visible"></span>
+                                                                                        </div>
+                                                                                    </td>
+
+                                                                                    <td>
+                                                                                        <input id="item_net_val_bs" class="form-control date num_right" value="@Convert.ToDecimal(dr["item_net_val_bs"]).ToString(Model.ValDigit)" autocomplete="off" type="text" name="item_net_val_bs_name" placeholder="0000.00" disabled>
+                                                                                    </td>
+                                                                                    <td style="display:@disableForDomestic;">
+                                                                                        <input id="item_net_val_spec" class="form-control date num_right" value="@Convert.ToDecimal(dr["item_net_val_spec"]).ToString(Model.ValDigit)" autocomplete="off" type="text" name="item_net_val_spec_name" placeholder="0000.00" disabled>
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <textarea id="item_remarks" class="form-control remarksmessage" @disabled name="remarks_name" onmouseover="OnMouseOver(this)" maxlength="200" placeholder="@Resource.remarks">@dr["remark"]</textarea>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            }
+
+                                                                        }
+
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                            <section class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="headingTwo">
+                                    <h4 class="panel-title"> <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo"> @Resource.Communication @Resource.Detail <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a></h4>
+                                </div>
+                                <div id="collapseTwo" class="panel-collapse in collapse" role="tabpanel" aria-labelledby="headingTwo" style="">
+                                    <div class="row">
+                                        <div class="col-md-12 col-sm-12">
+                                            <div class="panel-body">
+                                                <div class="col-md-12 col-sm-12 no-padding">
+                                                    <div class="col-md-9 col-sm-12 pl-0 pr-0">
+                                                        <div class="col-md-55 col-sm-12 ">
+                                                            <label class="col-form-label label-align">@Resource.Communication  @Resource.Type <span class="required"> *</span></label>
+                                                            @*<select class="form-control" id="CommunicationType" name="Status">
+                                                                    <option value="">---Select---</option>
+                                                                    <option value="">Telephonic</option>
+                                                                    <option value="">Email</option>
+                                                                    <option value="">Visit</option>
+                                                                    <option value="">Social Media</option>
+                                                                </select>*@
+                                                            @if (Disable)
+                                                            {
+                                                                @Html.DropDownListFor(model => model.CommunicatnTyp, new SelectList(new List<SelectListItem> {
+                                                                                                        new SelectListItem {Text="--Select--",Value="0" },
+                                                                                                        new SelectListItem {Text="Email",Value="EM" },
+                                                                                                        new SelectListItem {Text="Telephonic",Value="TL" },
+                                                                                                        new SelectListItem {Text="Visit",Value="VT" },
+                                                                                                        new SelectListItem {Text="Social Media",Value="SM" },
+                                                                                                        }, "Value", "Text"
+                                                                    ), new { @class = "form-control", disabled = "disabled", @id = "ddl_CommunicatnTyp", @name = "comm_type", onchange = "OnChangeCommunicatnTyp()" })
+
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.DropDownListFor(model => model.CommunicatnTyp, new SelectList(new List<SelectListItem> {
+                                                                                                                                                                    new SelectListItem {Text="--Select--",Value="0" },
+                                                                                                                                                                    new SelectListItem {Text="Email",Value="EM" },
+                                                                                                                                                                    new SelectListItem {Text="Telephonic",Value="TL" },
+                                                                                                                                                                    new SelectListItem {Text="Visit",Value="VT" },
+                                                                                                                                                                    new SelectListItem {Text="Social Media",Value="SM" },
+                                                                                                                                                                    }, "Value", "Text"
+                                                                                                                                ), new { @class = "form-control", @id = "ddl_CommunicatnTyp", @name = "comm_type", onchange = "OnChangeCommunicatnTyp()" })
+
+                                                            }
+                                                            @Html.ValidationMessageFor(model => model.CommunicatnTyp, String.Empty, new { @style = "color:red;!important", @id = "vmCommunicatnTyp" })
+                                                            @Html.HiddenFor(model => model.CommunicatnTyp, new { @id = "hdnCommunicatnTyp" })
+
+                                                        </div>
+                                                        <div class="col-md-55 col-sm-12 pl-0">
+                                                            <label class="col-form-label label-align">@Resource.Call @Resource.Date<span class="required"> *</span></label>
+                                                            @*<input class="form-control" id="CallDate" max="" name="CallDate" type="date" value="" placeholder="@Resource.Call @Resource.Date">*@
+
+                                                            @if (Disable)
+                                                            {
+                                                                @Html.TextBoxFor(model => model.CallDate, "{0:yyyy-MM-dd}", new { @class = "form-control", disabled = "disabled", @id = "txt_CallDate", @name = "caldate", @type = "date", @min = @System.DateTime.Now.ToString("yyyy-MM-dd"), @onchange = "OnChangeCallDate(this)", onblur = "this.placeholder='call Date'" })
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.TextBoxFor(model => model.CallDate, "{0:yyyy-MM-dd}", new { @class = "form-control", @id = "txt_CallDate", @name = "caldate", @type = "date", @min = @System.DateTime.Now.ToString("yyyy-MM-dd"), @onchange = "OnChangeCallDate(this)", onblur = "this.placeholder='call Date'" })
+                                                                @*<input type="date" class="form-control" id="CallDate" name="date" min="@System.DateTime.Now.ToString("yyyy-MM-dd")" onchange="OnChangeDeliveryDate(this)">*@
+                                                            }
+                                                            <span id="SpanCallDate" class="error_message"></span>
+                                                        </div>
+                                                        <div class="col-md-55 col-sm-12 pl-0">
+                                                            <label class="col-form-label label-align">@Resource.ContactedBy<span class="required"> *</span></label>
+                                                            @*<input class="form-control" id="ContactedBy" max="" name="ContactedBy" type="text" value="" placeholder="@Resource.ContactedBy">*@
+                                                            @if (Disable)
+                                                            {
+                                                                @Html.TextBoxFor(model => model.ContactedBy, new { @class = "form-control", @id = "txt_ContactedBy", maxlength = "100", @placeholder = "ContactedBy", disabled = "disabled" })
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.TextBoxFor(model => model.ContactedBy, new { @class = "form-control", @id = "txt_ContactedBy", maxlength = "100", autocomplete = "off", @placeholder = "ContactedBy", @onchange = "OnChangeContactedBy()" })
+                                                            }
+                                                            <span id="SpanContactedBy" class="error_message"></span>
+                                                        </div>
+                                                        <div class="col-md-55 col-sm-12 pl-0">
+                                                            <label class="col-form-label label-align">@Resource.ContactedTo <span class="required"> *</span></label>
+                                                            @*<input class="form-control" id="ContactedTo" max="" name="ContactedTo" type="text" value="" placeholder="@Resource.ContactedTo">*@
+                                                            @if (Disable)
+                                                            {
+                                                                @Html.TextBoxFor(model => model.ContactedTo, new { @class = "form-control", @id = "txt_ContactedTo", maxlength = "100", @placeholder = "ContactedTo", disabled = "disabled" })
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.TextBoxFor(model => model.ContactedTo, new { @class = "form-control", @id = "txt_ContactedTo", maxlength = "100", autocomplete = "off", @placeholder = "ContactedTo", @onchange = "OnChangeContactedTo()" })
+                                                            }
+                                                            <span id="SpanContactedTo" class="error_message"></span>
+                                                        </div>
+                                                        <div class="col-md-55 col-sm-12 pl-0">
+                                                            <label class="col-form-label label-align">@Resource.ContactDetail <span class="required"> *</span></label>
+                                                            @*<input class="form-control" id="ContactDetail" max="" name="ContactDetail" type="text" value="" placeholder="@Resource.ContactDetail">*@
+                                                            @if (Disable)
+                                                            {
+                                                                @Html.TextBoxFor(model => model.ContactDetail, new { @class = "form-control", @id = "txt_ContactDetail", maxlength = "250", @placeholder = "ContactDetail", disabled = "disabled" })
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.TextBoxFor(model => model.ContactDetail, new { @class = "form-control", @id = "txt_ContactDetail", maxlength = "250", autocomplete = "off", @placeholder = "ContactDetail", @onchange = "OnChangeContactDetail()" })
+                                                            }
+                                                            <span id="SpanContactDetail" class="error_message"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3 col-sm-12 pl-0">
+                                                        <div class="col-md-10 col-sm-12 pl-0 pr-0">
+                                                            <label class="col-form-label label-align">@Resource.DiscussionRemarks <span class="required"> *</span></label>
+                                                            @*<textarea class="form-control remarksmessage" cols="20" id="DiscussionRemarks" maxlength="50" name="DiscussionRemarks" placeholder="@Resource.DiscussionRemarks" rows="2" onmouseover="OnMouseOver(this)" title=""></textarea>*@
+                                                            @if (Model.Command == "New" || (Model.DocumentStatus == "D" && Model.Command == "Edit"))
+                                                            {
+                                                                @Html.TextAreaFor(model => model.DiscussRemarks, new { @class = "form-control remarksmessage", @cols = "20", @id = "txt_Discusremarks", @maxlength = "1000", @name = "Disremarks", @placeholder = @Resource.remarks, @rows = "2", @onchange = "OnChangeDiscusremarks()" })
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.TextAreaFor(model => model.DiscussRemarks, new { @class = "form-control remarksmessage", @cols = "20", @id = "txt_Discusremarks", @maxlength = "1000", @name = "Disremarks", @placeholder = @Resource.remarks, @rows = "2", @readonly = "readonly" })
+                                                            }
+                                                            <span id="SpanDiscussRemarks" class="error_message"></span>
+                                                        </div>
+                                                        <div class="col-sm-1 margin25 i_Icon">
+                                                            <button type="button" id="" class="calculator" data-toggle="modal" data-target="#DiscussionRemarks" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.DiscussionRemarks">  </button>
+                                                        </div>
+                                                        <div class="col-md-1 col-sm-12" id="CommunicationDtlAddBtn">
+                                                            @if (Disable)
+                                                            {
+                                                                @*<div id="divAddNewMaterialRwrkJO" class="col-md-2 col-sm-12" style="display:none;">*@
+                                                                <div id="divAddNewCommuniDtl" class="margin28" style="display:none;">
+                                                                    <a href="#">
+                                                                        <div class="plus_icon1"> <i class="fa fa-plus" id="BtnAttributeCommuniDtl" onclick="PlusBtnAddCommunicatnDetail()" session="" title="Populate Item Detail" data-original-title=""></i> </div>
+                                                                    </a>
+                                                                </div>
+                                                                @*</div>*@
+                                                            }
+                                                            else
+                                                            {
+                                                                if (Model.DocumentStatus == "A")
+                                                                { @*<div id="divAddNewMaterialRwrkJO" class="col-md-2 col-sm-12" style="display:none;">*@
+                                                                <div id="divAddNewCommuniDtl" class="margin28" style="display:none;">
+                                                                    <a href="#">
+                                                                        <div class="plus_icon1"> <i class="fa fa-plus" id="BtnAttributeCommuniDtl" onclick="PlusBtnAddCommunicatnDetail()" session="" title="Populate Item Detail" data-original-title=""></i> </div>
+                                                                    </a>
+                                                                </div>
+                                                                @*</div>*@
+                                                            }
+                                                            else
+                                                            {
+                                                                if (Model.DocumentStatus == "D" && Model.Command == "Edit")
+                                                                {
+                                                                    <div id="divAddNewCommuniDtl" class="margin28">
+                                                                        <a href="#">
+                                                                            <div class="plus_icon1"> <i class="fa fa-plus" id="BtnAttributeCommuniDtl" onclick="PlusBtnAddCommunicatnDetail()" session="" title="Populate Item Detail" data-original-title=""></i> </div>
+                                                                        </a>
+                                                                    </div>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <div id="divAddNewCommuniDtl" class="margin28" style="display:none;">
+                                                                        <a href="#">
+                                                                            <div class="plus_icon1"> <i class="fa fa-plus" id="BtnAttributeCommuniDtl" onclick="PlusBtnAddCommunicatnDetail()" session="" title="Populate Item Detail" data-original-title=""></i> </div>
+                                                                        </a>
+                                                                    </div>
+                                                                }
+
+                                                            }
+                                                        }
+                                                        </div>
+                                                        <div class="col-md-1 col-sm-12" id="divUpdateCommuniDtl" style="display:none;">
+                                                            <a href="#" style="color:#ffffff;">
+                                                                <div class="plus_icon1 margin28"> <i class="fa fa-refresh ref" id="ParaItemUpdateBtn" onclick="OnClickCommunicatnDtlUpdateBtn(this)" data-toggle="tooltip" title="" data-original-title="Update"></i> </div>
+                                                                <input type="hidden" id="hdnUpdateInTableCommuniTbl" />
+                                                            </a>
+                                                        </div>
+                                                        @*<div class="col-md-2 col-sm-12 margin25">
+
+                                                                <a href="#" id="GRN_AddNewItem">
+                                                                    <div class="plus_icon1">
+                                                                        <i class="fa fa-plus" id="BtnAttribute" onclick="PlusBtnAddCommunicatnDetail()" title="Populate Item Detail"></i>
+                                                                    </div>
+                                                                </a>
+                                                            </div>*@
+                                                    </div>
+                                                </div>
+                                                <div class="card-box table-responsive dy_table">
+                                                    <div class="col-md-12">
+                                                        <div class="price_item_detail">
+                                                            <div class="tableFixHead height30VH">
+                                                                <h2>@Resource.Item @Resource.Detail</h2>
+                                                                <table id="tbl_CommunicationDetails" class="table table-bordered">
+                                                                    <thead>
+                                                                        <tr class="headings">
+                                                                            <th width="2%">&nbsp;</th>
+                                                                            <th width="2%">&nbsp;</th>
+                                                                            <th width="2%">@Resource.SrNo</th>
+                                                                            <th width="14%">@Resource.Communication @Resource.Type</th>
+                                                                            <th width="15%">@Resource.Call @Resource.Date</th>
+                                                                            <th width="15%">@Resource.ContactedBy</th>
+                                                                            <th width="15%">@Resource.ContactedTo</th>
+                                                                            <th width="15%">@Resource.ContactDetail</th>
+                                                                            <th width="20%">@Resource.DiscussionRemarks</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+
+                                                                        @*<tr>
+                                                                                <td class="edit_pencil center">
+                                                                                    <i class="fa fa-edit" onclick="" aria-hidden="true" title="@Resource.Edit"></i>
+                                                                                </td>
+                                                                                <td class="red center">
+                                                                                    <i class="fa fa-trash" aria-hidden="false" title="@Resource.Delete"></i>
+                                                                                </td>
+                                                                                <td> <input id="" class="form-control" name="SrNo" placeholder="@Resource.SrNo" readonly="readonly"></td>
+                                                                                <td>
+                                                                                    <input id="Telephonic" value="" class="form-control" autocomplete="off" type="text" name="Telephonic" placeholder="@Resource.Telephonic" disabled="">
+                                                                                </td>
+                                                                                <td>
+                                                                                    <input id="CallDate" value="" class="form-control" autocomplete="off" type="date" name="CallDate" placeholder="10-10-2024" disabled="">
+                                                                                </td>
+                                                                                <td>
+                                                                                    <input id="ContactedBY" class="form-control " max="2024-09-17" name="ContactedBY" onchange="" type="text" value="" placeholder="@Resource.ContactedBy" disabled="">
+                                                                                </td>
+                                                                                <td>
+                                                                                    <input id="ContactedTo" class="form-control " max="2024-09-17" name="ContactedTo" onchange="" type="text" value="" placeholder="@Resource.ContactedTo" disabled="">
+                                                                                </td>
+                                                                                <td>
+                                                                                    <input id="ContactDetail" value="" class="form-control " autocomplete="off" type="text" name="ContactDetail" placeholder="@Resource.ContactDetail" disabled="">
+                                                                                </td>
+
+                                                                                <td>
+                                                                                    <textarea class="form-control remarksmessage" cols="20" id="DiscussionRemarks" maxlength="300" name="DiscussionRemarks" placeholder="@Resource.DiscussionRemarks" readonly="readonly" rows="2" onmouseover="OnMouseOver(this)" title="Enquired about DOM cameras including installation cost">Enquired about DOM cameras including installation cost</textarea>
+
+                                                                                </td>
+                                                                            </tr>*@
+                                                                        @if (ViewBag.CommunicationDtl != null)
+                                                                        {
+                                                                            var rowIdx = 0;
+
+                                                                            foreach (System.Data.DataRow Row in ViewBag.CommunicationDtl.Rows)
+                                                                            {
+                                                                                rowIdx++;
+
+                                                                                <tr id="@rowIdx">
+                                                                                    <td class="red center">
+                                                                                        @if (Disable)
+                                                                                        {
+                                                                                            <i class="fa fa-trash" aria-hidden="true" style="filter: grayscale(100%)" title="@Resource.Delete"></i>
+                                                                                        }
+                                                                                        else
+                                                                                        {
+
+                                                                                            if (Model.Command == "Edit" || Model.DocumentStatus == "D")
+                                                                                            {
+                                                                                                <i class="deleteIcon fa fa-trash" id="delBtnIcon" onclick="deleteRow(this, event, '@Row["comm_type"].ToString()')" aria-hidden="true" title="@Resource.Delete"></i>
+
+                                                                                            }
+                                                                                            else
+                                                                                            {
+                                                                                                <i class="deleteIcon fa fa-trash" id="delBtnIcon" onclick="deleteRow(this, event,'@Row["comm_type"].ToString()')" aria-hidden="true" title="@Resource.Delete"></i>
+
+                                                                                            }
+
+                                                                                        }
+                                                                                    </td>
+                                                                                    <td class="center edit_icon">
+                                                                                        @if (Disable)
+                                                                                        {
+                                                                                            <i class="fa fa-edit" aria-hidden="true" style="filter: grayscale(100%)" title="@Resource.Edit"></i>
+                                                                                        }
+                                                                                        else
+                                                                                        {
+
+                                                                                            if (Model.Command == "Edit" || Model.DocumentStatus == "D")
+                                                                                            {
+                                                                                                <i class="fa fa-edit" id="editBtnIcon" onclick="editRow(this, event,'@Row["comm_type"].ToString()')" aria-hidden="true" title="@Resource.Edit"></i>
+
+                                                                                            }
+                                                                                            else
+                                                                                            {
+                                                                                                <i class="fa fa-edit" id="editBtnIcon" onclick="editRow(this, event,'@Row["comm_type"].ToString()')" aria-hidden="true" title="@Resource.Edit"></i>
+
+                                                                                            }
+
+                                                                                        }
+                                                                                    </td>
+                                                                                    <td id="SRNO" class="sr_padding">
+                                                                                        <span id="SpanRowId" value="@rowIdx">@rowIdx</span>
+                                                                                        <input type="hidden" id="SNohiddenfiled" value="@rowIdx" />
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <input id="tbl_CommuTypeName" value="@Row["CommTypName"].ToString()" class="form-control" type="text" name="commType" placeholder="@Resource.Type" readonly>
+                                                                                        <input type="hidden" id="tbl_hdCommuTypVal" value="@Row["comm_type"].ToString()" style="display: none;" />
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <input id="tbl_CallDate" value="@Row["call_dt"].ToString()" class="form-control" autocomplete="off" type="date" name="calldt" placeholder="@Resource.Date" readonly>
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <input id="tbl_ContactBy" value="@Row["cont_by"].ToString()" class="form-control" maxlength="100" autocomplete="off" type="text" name="contby" placeholder="@Resource.ContactedBy" readonly>
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <input id="tbl_ContactTo" value="@Row["cont_to"].ToString()" class="form-control" maxlength="100" autocomplete="off" type="text" name="contto" placeholder="@Resource.ContactedTo" readonly>
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <input id="tbl_ContactDtl" value="@Row["cont_detail"].ToString()" class="form-control" maxlength="250" autocomplete="off" type="text" name="contDtl" placeholder="@Resource.ContactDetail" readonly>
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <textarea class="form-control remarksmessage" cols="20" id="tbl_DiscusRemark" maxlength="1000" name="DiscussionRemarks" placeholder="@Resource.DiscussionRemarks" readonly="readonly" rows="2" onmouseover="OnMouseOver(this)">@Row["disc_remark"].ToString()</textarea>
+
+                                                                                    </td>
+
+
+                                                                                </tr>
+                                                                            }
+                                                                        }
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                            @*/*------------------Attachment Start----------------*/*@
+                            @{
+                                ViewBag.Disable = Disable;
+                            }
+                            @Html.Partial("~/Areas/Common/Views/Comn_PartialAttatchmentDetail.cshtml")
+                            @Html.HiddenFor(model => model.attatchmentdetail, new { @id = "hdn_Attatchment_details" })
+                            @*/*------------------Attachment End----------------*/*@
+                            @*<section class="panel panel-default">
+                                    <div class="panel-heading" role="tab" id="headingFive">
+                                        <h4 class="panel-title"> <a class="" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive"> @Resource.Attachment <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a> </h4>
+                                    </div>
+                                    <div id="collapseFive" class="panel-collapse hide collapse" role="tabpanel" aria-labelledby="headingFive" style="">
+                                        <div class="panel-body">
+                                            <div id="PartialImageBind">
+                                                <script src="/Content/Scripts/Common/CommonJS1.js"></script>
+                                                <table id="hdn_attatchment_list" style="display:none;">
+                                                    <tbody>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <div class="form-group" id="FilesUpload">
+                                                <div class="file-input theme-fa file-input-ajax-new">
+                                                    <div class="file-preview ">
+                                                        <button type="button" class="close fileinput-remove" aria-label="Close">
+                                                            <span aria-hidden="true">×</span>
+                                                        </button>    <div class=" file-drop-zone">
+                                                            <div class="file-drop-zone-title">Drag &amp; drop files here …</div>
+                                                            <div class="file-preview-thumbnails">
+                                                            </div>
+                                                            <div class="clearfix"></div>    <div class="file-preview-status text-center text-success"></div>
+                                                            <div class="kv-fileinput-error file-error-message" style="display: none;"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="kv-upload-progress kv-hidden" style="display: none;">
+                                                        <div class="progress">
+                                                            <div class="progress-bar bg-success progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%;">
+                                                                0%
+                                                            </div>
+                                                        </div>
+                                                    </div><div class="clearfix"></div>
+                                                    <div class="input-group file-caption-main">
+                                                        <div class="file-caption form-control  kv-fileinput-caption" tabindex="500">
+                                                            <span class="file-caption-icon"></span>
+                                                            <input class="file-caption-name" onkeydown="return false;" onpaste="return false;" placeholder="Select files...">
+                                                        </div>
+                                                        <div class="input-group-btn input-group-append">
+                                                            <button type="button" tabindex="500" title="Clear selected files" class="btn btn-default btn-secondary fileinput-remove fileinput-remove-button"><i class="glyphicon glyphicon-trash"></i>  <span class="hidden-xs">Remove</span></button>
+                                                            <button type="button" tabindex="500" title="Abort ongoing upload" class="btn btn-default btn-secondary kv-hidden fileinput-cancel fileinput-cancel-button"><i class="glyphicon glyphicon-ban-circle"></i>  <span class="hidden-xs">Cancel</span></button>
+                                                            <a href="#" tabindex="500" title="Upload selected files" class="btn btn-default btn-secondary fileinput-upload fileinput-upload-button"><i class="glyphicon glyphicon-upload"></i>  <span class="hidden-xs">Upload</span></a>
+                                                            <div tabindex="500" class="btn btn-primary btn-file"><i class="glyphicon glyphicon-folder-open"></i>&nbsp;  <span class="hidden-xs">Browse …</span><input id="file-1" type="file" multiple="" class="file" data-overwrite-initial="false" data-min-file-count="1" name="ItemFiles"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>*@
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}

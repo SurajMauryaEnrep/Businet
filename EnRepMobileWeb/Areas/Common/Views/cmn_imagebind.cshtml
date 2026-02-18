@@ -1,0 +1,194 @@
+﻿@using System.Data;
+@using EnRepMobileWeb.Resources;
+
+<script src="~/Content/Scripts/Common/CommonJS1.js"></script>
+@{
+    var disabled = "";
+    if (ViewBag.Disable == true)
+    {
+        disabled = "disabled";
+    }
+}
+
+
+@if (ViewBag.AttechmentDetails != null)
+{
+    <table id="hdn_attatchment_list" style="display:none;">
+        <tbody>
+
+            @foreach (DataRow dr in ViewBag.AttechmentDetails.Rows)
+            {
+                var a = @dr["file_path"].ToString().Split('\\');
+                <tr>
+                    <td><input id="attch_Id" value="@dr["id"].ToString()" /></td>
+                    <td><input id="attch_fileName" value="@dr["file_name"].ToString()" /></td>
+                    <td><input id="attch_filePath" value="@dr["file_path"].ToString()" /></td>
+                    <td><input id="attch_fileDef" value="@dr["file_def"].ToString()" /></td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+    if (ViewBag.AttechmentDetails.Rows.Count > 0)
+    {
+        <div class="file-input theme-fa">
+            <div class="file-preview">
+                <button type="button" class="close fileinput-remove" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>    <div class="">
+                    @foreach (DataRow dr in ViewBag.AttechmentDetails.Rows)
+                    {
+                        var Image = "";
+                        var mapPath = System.Web.HttpContext.Current.Server.MapPath("~");
+                        var path = mapPath + @dr["file_path"].ToString().Split('.');
+                        var AFP = @dr["file_path"].ToString().Split('\\');
+                        var filePath = @dr["file_path"].ToString().Replace("\"", "/").Replace("Attachment","");
+                        string[] fpath = filePath.Split('.');
+                        string Scheme = System.Web.HttpContext.Current.Request.Url.Scheme.ToLower();
+                        string Host = System.Web.HttpContext.Current.Request.Url.Host.ToLower();
+                        string LocalServerURL = "";
+                        string localsysip= System.Configuration.ConfigurationManager.AppSettings["LocalServerip"];
+                        if (Host == localsysip)
+                            LocalServerURL = System.Configuration.ConfigurationManager.AppSettings["LocalServerURL"];
+                        else if (Host == "localhost")
+                            LocalServerURL = System.Configuration.ConfigurationManager.AppSettings["LocalServerURL"];
+                        else
+                            LocalServerURL = System.Configuration.ConfigurationManager.AppSettings["LiveServerURL"];
+
+                        string Port = System.Web.HttpContext.Current.Request.Url.Port.ToString().ToLower();
+                        string imgstr = "";
+                        //if (AFP.Length > 1)
+                        // {
+
+                        //}
+
+                        if (AFP.Length > 1)
+                            //imgstr = Scheme + "://" + Host + ":" + Port + "/" + AFP[AFP.Length - 3] + "/" + AFP[AFP.Length - 2] + "/" + AFP[AFP.Length - 1];
+                            // imgstr = /*Scheme + "://" + Host + ":" + Port +*/ (AppDomain.CurrentDomain.BaseDirectory+ AFP[AFP.Length - 4]+"/" + AFP[AFP.Length - 3] +"/"+ AFP[AFP.Length - 2] +"/"+ AFP[AFP.Length - 1]).Replace("\"","/");
+                            imgstr = LocalServerURL + AFP[AFP.Length -2]+"/"+ AFP[AFP.Length - 1];
+                        else
+                            imgstr = Scheme + "://" + Host + ":" + Port + "/" + "Attachment" + "/" + "Error" + "/" + "ErrorInPath.jpg";
+
+
+                        <div class="file-preview-thumbnails">
+
+                            <div class="file-preview-frame krajee-default  kv-preview-thumb" id="preview-1646392787251_78-0" data-fileindex="0" data-template="image">
+                                <div class="kv-file-content">
+
+                                    @if (imgstr.Substring((imgstr.Length - 4), 4) == ".pdf")
+                                    {
+                                        @*<embed class="kv-preview-data file-preview-pdf" src="@imgstr"
+                                            type="application/pdf" style="width:213px;height:160px;">*@
+                                        <img src="~/Content/Images/pdficon.png" class="file-preview-image kv-preview-data rotate-10588 is-portrait-gt4"
+                                             style="width:auto;height:auto;max-width:100%;max-height:100%;">
+                                    }
+                                    else if (imgstr.Substring((imgstr.Length - 4), 4) == ".mp4")
+                                    {
+                                        <video class="kv-preview-data file-preview-video" controls="" style="width: 162px; height: 93px;">
+                                            <source src="@imgstr" type="video/mp4">
+                                            <div class="file-preview-other">
+                                                <span class="file-other-icon"><i class="glyphicon glyphicon-file"></i></span>
+                                            </div>
+                                        </video>
+                                    }
+                                    else if (imgstr.Substring((imgstr.Length - 5), 5) == ".xlsx" || imgstr.Substring((imgstr.Length - 4), 4) == ".csv")
+                                    {
+                                        <img src="~/Content/Images/excelicon.png" class="file-preview-image kv-preview-data rotate-10588 is-portrait-gt4" style="width:auto;height:auto;max-width:100%;max-height:100%;">
+                                    }
+                                    else if (imgstr.Substring((imgstr.Length - 4), 4) == ".txt")
+                                    {
+                                        <img src="~/Content/Images/txticon.png" class="file-preview-image kv-preview-data rotate-10588 is-portrait-gt4" style="width:auto;height:auto;max-width:100%;max-height:100%;">
+                                    }
+                                    else if (imgstr.Substring((imgstr.Length - 4), 4) == ".docx")
+                                    {
+                                        <img src="~/Content/Images/docicon.png" class="file-preview-image kv-preview-data rotate-10588 is-portrait-gt4" style="width:auto;height:auto;max-width:100%;max-height:100%;">
+                                    }
+                                    else
+                                    {
+                                        Image = "Y";
+                                        <img src="@imgstr" class="file-preview-image kv-preview-data rotate-10588 is-portrait-gt4" style="width:auto;height:auto;max-width:100%;max-height:100%;">
+                                    }
+
+                                </div>
+                                <div class="file-thumbnail-footer">
+                                    <div class="file-footer-caption" title="@dr["file_name"].ToString()">
+                                        <div class="file-caption-info">@dr["file_name"].ToString()</div>
+                                        @*<div class="file-size-info"> <samp>(1.58 MB)</samp></div>*@
+
+                                    </div>
+                                    <div class="file-thumb-progress kv-hidden">
+                                        <div class="progress">
+                                            <div class="progress-bar bg-success progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%;">
+                                                Initializing...
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="file-upload-indicator" title="Not uploaded yet"><i class="glyphicon glyphicon-plus-sign text-warning"></i></div>
+                                    <div class="file-actions">
+                                        <div class="file-footer-buttons">
+
+                                            <button type="button" class="kv-file-upload btn btn-kv btn-default btn-outline-secondary" title="Upload file"><i class="glyphicon glyphicon-upload"></i></button>
+                                            @if (ViewBag.Disable)
+                                            {
+                                                <button type="button" class="kv-file-remove btn btn-kv btn-default btn-outline-secondary" id="RemoveAttatchbtn" title="Remove file">
+                                                    <i class="glyphicon glyphicon-trash"></i>
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <button type="button" class="kv-file-remove btn btn-kv btn-default btn-outline-secondary" id="RemoveAttatchbtn" onclick="RemoveAttatchFile(event,'@dr["file_name"]')" title="Remove file">
+                                                    <i class="glyphicon glyphicon-trash"></i>
+                                                </button>
+                                            }
+
+
+                                            <a href="@imgstr" target="_blank" class="kv-file-zoom btn btn-kv btn-default btn-outline-secondary" title="View Details"><i class="glyphicon glyphicon-zoom-in"></i></a>
+                                            @if (ViewBag.DocumentMenuId != null)
+                                            {
+                                                if (ViewBag.DocumentMenuId == "103105")
+                                                {
+                                                    if (Image == "Y")
+                                                    {
+                                                        <span class="kv-file-zoom btn btn-kv btn-default btn-outline-secondary" title="Set as default">
+                                                            @if (@dr["file_def"].ToString() == "Y")
+                                                            {
+                                                                <input type="radio" name="default" @disabled checked onclick="Cmn_ClickToDefaultImg('','@dr["file_name"]')" title="Set as default" style="width: 20px;height: 15px;margin-top: 6px;">
+                                                            }
+                                                            else
+                                                            {
+                                                                <input type="radio" name="default" @disabled onclick="Cmn_ClickToDefaultImg('','@dr["file_name"]')" title="Set as default" style="width: 20px;height: 15px;margin-top: 6px;">
+                                                            }
+                                                        </span>
+                                                    }
+
+                                                }
+                                            }
+
+
+                                        </div>
+                                    </div>
+
+                                    <div class="clearfix"></div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+
+                </div>
+                <div class="clearfix"></div>    <div class="file-preview-status text-center text-success"></div>
+                <div class="kv-fileinput-error file-error-message" style="display: none;"></div>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <table id="hdn_attatchment_list" style="display:none;">
+        <tbody>
+        </tbody>
+    </table>
+}
+
+
+

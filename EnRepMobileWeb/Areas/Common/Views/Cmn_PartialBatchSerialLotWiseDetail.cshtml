@@ -1,0 +1,190 @@
+﻿
+@using EnRepMobileWeb.Resources;
+@{
+    var QtyDigit = "0.";
+    decimal AvlStk = 0;
+    decimal RejQty = 0;
+    decimal RewQty = 0;
+    decimal ResQty = 0;
+    decimal TotalQty = 0;
+    var VD = Convert.ToInt32(Session["QtyDigit"].ToString());
+    for (var i = 0; i < VD; i++)
+    {
+        QtyDigit += "0";
+    }
+
+    string ShowRejResRew = "N";
+    if (ViewBag.DocMenuId == "105103125" || ViewBag.DocMenuId == "105103145110")
+    {
+        ShowRejResRew = "Y";
+    }
+    string TableWidth = "width1300";
+    if (ShowRejResRew == "Y")
+    {
+        TableWidth = "width1800";
+    }
+    int SrNo = 1;
+}
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<style>
+    #Cmn_LBS_Detail_WhWise th {
+        background-color:#ffffff;
+    }
+</style>
+<div class="modal-content">
+    <div class="modal-header">
+        <h2>@Resource.LotBatchDetail</h2>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body" style="padding-top: 0px;">
+        <div class="col-md-4 col-sm-12" style="padding-left:0px;">
+            <label class="col-form-label label-align">
+                @Resource.ItemName
+            </label>
+            <input id="ItemNameBatchWise" class="form-control" type="text" name="ItemName" placeholder="@Resource.ItemName" disabled>
+        </div>
+        <div class="col-md-1 col-sm-12" style="padding-left:0px;">
+            <label class="col-form-label label-align">
+                @Resource.UOM
+            </label>
+            <input id="UOMBatchWise" class="form-control" type="text" name="UOM" placeholder="@Resource.UOM" disabled>
+        </div>
+        <div class="clearfix"></div>
+        <div class="">
+            <div class="BatchDetail">
+                <div class="tableFixHead" style="height: 250px;">
+                    <table id="Cmn_LBS_Detail_WhWise" class="table margin5 table-striped rowhighlighttbl @TableWidth">
+                        <thead>
+                            <tr class="sticky-header" disabled="disabled">
+                                <th width="3%"> @Resource.SrNo</th>
+                                <th width="12%"> @Resource.WarehouseName</th>
+                                <th width="5%"> @Resource.Lot</th>
+                                <th width="7%"> @Resource.Batch1</th>
+                                <th width="7%"> @Resource.Serial1</th>
+                                <th width="10%">@Resource.Manufacturer @Resource.Name</th>
+                                <th width="5%">@Resource.MRP</th>
+                                <th width="5%">@Resource.Manufactured <br /> @Resource.Date</th>
+                                <th width="5%"> @Resource.Expiry <br />  @Resource.Date</th>
+                                <th width="5%" disabled="disabled"> @Resource.Available <br />  @Resource.Quantity</th>
+                                @if (ShowRejResRew == "Y")
+                                {
+                                    <th width="5%">@Resource.ReservedStock</th>
+                                    <th width="5%">@Resource.Reject <br />   @Resource.Stock</th>
+                                    <th width="5%">@Resource.Reworkable <br />   @Resource.Stock</th>
+                                    <th width="5%">@Resource.Total <br />   @Resource.Stock</th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (ViewBag.ItemStockBatchWise != null)
+                            {
+                                string IsZero(string data)
+                                {
+                                    if (data == "0" || data == "" || data == null)
+                                    {
+                                        return "";
+                                    }
+                                    return Convert.ToDecimal(data).ToString(QtyDigit);
+                                };
+                                string AddRow = "N";
+                                foreach (System.Data.DataRow Row in ViewBag.ItemStockBatchWise.Rows)
+                                {
+
+                                    if (ShowRejResRew == "N")
+                                    {
+                                        if (Convert.ToDecimal(@Row["avlstk"]) > 0)
+                                        {
+                                            AddRow = "Y";
+                                        }
+                                        else
+                                        {
+                                            AddRow = "N";
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (Convert.ToDecimal(@Row["totalstk"]) > 0)
+                                        {
+                                            AddRow = "Y";
+                                        }
+                                        else
+                                        {
+                                            AddRow = "N";
+                                        }
+                                    }
+                                    if (AddRow == "Y")
+                                    {
+                                        if (@Row["avlstk"] != null && @Row["avlstk"].ToString() != "")
+                                        {
+                                            AvlStk += Convert.ToDecimal(@Row["avlstk"]);
+                                        }
+                                        if (@Row["rejected"] != null && @Row["rejected"].ToString() != "")
+                                        {
+                                            RejQty += Convert.ToDecimal(@Row["rejected"]);
+                                        }
+                                        if (@Row["reworkabled"] != null && @Row["reworkabled"].ToString() != "")
+                                        {
+                                            RewQty += Convert.ToDecimal(@Row["reworkabled"]);
+                                        }
+                                        if (@Row["reserved"] != null && @Row["reserved"].ToString() != "")
+                                        {
+                                            ResQty += Convert.ToDecimal(@Row["reserved"]);
+                                        }
+                                        if (@Row["totalstk"] != null && @Row["totalstk"].ToString() != "")
+                                        {
+                                            TotalQty += Convert.ToDecimal(@Row["totalstk"]);
+                                        }
+
+                                        <tr>
+                                            <td>@SrNo</td>
+                                            <td>@Row["whname"].ToString()</td>
+                                            <td>@Row["lotno"].ToString()</td>
+                                            <td>@Row["batchno"].ToString() </td>
+                                            <td>@Row["serialno"].ToString()</td>
+                                            <td>@Row["mfg_name"].ToString()</td>
+                                            <td>@Row["mfg_mrp"].ToString()</td>
+                                            <td>@(Row["mfg_date"].ToString() == "" ? "" : Convert.ToDateTime(Row["mfg_date"]).ToString("dd-MM-yyyy"))</td>
+                                            <td>@Row["exp_dt"].ToString()</td>
+                                            <td align="right">@Convert.ToDecimal(Row["avlstk"]).ToString(QtyDigit)</td>
+                                            @if (ShowRejResRew == "Y")
+                                            {
+                                                <td align="right">@Convert.ToDecimal(Row["reserved"]).ToString(QtyDigit)</td>
+                                                <td align="right">@Convert.ToDecimal(Row["rejected"]).ToString(QtyDigit)</td>
+                                                <td align="right">@Convert.ToDecimal(Row["reworkabled"]).ToString(QtyDigit)</td>
+                                                <td align="right">@Convert.ToDecimal(Row["totalstk"]).ToString(QtyDigit)</td>
+                                            }
+                                        </tr>
+                                        SrNo++;
+
+                                    }
+
+                                }
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr class="total">
+                                <th colspan="9" class="num_right">@Resource.Total</th>
+                                <th class="num_right padding_right5" id="TotalLBAccQty" style="padding-right: 5px !important;">@AvlStk.ToString(QtyDigit)</th>
+                                @if (ShowRejResRew == "Y")
+                                {
+                                    <th class="num_right padding_right5" id="TotalLBRewQty" style="padding-right: 5px !important;">@ResQty.ToString(QtyDigit)</th>
+                                    <th class="num_right padding_right5" id="TotalLBRejQty" style="padding-right: 5px !important;">@RejQty.ToString(QtyDigit)</th>
+                                    <th class="num_right padding_right5" id="TotalLBRewQty" style="padding-right: 5px !important;">@RewQty.ToString(QtyDigit)</th>
+                                    <th class="num_right padding_right5" id="TotalLBRewQty" style="padding-right: 5px !important;">@TotalQty.ToString(QtyDigit)</th>
+                                }
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" id="btnItemBatchDiscardAndExit">@Resource.Close</button>
+    </div>
+</div>
+
+
+
+

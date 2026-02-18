@@ -1,0 +1,47 @@
+﻿@using EnRepMobileWeb.Resources;
+
+<table id="datatable-buttons11" class="table table-bordered data_table_full_width rowhighlighttbl">
+    <thead>
+        <tr class="sticky-header">
+            <th width="2%">@Resource.SrNo</th>
+            <th hidden="hidden"> @Resource.RejectionReason</th>
+            <th> @Resource.RejectionReason</th>
+            <th width="5%"> </th>
+            <th width="5%"> </th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (ViewBag.RejectionReason != null)
+        {
+            var i = 0;
+            foreach (System.Data.DataRow dr in ViewBag.RejectionReason.Rows)
+            {
+                i = i + 1;
+        <tr role="row" class="odd">
+            <td class="sorting_1">@i</td>
+            <td id="Rejection_id" style="display:none">@dr["rej_id"].ToString()</td>
+            <td id="Rejection_reason">@dr["rej_reason"].ToString()</td>
+            <td class="center">
+                <i type="submit" class="fa fa-edit" onclick="EditRejectionReason(event); CheckBranchStatusWhenUpdate('Rejection');" aria-hidden="true" title="@Resource.Edit"></i>
+            </td>
+            @if (@dr["Checkdependcy"].ToString()=="Y")
+            {
+                <td class="center">
+                    <i class="fa fa-trash" Disabled aria-hidden="true"  title="@Resource.Delete" onclick=""></i>
+                </td>
+            }
+            else
+            {
+                <td class="center">
+                    <i class="fa fa-trash red" aria-hidden="true" title="@Resource.Delete" onclick="return functionConfirm(event,'Rejection')"></i>
+                </td>
+            }
+
+        </tr>
+            }
+        }
+    </tbody>
+</table>
+
+
+

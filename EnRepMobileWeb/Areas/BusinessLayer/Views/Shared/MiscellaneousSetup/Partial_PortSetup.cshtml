@@ -1,0 +1,92 @@
+﻿@using EnRepMobileWeb.Resources;
+@{
+    var EditFlag = "N";
+    var DeleteFlag = "N";
+    if (ViewBag.VBRoleList != null)
+    {
+        foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+        {
+            if (Row["feature_id"].ToString() == "103205120002")
+            {
+                EditFlag = "Y";
+            }
+            if (Row["feature_id"].ToString() == "103205120004")
+            {
+                DeleteFlag = "Y";
+            }
+        }
+    }
+}
+<table id="portsetuptabledata" class="table table-bordered data_table_full_width rowhighlighttbl">
+    <thead>
+        <tr class="sticky-header">
+
+            <th class="wi">@Resource.SrNo</th>
+            <th style="display:none">&nbsp;</th>
+            <th style="display:none">&nbsp;</th>
+            <th> @Resource.Port @Resource.Type</th>
+            <th style="display:none">&nbsp;</th>
+            <th> @Resource.Country</th>
+            <th style="display:none">&nbsp;</th>
+            <th> @Resource.State</th>
+            <th> @Resource.PortID</th>
+            <th> @Resource.Port @Resource.Description</th>
+            <th>@Resource.Pin @Resource.Code</th>
+            <th>&nbsp;</th>
+            <th>&nbsp;</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            var i = 0;
+        }
+        @if (ViewBag.portDeatildata != null)
+        {
+            foreach (System.Data.DataRow dr in ViewBag.portDeatildata.Rows)
+            {
+
+                i = i + 1;
+                var portid = dr["port_id"].ToString();
+                var depency0 = dr["Checkdependcy"].ToString();
+        <tr role="row" class="even">
+            <td class="sorting_1">@i</td>
+            <td id="Checkdependcy" style="display:none">@dr["Checkdependcy"].ToString()</td>
+            <td id="hdnPorttype_id" style="display:none">@dr["Porttype_id"].ToString()</td>
+            <td id="tblporttype">@dr["port_type"].ToString()</td>
+            <td id="hdncountry_id" style="display:none">@dr["country_id"].ToString()</td>
+            <td id="tblcountry_name">@dr["country_name"].ToString()</td>
+            <td id="hdnstate_id" style="display:none">@dr["state_id"].ToString()</td>
+            <td id="tblstate_name">@dr["state_name"].ToString()</td>
+            <td id="tblport_id">@dr["port_id"].ToString()</td>
+            <td id="tblport_desc">@dr["port_desc"].ToString()</td>
+            <td id="tblpin_no">@dr["pin_no"].ToString()</td>
+
+            <td class="center">
+                @if (EditFlag == "Y")
+                {
+                    <i type="submit" class="fa fa-edit" onclick="EditPortSetup(event);" aria-hidden="true" title="@Resource.Edit"></i>
+
+                }
+            </td>
+            <td class="center">
+                @if (DeleteFlag == "Y")
+                {
+                    if (depency0 == "Y")
+                    {
+                        <i class="fa fa-trash red" aria-hidden="true" disabled style="filter: grayscale(100%)" title="@Resource.Delete"></i>
+                    }
+                    else
+                    {
+                        <i class="fa fa-trash red" aria-hidden="true" title="@Resource.Delete" onclick="return functionConfirm(event,'Saveport')"></i>
+                    }
+                }
+
+            </td>
+            </tr>
+            }
+        }
+    </tbody>
+</table>
+
+
+

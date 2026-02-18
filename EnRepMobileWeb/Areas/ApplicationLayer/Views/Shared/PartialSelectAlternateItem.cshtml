@@ -1,0 +1,97 @@
+﻿@using EnRepMobileWeb.Resources;
+<div class="modal-content">
+    <div class="modal-header">
+        <h2><span id=""> @Resource.Alternate @Resource.ItemDetail</span></h2>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body pop_top">
+        <div class="row">
+            <div class="col-md-5 col-sm-12 mb-2">
+                <label class="col-form-label label-align">@Resource.ItemType </label>
+                <input autocomplete="off" class="form-control" id="Alt_PP_ItemType" name="ItemType" placeholder="@Resource.ItemType" readonly="readonly" type="text" value="">
+            </div>
+            <div class="col-md-5 col-sm-12 mb-2">
+                <label class="col-form-label label-align">@Resource.ItemName </label>
+                <input autocomplete="off" class="form-control" id="Alt_PP_ItemName" name="ItemName" placeholder="@Resource.ItemName" readonly="readonly" type="text" value="">
+                <input hidden id="Alt_PP_ItemId" />
+            </div>
+            <div class="col-md-2 col-sm-12 mb-2">
+                <label class="col-form-label label-align">@Resource.UOM </label>
+                <input autocomplete="off" class="form-control" id="Alt_PP_UOM" name="UOM" placeholder="@Resource.UOM" readonly="readonly" type="text" value="">
+            </div>
+
+        </div>
+        <div class="card-box table-responsive dy_table">
+            <div id="" class="sticky-table sticky-ltr-cells sb-container container-example1 OrderHistory height30VH">
+                <input hidden id="hdnAltItemId" />
+                <table id="AltItemDetailTable" data-order="" class="table table-striped table-bordered rowhighlighttbl">
+                    <thead>
+                        <tr class="sticky-header">
+                            <th width="2%">&nbsp;</th>
+                            <th width="3%">@Resource.SrNo</th>
+                            
+                            <th width="3%" hidden></th>
+                            <th width="20%">@Resource.Alternate @Resource.ItemName</th>
+                            <th width="10%">@Resource.UOM</th>
+
+                        </tr>
+                    </thead>
+                    <tbody id="" class="AddressBodyNew">
+                        @if (ViewBag.AlternateItemList != null)
+                        {
+                            var rowNo = 1;
+                            foreach (System.Data.DataRow item in ViewBag.AlternateItemList.Rows)
+                            {
+
+
+<tr>
+    <td>
+        @if (ViewBag.Disabled == "Y")
+        {
+            <input type="radio" name="AltItem" disabled id="CheckedAltItem" />
+        }
+        else
+        {
+            <input type="radio" name="AltItem" id="CheckedAltItem" />
+        }
+
+    </td>
+                                    <td>@rowNo</td>
+                                    <td id="alt_item_id" hidden>@item["alt_item_id"].ToString()</td>
+                                    <td id="alt_item_name">@item["alt_item_name"].ToString()</td>
+                                    <td id="Alt_UOM">@item["uom_alias"].ToString()</td>
+                                    <td id="Alt_UOM_Id" hidden>@item["uom_id"].ToString()</td>
+                                    <td id="alt_req_qty" hidden>@item["qty_per_unit"].ToString()</td>
+                                    <td id="alt_shfl_stk" hidden>@item["avl_stock_shfl"].ToString()</td>
+                                    <td id="alt_wh_stk" hidden>@item["avl_stock_warehouse"].ToString()</td>
+                                    <td id="alt_sub_item" hidden>@item["sub_item"].ToString()</td>
+                                </tr>
+                                rowNo++;
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+    @*<div class="modal-footer">
+        <button type="button" id="addrSaveAndExit" class="btn btn-primary btn-sm" data-dismiss="modal" onclick="OnClickClosebtn();">@Resource.SaveAndExit</button>
+    </div>*@
+<div class="modal-footer">
+    @if (ViewBag.Disabled == "Y")
+    {
+        <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" id="" onclick="">@Resource.Close</button>
+    }
+    else
+    {
+        <button type="button" class="btn btn-primary btn-sm" disabled id="BtnAltSaveAndExit" onclick="return AltItemSaveAndExit();">@Resource.SaveAndExit</button>
+        <button type="button" class="btn btn-primary btn-sm" id="" data-dismiss="modal" onclick="">@Resource.DiscardAndExit</button>
+    }
+    @*<button type="button" class="btn btn-primary btn-sm" id="BtnAltReset" onclick="return OnClickAltBtnReset()">@Resource.Reset</button>*@
+
+
+
+
+</div>
+</div>

@@ -1,0 +1,310 @@
+﻿@model EnRepMobileWeb.MODELS.Common.CostCenterDt
+@using EnRepMobileWeb.Resources;
+@using System.Data;
+@{
+    double TotalAmt = 0;
+    var ResoAcc = "";
+    var ResoAmt = "";
+    var DocId = ViewBag.DocId;
+    var CCTotalAmt = ViewBag.CCTotalAmt; //add by sm 04 - 12 - 2024
+    if (DocId == "105104105")
+    {
+        ResoAcc = @Resource.GLAccount;
+        ResoAmt = @Resource.Budget + ' ' + @Resource.Amount;
+    }
+    else
+    {
+        ResoAcc = @Resource.GLAccount;
+        ResoAmt = @Resource.Amount;
+    }
+    string ValDigit = "";
+    var VD = Convert.ToInt32(Session["ValDigit"].ToString());
+    if (ViewBag.DocumentMenuId == "105103145125" || ViewBag.DocumentMenuId == "105101140125")
+    {
+        VD = Convert.ToInt32(Session["ExpImpValDigit"].ToString());
+    }
+    else
+    {
+        VD = Convert.ToInt32(Session["ValDigit"].ToString());
+    }
+    for (var i = 0; i < VD; i++)
+    {
+        ValDigit += "0";
+    }
+    var N = "N" + ValDigit.Length;
+}
+<div class="modal-content">
+    <div class="modal-header">
+        <h2>@Resource.CostCenterDetail</h2>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body" style="padding-top:0px;">
+        <div class="row">
+            <div class="col-md-12 col-sm-12 no-padding">
+                <div class="col-md-5 col-sm-12">
+                    <label class="col-form-label label-align">@ResoAcc</label>
+                    <input id="CC_GLAccount" class="form-control" autocomplete="off" type="text" name="GLAccount" placeholder="@ResoAcc" disabled>
+                    <input id="hdnGLAccount_Id" type="hidden" />
+                    <input id="hdnTable_Id" type="hidden" />
+                    <input id="hdnVou_No" type="hidden" />@*/*Add by Hina sharma on 26-11-2024 to get value of VouNo,VouDt,VouTyp for Cost Center ReAllocation*/*@
+                    <input id="hdnVou_Dt" type="hidden" />
+                    <input id="hdnVou_Typ" type="hidden" />
+                    <input id="CC_vou_sr_no" type="hidden" />
+                    <input id="CC_gl_sr_no" type="hidden" />
+                    <input id="CC_int_br_id" type="hidden" />
+                    <input id="FBDocumentMenuId" type="hidden" value="@ViewBag.DocId" />
+                </div>
+                <div class="col-md-3 col-sm-12">
+                    <label class="col-form-label label-align">
+                        @ResoAmt
+                    </label>
+                    <input id="GLAmount" class="form-control num_right" autocomplete="off" type="text" name="Amount" placeholder="0000.00" disabled="">
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-12">
+                <label class="col-form-label label-align">@Resource.CostCenter @Resource.Type <span class="required">*</span></label>
+                @if (Model.disflag == "N")
+                {
+                    @Html.DropDownListFor(model => model.cc_type_id, new SelectList(Model.costcntrtype, "cc_id", "cc_name"), new { @class = "form-control", id = "ddl_CC_Type", onchange = "Cmc_CC_BndName()" })
+                    <span id="spn_CCType" class="error_message"></span>
+                }
+                else
+                {
+                    <select class="form-control" name="EntityType" disabled>
+                        <option value="0">---Select---</option>
+                    </select>
+                }
+            </div>
+            <div class="col-md-4 col-sm-12">
+                <label class="col-form-label label-align">@Resource.CostCenter <span class="required">*</span></label>
+
+                @if (Model.disflag == "N")
+                {
+                    <select class="form-control" id="ddl_CC_Name" name="EntityType" onchange="Cmn_onchangeCCName()">
+                    </select>
+                    <span id="spn_CCName" class="error_message"></span>
+                }
+                else
+                {
+                    <select class="form-control" name="EntityType" disabled>
+                        <option value="0">---Select---</option>
+                    </select>
+                }
+
+            </div>
+            <div class="col-md-3 col-sm-12">
+                <label class="col-form-label label-align">@Resource.Amount <span class="required">*</span></label>
+                @if (Model.disflag == "N")
+                {
+                    <input id="CCAmount" class="form-control num_right" autocomplete="off" type="text" name="Amount" placeholder="0000.00" onkeypress="return Cmn_CC_onkeypressValidate(this,event)" onchange="Cmn_CC_onchangeCCAmount()" onkeyup="Cmn_CC_onkeyupCCAmtount()">
+                    <span id="spn_CCAmount" class="error_message"></span>
+                }
+                else
+                {
+                    <input id="CCAmount" class="form-control num_right" autocomplete="off" type="text" name="Amount" placeholder="0000.00" disabled>
+                }
+            </div>
+            <div class="col-md-1 col-sm-12 margin28" id="divAdd">
+                @if (Model.disflag == "N")
+                {
+                    <a href="#">
+                        <div class="plus_icon1"> <i class="fa fa-plus" id="BtnAttribute" onclick="Cmn_CC_onclickaddBtn()" title=""></i> </div>
+                    </a>
+                }
+            </div>
+            <div class="col-md-1 col-sm-12 margin28" id="divUpdate" style="display: none;">
+                <a href="#" style="color:#ffffff;">
+                    <div class="plus_icon1"> <i class="fa fa-refresh ref" id="ParaItemUpdateBtn" onclick="Cmn_CC_onclkUpdateBtn(event)" data-toggle="tooltip" title="" data-original-title="Update"></i> </div>
+                </a>
+            </div>
+        </div>
+        <div class="card-box table-responsive dy_table margin10">
+            @*<div class="price_item_detail ">*@
+            <div class="tableFixHead height55VH ">
+                <table class="table table-striped margin5" id="tbladd">
+                    <thead>
+                        <tr class="sticky-header">
+                            <th width="3%">&nbsp; </th>
+                            <th width="30%">@Resource.CostCenter @Resource.Type</th>
+                            <th width="50%">@Resource.CostCenter</th>
+                            <th width="17%">@Resource.Amount</th>
+                            @*<th>@Resource.Total</th>*@
+                        </tr>
+                    </thead>
+                    <tbody id="tbladd_body">
+
+                        @if (ViewBag.CC_type != null)
+                        {
+                            if (ViewBag.CC_type.Rows.Count > 0)
+                            {
+                                foreach (System.Data.DataRow dr in ViewBag.CC_type.Rows)
+                                {
+                                    var GlAcciD = dr["GlAccount"].ToString();
+                                    var opid = dr["dd_cc_type_id"].ToString();
+                                    var op_name = dr["ddl_cc_type"].ToString();
+                                    DataTable Details = new DataTable();
+                                    Details = ViewBag.CC_Item;
+                                    DataView data = new DataView();
+                                    data = Details.DefaultView;
+                                    data.RowFilter = "dd_cc_typ_id='" + opid + "'";
+                                    Details = data.ToTable();
+
+                                    //TotalAmt = 0;/*/*commeneted by Hina Sharma on 04-07-2025 to show total amount*/*/
+
+                                    <tr id="tr_@opid">
+
+                                        @if (Model.disflag == "Y")
+                                        {
+                                            <td width="20" class="center bom_width_td"> <i class="fa fa-trash" aria-hidden="true" title="Delete"></i></td>
+                                        }
+                                        else
+                                        {
+                                            <td width="20" class="red center bom_width_td"> <i class="fa fa-trash" aria-hidden="true" title="Delete" onclick="Cmn_CC_DeleteParent(this,event,'@opid')"></i></td>
+                                        }
+
+                                        <td id="CCtype_Name">@op_name</td>
+                                        <td hidden="hidden"><input type="hidden" id="hdn_ddl_Type_Id" value="@opid"></td>
+                                        <td hidden='hidden'><input type='hidden' id='hdn_ddl_Type_Name' value="@op_name" /></td>
+                                        <td class="no-padding" colspan="2">
+                                            <table id="tbl_@opid" border="0" width="100%">
+                                                <tbody id="@opid">
+                                                    @foreach (System.Data.DataRow dr1 in Details.Rows)
+                                                    {
+                                                        double cc_Amount = 0;
+                                                        var cc_Amount1 = "";
+                                                        var cc_type_id = dr1["dd_cc_typ_id"].ToString();
+                                                        var cc_Name = dr1["ddl_cc_name"].ToString();
+                                                        var cc_id = dr1["ddl_cc_name_id"].ToString();
+                                                        //if(ViewBag.DocId== "105104105"|| ViewBag.DocId == "105104115101"|| ViewBag.DocId == "105104115105"|| ViewBag.DocId == "105104115115" || ViewBag.DocId == "105104115110" || ViewBag.DocId == "105104115120" || ViewBag.DocId == "105104115130"|| ViewBag.DocId == "105104115135"|| ViewBag.DocId == "105104115145" || ViewBag.DocId == "105104115140"|| ViewBag.DocId == "105104115147"|| ViewBag.DocId == "105104115155") //add by sm 04 - 12 - 2024
+                                                        //{
+                                                        //cc_Amount1 = dr1["cc_Amount"].ToString();
+                                                        cc_Amount1 = dr1["cc_Amount"].ToString();
+                                                        cc_Amount = Convert.ToDouble(cc_Amount1);
+                                                        @*}*@
+                                                        //else
+                                                        //{
+                                                        //    cc_Amount = Convert.ToDouble(dr1["cc_Amount"]);
+                                                        //}
+                                                        //double cc_Amount = Convert.ToDouble(dr1["cc_Amount"]);
+
+                                                        //TotalAmt = Convert.ToDouble(TotalAmt) + Convert.ToDouble(cc_Amount);/*commeneted and modify by Hina Sharma on 04-07-2025 to show total amount*/
+                                                        //TotalAmt = Convert.ToDouble(TotalAmt) + Convert.ToDouble(cc_Amount1);
+                                                        TotalAmt = Convert.ToDouble(TotalAmt) + Convert.ToDouble(cc_Amount1);
+
+                                                        <tr>
+                                                            @if (Model.disflag == "Y")
+                                                            {
+                                                                <td width="20" class="center bom_width_td"> <i class="fa fa-trash" aria-hidden="true" title="Delete"></i></td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td width="20" class="red center bom_width_td"> <i class="fa fa-trash" aria-hidden="true" title="Delete" onclick="Cmn_CCDeleteChild(event,'@opid')"></i></td>
+                                                            }
+
+                                                            @if (Model.disflag == "Y")
+                                                            {
+                                                                <td class="bom_width_td"><i class="fa fa-edit" aria-hidden="true" id="hdn_editRowId" title=""></i></td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td class="bom_width_td pt-1"><i class="fa fa-edit" aria-hidden="true" id="hdn_editRowId" title="" onclick="Cmn_CC_editRow(event)"></i></td>
+                                                            }
+
+                                                            <td id="CC_Name" style="width:266px;">@cc_Name</td>
+                                                            @*@if (ViewBag.DocumentMenuId == "105103145125" || ViewBag.DocumentMenuId == "105101140125")
+                                                                {
+
+                                                                    <td id="CC_Amount" class="num_right">@string.Format("{0:0.00}", cc_Amount.ToString(N))</td>
+                                                                }
+                                                                else
+                                                                {
+                                                                    if (ViewBag.DocId == "105104105"||ViewBag.DocId == "105104115101"||ViewBag.DocId == "105104115105"||ViewBag.DocId == "105104115115" || ViewBag.DocId == "105104115110" || ViewBag.DocId == "105104115120" || ViewBag.DocId == "105104115130"|| ViewBag.DocId == "105104115135"|| ViewBag.DocId == "105104115145" || ViewBag.DocId == "105104115140" || ViewBag.DocId == "105104115147"|| ViewBag.DocId == "105104115155")//add by sm 04-12-2024
+                                                                    {*@
+                                                            <td id="CC_Amount" class="num_right">@string.Format("{0:0.00}", cc_Amount.ToString("N"))@*@cc_Amount1*@</td>
+
+                                                            @*}
+                                                                    else
+                                                                    {
+                                                                        <td id="CC_Amount" class="num_right">@string.Format("{0:0.00}", cc_Amount.ToString("N"))</td>
+
+                                                                    }
+
+                                                                }*@
+                                                            @*@if (ViewBag.DocId == "105104105"|| ViewBag.DocId == "105104115101"|| ViewBag.DocId == "105104115105"|| ViewBag.DocId == "105104115115" || ViewBag.DocId == "105104115110" || ViewBag.DocId == "105104115120" || ViewBag.DocId == "105104115130"|| ViewBag.DocId == "105104115135"|| ViewBag.DocId == "105104115145" || ViewBag.DocId == "105104115140" || ViewBag.DocId == "105104115147"|| ViewBag.DocId == "105104115155")//add by sm 04-12-2024
+                                                                {*@
+                                                            <td hidden="hidden"><input type="hidden" id="hdntbl_CstAmt" value="@string.Format("{0:0.00}", cc_Amount.ToString("N"))@*@cc_Amount1*@"></td>
+                                                            @*}
+                                                                else
+                                                                {
+                                                                    <td hidden="hidden"><input type="hidden" id="hdntbl_CstAmt" value="@cc_Amount"></td>
+                                                                }*@
+
+                                                            <td hidden="hidden"><input type="hidden" id="hdntbl_CC_Name" value="@cc_Name"></td>
+                                                            <td hidden="hidden"><input type="hidden" id="hdntbl_CCName_Id" value="@cc_id"></td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                                @*<tfoot>
+                                                        <tr>
+                                                            <td style="width:3%;">&nbsp</td>
+                                                            <td style="width:30%;">&nbsp</td>
+                                                            <td class="num_right" style="width:50%;"><strong>Total</strong></td>
+                                                            @if (ViewBag.DocumentMenuId == "105103145125" || ViewBag.DocumentMenuId == "105101140125")
+                                                            {
+                                                                <td class="num_right" id="Total_@opid" placeholder="00.00" style="width:17%;">@string.Format("{0:0.0000}", TotalAmt.ToString(N))</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                if (ViewBag.DocId == "105104105"|| ViewBag.DocId == "105104115101"|| ViewBag.DocId == "105104115105"|| ViewBag.DocId == "105104115115" || ViewBag.DocId == "105104115110" || ViewBag.DocId == "105104115120" || ViewBag.DocId == "105104115130"|| ViewBag.DocId == "105104115135"|| ViewBag.DocId == "105104115145" || ViewBag.DocId == "105104115140" || ViewBag.DocId == "105104115147" || ViewBag.DocId == "105104115155")//add by sm 04-12-2024
+                                                                {
+                                                                    <td class="num_right" id="Total_@opid" placeholder="00.00" style="width:17%;">@CCTotalAmt</td>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td class="num_right" id="Total_@opid" placeholder="00.00" style="width:17%;">@string.Format("{0:0.00}", TotalAmt.ToString("N"))</td>
+                                                                }
+                                                            }
+                                                        </tr>
+                                                    </tfoot>*@
+                                            </table>
+                                    </tr>
+                                }
+                            }
+                        }
+
+                    </tbody>
+                    <tfoot>
+                        <tr class="total">
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td class="right_aligh font-weight-bold">Total</td>
+                            <td class="num_right font-weight-bold" id="CCTotalAmt">@string.Format("{0:0.00}", TotalAmt.ToString("N"))</td>
+                        </tr>
+                    </tfoot>
+                    @*<tfoot>
+                            <tr>
+                                <td style="width:3%;">&nbsp</td>
+                                <td style="width:30%;">&nbsp</td>
+                                <td class="num_right" style="width:50%;"><strong>Total</strong></td>
+                                <td class="num_right" id="CstTotalAmount" placeholder="00.00" style="width:17%;">@string.Format("{0:0.00}",TotalAmt)</td>
+                            </tr>
+                        </tfoot>*@
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        @if (Model.disflag == "Y")
+        {
+
+        }
+        else
+        {
+            <button type="button" class="btn btn-primary btn-sm" onclick="Cmn_CCOnClickResetButton()" id="SerialResetBtn"> @Resource.Reset</button>
+            <button type="button" class="btn btn-primary btn-sm" id="CCSaveAndExitBtn" onclick="Cmn_CC_onclickSaveandExitBtn()">@Resource.SaveAndExit</button>
+            <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" id="SerialDiscardAndExitBtn" onclick="OnClickSerialDiscardAndExit()">@Resource.DiscardAndExit</button>
+        }
+
+
+    </div>
+</div>

@@ -1,0 +1,75 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.SalesAndDistribution.CustomerPriceList.PriceListDetailModel
+@using EnRepMobileWeb.Resources;
+@{
+    var rowId = 0;
+}
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/SalesAndDistribution/CustomerPriceList/PriceList.js"></script>
+
+<div id="tbodyDPOList" class="sticky-table sticky-ltr-cells sb-container container-example1">
+    <table id="datatable-buttons" class="table table-striped table-bordered width1800 rowhighlighttbl itmfrz" style="width:100%">
+        <thead>
+            <tr class="sticky-header">
+                <th width="3%">@Resource.SrNo</th>
+                <th width="5%">@Resource.ListNumber</th>
+                <th hidden="hidden"></th>
+                <th width="8%" class="itmStick">@Resource.PriceList <br /> @Resource.Name</th>
+                <th width="7%">@Resource.Valid <br />  @Resource.From</th>
+                <th width="7%">@Resource.Valid <br />  @Resource.Upto</th>
+                <th width="7%">@Resource.Active</th>
+                <th width="7%">@Resource.Status</th>
+                <th width="7%">@Resource.CreatedBy</th>
+                <th width="7%">@Resource.Createdon</th>
+                <th width="7%">@Resource.ApprovedBy</th>
+                <th width="7%">@Resource.ApprovedOn</th>
+                <th width="7%">@Resource.AmendedBy</th>
+                <th width="7%">@Resource.AmendedOn</th>
+                <th width="14%">@Resource.remarks</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.CustomerPriceList != null)
+            {
+                foreach (var row in Model.CustomerPriceList)
+                {
+                    rowId++;
+                    <tr>
+                        <td>@rowId</td>
+                        <td id="List_No">@row.list_no</td>
+                        <td id="Create_DT" hidden="hidden">@row.create_dt2</td>
+                        <td class="ItmNameBreak itmStick tditemfrz">@row.list_name</td>
+                        <td id="">@row.valid_fr</td>
+                        <td>@row.valid_to</td>
+                        <td class="center">
+                            @if (@row.active.ToString() == "N")
+                            {
+                                <i class="fa fa-times-circle text-danger" aria-hidden="true"></i> }
+                            else
+                            {
+                                <i class="fa fa-check text-success" aria-hidden="true"></i>}
+                        </td>
+                        <td id="Doc_Status">@row.Stauts</td>
+                        <td>@row.create_by</td>
+                        <td id="List_date">@row.CreateDate</td>
+                        <td>@row.app_by</td>
+                        <td>@row.ApproveDate</td>
+                        <td>@row.mod_by</td>
+                        <td>@row.ModifyDate</td>
+                        <td>@row.List_remarks</td>
+                    </tr>
+                }
+            }
+
+        </tbody>
+    </table>
+
+</div>
+@if (Model.ListSearch != null)
+{
+    if (Model.ListSearch == "ListSearch")
+    {
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+        @Scripts.Render("~/Content/Scripts/DatatablesJs")
+    }
+}
+

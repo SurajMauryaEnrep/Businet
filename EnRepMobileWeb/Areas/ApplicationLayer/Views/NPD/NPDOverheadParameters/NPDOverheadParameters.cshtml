@@ -1,0 +1,141 @@
+﻿@using EnRepMobileWeb.MODELS.Common;
+@using EnRepMobileWeb.Resources;
+
+@if (Session["UserId"] == null)
+{
+    Response.Redirect("~/Login");
+}
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+
+<div class="row">
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <h2 class="col-md-7 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                <div id="" class="col-md-5 col-sm-12 work_flow heading_right_padding">
+                    <ul>
+                        <li>
+                            <button class="add" title="Add New" type="submit" id="btn_add" name="Command" value="Add"></button>
+                        </li>
+                        <li>
+                            <button class="edit" title="Edit" type="submit" id="btn_edit" onclick="" name="Command" value="Edit"></button>
+                        </li>
+                        <li>
+                            <button class="delete" title="Delete" onclick="" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                        </li>
+                        <li>
+                            <button class="save" title="Save" type="submit" id="btn_save" onclick="" name="Command" value="Save"></button>
+                        </li>
+                        <li>
+                            <button class="refresh" title="Discard" type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-2 col-sm-12">
+                            <label class="col-form-label label-align">
+                                Overhead Description <span class="required">*</span>
+                            </label>
+                            <input class="form-control" id="ohd_exp_name" maxlength="50" name="ohd_exp_name" placeholder="Overhead Description" type="text" value="">
+                        </div>
+                        <div class="col-md-2 col-sm-12 pl-0">
+                            <label class="col-form-label label-align">
+                                @Resource.UOM <span class="required">*</span>
+                            </label>
+                            <select class="form-control" data-val="true" data-val-number="The field uom_id must be a number." data-val-required="The uom_id field is required." id="ddlUOM" name="uom_id">
+                                <option selected="selected" value="0">---Select---</option>
+                                <option value="118">BAGS</option>
+                                <option value="119">BALE</option>
+                                <option value="122">BILLION OF UNITS</option>
+                                <option value="124">BOTTLES</option>
+                                <option value="123">BOX</option>
+                                <option value="121">BUCKLES</option>
+                                <option value="125">BUNCHES</option>
+                                <option value="120">BUNDLES</option>
+                                <option value="126">CANS</option>
+                                <option value="130">CARTONS</option>
+                                <option value="115">Celcius</option>
+                                <option value="114">Centimeter</option>
+                                <option value="128">CUBIC CENTIMETERS</option>
+                                <option value="127">CUBIC METERS</option>
+                                <option value="131">DOZENS</option>
+                                <option value="132">DRUMS</option>
+                                <option value="107">Grams</option>
+                                <option value="133">GREAT GROSS</option>
+                                <option value="134">GROSS</option>
+                                <option value="135">GROSS YARDS</option>
+                                <option value="116">Inch</option>
+                                <option value="104">Kilo Gram</option>
+                                <option value="136">KILOLITRE</option>
+                                <option value="137">KILOMETRE</option>
+                                <option value="113">Kit</option>
+                                <option value="102">Liter</option>
+                                <option value="105">Meter</option>
+                                <option value="139">METRIC TON</option>
+                                <option value="108">Milligrams</option>
+                                <option value="109">Milliliters</option>
+                                <option value="106">Millimeter</option>
+                                <option value="103">Number</option>
+                                <option value="140">OTHERS</option>
+                                <option value="141">PACKS</option>
+                                <option value="142">PAIRS</option>
+                                <option value="101">Piece</option>
+                                <option value="143">QUINTAL</option>
+                                <option value="111">Roll</option>
+                                <option value="112">Set</option>
+                                <option value="145">SQUARE FEET</option>
+                                <option value="146">SQUARE METERS</option>
+                                <option value="147">SQUARE YARDS</option>
+                                <option value="148">TABLETS</option>
+                                <option value="149">TEN GROSS</option>
+                                <option value="150">THOUSANDS</option>
+                                <option value="151">TONNES</option>
+                                <option value="152">TUBES</option>
+                                <option value="154">UNITS</option>
+                                <option value="153">US GALLONS</option>
+                                <option value="117">Watt</option>
+                                <option value="155">YARDS</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 col-sm-12 pl-0">
+                            <label class="col-form-label label-align">
+                                Cost Per Unit
+                            </label>
+                            <input class="form-control num_right" id="CostPerUnit" maxlength="50" name="CostPerUnit" placeholder="0000.00" type="text" value="">
+                        </div>
+                        <div class="col-md-4 col-sm-12 pl-0">
+                            <label class="col-form-label label-align">
+                                @Resource.remarks
+                            </label>
+                            <textarea class="form-control remarksmessage" cols="20" id="ohd_exp_remarks" maxlength="100" name="ohd_exp_remarks" placeholder="Remarks" rows="2" onmouseover="OnMouseOver(this)" title=""></textarea>
+                        </div>
+                        <div class="col-md-2 col-sm-12">
+                            <button class="margin22 address_save" title="Save" type="submit" onclick="return CheckValidationCurreny();" id="btn_save" name="Command" value="Save"></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="clear margin10"></div>
+                <div class="row margin10">
+                    <div class="col-md-12">
+                        <div class="card-box table-responsive dy_table">
+                            <div class="col-md-12">
+                                <div id="">
+                                    @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialNPDOverheadParametersList.cshtml")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

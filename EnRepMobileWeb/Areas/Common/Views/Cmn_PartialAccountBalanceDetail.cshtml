@@ -1,0 +1,150 @@
+﻿@using EnRepMobileWeb.Resources;
+@using System.Data;
+<script src="~/Content/Scripts/Common/CommonJS.js"></script>
+@{ 
+    string Appbal = string.Empty;
+    string Unapp_bal = string.Empty;
+    string ClosBL = string.Empty;
+    string ClearBal = string.Empty;
+    string UnClearBal = string.Empty;
+    string UnClearBal_rcpt = string.Empty;
+    string UnClearBal_pay = string.Empty;
+    string OverDraft = string.Empty;
+    string AvlBal = string.Empty;
+    string Curr_name = string.Empty;
+    int Acctype;
+}
+@if (ViewBag.AccDetails != null && ViewBag.AccDetails.Rows.Count > 0)
+{
+    if (ViewBag.Acctype != null && ViewBag.Acctype.Rows.Count > 0)
+    {
+        Acctype = Convert.ToInt32(ViewBag.Acctype.Rows[0]["acc_type"]);
+        if (Acctype == 7)
+        {
+            ClosBL = ViewBag.AccDetails.Rows[0]["ClearBal"].ToString();
+        }
+    }
+    else
+    {
+        ClosBL = ViewBag.AccDetails.Rows[0]["ClosBL"].ToString();
+    }
+
+    ClearBal = ViewBag.AccDetails.Rows[0]["ClearBal"].ToString();
+    Appbal = ViewBag.AccDetails.Rows[0]["App_bal"].ToString();
+    Unapp_bal = ViewBag.AccDetails.Rows[0]["Unapp_bal"].ToString();
+    OverDraft = ViewBag.AccDetails.Rows[0]["OverDraft"].ToString();
+    UnClearBal = ViewBag.AccDetails.Rows[0]["UnCleared"].ToString();
+    UnClearBal_rcpt = ViewBag.AccDetails.Rows[0]["UnCleared_rept"].ToString();
+    UnClearBal_pay = ViewBag.AccDetails.Rows[0]["UnCleared_paym"].ToString();
+    AvlBal = ViewBag.AccDetails.Rows[0]["Avl_bal"].ToString();
+    Curr_name = ViewBag.AccDetails.Rows[0]["curr_name"].ToString();
+
+}
+else
+{
+    Appbal = "0.00";
+    Unapp_bal = "0.00";
+    ClosBL = "0.00";
+    ClearBal = "0.00";
+    OverDraft = "0.00";
+    UnClearBal = "0.00";
+    UnClearBal_rcpt = "0.00";
+    UnClearBal_pay = "0.00";
+    AvlBal = "0.00";
+}
+
+<div class="modal-content" id="">
+    <div class="modal-header">
+        <h2> @Resource.AccountBalance @Resource.Detail</h2>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body pop_top">
+        <div class="row">
+            <div class="col-md-12 col-sm-12 no-padding">
+                <div class="col-md-8 col-sm-12 pr-0">
+                    <label class="col-form-label label-align">@Resource.GLName</label>
+                    <input id="GLName" class="form-control" value="" autocomplete="off" type="text" name="GLName" placeholder="@Resource.GLName" disabled="">
+                    <input type="hidden" id="hdnacc_id" />
+                </div>
+                <div class="col-md-4 col-sm-12">
+                    <label class="col-form-label label-align">@Resource.Currency</label>                            
+                    <input id="Currency" class="form-control" value="@Curr_name" autocomplete="off" type="text" name="Currency" placeholder="@Resource.Currency" disabled="">
+                </div>
+                </div>
+                <div class="col-md-12 col-sm-12">
+                    <label class="col-form-label label-align">@Resource.GLBalance</label>
+                    <input id="ApprovedBalance" class="form-control" value="@Appbal" autocomplete="off" type="text" name="ApprovedBalance" placeholder="@Resource.Approved @Resource.Balance" disabled="">
+                </div>
+                @if (ViewBag.Acctype.Rows.Count > 0)
+                {
+                    if (Convert.ToInt32(ViewBag.Acctype.Rows[0]["acc_type"]) == 7)
+                    {
+                        <div class="col-md-12 col-sm-12">
+                            <label class="col-form-label label-align">@Resource.Cleared @Resource.Balance</label>
+                            <input id="ClearedBalance" class="form-control" value="@ClearBal" autocomplete="off" type="text" name="ClearedBalance" placeholder="@Resource.Cleared @Resource.Balance" disabled="">
+                        </div>
+                        <div class="col-md-12 col-sm-12">
+                            <div class="col-md-11 col-sm-12 no-padding">
+                                <label class="col-form-label label-align">@Resource.Uncleared @Resource.Payment</label>
+                                <input id="UnclearedBalance" class="form-control" value="@UnClearBal_pay" autocomplete="off" type="text" name="UnclearedBalance" placeholder="@Resource.Uncleared @Resource.Balance" disabled="">
+                            </div>
+                            <div class="col-md-1 col-sm-12 i_Icon margin28 left-0"><button type="button" id="btn_unclearbank_paym" class="calculator" onclick="onclickIcon_rcptpaydetails('paym')" data-toggle="modal" data-target="#ChequeDetail" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Cheque @Resource.Detail"> </button></div>
+                        </div>
+                        <div class="col-md-12 col-sm-12">
+                            <div class="col-md-11 col-sm-12 no-padding">
+                                <label class="col-form-label label-align">@Resource.Uncleared @Resource.Receipt</label>
+                                <input id="UnclearedReceipt" class="form-control" value="@UnClearBal_rcpt" autocomplete="off" type="text" name="UnclearedReceipt" placeholder="@Resource.Uncleared @Resource.Receipt" disabled="">
+                            </div>
+                            <div class="col-md-1 col-sm-12 i_Icon margin28 left-0"><button type="button" id="btn_unclearbank_rcpt" class="calculator" onclick="onclickIcon_rcptpaydetails('rcpt')" data-toggle="modal" data-target="#ChequeDetail" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Cheque @Resource.Detail"> </button></div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="col-md-12 col-sm-12" hidden>
+                        <label class="col-form-label label-align">@Resource.Cleared @Resource.Balance</label>
+                        <input id="ClearedBalance" class="form-control" value="@ClearBal" autocomplete="off" type="text" name="ClearedBalance" placeholder="@Resource.Cleared @Resource.Balance" disabled="">
+                    </div>
+                    <div class="col-md-12 col-sm-12" hidden>
+                        <label class="col-form-label label-align">@Resource.Uncleared @Resource.Payment</label>
+                        <input id="UnclearedPayment" class="form-control" value="@UnClearBal" autocomplete="off" type="text" name="UnclearedBalance" placeholder="@Resource.Uncleared @Resource.Balance" disabled="">
+                    </div>
+                    <div class="col-md-12 col-sm-12">
+                        <label class="col-form-label label-align">@Resource.Uncleared @Resource.Receipt</label>
+                        <input id="UnclearedReceipt" class="form-control" value="" autocomplete="off" type="text" name="UnclearedReceipt" placeholder="@Resource.Uncleared @Resource.Receipt" disabled="">
+                    </div>
+                }
+
+                <div class="col-md-12 col-sm-12">
+                    <label class="col-form-label label-align">@Resource.Unapproved @Resource.Balance</label>
+                    <input id="UnapprovedBalance" class="form-control" value="@Unapp_bal" autocomplete="off" type="text" name="UnapprovedBalance" placeholder="@Resource.Unapproved @Resource.Balance" disabled="">
+                </div>
+                <div class="col-md-12 col-sm-12">
+                    <label class="col-form-label label-align">@Resource.Available @Resource.Balance</label>
+                    <input id="TotalBalance" class="form-control" value="@AvlBal" autocomplete="off" type="text" name="TotalBalance" placeholder="@Resource.Total @Resource.Balance" disabled="">
+                </div>
+                @if (ViewBag.Acctype.Rows.Count > 0)
+                {
+                    if (Convert.ToInt32(ViewBag.Acctype.Rows[0]["acc_type"]) == 7)
+                    {
+                        <div class="col-md-12 col-sm-12">
+                            <label class="col-form-label label-align">@Resource.Overdraft @Resource.Limit</label>
+                            <input id="OverdraftLimit" class="form-control" value="@OverDraft" autocomplete="off" type="text" name="OverdraftLimit" placeholder="@Resource.Overdraft @Resource.Limit" disabled="">
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="col-md-12 col-sm-12" hidden>
+                        <label class="col-form-label label-align">@Resource.Overdraft @Resource.Limit</label>
+                        <input id="OverdraftLimit" class="form-control" value="@OverDraft" autocomplete="off" type="text" name="OverdraftLimit" placeholder="@Resource.Overdraft @Resource.Limit" disabled="">
+                    </div>
+                }
+
+
+            </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>
+    </div>
+</div>

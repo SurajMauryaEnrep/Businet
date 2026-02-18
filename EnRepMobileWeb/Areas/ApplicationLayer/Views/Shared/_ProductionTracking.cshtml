@@ -1,0 +1,113 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.SalesAndDistribution.SalesAndDistributionModels.LSOListModel
+
+@using EnRepMobileWeb.Resources;
+@using System.Data
+<script src="~/Content/Scripts/ApplicationLayer/SalesAndDistribution/LocalSalesOrder/LSOList.js"></script>
+<div class="modal-content">
+    <div class="modal-header">
+        <h2>@Resource.OrderToProduceTracking </h2> <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body pop_top">
+        <div class="row">
+            <div class="col-md-3 col-sm-12 available_right ">
+                <label class="col-form-label label-align" for="">@Resource.SalesOrderNumber</label>
+                <input type="text" id="txtSalesOrderNumber" class="form-control" readonly>
+            </div>
+            <div class="col-md-3 col-sm-12 available_right ">
+                <label class="col-form-label label-align" for="">@Resource.OrderDate</label>
+                <input type="text" id="txtOrderDate" class="form-control" readonly>
+            </div>
+            <div class="col-md-3 col-sm-12 available_right ">
+                <label class="col-form-label label-align" for="">@Resource.CustomerName</label>
+                <input type="text" id="txtCustomerName" class="form-control" readonly>
+            </div>
+            <div class="col-md-2 col-sm-12 available_right ">
+                <label class="col-form-label label-align" for="">@Resource.Customer @Resource.Alias</label>
+                <input type="text" id="txtCustomerAlias" class="form-control" readonly>
+            </div>
+        </div>
+        <div class="card-box table-responsive dy_table margin15">
+            <div class="sticky-table sticky-ltr-cells sb-container container-example1 OrderHistory height40VH pop_csv">
+                <table id="Production_trackingTBL" class="table table-striped table-bordered width2600 margin5" style="width:100%;">
+                    <thead>
+                        <tr class="sticky-header">
+                            <th width="4%">@Resource.SrNo</th>
+                            <th hidden="hidden">@Resource.ProductName</th>
+                            <th width="13%">@Resource.ProductName</th>
+                            <th width="5%">@Resource.UOM</th>
+                            <th width="6%">@Resource.Order <br /> @Resource.Quantity</th>
+                            <th width="6%" class="light_cream_colour">@Resource.ProductionPlan <br /> @Resource.Number </th>
+                            <th width="6%" class="light_cream_colour">@Resource.ProductionPlan <br /> @Resource.Date </th>
+                            <th width="6%" class="light_cream_colour">@Resource.Planned <br /> @Resource.Quantity</th>
+                            <th width="6%" class="light_blue_colour">@Resource.Production @Resource.Order <br /> @Resource.Number </th>
+                            <th width="6%" class="light_blue_colour">@Resource.Production @Resource.Order <br /> @Resource.Date </th>
+                            <th width="6%" class="light_blue_colour">@Resource.Order <br /> @Resource.Quantity</th>
+                            <th width="6%" class="light_blue1_colour">@Resource.Production @Resource.Confirmation <br /> @Resource.Number</th>
+                            <th width="6%" class="light_blue1_colour">@Resource.Production @Resource.Confirmation <br /> @Resource.Date</th>
+                            <th width="6%" class="light_blue1_colour" hidden="hidden"></th>
+                            <th width="6%" class="light_blue1_colour">@Resource.Produced <br /> @Resource.Quantity</th>
+                            <th width="6%" class="light_blue1_colour">@Resource.Accepted <br /> @Resource.Quantity</th>
+                            <th width="6%" class="light_blue1_colour">@Resource.Rejected <br /> @Resource.Quantity</th>
+                            <th width="6%" class="light_blue1_colour">@Resource.Reworkable <br /> @Resource.Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (ViewBag.ProductionTrackingList != null)
+                        {
+                            var rowIdx = 0;
+                            foreach (System.Data.DataRow Row in ViewBag.ProductionTrackingList.Rows)
+                            {
+                                rowIdx++;
+                        <tr>
+                            <td>@rowIdx</td>
+                            <td id="hdnItemId" hidden="hidden">@Row["item_id"].ToString()</td>
+                            <td id="TDItemName">@Row["item_name"].ToString()</td>
+                            <td id="UOM">@Row["uom_alias"].ToString()</td>
+                            <td class="num_right">@Row["ord_qty_base"].ToString()</td>
+                            <td class="light_cream_colour">@Row["pp_no"].ToString()</td>
+                            <td class="light_cream_colour">@Row["pp_dt"].ToString()</td>
+                            <td class="light_cream_colour num_right">@Row["plan_qty"].ToString()</td>
+                            <td class="light_blue_colour">@Row["jc_no"].ToString()</td>
+                            <td class="light_blue_colour">@Row["jc_dt"].ToString()</td>
+                            <td class="light_blue_colour num_right">@Row["jc_qty"].ToString()</td>
+                            <td class="light_blue1_colour" id="Prod_Confir_no">@Row["cnf_no"].ToString()</td>
+                            <td class="light_blue1_colour" id="">@Row["cnf_dt"].ToString()</td>
+                            <td class="light_blue1_colour" hidden="hidden" id="Prod_Confir_dt">@Row["cnf_Date"].ToString()</td>
+                            <td class="light_blue1_colour num_right" id="cnf_qty">@Row["prod_qty"].ToString()</td>
+                            @*<td class="light_blue1_colour num_right">@Row["accept_qty"].ToString()</td>*@
+                            <td class="light_blue1_colour num_right">
+                                <div class="col-sm-10 num_right no-padding" id="AcceptQty">
+                                    @Convert.ToDecimal(Row["accept_qty"]).ToString()
+                                </div>
+                                <div class="col-sm-2 i_Icon">
+                                    <button type="button" id="" class="calculator" onclick="OnClickOrderedQty(event,'accept_qty')" data-toggle="modal" data-target="#ProductionAnalysisDetail" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.QCDetail"> @*<i class="fa fa-info" aria-hidden="true" title="@Resource.QCDetail"></i>*@ </button>
+                                </div>
+                            </td>
+                            @*<td class="light_blue1_colour num_right">@Row["reject_qty"].ToString()</td>*@
+                            <td class="light_blue1_colour num_right">
+                                <div class="col-sm-10 num_right no-padding" id="RejectQty">
+                                    @Convert.ToDecimal(Row["reject_qty"]).ToString()
+                                </div>
+                                <div class="col-sm-2 i_Icon">
+                                    <button type="button" id="" class="calculator" onclick="OnClickOrderedQty(event,'reject_qty')" data-toggle="modal" data-target="#ProductionAnalysisDetail" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.CostingDetail"> @*<i class="fa fa-info" aria-hidden="true" title="@Resource.CostingDetail"></i>*@ </button>
+                                </div>
+                            </td>
+                            @*<td class="light_blue1_colour num_right">@Row["rework_qty"].ToString()</td>*@
+                            <td class="light_blue1_colour num_right">
+                                <div class="col-sm-10 num_right no-padding" id="ReworkableQty">
+                                    @Convert.ToDecimal(Row["rework_qty"]).ToString()
+                                </div>
+                                <div class="col-sm-2 i_Icon">
+                                    <button type="button" id="" class="calculator" onclick="OnClickOrderedQty(event,'rework_qty')" data-toggle="modal" data-target="#ProductionAnalysisDetail" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.CostingDetail"> @*<i class="fa fa-info" aria-hidden="true" title="@Resource.CostingDetail"></i>*@ </button>
+                                </div>
+                            </td>
+                        </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+

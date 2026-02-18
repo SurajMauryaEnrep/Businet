@@ -1,0 +1,115 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.FinancialAccountingAndControl.MIS.BudgetAnalysis.BudgetAnalysisModel
+@using EnRepMobileWeb.Resources;
+@{
+    decimal bgtAmt = 0;
+    decimal actAmt = 0;
+    decimal variance = 0;
+    decimal varianceAvg = 0;
+}
+@{
+    string ValDigit = "0.";
+    var VD = Convert.ToInt32(Session["ValDigit"].ToString());
+    for (var i = 0; i < VD; i++)
+    {
+        ValDigit += "0";
+    }
+    //decimal total = 0;
+}
+<div class="modal-content">
+    <div class="modal-header">
+        <h2>@Resource.Quarterly @Resource.Allocation</h2>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+
+    <div class="modal-body pop_top">
+        @*<div class="col-md-4 col-sm-12" style="padding-left:0px;">
+                <label class="col-form-label label-align">@Resource.RequirementArea</label>
+                <input id="RequirementArea" class="form-control" autocomplete="off" type="text" name="RequirementArea" placeholder="@Resource.RequirementArea" disabled="">
+            </div>*@
+        <input type="hidden" id="PeriodFlag" value="" />
+        <div class="col-md-4 col-sm-12" style="padding-left:0px;">
+            <label class="col-form-label label-align">@Resource.GLAccount</label>
+            <input id="GLAccount2" class="form-control " autocomplete="off" type="text" name="GLAccount" placeholder="@Resource.GLAccount" disabled>
+        </div>
+        <div class="col-md-4 col-sm-12" style="padding-left:0px;">
+            <label class="col-form-label label-align ">@Resource.Budget @Resource.Amount</label>
+            <input id="MonBudgetAmount2" class="form-control num_right" autocomplete="off" type="text" name="BudgetAmount" placeholder="0000.00" disabled>
+        </div>
+        <div class="col-md-4 col-sm-12" style="padding-left:0px;">
+            <label class="col-form-label label-align ">@Resource.Actual @Resource.Amount</label>
+            <input id="ActualAmount2" class="form-control num_right" autocomplete="off" type="text" name="ActualAmount   " placeholder="0000.00" disabled>
+        </div>
+        @*<div class="col-md-4 col-sm-12" style="padding-left:0px;">
+                <label class="col-form-label label-align ">@Resource.Variance </label>
+                <input id="Variance" class="form-control num_right" autocomplete="off" type="text" name="Variance" placeholder="0000.00" disabled>
+            </div>*@
+        <div class="card-box table-responsive dy_table margin15 ">
+            <div id="" class="sticky-table sticky-ltr-cells sb-container container-example1 OrderHistory height30VH">
+                <table id="" data-order="" class="table table-striped table-bordered rowhighlighttbl" style="width:100%">
+                    <thead>
+                        <tr class="sticky-header">
+                            <th width="8%"> @Resource.SrNo</th>
+                            <th width="23%">@Resource.Quarter</th>
+                            <th hidden="hidden">@Resource.Month</th>
+                            <th hidden="hidden">@Resource.Month</th>
+                            <th hidden="hidden">@Resource.Month</th>
+                            <th width="23%">@Resource.Budget @Resource.Amount</th>
+                            <th width="23%">@Resource.Actual @Resource.Amount</th>
+                            <th width="23%">@Resource.Variance <br />@Resource.InPercentage</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (ViewBag.QuarterlyAllocation != null)
+                        {
+
+                            var srno = 1;
+                            foreach (System.Data.DataRow dtr in ViewBag.QuarterlyAllocation.Rows)
+                            {
+                        <tr>
+                            <td>@srno</td>
+                            <td>@dtr["mnth_qtr_name"].ToString()</td>
+                            <td id="tdFromDate" hidden="hidden">@dtr["FinStDate"].ToString()</td>
+                            <td id="tdToDate" hidden="hidden">@dtr["FinEndDate"].ToString()</td>
+                            <td id="tdAccId" hidden="hidden">@dtr["acc_id"].ToString()</td>
+                            <td class="num_right">@dtr["BudgetAmount"].ToString()</td>
+                            <td class="num_right" id="tdActAmt">
+                                <div class=" col-sm-11 no-padding">
+                                    @dtr["ActualAmount"].ToString()
+                                </div>
+                                <div class="col-sm-1 i_Icon">
+                                    <button type="button" class="calculator" onclick="GetLedgerDetails(event);" data-toggle="modal" data-target="#ExpenseDetail" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Amount @Resource.Detail">   </button>
+                                </div>
+                            </td>
+                            <td class="num_right">@dtr["Variance"]</td>
+                        </tr>
+                                bgtAmt = bgtAmt + Convert.ToDecimal(dtr["BudgetAmount"]);
+                                actAmt = actAmt + Convert.ToDecimal(dtr["ActualAmount"]);
+                                variance = variance + Convert.ToDecimal(dtr["Variance"]);
+                                srno = srno + 1;
+                            }
+                        }
+                    </tbody>
+
+                    <tfoot>
+                        @if (ViewBag.QuarterlyAllocation != null)
+                        {
+                            varianceAvg = variance / Convert.ToDecimal(ViewBag.QuarterlyAllocation.Rows.Count);
+                        }
+                        <tr class="total">
+                            <td>&nbsp;</td>
+                            <td class="font-weight-bold num_right">@Resource.Total</td>
+                            <td class="num_right" id="">@bgtAmt.ToString("N") </td>
+                            <td class="num_right" id="">@actAmt.ToString("N") </td>
+                            <td class="num_right" id="">@varianceAvg.ToString("N")</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" id="" onclick="">@Resource.Close</button>
+
+    </div>
+</div>

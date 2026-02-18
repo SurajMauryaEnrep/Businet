@@ -1,0 +1,119 @@
+﻿@using EnRepMobileWeb.Resources;
+@using System.Data;
+@{
+    string ValDigit = "0.";
+    var VD = Convert.ToInt32(Session["ValDigit"].ToString());
+    for (var i = 0; i < VD; i++)
+    {
+        ValDigit += "0";
+    }
+
+    //decimal total = 0;
+}
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/FinancialAccountingAndControl/GeneralLedgerVoucher/CostCenterReAllocation/CostCenterReAllocation.js"></script>
+<table id="datatable-buttons1" class="table table-striped rowhighlighttbl mb-3 itmfrz" cellspacing="0" width="100%">
+    <thead>
+        <tr class="sticky-header">
+            <th width="5%"> @Resource.SrNo</th>
+            <th width="20%" class="itmStick">@Resource.Voucher  <br /> @Resource.Number</th>
+            <th width="15%">@Resource.Voucher  <br /> @Resource.Date</th>
+            <th hidden="hidden"></th>
+            <th hidden="hidden"></th>
+            <th hidden="hidden"></th>
+            <th hidden="hidden"></th>
+            <th width="15%">@Resource.GL  <br /> @Resource.Account </th>
+            <th hidden="hidden"></th>
+            <th width="15%">@Resource.Account  <br /> @Resource.Type </th>
+            <th hidden="hidden"></th>
+            <th width="15%">@Resource.Amount</th>
+            <th width="15%">@Resource.CostCenter <br /> @Resource.Detail</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (ViewBag.CostCenterReAllocationDetail != null)
+        {
+            var srno = 1;
+            foreach (DataRow dr in ViewBag.CostCenterReAllocationDetail.Rows)
+            {
+        <tr>
+            <td id="pthdn_SpanRowId">@srno</td>
+            @*<td id="pthdn_vou_no">@dr["vou_no"].ToString()</td>*@
+            <td id="" class="ItmNameBreak itmStick tditemfrz">
+                <div class="col-sm-10 no-padding" id="pthdn_vou_no">@dr["vou_no"].ToString()</div>
+                <div class="col-sm-2 i_Icon">
+                    <button type="button" id="VoucherDetail" class="calculator" onclick="OnClickShowVouDtl(event);" data-toggle="modal" data-target="#VoucherDetailMW" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.VoucherDetail"> </button>
+                </div>
+            </td>
+            <td id="pt_vou_dt">@dr["vou_dt"].ToString()</td>
+            <td hidden="hidden" id="pthdn_vou_dt">@dr["vou_dt1"].ToString()</td>
+            <td hidden="hidden" id="pthdn_vou_date">@dr["vou_date"].ToString()</td>
+        
+        <td hidden="hidden" id="pthdn_vou_type">@dr["vou_type"].ToString()</td>
+        <td hidden="hidden" id="pthdn_int_br_id">@dr["int_br_id"].ToString()</td>
+        <td id="pthdn_acc_name">@dr["acc_name"].ToString()</td>
+        <td hidden="hidden" id="pthdn_acc_id">@dr["acc_id"].ToString()</td>
+        <td id="pthdn_acc_typ">@dr["account_type_name"].ToString()</td>
+        <td hidden="hidden" id="pthdn_acc_typ_id">@dr["acc_type"].ToString()</td>
+        <td class="num_right" id="pthdn_gl_amt">@dr["gl_amt"].ToString()</td>
+        @if (dr["cc_amt"] != null)
+        {
+            if (Convert.ToDouble(dr["cc_amt"]) > 0)
+            {
+                <td class="center" id="td_CC">
+                    <button type="button" id="BtnCostCenterDetail" onclick="Onclick_CCbtn('type',event)" class="calculator subItmImg" data-toggle="modal" data-target="#CostCenterDetail" data-backdrop="static" data-keyboard="false"><i class="fa fa-eye green1" id="cls_cc_eyecolor" aria-hidden="true" title="@Resource.CostCenterDetail"></i></button>
+                </td>
+
+            }
+            else
+            {
+                <td class="center" id="td_CC">
+                    <button type="button" id="BtnCostCenterDetail" onclick="Onclick_CCbtn('type',event)" class="calculator subItmImg" data-toggle="modal" data-target="#CostCenterDetail" data-backdrop="static" data-keyboard="false"><i class="fa fa-eye" aria-hidden="true" title="@Resource.CostCenterDetail"></i></button>
+                </td>
+
+            }
+        }
+
+
+        </tr>
+
+                srno++;
+            }
+        }
+
+
+        @*<tr>
+                <td>01</td>
+                <td>
+                    <div class="col-md-11 col-sm-12 no-padding">
+                        <span class="item_add">
+                            JV000101
+                        </span>
+                    </div>
+                    <div class="col-sm-1 i_Icon">
+                        <button type="button" id="VoucherDetail" class="calculator" onclick="OnclickVouDetailsIconBtn(event);" data-toggle="modal" data-target="#VoucherDetailMW" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.VoucherDetail"> </button>
+
+                    </div>
+                </td>
+                <td>10-10-2024</td>
+                <td>Local Sales</td>
+                <td>Income</td>
+                <td class="num_right">45000.00</td>
+
+                <td class="center" id="td_CC">
+                    <button type="button" id="BtnCostCenterDetail" onclick="Onclick_CCbtn('type',event)" class="calculator subItmImg" data-toggle="modal" data-target="#CostCenterDetail" data-backdrop="static" data-keyboard="false"><i class="fa fa-eye" aria-hidden="true" title="@Resource.CostCenterDetail"></i></button>
+                </td>
+            </tr>*@
+    </tbody>
+</table>
+@{
+    if (TempData["CCRAFilter"] != null)
+    {
+        if (TempData["CCRAFilter"].ToString() == "CCRAFilter")
+        {
+            @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+            @Scripts.Render("~/Content/Scripts/DatatablesJs")
+
+        }
+    }
+}

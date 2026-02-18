@@ -1,0 +1,87 @@
+﻿@using EnRepMobileWeb.Resources;
+@using System.Data
+@{ 
+    var rowId = 0;
+}
+
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<div class="modal-content" id="">
+    <div class="modal-header">
+        <h2>@Resource.Payment @Resource.Detail</h2>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body pop_top">
+        <div class="row">
+            <div class="col-md-4 col-sm-12">
+                <label class="col-form-label label-align">
+                    @Resource.CustomerName
+                </label>
+                <input id="CustomerNamePaidDetail" class="form-control" autocomplete="off" type="text" name="CustomerName" placeholder="@Resource.CustomerName" disabled="">
+                <input hidden="hidden" id="HdnCustomerNameForPaidAmt" />
+            </div>
+            <div class="col-md-2 col-sm-12">
+                <label class="col-form-label label-align">
+                    @Resource.Currency
+                </label>
+                <input id="CurrencyPaidDetail" class="form-control" autocomplete="off" type="text" name="Currency" placeholder="@Resource.Currency" disabled="">
+            </div>
+        </div>
+        <div class="card-box table-responsive dy_table margin10">
+            <div id="" class="sticky-table sticky-ltr-cells sb-container container-example1 OrderHistory height30VH pop_csv">
+                <table id="tbl_PaidAmountDetails" class="table table-striped table-bordered rowhighlighttbl width1200 itmfrz" style="width:100%">
+                    <thead>
+                        <tr class="sticky-header">
+                            <th width="5%"> @Resource.SrNo</th>
+                            <th width="25%" class="itmStick">@Resource.Voucher @Resource.Number</th>
+                            <th width="10%">@Resource.Voucher @Resource.Date</th>
+                            <th width="12%">@Resource.Voucher @Resource.Type</th>
+                            <th width="12%">@Resource.Currency</th>
+                            <th width="12%">@Resource.InvoiceNumber</th>
+                            <th width="12%">@Resource.InvoiceDate</th>
+                            @*<th width="12%">@Resource.Invoice @Resource.Amount</th>*@
+                            <th width="12%">@Resource.Paid @Resource.Amount</th>
+                            @*<th width="12%">@Resource.Pending @Resource.Amount</th>*@
+                        </tr>
+                    </thead>
+                    <tbody>                        
+                        @if (ViewBag.PaidAmountDetail != null)
+                        {
+                            foreach (System.Data.DataRow dr in ViewBag.PaidAmountDetail.Rows)
+                            {
+                                rowId++;
+                        <tr>
+                            <td>@rowId</td>
+                            <td>@dr["VouNo"].ToString()</td>
+                            <td>@dr["VouDate"].ToString()</td>
+                            <td>@dr["VouType"].ToString()</td>
+                            <td>@dr["curr_name"].ToString()</td>
+                            <td>@dr["inv_no"].ToString()</td>
+                            <td>@dr["inv_dt"].ToString()</td>
+                            @*<td>@dr["inv_amt_bs"].ToString()</td>*@
+                            <td class="num_right">@dr["paid_amt"].ToString()</td>
+                            @*<td>@dr["pend_amt"].ToString()</td>*@
+                        </tr>
+                            }
+                        }
+                    </tbody>
+                    <tfoot>
+                        @if (ViewBag.PaidAmountDetailTotal != null)
+                        {
+                            foreach (System.Data.DataRow dr in ViewBag.PaidAmountDetailTotal.Rows)
+                            {
+                        <tr class="total">
+                            <th colspan="7" class="num_right font-weight-bold"> Total</th>
+                            <td class="num_right"><strong>@dr["paid_amt"].ToString()</strong></td>
+                            @*<th colspan="1"></th>*@
+                        </tr>
+                            }
+                        }                        
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" id="CloseBtn">@Resource.Close</button>
+    </div>
+</div>

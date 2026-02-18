@@ -1,0 +1,91 @@
+﻿@using EnRepMobileWeb.Resources;
+@*//Modifed by Shubham Maurya on 16-12-2022 add id in country Detail//*@
+
+@{
+    int i = 0;
+    var EditFlag = "N";
+    var DeleteFlag = "N";
+    if (ViewBag.VBRoleList != null)
+    {
+        foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+        {
+            if (Row["feature_id"].ToString() == "103190002")
+            {
+                EditFlag = "Y";
+            }
+            if (Row["feature_id"].ToString() == "103190004")
+            {
+                DeleteFlag = "Y";
+            }
+        }
+    }
+}
+
+<table id="datatable-buttons" class="table table-bordered rowhighlighttbl" style="width:100%">
+    <thead>
+        <tr class="sticky-header">
+            <th width="2%">@Resource.SrNo</th>
+            <th style="display:none;"></th>
+            <th>@Resource.StateAndProvince</th>
+            <th width="8%">@Resource.StateCode </th>
+            <th style="display:none"></th>
+            <th>@Resource.Country</th>
+            <th width="4%">&nbsp;</th>
+            <th width="4%">&nbsp;</th>
+        </tr>
+    </thead>
+    <tbody id="adrstrcountry_tbody">
+        @if (ViewBag.StateList != null)
+        {
+            foreach (System.Data.DataRow item in ViewBag.StateList.Rows)
+            {
+                i = i + 1;
+                <tr>
+                    <td class="sr_padding">@i</td>
+                    <td id="stateid" style="display:none;">@item["state_id"].ToString()</td>
+                    <td id="statename">@item["state_name"].ToString()</td>
+                    <td id="state_code">@item["state_code"].ToString()</td>
+                    <td id="contryid" style="display:none;">@item["country_id"].ToString()</td>
+                    <td id="contryname">@item["country_name"].ToString()</td>
+                    <td class="center">
+                        @if (EditFlag == "Y")
+                        {
+                            //if (@item["dependcy"].ToString() == "NotExit")
+                            //{
+                                <i type="submit" class="fa fa-edit editrecord" aria-hidden="true" title="@Resource.Edit"></i>
+                            @*}
+                            else
+                            {
+                                <i type="submit" class="fa fa-edit" disabled  style="filter: grayscale(100%)" aria-hidden="true" title="@Resource.Edit"></i>
+                            }*@
+
+                        }
+                    </td>
+                    <td class="center">
+                        @if (DeleteFlag == "Y")
+                        {
+                            if (@item["dependcy"].ToString() == "NotExit")
+                            {
+                                <i class="fa fa-trash red" aria-hidden="true" title="@Resource.Delete" onclick="return functionConfirm(this)"></i>
+                            }
+                            else
+                            {
+                                <i class="fa fa-trash red" aria-hidden="true" disabled  style="filter: grayscale(100%)" title="@Resource.Delete" onclick=""></i>
+                            }
+
+                        }
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+
+
+<script>
+
+</script>
+
+
+

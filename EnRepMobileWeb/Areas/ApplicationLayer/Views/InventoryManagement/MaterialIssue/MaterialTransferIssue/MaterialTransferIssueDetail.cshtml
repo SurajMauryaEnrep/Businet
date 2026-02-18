@@ -1,0 +1,1412 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.InventoryManagement.MaterialIssue.MaterialTransferIssue.MaterialTransferIssueModel
+@using EnRepMobileWeb.Resources;
+@using EnRepMobileWeb.MODELS.Common;
+@using System.Data
+<script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+<script src="~/Content/Css/build/js/sweetalert.js"></script>
+
+@*/*start Add by Hina on 13-02-2024 to chk Financial year exist or not*/*@
+@{
+    if (TempData["Message"] != null)
+    {
+        if (TempData["Message"] == "Financial Year not Exist")
+        {
+            <script type="text/javascript">
+                swal("", $("#FinancialYearDoesNotExistTransactionCanNotBeDone").text(), "warning");
+            </script>
+        }
+    }
+    /*Add by Hina sharma on 13-05-2025 to check Existing with previous year transaction*/
+    if (TempData["Message1"] != null)
+    {
+        if (TempData["Message1"] == "TransNotAllow")
+        {
+            <script type="text/javascript">
+                swal("", $("#NomodificationisallowedinpreviousFYdocument").text(), "warning");
+            </script>
+        }
+
+    }
+}
+@*/*End to chk Financial year exist or not*/*@
+<title>@Model.Title</title>
+@if (Session["UserId"] == null)
+{
+    Response.Redirect("~/Login");
+}
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+@{
+    //var rowId = 0;
+    var Disable = true;
+    //if (Session["TransType"].ToString() == "Update")
+    if (Model.TransType == "Update")
+    {
+        //if (Session["Command"].ToString() == "Edit")
+        if (Model.Command == "Edit")
+        {
+            Disable = false;
+        }
+        else
+        {
+            Disable = true;
+        }
+    }
+    else
+    {
+        //if (Session["Command"].ToString() == "Refresh")
+        if (Model.Command == "Refresh")
+        {
+            Disable = true;
+        }
+        else
+        {
+            Disable = false;
+        }
+    }
+}
+@{
+    //if (Session["Message"] != null)
+    if (Model.Message != null)
+    {
+        Model.hdnsaveApprovebtn = null;
+        //if (Session["Message"].ToString() == "Save")
+        if (Model.Message == "Save")
+        {
+            <script type="text/javascript">
+                swal("", $("#savemsg").text(), "success");
+            </script>
+        }
+
+        //if (Session["Message"].ToString() == "Cancelled")
+        if (Model.Message == "Cancelled")
+        {
+            <script type="text/javascript">
+                swal("", $("#cancelmsg").text(), "success");
+            </script>
+        }
+        //if (Session["Message"].ToString() == "StockNotAvail")
+        if (Model.Message == "StockNotAvail")
+        {
+            <script type="text/javascript">
+                swal("", $("#SelectedlotqtyforsomeitemhasbeenchangedDoccannotbeSaved").text(), "warning");
+            </script>
+        }
+        //if (Session["Message"].ToString() == "Used")
+        if (Model.Message == "Used")
+        {
+            <script type="text/javascript">
+                swal("", $("#MaterialTransferReceiptIsUnderProcessTransferIssueCannotBeCancelled").text(), "warning");
+            </script>
+        }
+        if (Model.Message == "DocModify")
+        {
+            <script type="text/javascript">
+                swal("", $("#SourceDocumentHasBeenModifiedCanNotProceed").text(), "warning");
+            </script>
+        }
+        //Session["Message"] = "";
+        Model.Message = "";
+    }
+}
+@using (Html.BeginForm("MaterialTransferIssueSave", "MaterialTransferIssue", FormMethod.Post, new { enctype = "multipart/form-data", id = "MaterialTransferIssueForm" }))
+{
+    @Html.AntiForgeryToken()
+    {
+<div class="row">
+    <!-- Item Information -->
+    <div id="ItemInfo" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/Common/Views/_ItemInfomation.cshtml")
+        </div>
+    </div>
+    <div id="WareHouse" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div id="ItemStockWareHouseWise">
+                    @Html.Partial("~/Areas/Common/Views/PartialItemStockWareHouseWise.cshtml")
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Batch Number -->
+    <div id="BatchNumber" class="modal fade" role="dialog">
+        <div class="modal-dialog" style=" max-width:800px;">
+            <div class="price_item_detail">
+                <!-- Modal content-->
+                <div id="ItemStockBatchWise">
+                    @Html.Partial("~/Areas/Common/Views/Comn_PartialItemStockBatchWise.cshtml")
+                </div>
+                @Html.HiddenFor(model => model.ItemBatchWiseDetail, new { @id = "HDSelectedBatchwise" })
+                @*<div class="modal-content">
+                        <div class="modal-header">
+                            <h2>@Resource.BatchDetail</h2>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="col-md-4 col-sm-12" style="padding-left:0px;">
+                                <label class="col-form-label label-align">
+                                    @Resource.ItemName
+                                </label>
+                                <input id="ItemNameBatchWise" class="form-control" autocomplete="off" type="text" name="ItemName" required="required" placeholder="Item Name"  onblur="this.placeholder='Item Name'" disabled="">
+                                <input type="hidden" id="HDItemNameBatchWise" />
+                            </div>
+                            <div class="col-md-4 col-sm-12" style="padding-left:0px;">
+                                <label class="col-form-label label-align">
+                                    @Resource.UOM
+                                </label>
+                                <input id="UOMBatchWise" class="form-control" autocomplete="off" type="text" name="UOM" required="required" placeholder="@Resource.UOM" disabled="">
+                                <input type="hidden" id="HDUOMBatchWise" />
+                            </div>
+                            <div class="col-md-4 col-sm-12" style="padding-left:0px;">
+                                <label class="col-form-label label-align">
+                                    @Resource.IssuedQuantity
+                                </label>
+                                <input id="ShippedQuantityBatchWise" class="form-control" autocomplete="off" type="text" name="ShippedQuantity" required="required" placeholder="Issued Quantity"  onblur="this.placeholder='Issued Quantity'" disabled="">
+                            </div>
+                            <div class="clearfix"></div>
+                            <div class="BatchDetail">
+                                <div id="ItemStockBatchWise">
+                                    @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialMaterialIssueItemStockBatchWise.cshtml")
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+
+                            @if (Disable)
+                            {
+                                <button type="button" disabled onclick="onclickbtnItemBatchReset()" class="btn btn-primary btn-sm" id="btnItemBatchReset">@Resource.Reset</button>
+                                <button type="button" disabled onclick="onclickbtnItemBatchSaveAndExit()" class="btn btn-primary btn-sm" id="btnItemBatchSaveAndExit">@Resource.SaveAndExit</button>
+                                <button type="button" disabled onclick="onclickbtnItemBatchDiscardAndExit()" class="btn btn-primary btn-sm" data-dismiss="modal" id="btnItemBatchDiscardAndExit">@Resource.DiscardAndExit</button>
+                            }
+                            else
+                            {
+                                if (Session["Command"].ToString() == "Edit" && ViewBag.DocumentCode == "I")
+                                {
+                                    <button type="button" disabled onclick="onclickbtnItemBatchReset()" class="btn btn-primary btn-sm" id="btnItemBatchReset">@Resource.Reset</button>
+                                    <button type="button" disabled onclick="onclickbtnItemBatchSaveAndExit()" class="btn btn-primary btn-sm" id="btnItemBatchSaveAndExit">@Resource.SaveAndExit</button>
+                                    <button type="button" disabled onclick="onclickbtnItemBatchDiscardAndExit()" class="btn btn-primary btn-sm" data-dismiss="modal" id="btnItemBatchDiscardAndExit">@Resource.DiscardAndExit</button>
+                                }
+                                else
+                                {
+                                    <button type="button" onclick="onclickbtnItemBatchReset()" class="btn btn-primary btn-sm" id="btnItemBatchReset">@Resource.Reset</button>
+                                    <button type="button" onclick="onclickbtnItemBatchSaveAndExit()" class="btn btn-primary btn-sm" id="btnItemBatchSaveAndExit">@Resource.SaveAndExit</button>
+                                    <button type="button" onclick="onclickbtnItemBatchDiscardAndExit()" class="btn btn-primary btn-sm" data-dismiss="modal" id="btnItemBatchDiscardAndExit">@Resource.DiscardAndExit</button>
+                                }
+                            }
+
+                        </div>
+                    </div>*@
+                <table id="SaveItemBatchTbl" class="table table-bordered" style="display:none">
+                    <thead>
+                        <tr>
+                            <th>LOTNo</th>
+                            <th>ItemId</th>
+                            <th>UOMID</th>
+                            <th>BatchNO</th>
+                            <th>IssueQuantity</th>
+                            <th>expiryDate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (ViewBag.ItemStockBatchWise != null)
+                        {
+                            foreach (System.Data.DataRow Row in ViewBag.ItemStockBatchWise.Rows)
+                            {
+                        <tr>
+                            <td><input type="text" id="Batch_LotNo" value="@Row["lot_id"].ToString()" /></td>
+                            <td><input type="text" id="Batch_ItemId" value="@Row["item_id"].ToString()" /></td>
+                            <td><input type="text" id="Batch_UOMId" value="@Row["uom_id"].ToString()" /></td>
+                            <td><input type="text" id="Batch_BatchNo" value="@Row["batch_no"].ToString()" /></td>
+                            <td><input type="text" id="Batch_Qty" value="@Row["Issue_Qty"].ToString()" /></td>
+                            <td><input type="text" id="Batch_ExpiryDate" value="@Row["expiry_date"].ToString()" /></td>
+                            <td><input type="text" id="Batch_AvlBatchQty" value="@Row["avl_batch_qty"].ToString()" /></td>
+                            <td id="Batch_MfgName">@Row["mfg_name"].ToString()</td>
+                            <td><input type="text" id="Batch_MfgMrp" value="@Row["mfg_mrp"].ToString()" /></td>
+                            <td><input type="text" id="Batch_MfgDate" value="@Row["mfg_date"].ToString()" /></td>
+                            @*<td><input type="text" id="mi_lineBatchLotNo" value="@Row["lot_id"].ToString()" /></td>
+        <td><input type="text" id="mi_lineBatchItemId" value="@Row["item_id"].ToString()" /></td>
+        <td><input type="text" id="mi_lineBatchUOMId" value="@Row["uom_id"].ToString()" /></td>
+        <td><input type="text" id="mi_lineBatchBatchNo" value="@Row["batch_no"].ToString()" /></td>
+        <td><input type="text" id="mi_lineBatchIssueQty" value="@Row["Issue_Qty"].ToString()" /></td>
+        <td><input type="text" id="mi_lineBatchExpiryDate" value="@Row["expiry_date"].ToString()" /></td>
+        <td><input type="text" id="mi_lineBatchavl_batch_qty" value="@Row["avl_batch_qty"].ToString()" /></td>
+        <td><input type="text" id="mi_lineBatchMfgName" value="@Row["mfg_name"].ToString()" /></td>
+        <td><input type="text" id="mi_lineBatchMfgMrp" value="@Row["mfg_mrp"].ToString()" /></td>
+        <td><input type="text" id="mi_lineBatchMfgDate" value="@Row["mfg_date"].ToString()" /></td>*@
+                        </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- Serial Detail -->
+    <div id="SerialDetail" class="modal fade" role="dialog">
+        <div class="modal-dialog" style=" max-width:500px;">
+            <!-- Modal content-->
+            <div class="BatchDetail">
+                <div id="ItemStockSerialWise">
+                    @Html.Partial("~/Areas/Common/Views/Comn_PartialItemStockSerialWise.cshtml")
+                </div>
+                @Html.HiddenFor(model => model.ItemSerialWiseDetail, new { @id = "HDSelectedSerialwise" })
+
+            </div>
+
+            @*<div class="modal-content">
+                    <div class="modal-header">
+                        <h2>@Resource.SerialDetail</h2>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+
+                    </div>
+                    <div class="modal-body">
+                        <div class="col-md-4 col-sm-12" style="padding-left:0px;">
+                            <label class="col-form-label label-align">
+                                @Resource.ItemName
+                            </label>
+                            <input id="ItemNameSerialWise" class="form-control" autocomplete="off" type="text" name="ItemName" placeholder="Item Name"  onblur="this.placeholder='Item Name'" disabled="">
+                            <input type="hidden" id="HDItemIDSerialWise" />
+                            @Html.HiddenFor(model => model.ItemBatchWiseDetail, new { @id = "HDSelectedBatchwise" })
+                        </div>
+                        <div class="col-md-4 col-sm-12" style="padding-left:0px;">
+                            <label class="col-form-label label-align">
+                                @Resource.UOM
+                            </label>
+                            <input id="UOMSerialWise" class="form-control" autocomplete="off" type="text" name="UOM" placeholder="@Resource.UOM" disabled="">
+                            <input type="hidden" id="HDUOMIDSerialWise" />
+                            @Html.HiddenFor(model => model.ItemSerialWiseDetail, new { @id = "HDSelectedSerialwise" })
+                        </div>
+                        <div class="col-md-4 col-sm-12" style="padding-left:0px;">
+                            <label class="col-form-label label-align">
+                                @Resource.IssuedQuantity
+                            </label>
+                            <input id="ShippedQuantitySerialWise" class="form-control" autocomplete="off" type="text" name="ShippedQuantity" required="required" placeholder="Shipped Quantity"  onblur="this.placeholder='Shipped Quantity'" disabled="">
+                        </div>
+
+                        <div class="clearfix"></div>
+
+                        <div class="BatchDetail">
+                            <div id="ItemStockSerialWise">
+                                @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialMaterialIssueItemStockSerialWise.cshtml")
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+
+                        @if (Disable)
+                        {
+                            <button type="button" disabled id="btnItemSerialReset" onclick="onclickbtnItemSerialReset()" class="btn btn-primary btn-sm">@Resource.Reset</button>
+                            <button type="button" disabled id="btnItemSerialSaveAndExit" onclick="onclickbtnItemSerialSaveAndExit()" class="btn btn-primary btn-sm">@Resource.SaveAndExit</button>
+                            <button type="button" disabled id="btnItemSerialDiscardAndExit" onclick="onclickbtnItemSerialDiscardAndExit()" class="btn btn-primary btn-sm" data-dismiss="modal">@Resource.DiscardAndExit</button>
+                        }
+                        else
+                        {
+                            if (Session["Command"].ToString() == "Edit" && ViewBag.DocumentCode == "I")
+                            {
+                                <button type="button" disabled id="btnItemSerialReset" onclick="onclickbtnItemSerialReset()" class="btn btn-primary btn-sm">@Resource.Reset</button>
+                                <button type="button" disabled id="btnItemSerialSaveAndExit" onclick="onclickbtnItemSerialSaveAndExit()" class="btn btn-primary btn-sm">@Resource.SaveAndExit</button>
+                                <button type="button" disabled id="btnItemSerialDiscardAndExit" onclick="onclickbtnItemSerialDiscardAndExit()" class="btn btn-primary btn-sm" data-dismiss="modal">@Resource.DiscardAndExit</button>
+                            }
+                            else
+                            {
+                                <button type="button" id="btnItemSerialReset" onclick="onclickbtnItemSerialReset()" class="btn btn-primary btn-sm">@Resource.Reset</button>
+                                <button type="button" id="btnItemSerialSaveAndExit" onclick="onclickbtnItemSerialSaveAndExit()" class="btn btn-primary btn-sm">@Resource.SaveAndExit</button>
+                                <button type="button" id="btnItemSerialDiscardAndExit" onclick="onclickbtnItemSerialDiscardAndExit()" class="btn btn-primary btn-sm" data-dismiss="modal">@Resource.DiscardAndExit</button>
+                            }
+                        }
+                    </div>
+                </div>*@
+            <table id="SaveItemSerialTbl" class="table table-bordered" style="display:none">
+                <thead>
+                    <tr class="headings" disabled="disabled">
+                        <th>ItemId</th>
+                        <th>UOMID</th>
+                        <th>LOTNO</th>
+                        <th>IssueQuantity</th>
+                        <th>SerialNO</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (ViewBag.ItemStockSerialWise != null)
+                    {
+
+                        foreach (System.Data.DataRow Row in ViewBag.ItemStockSerialWise.Rows)
+                        {
+                            if (@Row["SerailSelected"].ToString() == "Y")
+                            {
+                    <tr>
+                        <td><input type="text" id="Serial_ItemId" value="@Row["item_id"].ToString()" /></td>
+                        <td><input type="text" id="Serial_UOMId" value="@Row["uom_id"].ToString()" /></td>
+                        <td><input type="text" id="Serial_LOTNo" value="@Row["lot_id"].ToString()" /></td>
+                        <td><input type="text" id="Serial_Qty" value="1" /></td>
+                        <td><input type="text" id="Serial_SerialNo" value="@Row["serial_no"].ToString()" /></td>
+                        <td><input type="text" id="Serial_MfgName" value="@Row["mfg_name"].ToString()" /></td>
+                        <td><input type="text" id="Serial_MfgMrp" value="@Row["mfg_mrp"].ToString()" /></td>
+                        <td><input type="text" id="Serial_MfgDate" value="@Row["mfg_date"].ToString()" /></td>
+                    </tr>
+                            }
+                        }
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+    <!-- Sub Item Detail -->
+    <div id="SubItem" class="modal fade" role="dialog">
+        <div class="modal-dialog" id="SubItemPopUp" style=" max-width:600px;">
+            <!-- Modal content-->
+            @{
+                SubItemPopupDt mdl = new SubItemPopupDt();
+            }
+            @Html.Partial("~/Areas/Common/Views/Cmn_PartialSubItemDetail.cshtml", mdl)
+        </div>
+        <table id="hdn_Sub_ItemDetailTbl" hidden>
+            <tbody>
+                @if (ViewBag.SubItemDetails != null)
+                {
+                    foreach (System.Data.DataRow dr in ViewBag.SubItemDetails.Rows)
+                    {
+                        <tr>
+                            <td><input type="text" id="ItemId" value='@dr["item_id"]'></td>
+                            <td><input type="text" id="subItemId" value='@dr["sub_item_id"]'></td>
+                            <td><input type="text" id="subItemQty" value='@dr["Qty"]'></td>
+                            <td><input type="text" id="subItemReqQty" value='@dr["req_qty"]'></td>
+                            <td><input type="text" id="subItemPendQty" value='@dr["pend_qty"]'></td>
+                            <td><input type="text" id="subItemAvlQty" value='@dr["avl_stock"]'></td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+        @Html.HiddenFor(model => model.SubItemDetailsDt, new { @id = "SubItemDetailsDt" })
+    </div>
+    <!-- Sub Item Stock Detail -->
+    <div id="SubItemStock" class="modal fade" role="dialog">
+        <div class="modal-dialog" id="SubItemStockPopUp" style=" max-width:600px;">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/Common/Views/Cmn_PartialSubItemStkDetail.cshtml")
+        </div>
+    </div>
+    <!-- Sales Invoice Print -->
+    <div id="SalesInvoicePrint" class="modal fade" role="dialog">
+        <div class="modal-dialog" style="max-width:700px;">
+            @{
+                ViewBag.DocumentMenuId = Model.DocumentMenuId;
+            }
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialSalesInvoiceForPrint.cshtml")
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <h2 class="col-md-6 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                @Html.HiddenFor(model => model.DocumentMenuId, new { @id = "DocumentMenuId" })
+                @Html.HiddenFor(model => model.TransType, new { @id = "cmn_TransType" })
+                @Html.HiddenFor(model => model.CMN_Command, new { @id = "CMN_Command" })
+                @Html.HiddenFor(model => model.hdnsaveApprovebtn, new { @id = "hdnsavebtn" })
+                @Html.HiddenFor(model => model.ShowProdDesc, new { @id = "ShowProdDesc", @value = "N" })
+                @Html.HiddenFor(model => model.ShowProdTechDesc, new { @id = "ShowProdTechDesc", @value = "N" })
+                @Html.HiddenFor(model => model.ShowSubItem, new { @id = "ShowSubItem", @value = "N" })
+                @Html.HiddenFor(model => model.ShowCustSpecProdDesc, new { @id = "ShowCustSpecProdDesc", @value = "N" })
+                @Html.HiddenFor(model => model.CustomerAliasName, new { @id = "CustomerAliasName", @value = "N" })
+
+                @*@Html.TextBoxFor(m => m.StockItemWiseMessage1, new { @id = "hdnStockItemWiseMessage1test"})*@
+                <div class="col-md-6 col-sm-12 work_flow heading_right_padding">
+                    @{
+                        //var btnName = Session["BtnName"].ToString();
+                        var btnName = Model.BtnName;
+                        switch (btnName)
+                        {
+                            case "BtnAddNew":
+                                <ul>
+                                    @if (ViewBag.VBRoleList != null)
+                                    {
+                                        foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                        {
+                                            if (Row["feature_id"].ToString() == "105102130103001")
+                                            {
+                                                <li>
+                                                    <button class="add"
+                                                            title="@Resource.AddNew" disabled style="filter: grayscale(100%)" type="submit" id="btn_add" name="Command" value="AddNew" onclick="EnableAddkBtn()"></button>
+                                                </li>
+                                            }
+                                            if (Row["feature_id"].ToString() == "105102130103002")
+                                            {
+                                                <li>
+                                                    <button class="edit"
+                                                            title="@Resource.Edit" disabled style="filter: grayscale(100%)" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                </li>
+                                            }
+
+                                        }
+                                    }
+
+
+                                    <li>
+                                        <button class="save" title="@Resource.Save" type="submit" onclick="return  CheckFormValidation();" id="btn_save" name="Command" value="Save"></button>
+                                    </li>
+                                    <li>
+                                        <button class="refresh"
+                                                title="@Resource.Refresh" type="submit" id="btn_refresh" name="Command" value="Refresh" onclick="EnableRefreshBtn()"></button>
+                                    </li>
+                                    @if (ViewBag.VBRoleList != null)
+                                    {
+                                        foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                        {
+                                            if (Row["feature_id"].ToString() == "105102130103005")
+                                            {
+                                                <li>
+                                                    <button class="print"
+                                                            title="@Resource.Print" type="submit" disabled style="filter: grayscale(100%)" id="btn_print" name="Command" value="Print"></button>
+                                                </li>
+                                            }
+                                        }
+                                    }
+
+                                    <li>
+                                        <button class="back"
+                                                title="@Resource.Back" disabled style="filter: grayscale(100%)" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                                    </li>
+                                </ul>
+                                break;
+                            case "BtnEdit":
+                                <ul>
+                                    @if (ViewBag.VBRoleList != null)
+                                    {
+                                        foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                        {
+                                            if (Row["feature_id"].ToString() == "105102130103001")
+                                            {
+                                                <li>
+                                                    <button class="add"
+                                                            title="@Resource.AddNew" disabled style="filter: grayscale(100%)" type="submit" id="btn_add" name="Command" value="AddNew" onclick="EnableAddkBtn()"></button>
+                                                </li>
+                                            }
+                                            if (Row["feature_id"].ToString() == "105102130103002")
+                                            {
+                                                <li>
+                                                    @if (ViewBag.DocumentCode == "I")
+                                                    {
+                                                        //if (Session["Command"].ToString() == "Edit")
+                                                        if (Model.Command == "Edit")
+                                                        {
+                                                            <button class="edit"
+                                                                    title="@Resource.Edit" disabled style="filter: grayscale(100%)" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                        }
+                                                        else
+                                                        {
+                                                            <button class="edit"
+                                                                    title="@Resource.Edit" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <button class="edit"
+                                                                title="@Resource.Edit" disabled style="filter: grayscale(100%)" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                    }
+                                                </li>
+                                            }
+
+                                        }
+                                    }
+
+
+                                    <li>
+                                        @if (ViewBag.DocumentCode == "I")
+                                        {
+                                            //if (Session["Command"].ToString() == "Edit")
+                                            if (Model.Command == "Edit")
+                                            {
+                                                <button class="save" title="@Resource.Save" type="submit" disabled style="filter: grayscale(100%)" @*onclick="return  CheckFormValidation();"*@ id="btn_save" name="Command" value="Save"></button>
+                                            }
+                                            else
+                                            {
+                                                <button class="save" data-toggle="tooltip" disabled style="filter: grayscale(100%)" data-placement="top" title="@Resource.Save" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <button class="save" data-toggle="tooltip" disabled style="filter: grayscale(100%)" data-placement="top" title="@Resource.Save" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                        }
+
+                                    </li>
+                                    <li>
+                                        @*@if (Session["Command"].ToString() == "Edit")*@
+                                        @if (Model.Command == "Edit")
+                                        {
+                                            <button class="refresh"
+                                                    title="@Resource.Refresh" type="submit" id="btn_refresh" name="Command" value="Refresh" onclick="EnableRefreshBtn()"></button>
+                                        }
+                                        else
+                                        {
+                                            <button class="refresh"
+                                                    title="@Resource.Refresh" disabled style="filter: grayscale(100%)" type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                                        }
+                                    </li>
+                                    @if (ViewBag.VBRoleList != null)
+                                    {
+                                        foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                        {
+                                            if (Row["feature_id"].ToString() == "105102130103005")
+                                            {
+                                                <li>
+                                                    @if (ViewBag.DocumentCode == "I")
+                                                    {
+                                                        if (Model.hdtrf_type == "B")
+                                                        {
+
+
+                                                            <button class="print" title="@Resource.Print" type="button" id="" onclick="ForwardHistoryBtnClick();" name="Command" value="print" data-toggle="modal" data-target="#SalesInvoicePrint" data-backdrop="static" data-keyboard="false"></button>
+
+                                                        }
+                                                        else
+                                                        {
+
+                                                            <button class="print"
+                                                                    title="@Resource.Print" type="submit" id="btn_print" name="Command" value="Print"></button>
+
+
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        if (Model.hdtrf_type == "B")
+                                                        {
+
+
+                                                            <button class="print" title="@Resource.Print" type="button" id="" onclick="ForwardHistoryBtnClick();" name="Command" value="print" data-toggle="modal" data-target="#SalesInvoicePrint" data-backdrop="static" data-keyboard="false"></button>
+
+                                                        }
+                                                        else
+                                                        {
+
+                                                            <button class="print"
+                                                                    title="@Resource.Print" type="submit" id="btn_print" name="Command" value="Print"></button>
+
+
+                                                        }
+                                                    }
+                                                </li>
+                                            }
+                                        }
+                                    }
+
+                                    <li>
+                                        <button class="back"
+                                                title="@Resource.Back" @*disabled style="filter: grayscale(100%)"*@ type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                                    </li>
+                                </ul>
+                                break;
+                            case "BtnRefresh":
+                                <ul>
+                                    @if (ViewBag.VBRoleList != null)
+                                    {
+                                        foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                        {
+                                            if (Row["feature_id"].ToString() == "105102130103001")
+                                            {
+                                                <li>
+                                                    <button class="add"
+                                                            title="@Resource.AddNew" type="submit" id="btn_add" name="Command" value="AddNew" onclick="EnableAddkBtn()"></button>
+                                                </li>
+                                            }
+                                            if (Row["feature_id"].ToString() == "105102130103002")
+                                            {
+
+                                                <li>
+                                                    <button class="edit"
+                                                            title="@Resource.Edit" disabled style="filter: grayscale(100%)" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                </li>
+                                            }
+
+                                        }
+                                    }
+
+                                    <li>
+                                        <button class="save" data-toggle="tooltip" disabled style="filter: grayscale(100%)" data-placement="top" title="@Resource.Save" type="submit" onclick="return CheckFormValidation();" id="btn_save" name="Command" value="Save"></button>
+                                    </li>
+                                    <li>
+                                        <button class="refresh"
+                                                title="@Resource.Refresh" disabled style="filter: grayscale(100%)" type="submit" id="btn_refresh" name="Command" value="Refresh" onclick="EnableRefreshBtn()"></button>
+                                    </li>
+                                    @if (ViewBag.VBRoleList != null)
+                                    {
+                                        foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                        {
+                                            if (Row["feature_id"].ToString() == "105102130103005")
+                                            {
+                                                if (Model.hdtrf_type == "B")
+                                                {
+                                                    <li>
+
+                                                        <button class="print" title="@Resource.Print" type="button" id="" onclick="ForwardHistoryBtnClick();" name="Command" value="print" data-toggle="modal" data-target="#SalesInvoicePrint" data-backdrop="static" data-keyboard="false"></button>
+                                                    </li>
+                                                }
+                                                else
+                                                {
+                                                    <li>
+                                                        <button class="print"
+                                                                title="@Resource.Print" type="submit" id="btn_print" name="Command" value="Print"></button>
+
+                                                    </li>
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    <li>
+                                        <button class="back" title="@Resource.Back" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                                    </li>
+                                </ul>
+                                break;
+                            case "Refresh":
+                                <ul>
+                                    @if (ViewBag.VBRoleList != null)
+                                    {
+                                        foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                        {
+                                            if (Row["feature_id"].ToString() == "105102130103001")
+                                            {
+                                                <li>
+                                                    <button class="add"
+                                                            title="@Resource.AddNew" type="submit" id="btn_add" name="Command" value="AddNew"></button>
+                                                </li>
+                                            }
+                                            if (Row["feature_id"].ToString() == "105102130103002")
+                                            {
+                                                <li>
+                                                    <button class="edit"
+                                                            title="@Resource.Edit" disabled style="filter: grayscale(100%)" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                </li>
+                                            }
+
+                                        }
+                                    }
+
+
+                                    <li>
+                                        <button class="save"
+                                                title="@Resource.Save" disabled style="filter: grayscale(100%)" onclick="CheckFormValidation()" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                    </li>
+                                    <li>
+                                        <button class="refresh"
+                                                title="@Resource.Refresh" disabled style="filter: grayscale(100%)" type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                                    </li>
+                                    @if (ViewBag.VBRoleList != null)
+                                    {
+                                        foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                        {
+                                            if (Row["feature_id"].ToString() == "105102130103005")
+                                            {
+                                                <li>
+                                                    <button class="print"
+                                                            title="@Resource.Print" type="submit" id="btn_print" name="Command" value="Print"></button>
+                                                </li>
+                                            }
+                                        }
+                                    }
+
+                                    <li>
+                                        <button class="back"
+                                                title="@Resource.Back" type="submit" id="btn_back" onclick="ForwardHistoryBtnClick();" name="Command" value="BacktoList"></button>
+                                    </li>
+                                </ul>
+                                break;
+                            case "BtnToDetailPage":
+                                <ul>
+                                    @if (ViewBag.VBRoleList != null)
+                                    {
+                                        foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                        {
+                                            if (Row["feature_id"].ToString() == "105102130103001")
+                                            {
+                                                <li>
+                                                    <button class="add"
+                                                            title="@Resource.AddNew" type="submit" id="btn_add" name="Command" value="AddNew"></button>
+                                                </li>
+                                            }
+                                            if (Row["feature_id"].ToString() == "105102130103002")
+                                            {
+                                                <li>
+                                                    <button class="edit"
+                                                            title="@Resource.Edit" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                </li>
+                                            }
+
+                                        }
+                                    }
+
+
+                                    <li>
+                                        <button class="save"
+                                                title="@Resource.Save" disabled style="filter: grayscale(100%)" onclick="CheckFormValidation()" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                    </li>
+                                    <li>
+                                        <button class="refresh"
+                                                title="@Resource.Refresh" disabled style="filter: grayscale(100%)" type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                                    </li>
+
+                                    @if (ViewBag.VBRoleList != null)
+                                    {
+                                        foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                        {
+                                            if (Row["feature_id"].ToString() == "105102130103005")
+                                            {
+                                                if (Model.hdtrf_type == "B")
+                                                {
+                                                    <li>
+
+                                                        <button class="print" title="@Resource.Print" type="button" id="" onclick="ForwardHistoryBtnClick();" name="Command" value="print" data-toggle="modal" data-target="#SalesInvoicePrint" data-backdrop="static" data-keyboard="false"></button>
+                                                    </li>
+                                                }
+                                                else
+                                                {
+                                                    <li>
+                                                        <button class="print"
+                                                                title="@Resource.Print" type="submit" id="btn_print" name="Command" value="Print"></button>
+
+                                                    </li>
+                                                }
+
+                                            }
+                                        }
+                                    }
+                                    <li>
+                                        <button class="back"
+                                                title="@Resource.Back" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                                    </li>
+                                </ul>
+                                break;
+                        }
+                    }
+
+
+                </div>
+                <div class="x_title pad_mar ">
+                    <div class="col-md-12 col-sm-12 icon_tool ">
+                        <!--<span>Collapsible / Accordion </span>-->
+                        <div class="approved_by">
+                            <ul>
+                                <li><span>@Resource.CreatedBy<br><b>@Html.DisplayFor(model => model.CreatedBy)</b></span></li>
+                                <li><span>@Resource.Createdon<br><b>@Html.DisplayFor(model => model.CreatedOn)</b></span></li>
+                                <li><span>@Resource.AmendedBy<br><b>@Html.DisplayFor(model => model.AmmendedBy)</b></span></li>
+                                <li><span>@Resource.AmendedOn<br> <b>@Html.DisplayFor(model => model.AmmendedOn)</b></span></li>
+                                <li>
+                                    <span>
+                                        @Resource.Status<br> <b>
+                                            @Html.DisplayFor(model => model.trf_status)
+                                            @Html.HiddenFor(model => model.StatusCode, new { @id = "hdMTIStatus" })
+                                        </b>
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        @if ((Model.StatusCode == "D" || Model.StatusCode == "F" || string.IsNullOrEmpty(Model.StatusCode) == true))
+                        {
+                            if (Disable)
+                            {
+                                <input id="DisableSubItem" value="Y" hidden />
+                            }
+                            else
+                            {
+                                <input id="DisableSubItem" value="N" hidden />
+                            }
+
+                        }
+                        else
+                        {
+                            <input id="DisableSubItem" value="Y" hidden />
+                        }
+                        @Html.HiddenFor(m => m.ListFilterData1, new { @id = "ListFilterData1", value = Model.ListFilterData1 })
+                    </div>
+
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @*@Html.HiddenFor(model => model.StockItemWiseMsg1, new { @id = "hdnStockItemWiseMessage1test" })*@
+    <input hidden value="@Model.StockItemWiseMsg1" id="hdnStockItemWiseMessage"/>
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <article class="panel-group bs-accordion" id="accordion" role="tablist" aria-multiselectable="true">
+                    <section class="panel panel-default">
+                        <div class="panel-heading" role="tab" id="headingOne">
+                            <h4 class="panel-title">  <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne"> @Resource.IssueDetail<span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a></h4>
+                        </div>
+                        <div id="collapseOne" class="panel-collapse in collapse show" role="tabpanel" aria-labelledby="headingOne" style="">
+                            <div class="panel-body">
+                                <div class="col-md-3 col-sm-12">
+                                    <label class="col-form-label label-align">@Resource.TransferType <span class="required">*</span></label>
+                                    @*@if ((Session["DocumentStatus"].ToString() != "D") || Disable)*@
+                                    @if ((Model.DocumentStatus != "D") || Disable)
+                                    {
+                                        @Html.DropDownListFor(model => model.trf_type, new SelectList(new List<Object>
+                                        {
+                                           new { value = "0", text = "--Select--"  },
+                                            new { value = "B" , text = "Branch Transfer" },
+                                           new { value = "W", text = "Warehouse Transfer"  }
+
+                                        }, "value", "text"), new { @class = "form-control", @id = "TransferType", disabled = "disabled", onchange = "OnChangeTranferType()" })
+                                        @Html.ValidationMessageFor(model => model.trf_type, String.Empty, new { @style = "color:red;!important", @id = "vmTransferType" })
+                                        @Html.HiddenFor(model => model.hdtrf_type, new { @id = "hdtrfType" })
+                                    }
+                                    else
+                                    {
+                                        @Html.DropDownListFor(model => model.trf_type, new SelectList(new List<Object>
+                                        {
+                                           new { value = "0", text = "--Select--"  },
+                                           new { value = "B" , text = "Branch Transfer" },
+                                           new { value = "W", text = "Warehouse Transfer"  }
+
+                                        }, "value", "text"), new { @class = "form-control", @id = "TransferType", onchange = "OnChangeTranferType()" })
+                                        @Html.ValidationMessageFor(model => model.trf_type, String.Empty, new { @style = "color:red;!important", @id = "vmTransferType" })
+                                        @Html.HiddenFor(model => model.hdtrf_type, new { @id = "hdtrfType" })
+                                    }
+
+                                </div>
+                                <div class="col-md-3 col-sm-12">
+                                    <label class="col-form-label label-align">@Resource.IssueNumber</label>
+                                    @Html.HiddenFor(model => model.MaterialIssueNo, new { @id = "hdmi_no" })
+                                    @Html.TextBoxFor(model => model.MaterialIssueNo, new { @readonly = "readonly", @Value = @Model.MaterialIssueNo, @id = "txtMaterialIssueNo", @maxlength = "20", @class = "form-control", @placeholder = @Resource.IssueNumber, disabled = "disabled" })
+                                    @Html.HiddenFor(model => model.CompId, new { @id = "HdCompId" })
+                                    @Html.HiddenFor(model => model.BrchID, new { @id = "HdBranchId" })
+                                </div>
+                                <div class="col-md-3 col-sm-12">
+                                    <label class="col-form-label label-align">@Resource.IssueDate</label>
+                                    @Html.TextBoxFor(model => model.MaterialIssueDate, "{0:yyyy-MM-dd}", new { @class = "form-control", @readonly = "readonly", @id = "txtMaterialIssueDate", type = "date" })
+                                    @Html.HiddenFor(model => model.MaterialIssueDate, new { @id = "hdmi_dt" })<span id="mi_Date" class="sr-only">(success)</span>
+
+                                </div>
+                                <div class="col-md-2 col-sm-12">
+                                    <div class="margin25">
+                                        <label>
+                                            @*@if ((ViewBag.DocumentCode == "I") && Session["Command"].ToString() == "Edit")*@
+                                            @if ((ViewBag.DocumentCode == "I") && Model.Command == "Edit")
+                                            {
+                                                @Html.CheckBoxFor(model => model.CancelFlag, new { @class = "js-switch", onclick = "OnclickCancelFlag()" })
+                                            }
+                                            else
+                                            {
+                                                @Html.CheckBoxFor(model => model.CancelFlag, new { @class = "js-switch", @disabled = "disabled" })
+                                            }
+                                            @Resource.Cancelled
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="clear"></div>
+                                <div class="col-md-3 col-sm-12 dynamic_select">
+                                    <label class="col-form-label label-align">@Resource.SourceBranch </label>
+                                    @Html.TextBoxFor(model => model.from_br, new { @readonly = "readonly", @value = @Model.from_br, @id = "Fr_branch", @maxlength = "50", @tabindex = "5", @class = "form-control", @placeholder = "", disabled = "disabled" })
+                                    @Html.HiddenFor(model => model.from_brid, new { @id = "hdfrbr_ID" })
+                                    @Html.HiddenFor(model => model.hdfrom_whName, new { @id = "hdfrom_whName" })
+                                </div>
+                                <div class="col-md-3 col-sm-12">
+                                    <label class="col-form-label label-align">@Resource.SourceWarehouse <span class="required">*</span></label>
+                                    @*@if ((Session["DocumentStatus"].ToString() != "D") || Disable)*@
+                                    @if ((Model.DocumentStatus != "D") || Disable)
+                                    {
+                                        @Html.DropDownListFor(model => model.from_wh, new SelectList(Model.FromWharehouseList, "wh_id", "wh_val"), new { @class = "form-control", disabled = "disabled", id = "fromWh" })
+                                        @Html.ValidationMessageFor(model => model.from_wh, String.Empty, new { @style = "color:red;!important", @id = "vmwarehouse" })
+                                        @Html.HiddenFor(model => model.hdfrom_whid, new { @id = "hdWh_ID" })
+
+                                    }
+                                    else
+                                    {
+                                        @Html.DropDownListFor(model => model.from_wh, new SelectList(Model.FromWharehouseList, "wh_id", "wh_val"), new { @class = "form-control", id = "fromWh", onchange = "OnChangefromWh()" })
+                                        @Html.ValidationMessageFor(model => model.from_wh, String.Empty, new { @style = "color:red;!important", @id = "vmwarehouse" })
+                                        @Html.HiddenFor(model => model.hdfrom_whid, new { @id = "hdWh_ID" })
+                                    }
+                                    <span id="spanFromWh" class="error_message"></span>
+                                    @Html.HiddenFor(model => model.hdfrom_whid, new { @id = "hdWh_ID" })
+                                </div>
+                                <div class="col-md-3 col-sm-12">
+                                    <label class="col-form-label label-align">@Resource.DestinationBranch <span class="required">*</span></label>
+                                    @*@if ((Session["DocumentStatus"].ToString() != "D") || Disable)*@
+                                    @if ((Model.DocumentStatus != "D") || Disable)
+                                    {
+                                        @Html.DropDownListFor(model => model.to_br, new SelectList(Model.ToBranchList, "br_id", "br_val"), new { @class = "form-control", disabled = "disabled", id = "tobranch" })
+                                        @Html.ValidationMessageFor(model => model.to_br, String.Empty, new { @style = "color:red;!important", @id = "vmbranch" })
+                                        @Html.HiddenFor(model => model.hdto_brid, new { @id = "hdBRID" })
+                                    }
+                                    else
+                                    {
+                                        @Html.DropDownListFor(model => model.to_br, new SelectList(Model.ToBranchList, "br_id", "br_val"), new { @class = "form-control", onchange = "OnChangeToBranch()", id = "tobranch" })
+                                        @Html.ValidationMessageFor(model => model.to_br, String.Empty, new { @style = "color:red;!important", @id = "vmbranch" })
+                                        @Html.HiddenFor(model => model.hdto_brid, new { @id = "hdBRID" })
+                                    }
+                                </div>
+                                <div class="col-md-3 col-sm-12">
+                                    <label class="col-form-label label-align">@Resource.DestinationWarehouse <span class="required">*</span></label>
+                                    @*@if ((Session["DocumentStatus"].ToString() != "D") || Disable)*@
+                                    @if ((Model.DocumentStatus != "D") || Disable)
+                                    {
+                                        @Html.DropDownListFor(model => model.to_wh, new SelectList(Model.ToWharehouseList, "wh_id", "wh_val"), new { @class = "form-control", disabled = "disabled", id = "toWh" })
+                                        @Html.ValidationMessageFor(model => model.to_wh, String.Empty, new { @style = "color:red;!important", @id = "vmtowarehouse" })
+                                        @Html.HiddenFor(model => model.hdto_whid, new { @id = "hdWhID" })
+                                        @Html.HiddenFor(model => model.hdto_WhName, new { @id = "hdWhName" })
+
+                                    }
+                                    else
+                                    {
+                                        @Html.DropDownListFor(model => model.to_wh, new SelectList(Model.ToWharehouseList, "wh_id", "wh_val"), new { @class = "form-control", id = "toWh", onchange = "OnChangeToWh()" })
+                                        @Html.ValidationMessageFor(model => model.to_wh, String.Empty, new { @style = "color:red;!important", @id = "vmtowarehouse" })
+                                        @Html.HiddenFor(model => model.hdto_whid, new { @id = "hdWhID" })
+                                        @Html.HiddenFor(model => model.hdto_WhName, new { @id = "hdWhName" })
+
+                                    }
+
+                                </div>
+                                <div class="clear"></div>
+                                <div class="col-md-3 col-sm-12">
+                                    <label class="col-form-label label-align">@Resource.RequisitionNumber <span class="required">*</span></label>
+                                    @*@if ((Session["DocumentStatus"].ToString() != "D") || Disable)*@
+                                    @if ((Model.DocumentStatus != "D") || Disable)
+                                    {
+                                        @Html.DropDownListFor(model => model.Req_No, new SelectList(Model.Req_NO_List, "RequirementDate", "RequirementNo"), new { @class = "form-control", id = "ddlMTR_No", disabled = "disabled" })
+                                        <input type="hidden" id="hdMaterialIssueNo_Path" value='@Url.Action("GetMaterialTranserReqList", "MaterialTransferIssue", Model)' />
+                                        @Html.HiddenFor(model => model.Req_No, new { @id = "HdMTRNo" })
+                                        @Html.ValidationMessageFor(model => model.Req_No, String.Empty, new { @style = "color:red;!important", @id = "vmMTR_No" })
+                                    }
+                                    else
+                                    {
+                                        @Html.DropDownListFor(model => model.Req_No, new SelectList(Model.Req_NO_List, "RequirementDate", "RequirementNo"), new { @class = "form-control", id = "ddlMTR_No", onchange = "onChangeddlMTR_No()" })
+                                        <input type="hidden" id="hdMaterialIssueNo_Path" value='@Url.Action("GetMaterialTranserReqList", "MaterialTransferIssue", Model)' />
+                                        @Html.HiddenFor(model => model.Req_No, new { @id = "HdMTRNo" })
+                                        @Html.ValidationMessageFor(model => model.Req_No, String.Empty, new { @style = "color:red;!important", @id = "vmMTR_No" })
+                                    }
+                                    @Html.HiddenFor(model => model.hdReq_Number, new { @id = "hdReq_Number" })
+                                </div>
+                                <div class="col-md-3 col-sm-12">
+                                    <label class="col-form-label label-align">@Resource.RequisitionDate @*<span class="required">*</span>*@</label>
+                                    @Html.TextBoxFor(model => model.Req_Date, "{0:yyyy-MM-dd}", new { @class = "form-control", @readonly = "readonly", @id = "txtMTR_Date", type = "date" })
+                                    @Html.HiddenFor(model => model.Req_Date, new { @id = "HdMTRDate" })
+                                    <span id="PackingDate" class="sr-only">(success)</span>
+                                </div>
+                                <div class="col-md-3 col-sm-12">
+                                    <label class="col-form-label label-align">@Resource.remarks</label>
+                                    @if (Model.DocumentStatus != "D" || Disable)
+                                    {
+                                        @Html.TextAreaFor(model => model.issue_rem, new { @id = "txtissue_rem", @readonly = "readonly", @maxlength = "100", @class = "form-control remarksmessage", @placeholder = Resource.remarks, })
+                                    }
+                                    else
+                                    {
+                                        @Html.TextAreaFor(model => model.issue_rem, new { @id = "txtissue_rem", @maxlength = "100", @class = "form-control remarksmessage", @placeholder = Resource.remarks, })
+                                    }
+                                </div>
+                                @*@if ((Session["DocumentStatus"].ToString() != "D") || Disable)*@
+                                @if ((Model.DocumentStatus != "D") || Disable)
+                                {
+                                    <div class="col-md-1 col-sm-12 margin25">
+                                        <a href="#">
+                                            <div class="plus_icon1" style="display: none;">
+                                                <i class="fa fa-plus" id="BtnAttribute" onclick="AddItemDetail()" title="Add New" disabled></i>
+                                            </div>
+                                        </a>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-md-1 col-sm-12 margin25">
+                                        <a href="#">
+                                            <div class="plus_icon1" style="display: block;">
+                                                <i class="fa fa-plus" id="BtnAttribute" onclick="AddItemDetail()" title="Add New"></i>
+                                            </div>
+                                        </a>
+                                    </div>
+                                }
+
+                                <div class="clear"></div>
+                                @*<div class="card-box table-responsive dy_table">
+                                    <div class="sticky-table sticky-ltr-cells sb-container container-example1 price_item_detail height40VH">
+                                        <div class=" col-sm-12">
+                                            <h2 class="col-md-9 col-sm-12 no-padding mt-3">@Resource.ItemDetail</h2>*@
+                                <div class="card-box table-responsive dy_table">
+                                    <div class="col-md-12">
+                                        <div class="price_item_detail">
+                                            <div class="tableFixHead height30VH">
+                                                <h2 class="col-md-9 col-sm-12 no-padding mt-1">@Resource.ItemDetail</h2>
+                                                <div class="col-md-3 col-sm-12 no-padding num_right mt-3 mb-2"><label class="label pt-1 col-md-4 col-sm-12 num_right pr-0" for="SearchItmDetailsTbl">@Resource.Search @Resource.Item : </label><input type="text" class="form-control col-md-7 col-sm-12" id="SearchItmDetailsTbl" onkeyup="FilterItemDetail(event)" /> </div>
+
+                                                @Html.HiddenFor(model => model.MaterialIssueItemDetails, new { @id = "hdMaterialIssueItemDetails" })
+                                                @*<table class="table table-bordered width3000" id="PoItmDetailsTbl">*@
+                                                <table id="MaterialIssueItemDetailsTbl" class="table table-bordered width2500 itmfrz">
+                                                    <thead>
+                                                        <tr class="headings">
+                                                            <th width="1%"> &nbsp;</th>
+                                                            <th width="2%">@Resource.SrNo</th>
+                                                            <th width="15%" class="itmStick"> @Resource.ItemName</th>
+                                                            <th width="6%" title="@Resource.UnitOfMeasure"> @Resource.UOM </th>
+                                                            <th width="6%">@Resource.Requisition @Resource.Quantity </th>
+                                                            <th width="6%">@Resource.Pending @Resource.Quantity</th>
+                                                            <th width="13%">@Resource.Warehouse</th>
+                                                            <th width="7%">@Resource.Available @Resource.Stock</th>
+                                                            <th width="6%">@Resource.Issued @Resource.Quantity</th>
+                                                            <th width="6%">@Resource.ItemPrice</th>
+                                                            <th width="6%">@Resource.Value</th>
+                                                            <th width="6%">@Resource.BatchNumberDetail</th>
+                                                            <th width="6%">@Resource.SerialNumberDetail</th>
+                                                            <th width="14%">@Resource.remarks</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+
+                                                        @if (ViewBag.ItemDetails != null)
+                                                        {
+                                                            var rowIdx = 0;
+                                                            foreach (System.Data.DataRow Row in ViewBag.ItemDetails.Rows)
+                                                            {
+                                                                rowIdx++;
+                                                                var subitmDisable = "";
+                                                                if (Row["sub_item"].ToString() != "Y")
+                                                                {
+                                                                    subitmDisable = "disabled";
+                                                                }
+                                                                var wh_id = "wh_id" + @rowIdx;
+                                                                var wh_Error = "wh_Error" + @rowIdx;
+                                                                <tr id="@rowIdx">
+                                                                    <td class="red center">
+                                                                        <i class="fa fa-trash" aria-hidden="true" title="@Resource.Delete"></i>
+                                                                    </td>
+                                                                    <td class="sr_padding"><span id="SpanRowId" value="@rowIdx">@rowIdx</span> <input type="hidden" id="SNohiddenfiled" value="@rowIdx" /></td>
+                                                                    <td class="ItmNameBreak itmStick tditemfrz">
+                                                                        <div class=" col-sm-11 no-padding">
+                                                                            <input id="ItemName" value="@Row["item_name"].ToString()" class="form-control" autocomplete="off" type="text" name="OrderNumber" placeholder="Item Name" onblur="this.placeholder='Order Number'" disabled>
+                                                                            <input type="hidden" id="hdItemId" value="@Row["item_id"].ToString()" style="display: none;" />
+                                                                        </div>
+                                                                        <div class="col-sm-1 i_Icon">
+
+                                                                            <button type="button" onclick="OnClickIconBtn(event);" class="calculator" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.ItemInformation"> @*<i class="fa fa-info" aria-hidden="true" title=" @Resource.ItemInformation"></i>*@ </button>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <input id="UOM" value="@Row["uom_name"].ToString()" class="form-control" autocomplete="off" type="text" name="UOM" placeholder="@Resource.UOM" disabled>
+                                                                        <input type="hidden" id="hdUOMId" value="@Row["base_uom_id"].ToString()" style="display: none;" />
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="col-sm-10 no-padding">
+                                                                            <input id="RequisitionQuantity" value="@Row["req_qty"].ToString()" class="form-control num_right" autocomplete="" type="text" name="PackedQuantity" placeholder="0000.00" disabled>
+                                                                        </div>
+                                                                        <div class="col-sm-2 i_Icon no-padding" id="div_SubItemReqQty">
+                                                                            <button type="button" id="SubItemReqQty" class="calculator subItmImg" @subitmDisable onclick="return SubItemDetailsPopUp('ReqQty',event)" data-toggle="modal" data-target="#SubItem" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="col-sm-10 no-padding">
+                                                                            <input id="PendingQuantity" value="@Row["pend_qty"].ToString()" class="form-control num_right" autocomplete="" type="text" name="NumberOfPacks" placeholder="0000.00" disabled>
+                                                                        </div>
+                                                                        <div class="col-sm-2 i_Icon no-padding" id="div_SubItemPendQty">
+                                                                            <button type="button" id="SubItemPendQty" class="calculator subItmImg" @subitmDisable onclick="return SubItemDetailsPopUp('PendingQty',event)" data-toggle="modal" data-target="#SubItem" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="col-sm-11 no-padding">
+                                                                            <div class="lpo_form">
+                                                                                <input id="WHName" value="@Row["wh_name"].ToString()" class="form-control" autocomplete="off" type="text" name="OrderNumber" placeholder="Item Name" onblur="this.placeholder='Order Number'" disabled>
+                                                                                <input type="hidden" id="hdwhId" value="@Row["wh_id"].ToString()" style="display: none;" />
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-sm-1 i_Icon">
+                                                                            <button type="button" onclick="ItemStockWareHouseWise(this,event)" class="calculator" data-toggle="modal" data-target="#WareHouse" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.WarehouseWiseStock"> @*<i class="fa fa-info" aria-hidden="true" title=" @Resource.WarehouseWiseStock"></i>*@ </button>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class=" col-sm-10 no-padding">
+                                                                            <input id="AvailableQuantity" value="@Row["avl_stock"].ToString()" class="form-control num_right" autocomplete="off" type="text" name="AvailableStock" placeholder="0000.00" disabled>
+                                                                        </div>
+                                                                        <div class="col-sm-2 i_Icon no-padding" id="div_SubItemAvlStk">
+                                                                            <button type="button" id="SubItemAvlStk" class="calculator subItmImg" @subitmDisable onclick="return GetSubItemAvlStock(event)" data-toggle="modal" data-target="#SubItemStock" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="col-sm-10 lpo_form no-padding">
+                                                                            <input id="IssuedQuantity" value="@Row["issue_qty"].ToString()" class="form-control num_right" autocomplete="off" type="text" name="IssuedQuantity" placeholder="0000.00" disabled>
+                                                                            <span id="IssuedQuantity_Error" class="error-message is-visible"></span>
+                                                                        </div>
+                                                                        <div class="col-sm-2 i_Icon no-padding" id="div_SubItemIssueQty">
+                                                                            <input hidden type="text" id="sub_item" value="@Row["sub_item"].ToString()" />
+                                                                            <button type="button" id="SubItemIssueQty" class="calculator subItmImg" @subitmDisable onclick="return SubItemDetailsPopUp('IssueQty',event)" data-toggle="modal" data-target="#SubItem" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+
+                                                                        <input id="itemprice" value="@Row["price"].ToString()" class="form-control num_right" autocomplete="off" type="text" name="IssuedQuantity" placeholder="0000.00" disabled>
+                                                                        <span id="itemprice_Error" class="error-message is-visible"></span>
+                                                                    </td>
+                                                                    <td>
+                                                                        <input id="tblvalue" value="@Row["item_val"].ToString()" class="form-control num_right" autocomplete="off" type="text" name="IssuedQuantity" placeholder="0000.00" disabled>
+                                                                    </td>
+                                                                    @if (@Row["i_batch"].ToString() == "Y")
+                                                                    {
+                                                                        <td class="center">
+                                                                            <button type="button" onclick="ItemStockBatchWise(this,event)" class="calculator" data-toggle="modal" data-target="#BatchNumber" data-backdrop="static" data-keyboard="false"><i class="fa fa-eye green" aria-hidden="true" data-toggle="" title="@Resource.BatchDetail"></i></button>
+                                                                            <input type="hidden" id="hdi_batch" value="Y" style="display: none;" />
+                                                                        </td>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <td class="center">
+                                                                            <button type="button" onclick="ItemStockBatchWise(this,event)" disabled class="calculator subItmImg" data-toggle="modal" data-target="#BatchNumber" data-backdrop="static" data-keyboard="false"><i class="fa fa-eye" aria-hidden="true" data-toggle="" title="@Resource.BatchDetail"></i></button>
+                                                                            <input type="hidden" id="hdi_batch" value="N" style="display: none;" />
+                                                                        </td>
+                                                                    }
+                                                                    @if (@Row["i_serial"].ToString() == "Y")
+                                                                    {
+                                                                        <td class="center">
+                                                                            <button type="button" onclick="ItemStockSerialWise(this,event)" class="calculator " data-toggle="modal" data-target="#SerialDetail" data-backdrop="static" data-keyboard="false"><i class="fa fa-eye green" aria-hidden="true" data-toggle="" title="@Resource.SerialDetail"></i></button>
+                                                                            <input type="hidden" id="hdi_serial" value="Y" style="display: none;" />
+                                                                        </td>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <td class="center">
+                                                                            <button type="button" onclick="ItemStockSerialWise(this,event)" disabled class="calculator subItmImg " data-toggle="modal" data-target="#SerialDetail" data-backdrop="static" data-keyboard="false"><i class="fa fa-eye" aria-hidden="true" data-toggle="" title="@Resource.SerialDetail"></i></button>
+                                                                            <input type="hidden" id="hdi_serial" value="N" style="display: none;" />
+                                                                        </td>
+                                                                    }
+                                                                    @{
+                                                                        if (@Row["i_serial"].ToString() == "N" && @Row["i_batch"].ToString() == "N")
+                                                                        {
+                                                                            <td style="display:none">
+                                                                                <input id="ItemType" type="text" value="YES" />
+                                                                            </td>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td style="display:none">
+                                                                                <input id="ItemType" type="text" value="NO" />
+                                                                            </td>
+                                                                        }
+                                                                    }
+                                                                    <td>
+                                                                        @if (Disable)
+                                                                        {
+                                                                            <textarea id="remarks" readonly value="@Row["it_remarks"].ToString()" class="form-control remarksmessage" name="remarks" maxlength="100" placeholder="@Resource.remarks">@Row["it_remarks"].ToString()</textarea>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            //if (Session["Command"].ToString() == "Edit" && ViewBag.DocumentCode == "I")
+                                                                            if (Model.Command == "Edit" && ViewBag.DocumentCode == "I")
+                                                                            {
+                                                                                <textarea id="remarks" readonly value="@Row["it_remarks"].ToString()" class="form-control remarksmessage" name="remarks" maxlength="100" placeholder="@Resource.remarks">@Row["it_remarks"].ToString()</textarea>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <textarea id="remarks" value="@Row["it_remarks"].ToString()" class="form-control remarksmessage" name="remarks" maxlength="100" placeholder="@Resource.remarks">@Row["it_remarks"].ToString()</textarea>
+                                                                            }
+                                                                        }
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="panel panel-default">
+                        <div class="panel-heading" role="tab" id="headingTwo">
+                            <h4 class="panel-title"> <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo"> @Resource.GLAccountDetail <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a> </h4>
+                        </div>
+                        <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+                            <form class="accordian_form_bg" action="" method="post" novalidate>
+                                <div class="col-md-55 col-sm-12">
+                                    <label class="col-form-label label-align">@Resource.GLVoucherType</label>
+                                    <input id="GLVoucherType" class="form-control" autocomplete="off" maxlength="25" tabindex="5" type="text" name="GLVoucherType" placeholder="@Resource.GLVoucherType" onblur="this.placeholder='@Resource.GLVoucherType'" disabled>
+                                </div>
+                                <div class="col-md-55 col-sm-12">
+                                    <label class="col-form-label label-align">@Resource.GLVoucherNumber</label>
+                                    <input id="GLVoucherNo" class="form-control" autocomplete="off" type="text" maxlength="20" name="GLVoucherNumber" placeholder="Invoice Number" onblur="this.placeholder='GL Voucher Number'" disabled>
+                                </div>
+                                <div class="col-md-55 col-sm-12">
+                                    <label class="col-form-label label-align">@Resource.GLVoucherDate</label>
+                                    <input type="text" class="form-control" id="GLVoucherDt" name="VoucherDate" placeholder="@Resource.GLVoucherDate" aria-describedby="inputSuccess2Status" disabled>
+                                </div>
+                                <div class="card-box table-responsive dy_table">
+                                    <div class="sticky-table sticky-ltr-cells sb-container container-example1" style="max-height:200px;">
+                                        <div class="col-md-12 col-sm-12">
+                                            <table class="table table-striped jambo_table bulk_action margin5" id="VoucherDetail">
+                                                <thead>
+                                                    <tr class="headings">
+                                                        @*<th class="column-title" width="3%"></th>*@
+                                                        <th width="2%">@Resource.SrNo</th>
+                                                        <th width="40%">@Resource.GLAccount</th>
+                                                        <th width="15%">@Resource.DrAmount</th>
+                                                        <th width="15%">@Resource.CrAmount</th>
+                                                        <th width="28%">@Resource.CostCenter</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                </tbody>
+                                                <tfoot>
+                                                    <tr class="total">
+                                                        <td> &nbsp;</td>
+                                                        <td class="num_right"><strong>@Resource.Total</strong></td>
+                                                        <td class="num_right"><strong><span id="DrTotal"></span></strong></td>
+                                                        <td class="num_right"><strong><span id="CrTotal"></span></strong></td>
+                                                        <td> &nbsp;</td>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </section>
+
+                    <section class="panel panel-default">
+                        <div class="panel-heading" role="tab" id="headingTwo">
+                            <h4 class="panel-title"> <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapsethree" aria-expanded="false" aria-controls="collapsethree"> @Resource.TransportDetail <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a> </h4>
+                        </div>
+                        <div id="collapsethree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-md-12 col-sm-12">
+                                        <div class="col-md-55 col-sm-12">
+                                            <label class="col-form-label label-align">@Resource.GRNumber <span class="required">*</span></label>
+                                            @if (Disable || Model.DocumentStatus != "D")
+                                            {
+                                                @Html.TextBoxFor(model => model.GR_No, new { @id = "GRNumber", @maxlength = "50", disabled = "disabled", @class = "form-control", @placeholder = @Resource.GRNumber })
+                                            }
+                                            else
+                                            {
+                                                @Html.TextBoxFor(model => model.GR_No, new { @id = "GRNumber", @autocomplete = "off", @onchange = "OnChangeGRNumber()", @maxlength = "50", @class = "form-control", @placeholder = @Resource.GRNumber, onkeypress = "return onlynumeric_char(this,event);", onpaste = "return NOanycopypastedata(event)" })
+                                            }
+                                            @*@Html.HiddenFor(model => model.HdnGRNumber, new { @id = "hdnGrNumber" })*@
+                                            <span id="Span_GRNumber" class="error_message"></span>
+                                            @*<input value="" class="form-control" id="GRNumber" maxlength="20" name="GRNumber" placeholder="@Resource.GRNumber" type="text">*@
+                                        </div>
+                                        <div class="col-md-55 col-sm-12">
+                                            <label class="col-form-label label-align"> @Resource.GRDate <span class="required">*</span></label>
+                                            @if (Disable || Model.DocumentStatus != "D")
+                                            {
+                                                @Html.TextBoxFor(model => model.GR_Dt, new { @id = "GRDate", @maxlength = "50", disabled = "disabled", @class = "form-control", @placeholder = @Resource.GRDate, type = "date" });
+                                            }
+                                            else
+                                            {
+                                                @Html.TextBoxFor(model => model.GR_Dt, new
+                                                {
+                                                    @id = "GRDate",
+                                                    @autocomplete = "off",
+                                                    @onchange = "OnChangeGRDate()",
+                                                    @maxlength = "50",
+                                                    @class = "form-control",
+                                                    @placeholder = @Resource.GRDate,
+                                                    type = "date"@*, @max = Model.ship_dt*@});
+                                            }
+                                            @Html.HiddenFor(model => model.HdnGRDate, new { @id = "hdnGrDt" })
+                                            <span id="Span_GRDate" class="error_message"></span>
+                                            @*<input class="form-control" id="GRDate" maxlength="100" name="GRNDate" placeholder="@Resource.GRNDate" type="date" value="">*@
+                                        </div>
+
+                                        <div class="col-md-55 col-sm-12">
+                                            <label class="col-form-label label-align">@Resource.NumberOf @Resource.Packs <span class="required">*</span></label>
+                                            @if (Disable || Model.DocumentStatus != "D")
+                                            {
+                                                @Html.TextBoxFor(model => model.No_Of_Packages, new { @id = "NoOfPacks", @maxlength = "15", disabled = "disabled", @class = "form-control num_right", @placeholder = "0000.00" })
+                                            }
+                                            else
+                                            {
+                                                @Html.TextBoxFor(model => model.No_Of_Packages, new { @id = "NoOfPacks", @maxlength = "15", @autocomplete = "off", @class = "form-control num_right", @onkeypress = "return QtyFloatValueonly(this,event);", onchange = "OnChangeNoOfPackages(this,event);", @placeholder = "0000.00" })
+                                            }
+                                            <span id="Span_No_Of_Packages" class="error_message"></span>
+                                        </div>
+                                        <div class="col-md-55 col-sm-12">
+                                            <label class="col-form-label label-align">@Resource.TransporterName <span class="required">*</span></label>
+                                            @if (Disable || Model.DocumentStatus != "D")
+                                            {
+                                                @*@Html.TextBoxFor(model => model.Transpt_Name, new { @id = "TxtTranspt_Name", @maxlength = "100", disabled = "disabled", @class = "form-control", @placeholder = @Resource.TransporterName })*@
+                                                @Html.DropDownListFor(model => model.Transpt_NameID, new SelectList(Model.TransList, "TransId", "TransName"), new { @class = "form-control", disabled = "disabled", @id = "DdlTranspt_Name" })
+                                            }
+                                            else
+                                            {
+                                                @*@Html.TextBoxFor(model => model.Transpt_Name, new { @id = "TxtTranspt_Name", @maxlength = "100", @class = "form-control", @onkeypress = "OnChangeTransporterName(this,event);", @placeholder = @Resource.TransporterName })*@
+                                                @Html.DropDownListFor(model => model.Transpt_NameID, new SelectList(Model.TransList, "TransId", "TransName"), new { @class = "form-control", @id = "DdlTranspt_Name", @onchange = "OnChangeTransporterName(this,event);" })
+                                            }
+                                            @Html.HiddenFor(model => model.HdnTrnasportName, new { @id = "hdnTrnasName" })
+                                            <span id="Span_TransporterName" class="error_message"></span>
+                                        </div>
+                                        <div class="col-md-55 col-sm-12">
+                                            <label class="col-form-label label-align">@Resource.VehicleNumber <span class="required">*</span></label>
+                                            @if (Disable || Model.DocumentStatus != "D")
+                                            {
+                                                @Html.TextBoxFor(model => model.Veh_Number, new { @id = "TxtVeh_Number", @maxlength = "100", disabled = "disabled", @class = "form-control", @placeholder = @Resource.VehicleNumber })
+                                            }
+                                            else
+                                            {
+                                                @Html.TextBoxFor(model => model.Veh_Number, new
+                                                {
+                                                    @id = "TxtVeh_Number",
+                                                    @autocomplete = "off",
+                                                    onkeypress = "OnChangeVehicleNumber()",
+                                                    @maxlength = "100",
+                                                    @class = "form-control",
+                                                    @placeholder = @Resource.VehicleNumber,@*onkeypress = "return onlynumeric_char(this,event);",*@onpaste = "return NOanycopypastedata(event)"
+})
+                                            }
+                                            <span id="Span_VehicleNumber" class="error_message"></span>
+                                        </div>
+                                        <div class="col-md-55 col-sm-12">
+                                            <label class="col-form-label label-align">@Resource.DriverName </label>
+                                            @if (Disable || Model.DocumentStatus != "D")
+                                            {
+                                                @Html.TextBoxFor(model => model.Driver_Name, new { @id = "TxtDriver_Name", @maxlength = "100", disabled = "disabled", @class = "form-control", @placeholder = Resource.DriverName })
+                                            }
+                                            else
+                                            {
+                                                @Html.TextBoxFor(model => model.Driver_Name, new { @id = "TxtDriver_Name", @autocomplete = "off", @maxlength = "100", @tabindex = "6", @class = "form-control", @placeholder = Resource.DriverName })
+                                            }
+                                        </div>
+                                        <div class="col-md-55 col-sm-12">
+                                            <label class="col-form-label label-align"> @Resource.MobileNumber</label>
+                                            @if (Disable || Model.DocumentStatus != "D")
+                                            {
+                                                @Html.TextBoxFor(model => model.Mob_No, new { @id = "MobileNumber", @maxlength = "10", disabled = "disabled", @class = "form-control num_right", @placeholder = Resource.MobileNumber })
+                                            }
+                                            else
+                                            {
+                                                @Html.TextBoxFor(model => model.Mob_No, new { @id = "MobileNumber", @autocomplete = "off", @maxlength = "10", @class = "form-control num_right", @onkeypress = "return Cmn_NumericValueonly(this,event);", @placeholder = Resource.MobileNumber })
+                                            }
+                                            @*<input class="form-control" id="MobileNumber" maxlength="100" name="MobileNumber" placeholder="@Resource.MobileNumber" type="text" value="">*@
+                                        </div>
+                                        <div class="col-md-55 col-sm-12">
+                                            <label class="col-form-label label-align">@Resource.TotalTonnage </label>
+                                            @if (Disable || Model.DocumentStatus != "D")
+                                            {
+                                                @Html.TextBoxFor(model => model.Tot_Tonnage, new { @id = "TxtTot_Tonnage", @maxlength = "100", disabled = "disabled", @class = "form-control num_right", @placeholder = "0000.00" })
+                                            }
+                                            else
+                                            {
+                                                @Html.TextBoxFor(model => model.Tot_Tonnage, new { @id = "TxtTot_Tonnage", @autocomplete = "off", @maxlength = "100", @class = "form-control num_right", @onkeypress = "return QtyFloatValueonly(this,event);", @placeholder = @Resource.TotalTonnage })
+                                            }
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </article>
+            </div>
+        </div>
+    </div>
+</div>
+    }
+}
+<!-- page content end -->
+
+<script src="~/Content/Scripts/ApplicationLayer/InventoryManagement/MaterialIssue/MaterialTransferIssue/MaterialTransferIssue.js"></script>

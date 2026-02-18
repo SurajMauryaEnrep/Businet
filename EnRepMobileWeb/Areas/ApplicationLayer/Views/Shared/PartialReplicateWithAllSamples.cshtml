@@ -1,0 +1,125 @@
+﻿@using EnRepMobileWeb.Resources;
+
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<div class="modal-content">
+    <div class="modal-header">
+        @if (ViewBag.DocumentMenuId == "105103130"|| ViewBag.DocumentMenuId == "105103145115" || ViewBag.DocumentMenuId == "105102130101" || ViewBag.DocumentMenuId == "105102115101")
+        {
+            <h2>@Resource.ReplicateWithAllItems</h2>
+        }
+        else
+        {
+            <h2>@Resource.ReplicateWithAllSamples</h2>
+        }
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <input id="thReplicateDeatil" hidden="hidden" type="text" />
+    <input id="thReplicateDeatilCount" hidden="hidden" type="text" />
+    <div class="modal-body pop_top">
+        <div class="card-box table-responsive dy_table margin5">
+            <div class="sticky-table sticky-ltr-cells sb-container container-example1">
+                <div class="price_item_detail">
+                    <table class="table table-bordered" style="display:none;" id="QualitativeId">
+                        <thead>
+                            <tr class="sticky-header">
+                                <th>
+                                    @*<input id="thHeading" type="text" disabled />*@
+                                    <span id="thHeading"></span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="center">
+                                    <strong id="tdHeaderData"></strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="center" style="padding-left: 110px; padding-top: 5px;">
+                                    <label class="switch">
+                                        <input id="td_Checkd" type="checkbox" checked="" style="color: red;">
+                                        <span class="slider round"></span>
+                                    </label>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <table class="table table-bordered" id="ObservativeId" style="display:none;">
+                        <thead>
+                            <tr class="sticky-header">
+                                <th>
+                                    @*<input id="thHeading1" type="text" disabled />*@
+                                    <span id="thHeading1"></span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="center">
+                                    <strong id="tdHeaderData1"></strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input class="form-control" autocomplete="off" maxlength="50" id="td_Observative" placeholder="" onchange="OnchangeObservativeVal(this)" title="" value="">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table class="table table-bordered" id="QuantitativeId" style="display:none;">
+                        <thead>
+                            <tr class="sticky-header">
+                                <th id="th_1">
+                                    @*<input id="thHeading2" type="text" disabled />*@
+                                    <span id="thHeading2"></span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="center">
+                                    <strong id="tdHeaderData2"></strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="lpo_form">
+                                        <input class="form-control num_right" autocomplete="off" id="td_ParamVal" value="" onchange="OnchangeParamVal(this)" onkeypress="return OnClickParamValForReplicate(this,event);" onkeyup="OnKeyUpParamValForReplicate(this, this.value)">
+                                        <span id="ErrMsg_td_3" class="error-message is-visible" style="display: none;"></span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    @if (ViewBag.DocumentMenuId == "105103130" || ViewBag.DocumentMenuId == "105103145115" || ViewBag.DocumentMenuId== "105102130101" ||  ViewBag.DocumentMenuId == "105102115101")
+                    {
+                <table class="table table-bordered">
+                    <thead>
+                        <tr class="sticky-header">
+                            <th>@Resource.Warehouse</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="lpo_form">
+                                     <select class="form-control" id="Replicat_wh_id" onchange="OnChangeReplicatWarehouse()"></select>
+                                    <span id="Replicat_wh_id_Error" class="error-message is-visible"></span>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            }                 
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        @*<button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" id="QCReset">@Resource.Close</button>*@
+        <button type="button" class="btn btn-primary btn-sm" id="SaveExitReplicateBtn" onclick="OnClickSaveAndExitReplicateBtn();">@Resource.SaveAndExit</button>
+        <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">@Resource.DiscardAndExit</button>
+    </div>
+</div>

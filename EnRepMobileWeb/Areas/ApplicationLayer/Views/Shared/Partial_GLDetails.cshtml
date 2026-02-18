@@ -1,0 +1,86 @@
+﻿
+@using EnRepMobileWeb.Resources;
+@{
+    var rowId = 0;
+}
+
+<script src="~/Content/Scripts/Common/CommonJS.js"></script>
+
+<div class="modal-content">
+    <div class="modal-header">
+        <h2>@Resource.VoucherDetail</h2>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body pop_top">
+        <div class="card-box table-responsive dy_tablec">
+            <div id="" class="sticky-table sticky-ltr-cells sb-container container-example1">
+                <table id="datatable-buttons5" class="table table-striped width1400 itmfrz rowhighlighttbl" cellspacing="0" width="100%">
+                    <thead>
+                        <tr class="sticky-header">
+                            <th width="15%">@Resource.GLName</th>
+                            <th style="display:none;">@Resource.GLName</th>
+                            <th width="12%">@Resource.GLVoucher <br /> @Resource.Number</th>
+                            <th width="9%">@Resource.GLVoucher <br /> @Resource.Date</th>
+                            <th width="18%">@Resource.Narration</th>
+                            <th width="9%">@Resource.Opening <br /> @Resource.Balance</th>
+                            <th width="6%">@Resource.BalanceType</th>
+                            <th width="9%">@Resource.Debit <br /> @Resource.Amount</th>
+                            <th width="8%">@Resource.Credit <br /> @Resource.Amount</th>
+                            <th width="8%">@Resource.Closing <br /> @Resource.Balance</th>
+                            <th width="6%">@Resource.BalanceType</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (ViewBag.GL_Details != null)
+                        {
+                            foreach (System.Data.DataRow row in ViewBag.GL_Details.Rows)
+                            {
+                                rowId++;
+                                <tr>
+                                    <td>@row["acc_name"].ToString()</td>
+                                    <td style="display:none;">@row["acc_id"].ToString()</td>
+                                    <td>
+                                        <div class="col-sm-10 no-padding" id="">
+                                            @row["src_doc_no"].ToString()
+                                        </div>
+                                        <div class="col-sm-2 i_Icon">
+                                            <button type="button" id="VoucherDetail" class="calculator" onclick="OnclickVouDetailsIconBtn(event);" data-toggle="modal" data-target="#VoucherDetailMW" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.VoucherDetail"> </button>
+
+                                        </div>
+                                        <input type="hidden" id="hdn_vouno" value="@row["src_doc_no"]" />
+                                    </td>
+                                    <td><span id="spn_voudt">@row["src_doc_dt"].ToString()</span><input type="hidden" id="hdn_voudt" value="@row["srcdocdt"]" /> </td>
+                                    <td class="narration" id="td_narr">@row["narr"].ToString()</td>
+                                    <td class="num_right">@row["br_op_bal_bs"].ToString()</td>
+                                    <td class="center">@row["br_op_bal_type"].ToString()</td>
+                                    <td class="num_right">@row["dr_amt"].ToString()</td>
+                                    <td class="num_right">@row["cr_amt"].ToString()</td>
+                                    <td class="num_right">@row["br_acc_bal_bs"].ToString()</td>
+                                    <td class="center">@row["br_acc_bal_type"].ToString()</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+                @if (ViewBag.GL_Details != null)
+                {
+                    <span id="hdncurr_srch" hidden>@ViewBag.GL_Details.Rows[0]["curr_name"].ToString()</span>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">@Resource.Close</button>
+    </div>
+</div>
+@if (ViewBag.GL_listByFilter != null)
+{
+    if (ViewBag.GL_listByFilter == "GLlistByFilter")
+    {
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+        @Scripts.Render("~/Content/Scripts/DatatablesJs")
+
+    }
+    ViewBag.GL_listByFilter = null;
+
+}

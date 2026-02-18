@@ -1,0 +1,65 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.FinancialAccountingAndControl.GeneralLedgerVoucher.ExpenseVoucher.ExpenseVoucherList_Model
+@using EnRepMobileWeb.Resources;
+
+@{
+    var rowId = 0;
+}
+
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/FinancialAccountingAndControl/GeneralLedgerVoucher/ExpenseVoucher/ExpenseVoucheList.js"></script>
+<table id="datatable-buttons" class="table table-striped rowhighlighttbl width1800 itmfrz" cellspacing="0" width="100%">
+    <thead>
+        <tr class="sticky-header">
+            <th width="4%"> @Resource.SrNo</th>
+            <th width="11%" class="itmStick">@Resource.GLVoucher <br /> @Resource.Number</th>
+            <th width="7%">@Resource.GLVoucher <br /> @Resource.Date</th>
+            <th hidden></th>
+            <th width="8%">@Resource.Payee <br /> @Resource.GLAccount</th>
+            <th width="7%">@Resource.PaymentAmount</th>
+            <th width="7%">@Resource.Expense @Resource.Amount</th>
+            <th width="8%">@Resource.Status</th>
+            <th width="8%">@Resource.CreatedBy</th>
+            <th width="8%">@Resource.Createdon</th>
+            <th width="8%">@Resource.ApprovedBy</th>
+            <th width="8%">@Resource.ApprovedOn</th>
+            <th width="8%">@Resource.AmendedBy</th>
+            <th width="8%">@Resource.AmendedOn</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @if (Model.VouList != null)
+        {
+            foreach (var row in Model.VouList)
+            {
+                rowId++;
+        <tr>
+            <td>@rowId</td>
+            <td id="Vou_No" class="ItmNameBreak itmStick tditemfrz">@row.Vou_No</td>
+            <td id="Vou_Date">@row.Vou_Dt</td>
+            <td hidden="hidden" id="hdnvou_date">@row.Vou_Date.ToString()</td>
+            <td id="Acc_Id">@row.acc_id</td>
+            <td class="num_right" id="Pay_Amt">@row.PayAmt</td>
+            <td class="num_right" id="Exp_Amt">@row.ExpAmt</td>
+            <td id="Doc_Status">@row.Vou_Status</td>
+            <td>@row.CreateBy</td>
+            <td>@row.CreateDt</td>
+            <td>@row.Approve_by</td>
+            <td>@row.Approve_Date</td>
+            <td>@row.Modify_By</td>
+            <td>@row.Modify_Date</td>
+        </tr>
+            }
+        }
+    </tbody>
+</table>
+@if (Model.ExpVouSearch != null)
+{
+    if (Model.ExpVouSearch == "VouSearch")
+    {
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+        @Scripts.Render("~/Content/Scripts/DatatablesJs")
+        Model.ExpVouSearch = null;
+    }
+}
+

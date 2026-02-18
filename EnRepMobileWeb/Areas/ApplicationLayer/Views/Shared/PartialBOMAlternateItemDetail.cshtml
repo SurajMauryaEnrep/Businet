@@ -1,0 +1,151 @@
+﻿@using EnRepMobileWeb.Resources;
+<div class="modal-content">
+    <div class="modal-header">
+        <h2>@Resource.Alternate @Resource.ItemDetail</h2>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>   
+    <div class="modal-body pop_top">
+        <div class="col-md-2 col-sm-12" style="padding-left:0px;">
+            <label class="col-form-label label-align">@Resource.OperationName</label>
+            <input id="Alt_OpName" class="form-control " autocomplete="off" type="text" name="OperationName" placeholder="@Resource.OperationName" disabled>
+            <input hidden id="hdn_Alt_OpId"/>
+        </div>
+        <div class="col-md-2 col-sm-12" style="padding-left:0px;">
+            <label class="col-form-label label-align ">@Resource.Item @Resource.Type</label>
+            <input id="Alt_ItemType" class="form-control " autocomplete="off" type="text" name="ItemType" placeholder="@Resource.Item @Resource.Type" disabled>
+            <input hidden id="hdn_Alt_ItemTypeId" />
+        </div>
+        <div class="col-md-4 col-sm-12" style="padding-left:0px;">
+            <label class="col-form-label label-align ">@Resource.Item @Resource.Name</label>
+            <input id="Alt_ItemName" class="form-control " autocomplete="off" type="text" name="ItemName" placeholder="@Resource.Item @Resource.Name" disabled>
+            <input hidden id="hdn_Alt_ItemId" />
+        </div>
+        <div class="col-md-2 col-sm-12" style="padding-left:0px;">
+            <label class="col-form-label label-align ">@Resource.UOM</label>
+            <input id="Alt_ItemUom" class="form-control " autocomplete="off" type="text" name="UOM" placeholder="@Resource.UOM" disabled>
+            <input hidden id="hdn_Alt_ItemUomId" />
+        </div>
+        <div class="col-md-2 col-sm-12" style="padding-left:0px;">
+            <label class="col-form-label label-align ">@Resource.Quantity</label>
+            <input id="Alt_ItemQty" class="form-control num_right" autocomplete="off" type="text" name="Quantity" placeholder="0000.00" disabled>
+            <input hidden id="hdn_Alt_ItemQty" />
+        </div>
+        <div class="card-box table-responsive dy_table margin15 price_item_detail">
+            <div id="" class="sticky-table sticky-ltr-cells sb-container container-example1 OrderHistory height30VH">
+                <table id="tbl_AlternateItem" data-order="" class="table table-striped table-bordered " style="width:100%">
+                    <thead>
+                        <tr class="sticky-header">
+                            <th width="5%">&nbsp;</th>
+                            <th width="5%"> @Resource.SrNo</th>
+                            @*<th width="45%">@Resource.Alternate @Resource.ItemName</th>*@
+                            <th width="45%">
+                                <div class="col-md-3 col-sm-12"></div>
+                                <div class="col-md-6 col-sm-12">
+                                    <span class="item_add">
+                                        @Resource.Alternate <br /> @Resource.ItemName
+                                    </span>
+                                    @if (ViewBag.Disable == "Y")
+            {
+                             
+            }
+            else
+            {
+                                <a href="#">
+                                    <div class="plus_icon1 mt-2"> <i class="fa fa-plus" id="" onclick="AddNewAlternateItemRow()" title="Add New"></i> </div>
+                                </a>
+            }
+                                        
+                                </div>
+                                <div class="col-md-3 col-sm-12"></div>
+                            </th>
+                            <th width="15%">@Resource.UOM</th>
+                            <th width="15%">@Resource.Quantity</th>
+                            <th width="15%">@Resource.ItemCost</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (ViewBag.AltenateItemDetailItemWise != null)
+                        {
+                            var SrNo = 1;
+                            var HdnRowNo = 1;
+                            var GrayDelete = "";
+                            var disable = "";
+                            if (ViewBag.Disable == "Y")
+                            {
+                                GrayDelete = "style=filter:grayscale(100%)";
+                                disable = "disabled";
+                            }
+                            foreach (System.Data.DataRow dr in ViewBag.AltenateItemDetailItemWise.Rows)
+                            {
+                                <tr>
+                                    <td width="20" class="red center"> <i class="fa fa-trash @(ViewBag.Disable == "Y" ? "" : "Alt_deleteIcon")" @GrayDelete aria-hidden="true" title="@Resource.Delete"></i></td>
+                                    <td class="pl-2" id="AltSrNo">@SrNo</td>
+                                    <td class="pl-2" hidden id="HdnAltRowNo">@HdnRowNo</td>
+                                    <td>
+                                        <div class="lpo_form col-sm-11 no-padding">
+                                            <select class=" form-control" id="td_Alt_ddlItem@(SrNo)" @disable onchange="AltItemChange(event)">
+                                                <option value="@dr["ItemNameId"]">@dr["ItemName"]</option>
+                                            </select>
+                                            <span id="AltItemNameError" class="error-message is-visible"></span>
+                                        </div>
+                                        <div class="col-sm-1 i_Icon">
+                                            <button type="button" id="" class="calculator" onclick="AltItemInfoBtnClick(event);" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.ItemInformation"> </button>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="lpo_form no-padding">
+                                            <select id="td_AltUom" class="form-control date" onchange="OnChangeAltTxtUom('td_AltUom','td_Alt_ddlItem@(SrNo)',event)" @disable>
+                                                <option value="@dr["ItemUomId"]">@dr["ItemUom"]</option>
+                                            </select>
+                                            <input hidden id="tdAltUomId" value='@dr["ItemUomId"]' />
+                                            <span id="vmtd_AltUom" class="error-message is-visible"></span>
+                                        </div>
+                                        
+                                    </td>
+                                    <td>
+                                        <div class="lpo_form col-sm-12 no-padding">
+                                            <input id="td_AltQty" @disable value='@dr["AltQty"]' class="form-control date num_right" onkeypress="return AmtFloatQtyonly(this,event)" onpaste="return CopyPasteData(event)" onchange="OnChangeAltItemQty(event)" autocomplete="off" type="text" name="Quantity" placeholder="0000:00">
+                                            <span id="AltQtyError" class="error-message is-visible"></span>
+                                        </div>
+                                    </td>
+                                    <td><input id="td_AltItemCost" value='@dr["AltItemCost"]' class="form-control date num_right" autocomplete="off" type="text" name="ItemCost" placeholder="0000:00" disabled=""></td>
+                                </tr>
+                                SrNo = SrNo+1;
+                                HdnRowNo = HdnRowNo+1;
+                            }
+                        }
+
+
+
+                    </tbody>
+
+                    @*<tfoot>
+                        <tr class="total">
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td class="font-weight-bold num_right">@Resource.Total</td>                            
+                            <td class="font-weight-bold num_right" id="tf_TotalAltItemQty">0000.00 </td>
+                            <td class="font-weight-bold num_right" id="tf_TotalAltItemCost">0000.00</td>
+                        </tr>
+                    </tfoot>*@
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        @if (ViewBag.Disable == "Y")
+        {
+            <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" id="" onclick="">@Resource.Close</button>
+        }
+        else
+        {
+            <button type="button" class="btn btn-primary btn-sm" id="BtnAltReset" onclick="return OnClickAltBtnReset()">@Resource.Reset</button>
+            <button type="button" class="btn btn-primary btn-sm" id="BtnAlternateSaveAndExit" onclick="return AlternateItemSaveAndExit();">@Resource.SaveAndExit</button>
+            <button type="button" class="btn btn-primary btn-sm" id="" data-dismiss="modal" onclick="">@Resource.DiscardAndExit</button>
+        }
+
+   
+        </div>
+    </div>

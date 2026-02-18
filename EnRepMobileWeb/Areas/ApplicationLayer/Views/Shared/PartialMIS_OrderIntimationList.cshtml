@@ -1,0 +1,102 @@
+﻿@using EnRepMobileWeb.Resources;
+<style>
+    /*#datatable-buttons_wrapper .btn-group a:nth-child(3) {
+        display: inline-block;
+        position: absolute;
+    }
+
+    table.dataTable tbody th, table.dataTable tbody td {
+        padding: 5px 10px !important;
+        white-space: normal;
+    }*/
+    #datatable-buttons_wrapper .dt-buttons {
+        position: absolute;
+        margin-left: 13%;
+    }
+
+    #datatable-buttons_filter {
+        position: absolute;
+        right: 9%;
+        /* top: 0px;*/
+    }
+
+    #datatable-buttons_wrapper {
+        padding-left: 2px !important;
+    }
+
+        #datatable-buttons_wrapper .buttons-pdf {
+            padding-left: 75px;
+        }
+</style>
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+
+@*<table id="datatable-buttons" class="table table-striped rowhighlighttbl itmfrz table-bordered intimationtbl" cellspacing="0" width="100%">*@
+<table id="intimationtbl" class="table table-striped rowhighlighttbl itmfrz table-bordered intimationtbl" cellspacing="0" width="100%">
+    <thead>
+        <tr class="sticky-header">
+            <th width="3%"><input type="checkbox" class="tableflat float-left ml-1" id="AllIntimationCheck" onclick="OnClickAllOrderIntimationCheck()"></th>
+            <th width="3%">@Resource.SrNo</th>
+            <th width="19%">@Resource.Product @Resource.Name</th>
+            <th width="10%" title="@Resource.UnitOfMeasure"> @Resource.UOM </th>
+            <th width="15%">@Resource.Sales @Resource.Order @Resource.Number</th>
+            <th hidden="hidden"></th>
+            <th width="11%">@Resource.Order @Resource.Date</th>
+            <th width="15%">@Resource.SalesPerson</th>
+            <th width="17%">@Resource.Customer   @Resource.Name</th>
+            <th width="11%">@Resource.Order @Resource.Quantity</th>
+            <th width="11%">@Resource.Pending @Resource.Quantity</th>
+        </tr>
+    </thead>
+    <tbody id="">
+        @if (ViewBag.SalesOrderIntimationList != null)
+        {
+            var srno = 1;
+            foreach (System.Data.DataRow dr in ViewBag.SalesOrderIntimationList.Rows)
+            {
+
+                <tr>
+                    <td class="center"><input type="checkbox" class="tableflat" id="IntimationCheck"></td>
+                    <td>@srno</td>
+                    <td>
+                        <div class="col-sm-11 lpo_form" style="padding:0px;" id="multiWrapper">
+                            @dr["item_name"].ToString()
+                            <input id="hdnItemId" hidden="hidden" value="@dr["item_id"].ToString()" />
+                        </div>
+                        <div class="col-sm-1 i_Icon">
+                            <button type="button" id="ItmInfoBtnIcon" class="calculator ItmInfoBtnIcon " onclick="OnClickIconBtn(event);" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.ItemInformation">  </button>
+                        </div>
+                    </td>
+                    <td>@dr["uom_alias"].ToString()</td>
+                    <td id="hdn_so_no">@dr["so_no"].ToString()</td>
+                    <td id="hdn_so_date" hidden="hidden">@dr["so_dt"].ToString()</td>
+                    <td>@dr["so_date"].ToString()</td>
+                    <td>@dr["SalesPerson"].ToString()</td>
+                    <td>@dr["cust_name"].ToString()</td>
+                    <td class="num_right">@dr["ord_qty_base"].ToString()</td>
+                    <td class="num_right">@dr["PendingQty"].ToString()</td>
+                </tr>
+                srno = srno + 1;
+            }
+        }
+    </tbody>
+    <tfoot>
+
+    </tfoot>
+</table>
+@{
+    <script>
+        $(document).ready(function () {
+            cmn_apply_datatable("#intimationtbl");
+        });
+            //cmn_apply_datatable("#intimationtbl");
+    </script>
+    @*if (ViewBag.ODFilter != null)
+        {
+            if (ViewBag.ODFilter == "SDFilter")
+            {
+                @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+                @Scripts.Render("~/Content/Scripts/DatatablesJs")
+                ViewBag.ODFilter = null;
+            }
+        }*@
+}

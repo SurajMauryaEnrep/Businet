@@ -1,0 +1,531 @@
+﻿@* Used this Partial 
+    1. Sales Order
+    2. Material TransferIssue
+    3.Shipment
+
+*@
+<style>
+    span#SpanNoOfCopies { position:relative;
+    }
+</style>
+
+@using EnRepMobileWeb.Resources;
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/InventoryManagement/QualityInspection/QualityInspectionList.js"></script>
+<div class="modal-content">
+    <div class="modal-header">
+        <h2>@Resource.Print @Resource.Options</h2>
+        <button type="button" class="close" data-dismiss="modal" onclick="onclickmailCmnOptionPrint();">&times;</button> @*Added by Nidhi on 14-08-2025*@
+    </div>
+    <div class="modal-body pop_top">
+        <div class="col-md-12 col-sm-12">
+            <div class="po col-md-5 col-sm-12 no-padding mt-3">
+                @*<label class="col-form-label label-align font-weight-bold" style="padding-right:10px;">
+            Order Type
+        </label>*@
+                @if (ViewBag.DocumentMenuId != "105103190125")
+                {
+                    if (ViewBag.DocumentMenuId != "105103125" && ViewBag.DocumentMenuId != "105103145110" && ViewBag.DocumentMenuId != "105102130103" && ViewBag.DocumentMenuId != "103107")
+                    {<input checked="checked" class="" id="OrderTypeLocal" name="POOrderType" type="radio" value="D" onclick="onCheckedChangeFormatBtn()">
+                        @Resource.Format1<span>&nbsp;</span>
+
+                    }
+                    if (@*ViewBag.DocumentMenuId != "105103147" &&*@ ViewBag.DocumentMenuId != "105103135" && ViewBag.DocumentMenuId != "105103125" && ViewBag.DocumentMenuId != "105103145110" && ViewBag.DocumentMenuId != "105102130103" && ViewBag.DocumentMenuId != "105103142"
+&& ViewBag.DocumentMenuId != "103107")
+{
+            <input class="" id="OrderTypeImport" name="POOrderType" type="radio" value="I" onclick="onCheckedChangeFormatBtn()">
+            <span>&nbsp;</span> @Resource.Format2<span>&nbsp;</span>
+
+                    }
+                    if (ViewBag.DocumentMenuId == "105103140"|| ViewBag.DocumentMenuId == "105103148")
+                    {
+            <input class="" id="OrderTypeImport1" name="POOrderType" type="radio" value="E" onclick="onCheckedChangeFormatBtn()">
+            <span>&nbsp;</span> @Resource.Format3<span>&nbsp;</span>
+
+        }
+    }
+
+
+            </div>
+            <div class="po col-md-3 col-sm-12 no-padding mt-3">
+                @if ((ViewBag.DocumentMenuId == "105103140" || ViewBag.DocumentMenuId == "105103145125" || ViewBag.DocumentMenuId == "105103148" || ViewBag.DocumentMenuId == "105103147" || ViewBag.DocumentMenuId == "105103149")
+                       && ViewBag.DocumentMenuId != "103107")/*Add by Hina sharma on 01-10-2024 for Domestic sale invoice and commercial sale invoice*/
+                {
+                    <label class="col-md-9 col-sm-12 no-padding"> @Resource.NumberOf @Resource.Copies</label>
+                    @*@Html.TextBoxFor(model => model.Req_By, new { @class = "form-control", disabled = "disabled", @id = "RequestedBy", @maxlength = "25", @name = "mrs_no", @placeholder = "Requested By", @type = "text" })*@
+                    if (ViewBag.DocumentMenuId == "105103140" || ViewBag.DocumentMenuId == "105103148" || ViewBag.DocumentMenuId == "105103147" || ViewBag.DocumentMenuId == "105103149")
+                    {
+                        <input id="txt_NoOfCopies" value="1" class="form-control col-md-3 col-sm-12 " onchange="OnChngNoofCopy()" onkeypress="return Cmn_NumericValueonly(this,event);" autocomplete="off" type="text" maxlength="1" name="NoOfCopiesname" placeholder="No.">
+                        <span id="SpanNoOfCopies" class="error_message"></span>
+                    }
+                    else
+                    {
+                        <input id="txt_NoOfCopies" class="form-control col-md-3 col-sm-12 " value="1" autocomplete="off" type="text" name="NoOfCopiesname" placeholder="No." disabled>
+                    }
+                }
+            </div>
+            <div class="clear"></div>
+            @if (ViewBag.DocumentMenuId == "103107")
+            {
+                <div class="po col-md-12 col-sm-12 no-padding mt-1">
+                    <div class="col-md-9 col-sm-9 col-xs-12 no-padding">
+                        <div class="checkbox">
+                            <label>
+                                <input id="chkItemName" checked="checked" type="checkbox" onchange="OnCheckedShowItemName();">
+                                @Resource.Show @Resource.ItemName
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input id="chkshowUOM" checked="checked" type="checkbox" onchange="OnCheckedChangeUOM();">
+                                @Resource.Show @Resource.UOM
+                            </label>
+                        </div>
+
+                        <div class="checkbox">
+                            <label>
+                                <input id="chkshowOEM" checked="checked" type="checkbox" onchange="OnCheckedChangeOEM();">
+                                @Resource.Show @Resource.OEMNo
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input id="chkshowItemAliasName" checked="checked" type="checkbox" onchange="OnCheckedChangeItmAliasName();">
+                                @Resource.ShowItemAlias
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input id="chkshowRefNum" checked="checked" type="checkbox" onchange="OnCheckedChangeRefNum();">
+                                @Resource.Show  @Resource.ReferenceNumber
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input id="chkshowItmTechSpecific" checked="checked" type="checkbox" onchange="OnCheckedChangeItmTechSpecific();">
+                                @Resource.Show  @Resource.TechnicalSpecification
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input id="chkprodtechdesc" checked="checked" type="checkbox" onchange="OnCheckedChangeProdTechDesc();">
+                                @Resource.Show  @Resource.TechnicalDescription
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input id="groupname" checked="checked" type="checkbox" onchange="OnCheckedChangegroupname();">
+                                @Resource.Show @Resource.groupname
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input id="chkHSNNumber" checked="checked" type="checkbox" onchange="OnCheckedChangeHSNNumber();">
+                                @Resource.Show  @Resource.HSNNumber
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input id="chkprintremarks" checked="checked" type="checkbox" onchange="OnCheckedChangePrintRemarks();">
+                                @Resource.ShowRemarks
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input id="chkWeightInKg" checked="checked" type="checkbox" onchange="OnCheckedChangeWeightInKg();">
+                                @Resource.Show  @Resource.WeightInKg
+                            </label>
+
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input id="chkVolumeInLitres" checked="checked" type="checkbox" onchange="OnCheckedChangeVolumeInLitres();">
+                                @Resource.Show  @Resource.VolumeInLitres
+                            </label>
+
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input id="chkGrossWeight" checked="checked" type="checkbox" onchange="OnCheckedChangeGrossWeight();">
+                                @Resource.Show  @Resource.GrossWeight
+                            </label>
+
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input id="chkNetWeighte" checked="checked" type="checkbox" onchange="OnCheckedChangeNetWeight();">
+                                @Resource.Show  @Resource.NetWeight
+                            </label>
+
+                        </div>
+                        @*<div class="checkbox">
+                            <label>
+                                <input id="chkshowItemImage" disabled="disabled" checked="checked" type="checkbox" onchange="OnCheckedChangePrintItemImage();">
+                                @Resource.Show  @Resource.PrintItemImage
+                            </label>
+
+                        </div>*@
+
+                    </div>
+                </div>
+            }
+            else if (ViewBag.DocumentMenuId == "105103130" || ViewBag.DocumentMenuId == "105103145115")
+            {
+
+            }
+            else
+            {
+
+
+                <div class="po col-md-12 col-sm-12 no-padding mt-1">
+                    <div class="col-md-9 col-sm-9 col-xs-12 no-padding">
+                        <div class="checkbox">
+                            @if (ViewBag.DocumentMenuId == "105103190125")
+                            {
+                                <div class="checkbox">
+                                    <label>
+                                        <input id="chkItemName" checked type="checkbox" onchange="OnCheckedItemName();"> @Resource.ItemName <br />
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input id="chkCustSpecItemDesc" type="checkbox" onchange="OnCheckedCustSpecItemDesc();"> @Resource.Customer @Resource.Specific @Resource.ItemDescription <br />
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input id="chkUOM" checked type="checkbox" onchange="OnCheckedUOM();"> @Resource.UOM <br />
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input id="chkHSN" type="checkbox" onchange="OnCheckedHSN();"> @Resource.HSNCode <br />
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input id="chkReferenceNo" type="checkbox" onchange="OnCheckedReferenceNo();"> @Resource.Reference @Resource.Number <br />
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input id="chkshowOEM" type="checkbox" onchange="OnCheckedChangeOEM();">
+                                        @Resource.Show @Resource.OEMNo
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input id="chkTechspec" type="checkbox" onchange="OnCheckedTechspec();"> @Resource.TechnicalSpecification <br />
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input id="chkTechDesc" type="checkbox" onchange="OnCheckedTechDesc();"> @Resource.TechnicalDescription <br />
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input id="chkweight" type="checkbox" onchange="OnCheckedweight();"> @Resource.Weight <br />
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input id="chkCustNm" type="checkbox" onchange="OnCheckedCustName();"> @Resource.CustomerName <br />
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input id="chkOrderedQuantity" type="checkbox" onchange="OnCheckedOrderedQuantity();"> @Resource.OrderedQuantity <br />
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input id="chkPrice" type="checkbox" onchange="OnCheckedprice();"> @Resource.Price <br />
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input id="chkPendingAmt" type="checkbox" onchange="OnCheckedPendingAmt();"> @Resource.Pending @Resource.Amount <br />
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input id="chkBomAvl" type="checkbox" onchange="OnCheckedBomAvl();"> @Resource.BillOfMaterial @Resource.Available <br />
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input id="chkremarks" type="checkbox" onchange="OnCheckedremarks();"> @Resource.remarks <br />
+                                    </label>
+                                </div>
+                            }
+
+                            @if (ViewBag.DocumentMenuId != "105103190125")
+                            {
+                                <label>
+                                    <input id="chkproddesc" checked="checked" type="checkbox" onchange="OnCheckedChangeProdDesc();"> @Resource.ShowProductDescription
+                                </label>
+                            }
+
+
+                        </div>
+                        <div class="checkbox">
+                            @if (ViewBag.DocumentMenuId != "105102130103" && ViewBag.DocumentMenuId != "105103190125")
+                            {
+                                <label>
+                                    <input id="chkshowcustspecproddesc" type="checkbox" onchange="onCheckedChangeCustSpecProdDesc();"> @Resource.ShowCustomerSpecificProductDescription
+                                </label>
+                            }
+                        </div>
+                        @if (ViewBag.DocumentMenuId == "105103125" || ViewBag.DocumentMenuId == "105103145110" /*for sales order*/||
+                            ViewBag.DocumentMenuId == "105103135"/*for domes shipment*/|| ViewBag.DocumentMenuId == "105103140"/*for Domes Sales invoice*/|| ViewBag.DocumentMenuId == "105103120" || ViewBag.DocumentMenuId == "105103145105"/*for sales quotation*/)/*Add by Hina on 13-11-2024 for Sales Module*/
+                        {
+                            <div class="checkbox">
+                                <label>
+                                    <input id="chkitmaliasname" type="checkbox" onchange="OnCheckedChangeItemAliasName();"> @Resource.ShowProductAliasName
+                                </label>
+                            </div>
+                        }
+                        @if (ViewBag.DocumentMenuId != "105103190125")
+                        {
+                            <div class="checkbox">
+                                <label>
+                                    <input id="chkprodtechdesc" type="checkbox" onchange="OnCheckedChangeProdTechDesc();"> @Resource.ShowProductTechnicalDescription
+                                </label>
+                            </div>
+                        }
+
+                        @if (ViewBag.DocumentMenuId == "105103147")
+                        {
+                            <div class="checkbox" style="display:none">
+                                <label>
+                                    <input id="chkshowsubitm" type="checkbox" onchange="OnCheckedChangeShowSubItem();"> @Resource.ShowSubItemDetail
+                                </label>
+                            </div>
+                        }
+                        else
+                        {
+                            if (ViewBag.DocumentMenuId != "105103190125")
+                            {
+                                <div class="checkbox">
+                                    <label>
+                                        <input id="chkshowsubitm" type="checkbox" onchange="OnCheckedChangeShowSubItem();"> @Resource.ShowSubItemDetail
+                                    </label>
+                                </div>
+                            }
+
+                        }
+                        <div class="checkbox">
+                            @if (ViewBag.DocumentMenuId != "105102130103" && ViewBag.DocumentMenuId != "105103190125")
+                            {
+                                <label>
+                                    <input id="chkcustaliasname" type="checkbox" onchange="OnCheckedChangeCustAliasName();"> @Resource.ShowCustomerAliasName @*@Resource.Customer @Resource.Alias @Resource.Name*@
+                                </label>
+                            }
+                        </div>
+                        @if (ViewBag.DocumentMenuId == "105103148" || ViewBag.DocumentMenuId == "105103142" || ViewBag.DocumentMenuId == "105103149")
+                        {
+                            <div class="checkbox">
+                                <label>
+                                    <input id="chkTotalqty" checked="checked" type="checkbox" onchange="OnCheckedChangeTotalQty();"> @Resource.Total @Resource.Quantity @*@Resource.Customer @Resource.Alias @Resource.Name*@
+                                </label>
+                            </div>
+                        }
+                        @if (ViewBag.DocumentMenuId == "105103147" || ViewBag.DocumentMenuId == "105103120"@*|| ViewBag.DocumentMenuId == "105103120"*@)/*Add by Hina on 25-09-2024 for service sale invoice*/
+{
+                    <div class="checkbox">
+                        <label>
+                            <input id="chkprintremarks" type="checkbox" onchange="OnCheckedChangePrintRemarks();"> @Resource.ShowRemarks
+                        </label>
+                    </div>
+                }
+                        @if (ViewBag.DocumentMenuId == "105103135" || ViewBag.DocumentMenuId == "105103142")/*Add by Hina on 25-09-2024 for service sale invoice,add 105103142 on 29-05-2025 for sales return*/
+                        {
+                            <div class="checkbox">
+                                <label>
+                                    <input id="chkprintremarks" type="checkbox" onchange="OnCheckedChangePrintRemarks();"> @Resource.Show @Resource.Item @Resource.remarks
+                                </label>
+                            </div>
+                        }
+                        @if (ViewBag.DocumentMenuId == "105103140" || ViewBag.DocumentMenuId == "105103148" || ViewBag.DocumentMenuId == "105103147"
+                            || ViewBag.DocumentMenuId == "105103142" || ViewBag.DocumentMenuId == "105103149")/*Add 105103142 by Hina on 29-05-2025 for sales return*/
+                        {
+
+                            <div class="checkbox">
+                                <label>
+                                    <input id="chkprintwithout" checked="checked" type="checkbox" onchange="OnCheckedChangePrintwithoutSymbol();"> @Resource.PrintInvoiceNumberwithoutSymbol
+                                </label>
+                            </div>
+                            if (ViewBag.DocumentMenuId != "105103142")/*Add 105103142 by Hina on 29-05-2025 for sales return*/
+                            {
+                                <div class="checkbox">
+                                    <label>
+                                        <input id="chkprintDecl1" type="checkbox" onchange="OnCheckedChangePrintDecl1();"> @Resource.Print @Resource.Declaration 1
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input id="chkprintDecl2" type="checkbox" onchange="OnCheckedChangePrintDecl2();"> @Resource.Print @Resource.Declaration 2
+                                    </label>
+                                </div>
+                            }
+                            <div class="checkbox">
+                                <label>
+                                    <input id="chkprintInvHead" type="checkbox" onchange="OnCheckedChangePrintInvHead();"> @Resource.Print @Resource.Invoice @Resource.Heading
+                                </label>
+                            </div>
+
+                        }
+
+                        @if (ViewBag.DocumentMenuId == "105103125" || ViewBag.DocumentMenuId == "105103145110")/*Add  by Hina sharma on 17-04-2025 for Sales Order(D,E) */
+                        {
+                            <div class="checkbox">
+                                <label>
+                                    <input id="chkshowtotalqty" type="checkbox" onchange="OnCheckedChangePrintQuantityTotal();"> @Resource.Print @Resource.Quantity @Resource.Total
+                                </label>
+                            </div>
+                            <div class="checkbox">
+                                <label>
+                                    <input id="chkshowCustProdctCode" type="checkbox" onchange="OnCheckedChangeProductCode();"> @Resource.Print @Resource.Customer @Resource.Product @Resource.Code
+                                </label>
+                            </div>
+                        }
+                        @if (ViewBag.DocumentMenuId == "105103140" || ViewBag.DocumentMenuId == "105103148" || ViewBag.DocumentMenuId == "105103149")/*Add  by Hina sharma on 19-05-2025 Sale invoice, Scrap sale invoice  */
+                        {
+                            <div class="checkbox">
+                                <label>
+                                    <input id="chkPrintShipFromAddress" type="checkbox" onchange="OnCheckedPrintShipFromAddress();"> @Resource.Print @Resource.Ship @Resource.From @Resource.Address
+                                </label>
+                            </div>
+                        }
+                        @if (ViewBag.DocumentMenuId == "105103140" || ViewBag.DocumentMenuId == "105103148")/*Add  by Hina sharma on 19-05-2025 Sale invoice, Scrap sale invoice  */
+                        {
+                            <div class="checkbox" style="display:none" id="CorpAddrDiv">
+                                <label>
+                                    <input id="chkPrintCorpAddr" checked type="checkbox" onchange="OnCheckedPrintCorpAddr();"> @Resource.Print @Resource.Corporate @Resource.Address
+                                </label>
+                            </div>
+                            <div class="checkbox" style="display:none" id="PrintRemarksDiv">
+                                <label>
+                                    <input id="chkPrintRemarks" checked type="checkbox" onchange="OnCheckedPrintRemarks();"> @Resource.Print @Resource.remarks
+                                </label>
+                            </div>
+                        }
+                        @if (ViewBag.DocumentMenuId == "105103147")/*Add  by Hina sharma on 14-04-2025 for service sale invoice */
+                        {
+                            <div class="checkbox">
+                                <label>
+                                    <input id="chkshowtotalqty" type="checkbox" onchange="OnCheckedChangePrintQuantityTotal();"> @Resource.Print @Resource.Quantity @Resource.Total
+                                </label>
+                            </div>
+                        }
+
+                        @if (ViewBag.DocumentMenuId == "105103125" || ViewBag.DocumentMenuId == "105103145110" || ViewBag.DocumentMenuId == "105103120" || ViewBag.DocumentMenuId == "105103145105")/*Add  by Nitesh on 29-05-2025 for  sale Order,25-07-2025 for SQ(D,E)*/
+                        {
+                            <div class="checkbox">
+                                <label>
+                                    <input id="chkshowItemImage" type="checkbox" onchange="OnCheckedChangePrintItemImage();"> @Resource.PrintItemImage
+                                </label>
+
+                            </div>
+                        }
+                        @if (ViewBag.DocumentMenuId == "105103125" || ViewBag.DocumentMenuId == "105103145110")/*Add  by Hina Sharma on 17-07-2025 for  sale Order */
+                        {
+                            <div class="checkbox">
+                                <label>
+                                    <input id="chkshowDelivrySchdl" type="checkbox" onchange="OnCheckedChangeDelvrySchdul();"> @Resource.Print @Resource.DeliverySchedule
+                                </label>
+                            </div>
+                        }
+                        @if (ViewBag.DocumentMenuId == "105103120" || ViewBag.DocumentMenuId == "105103145105")
+                        {
+
+                            if (ViewBag.DocumentMenuId == "105103120" || ViewBag.DocumentMenuId == "105103145105")
+                            {
+                                <div class="checkbox">
+                                    <label>
+                                        <input id="chkshowOEM" type="checkbox" onchange="OnCheckedChangeOEM();"> @Resource.Show @Resource.OEMNo
+                                    </label>
+                                </div>
+
+                                <div class="checkbox">
+                                    <label>
+                                        <input id="chkshowCatalogueNum" type="checkbox" onchange="OnCheckedChangeCatalogueNum();"> @Resource.Show  @Resource.CatalogueNumber
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input id="chkshowRefNum" type="checkbox" onchange="OnCheckedChangeRefNum();"> @Resource.Show  @Resource.ReferenceNumber
+                                    </label>
+                                </div>
+                            }
+
+                        }
+
+                        @if (ViewBag.DocumentMenuId == "105103120" || ViewBag.DocumentMenuId == "105103145105")/*Add  by Hina Sharma on 25-07-2025 for  Sales Quotation(D,E) */
+                        {
+                            <div class="checkbox">
+                                <label>
+                                    <input id="chkshowHSN" type="checkbox" checked="checked" onchange="OnCheckedChangeHSNCode();"> @Resource.Show  @Resource.HSNCode
+                                </label>
+                            </div>
+                            <div class="checkbox">
+                                <label>
+                                    <input id="chkshowDiscount" type="checkbox" checked="checked" onchange="OnCheckedChangeDiscount();"> @Resource.Show  @Resource.Discount
+                                </label>
+                            </div>
+                            <div class="checkbox">
+                                <label>
+                                    <input id="chkshowShipTo" type="checkbox" checked="checked" onchange="OnCheckedChangeShipTo();"> @Resource.Show  @Resource.Ship @Resource.to1
+                                </label>
+                            </div>
+                            <div class="checkbox">
+                                <label>
+                                    <input id="chkshowBillTo" type="checkbox" checked="checked" onchange="OnCheckedChangeBillTo();"> @Resource.Show @Resource.Bill @Resource.to1
+                                </label>
+                            </div>
+                            <div class="checkbox">
+                                <label>
+                                    <input id="chkshowBankDtl" type="checkbox" checked="checked" onchange="OnCheckedChangeBankDtl();"> @Resource.Show  @Resource.BankDetail
+                                </label>
+                            </div>
+                            <div class="checkbox">
+                                <label>
+                                    <input id="chkshowCompAddrs" type="checkbox" checked="checked" onchange="OnCheckedChangeCompAddrs();"> @Resource.Show  @Resource.Company @Resource.Address
+                                </label>
+                            </div>
+                        }
+                        @if (ViewBag.DocumentMenuId == "105103149" || ViewBag.DocumentMenuId == "105103135")
+                        {
+                            <div class="checkbox">
+                                <label>
+                                    <input id="chkshowPackSize" type="checkbox" onchange="OnCheckedChangePrintPackSize();"> @Resource.Show @Resource.PackSize
+                                </label>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
+        </div>
+    </div>
+    <div class="modal-footer">
+        <input type="hidden" id="MailPrintOption" />
+        @*<button type="button" class="btn btn-primary btn-sm" id="Print" onclick="ResetQCDetail();">@Resource.Print</button>*@
+        @*Added by Nidhi on 14-08-2025*@
+        <button class="btn btn-primary btn-sm" style="display:none"
+                title="@Resource.Save" type="button" id="btn_mail_print" onclick="PrintFormate();"
+                data-toggle="modal" data-target="#SalesInvoicePrint" data-bs-backdrop data-keyboard="false">
+            @Resource.Save
+        </button>
+        <button class="btn btn-primary btn-sm"
+                title="@Resource.Print" type="submit" id="btn_print" onclick="return PrintInvoice()" name="Command" value="Print"
+                data-toggle="modal" data-target="#SalesInvoicePrint" data-bs-backdrop data-keyboard="false">
+            @Resource.Print
+        </button>
+        <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" id="Back" onclick="onclickmailCmnOptionPrint();">@Resource.Back</button> @*Added by Nidhi on 14-08-2025*@
+
+    </div>
+
+    </div>
+

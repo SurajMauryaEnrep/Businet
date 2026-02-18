@@ -1,0 +1,233 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.SalesAndDistribution.SalesAndDistributionModels.LSOListModel
+@using EnRepMobileWeb.Resources;
+@using System.Data
+@if (Session["UserId"] == null)
+{
+    Response.Redirect("~/Login");
+}
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+<script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+<script src="~/Content/Css/build/js/sweetalert.js"></script>
+@*/*start Add by Hina on 16-02-2024 to chk Financial year exist or not*/*@
+@{
+    if (TempData["Message"] != null)
+    {
+        if (TempData["Message"] == "Financial Year not Exist")
+        {
+            <script type="text/javascript">
+                swal("", $("#FinancialYearDoesNotExistTransactionCanNotBeDone").text(), "warning");
+            </script>
+        }
+
+    }
+}
+@*/*End to chk Financial year exist or not*/*@
+<script src="~/Content/Scripts/ApplicationLayer/SalesAndDistribution/LocalSalesOrder/LSOList.js"></script>
+<title>@Model.Title</title>
+<div class="clearfix"></div>
+<div class="row">
+    <!-- Sales Order Tracking -->
+    <div id="SalesOrderTracking" class="modal fade" role="dialog">
+        <div id="trackingso" class="modal-dialog" style=" max-width:1200px;">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/_SalesOrderTracking.cshtml")
+        </div>
+    </div>
+    <!-- Production Tracking -->
+    <div id="ProductionTracking" class="modal fade" role="dialog">
+        <div id="prodtracking" class="modal-dialog" style=" max-width:1200px;">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/_ProductionTracking.cshtml")
+        </div>
+    </div>
+    <!-- Production Analysis Detail -->
+    <div id="ProductionAnalysisDetail" class="modal fade" role="dialog">
+        <div class="modal-dialog" id="ProductionPlanQCDetailsPopUp" style="max-width:1200px;">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/Common/Views/Cmn_ProductionPlanTrackingQC.cshtml")
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12 ">
+        <!-- Workflow Information -->
+        <div id="WorkflowInformation" class="modal fade" role="dialog">
+            <div class="modal-dialog" style="max-width:700px;">
+                <!-- Modal content-->
+                @Html.Partial("~/Areas/Common/Views/_WorkFlow.cshtml")
+            </div>
+        </div>
+        <!-- QC Parameter Evalution Detail -->
+        <div id="RecQuant" class="modal fade" role="dialog">
+            <div class="modal-dialog" id="RecQuantPopUp" style="min-width:1000px;">
+                <!-- Modal content-->
+                @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/_OnlyShowQCParameterEvalutionDetail.cshtml")
+            </div>
+        </div>
+        <!-- Reason Remarksl -->
+        <div id="ReasonRemarks" class="modal fade" role="dialog">
+            <div class="modal-dialog" id="" style=" max-width:600px;">
+                <!-- Modal content-->
+                @*@Html.Partial("~/Areas/Common/Views/Cmn_ReasonRemarks.cshtml")*@
+                @Html.Partial("~/Areas/Common/Views/Cmn_QCReasonRemarks.cshtml")
+            </div>
+        </div>
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <h2 class="col-md-5 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                <!-- Smart Wizard -->
+                <div id="wizard" class="form_wizard wizard_horizontal col-md-3 col-sm-12 work_flow">
+                    @Html.Partial("~/Areas/Common/Views/_PartialWorkflowBar.cshtml")
+                </div>
+                @Html.HiddenFor(m => m.ListFilterData, new { @id = "ListFilterData" })
+                @Html.HiddenFor(m => m.DocumentMenuId, new { @id = "DocumentMenuId" })
+                @Html.HiddenFor(m => m.WF_status, new { @id = "WF_status" })
+                @Html.HiddenFor(m => m.CustType, new { @id = "CustType" })
+                @*<input type="hidden" id="DocumentMenuId" value="@ViewBag.DocumentMenuId" />*@
+                @if (ViewBag.VBRoleList != null)
+                {
+                    foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                    {
+                        if ((Row["feature_id"].ToString() == "105103125001" && ViewBag.crm=="Y") || Row["feature_id"].ToString() == "105103145110001")
+                        {
+                            <div id="" class="col-md-4 col-sm-12 heading_right_padding">
+                                <ul>
+                                    <li>
+                                        <a class="tooltip-test" title="@Resource.AddNew" href="@Url.Action("AddNewLSO","LSOList",new {Model.DocumentMenuId })"><img src="~/Content/Images/addgreen.png" width="32" id="Btn_AddNewSO" height="32" alt="Add"></a>
+                                    </li>
+                                </ul>
+                            </div>
+                        }
+                    }
+                }
+                <div class="x_title pad_mar ">
+                    <div class="col-md-12 col-sm-12 icon_tool padding_zero">
+                        <form class="available_stock pad_mar" action="" method="post" novalidate>
+                            <div class="col-md-12 col-sm-12 padding_zero">
+                                <div class="col-md-2 col-sm-12">
+                                    <label class="col-form-label label-align">@Resource.CustomerName</label>
+                                    @Html.DropDownListFor(model => model.SO_CustID, new SelectList(Model.CustomerNameList, "cust_id", "cust_name"), new { @class = "form-control", id = "ddlCustomerName" })
+                                    <input type="hidden" id="CustNameList" value='@Url.Action("GetAutoCompleteSearchCustList", "LSOList")' />
+                                </div>
+                                <div class="col-md-2 col-sm-12">
+                                    <label class="col-form-label label-align">
+                                        @Resource.FromDate
+                                    </label>
+                                    @Html.TextBoxFor(model => model.FromDate, new { @class = "form-control", @id = "txtFromdate", @onchange = "FromToDateValidation()", @type = "date", @max = DateTime.Now.ToString("yyyy-MM-dd") })
+                                    @Html.HiddenFor(model => model.FromDate, new { id = "hdFromdate" })
+                                    <span id="PaymentDate" class="sr-only">(success)</span>
+                                </div>
+                                <div class="col-md-2 col-sm-12">
+                                    <label class="col-form-label label-align">
+                                        @Resource.ToDate
+                                    </label>
+                                    @if (Model.SO_ToDate != null)
+                                    {
+                                        @Html.TextBoxFor(model => model.ToDate, new { @class = "form-control", @id = "txtTodate", @placeholder = "dd-MM-yyyy", @onchange = "FromToDateValidation()", @type = "date", @max = DateTime.Now.ToString("yyyy-MM-dd"), @Value = Model.SO_ToDate })
+                                    }
+                                    else
+                                    {
+                                        @Html.TextBoxFor(model => model.ToDate, new { @class = "form-control", @id = "txtTodate", @placeholder = "dd-MM-yyyy", @onchange = "FromToDateValidation()", @type = "date", @max = DateTime.Now.ToString("yyyy-MM-dd"), @Value = @DateTime.Now.ToString("yyyy-MM-dd") })
+                                    }
+                                    <span id="PaymentDate" class="sr-only">(success)</span>
+                                </div>
+                                <div class="col-md-2 col-sm-12 pl-0">
+                                    <label class="col-form-label label-align">
+                                        @Resource.SalesPerson
+                                    </label>
+                                    @Html.DropDownListFor(model => model.SQ_SalePerson, new SelectList(Model.SalePersonList, "salep_id", "salep_name"), new { @class = "form-control", @id = "sales_person" })
+                                </div>
+                                <div class="col-md-2 col-sm-12">
+                                    <label class="col-form-label label-align">
+                                        @Resource.Status
+                                    </label>
+                                    @Html.DropDownListFor(model => model.SO_Status, new SelectList(Model.StatusList, "status_id", "status_name"), new { @class = "form-control", id = "ddlStatus" })
+
+                                </div>
+                                <div class="col-md-1 col-sm-12">
+                                    <button type="button" class="btn btn-primary btn-sm margintop20" id="Btn_Search" onclick="BtnSearch()"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-10 col-sm-12 padding_right">
+        <div id="Itm_Details_List" class="x_panel margin_top_zero">
+            <div class="x_content">
+                <div class="card-box table-responsive dy_table">
+                    <div id="LSOListTbody" class="sticky-table sticky-ltr-cells sb-container container-example1">
+                        <!--<table id="datatable-buttons" class="table table-striped table-bordered width1300" style="width:100%">
+                            <thead>
+                                <tr class="sticky-header">
+                                    <th width="3%">@Resource.SrNo</th>
+                                    <th width="10%">@Resource.OrderNumber</th>
+                                    <th>@Resource.OrderDate</th>
+                                    <th style="display:none">@Resource.OrderDate</th>-->
+                        @*<th>@Resource.OrderType</th>*@
+                        <!--<th width="17%">@Resource.CustomerName</th>
+                                <th width="5%">@Resource.Currency</th>
+                                <th>@Resource.OrderValue</th>
+                                <th>@Resource.Status</th>
+                                <th>@Resource.Createdon</th>
+                                <th>@Resource.ApprovedOn</th>
+                                <th>@Resource.AmendedOn</th>
+                            </tr>
+                        </thead>
+                        <tbody id="LSOListTbody">-->
+                        @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialSOList.cshtml")
+                        @*</tbody>
+                            </table>*@
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2 col-sm-12 ">
+        <div class="x_panel">
+            <div class="x_content">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <form id="available_stock" data-parsley-validate class="form-horizontal form-label-left">
+                            <div class="item form-group">
+                                <div class="col-md-12 col-sm-12 available_right ">
+                                    <label class="col-form-label label-align num_right_label" for="">@Resource.OrderValue</label>
+                                    <input type="text" id="TxtOrderVal" class="form-control num_right" placeholder="0000.00" readonly>
+                                </div>
+                            </div>
+                            <div class="item form-group">
+                                <div class="col-md-12 col-sm-12 available_right ">
+                                    <label class="col-form-label label-align num_right_label" for="">@Resource.ShippedValue</label>
+                                    <input type="text" id="TxtShippedVal" class="form-control num_right" placeholder="0000.00" readonly>
+                                </div>
+                            </div>
+                            <div class="item form-group">
+                                <div class="col-md-12 col-sm-12 available_right ">
+                                    <label class="col-form-label label-align num_right_label" for="">@Resource.PendingOrderValue</label>
+                                    <input type="text" id="TxtPendingOrderVal" class="form-control num_right" placeholder="0000.00" readonly>
+                                </div>
+                            </div>
+                            <div class="item form-group">
+                                <div class="col-md-12 col-sm-12 available_right ">
+                                    <label class="col-form-label label-align num_right_label" for="">@Resource.InvoiceValue</label>
+                                    <input type="text" id="TxtInvoiceVal" class="form-control num_right" placeholder="0000.00" readonly>
+                                </div>
+                            </div>
+                            <div class="item form-group">
+                                <div class="col-md-12 col-sm-12 available_right ">
+                                    <label class="col-form-label label-align num_right_label" for="">@Resource.ReturnValue</label>
+                                    <input type="text" id="ReturnValue" class="form-control num_right" placeholder="0000.00" readonly>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- page content end -->

@@ -1,0 +1,188 @@
+﻿@using EnRepMobileWeb.Resources;
+<style>
+    .tree, #tree {
+        width: 100%;
+        float: left;
+    }
+        .tree ul {
+            width: 100%;
+            padding-top: 20px;
+            position: relative;
+            transition: all 0.5s;
+            -webkit-transition: all 0.5s;
+            -moz-transition: all 0.5s;
+        }
+
+.tree li {
+float: left;
+text-align: center;
+list-style-type: none;
+position: relative;
+padding: 20px 5px 0 5px;
+transition: all 0.5s;
+-webkit-transition: all 0.5s;
+-moz-transition: all 0.5s;
+}
+
+.tree li::before, .tree li::after {
+content: '';
+position: absolute;
+top: 0;
+right: 50%;
+border-top: 1px solid #ccc;
+width: 50%;
+height: 20px;
+}
+
+.tree li::after {
+right: auto;
+left: 50%;
+border-left: 1px solid #ccc;
+}
+
+.tree li:only-child::after, .tree li:only-child::before {
+display: none;
+}
+
+.tree li:only-child {
+padding-top: 0;
+}
+
+.tree li:first-child::before, .tree li:last-child::after {
+border: 0 none;
+}
+
+.tree li:last-child::before {
+border-right: 1px solid #ccc;
+border-radius: 0 5px 0 0;
+-webkit-border-radius: 0 5px 0 0;
+-moz-border-radius: 0 5px 0 0;
+}
+
+.tree li:first-child::after {
+border-radius: 5px 0 0 0;
+-webkit-border-radius: 5px 0 0 0;
+-moz-border-radius: 5px 0 0 0;
+}
+
+.tree ul ul::before {
+content: '';
+position: absolute;
+top: 0;
+left: 50%;
+border-left: 1px solid #ccc;
+width: 0;
+height: 20px;
+}
+
+.tree li a {
+border: 1px solid #ccc;
+padding: 5px 10px;
+text-decoration: none;
+color: #666;
+font-family: arial, verdana, tahoma;
+font-size: 14px;
+display: inline-block;
+border-radius: 5px;
+-webkit-border-radius: 5px;
+-moz-border-radius: 5px;
+transition: all 0.5s;
+-webkit-transition: all 0.5s;
+-moz-transition: all 0.5s;
+}
+
+.tree li a:hover, .tree li a:hover + ul li a {
+background: #c8e4f8;
+color: #000;
+border: 1px solid #94a0b4;
+}
+
+.tree li a:hover + ul li::after,
+.tree li a:hover + ul li::before,
+.tree li a:hover + ul::before,
+.tree li a:hover + ul ul::before {
+border-color: #94a0b4;
+}
+</style>
+<script>
+    'use strict';
+    function TreeData(data, select) {
+        var main = document.querySelector(select);
+        var treecanvas = document.createElement('div');
+        treecanvas.className = 'tree';
+
+
+        var treeCode = buildTree(data, Object.keys(data)[0]);
+        treecanvas.innerHTML = treeCode;
+        main.appendChild(treecanvas);
+
+    }
+
+    function buildTree(obj, node) {
+        debugger
+        var treeString = "";
+        if (node != "BOM") {
+            treeString = "<li><a href='#'>" + obj[node].value + "</a>";
+        }
+        else {
+            treeString = "";
+        }
+        var sons = [];
+        for (var i in obj) {
+            if (obj[i].parent == node)
+                sons.push(i);
+        }
+        if (sons.length > 0) {
+            treeString += "<ul>";
+            for (var i in sons) {
+                treeString += buildTree(obj, sons[i]);
+            }
+            treeString += "</ul>";
+        }
+        return treeString;
+    }
+
+</script>
+<div class="modal-content">
+    <div class="modal-header">
+        <h2>@Resource.BOMHierarchy</h2> <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body pop_top">
+        <div id="tree"></div>
+        <script type="text/javascript" src="js/treeData.js"></script>
+        <script>
+            var tree = {
+                BOM: { value: "BOM Timeline", parent: "" },
+                a: { value: "FG", parent: "BOM" },
+                b: { value: "SF1", parent: "a" },
+                c: { value: "SF2", parent: "a" },
+                d: { value: "SF3", parent: "a" },
+                e: { value: "SF1/1", parent: "b" },
+                f: { value: "SF1/2", parent: "b" },
+                g: { value: "SF2/1", parent: "c" },
+                h: { value: "SF2/2", parent: "c" },
+                i: { value: "SF3/1", parent: "d" },
+                j: { value: "SF3/2", parent: "d" },
+                k: { value: "SF1/1/1", parent: "e" },
+                l: { value: "SF1/1/2", parent: "e" },
+                m: { value: "SF2/1/1", parent: "g" },
+                n: { value: "SF2/1/2", parent: "g" },
+                o: { value: "SF3/1/1", parent: "i" },
+                p: { value: "SF3/1/2", parent: "i" },
+                q: { value: "SF1/1/1/1", parent: "k" },
+                r: { value: "SF1/1/1/2", parent: "k" },
+                s: { value: "SF1/1/1/1/1", parent: "q" },
+                t: { value: "SF1/1/1/1/2", parent: "q" }
+
+            };
+
+            TreeData(tree, "#tree");
+        </script>
+    </div>
+    </div>
+
+
+
+
+
+

@@ -1,0 +1,261 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.FinancialAccountingAndControl.MIS.CashBook.CashBookModel
+@using EnRepMobileWeb.Resources;
+@{
+    var rowId = 0;
+}
+<style>
+   /* #datatable-buttons5_wrapper .btn-group a:nth-child(3) {
+        display: block;
+    }
+
+    #datatable-buttons_wrapper .buttons-pdf, #datatable-buttons1_wrapper .buttons-pdf, #datatable-buttons2_wrapper .buttons-pdf, #datatable-buttons3_wrapper .buttons-csv, #datatable-buttons4_wrapper .buttons-pdf, #datatable-buttons5_wrapper .buttons-pdf, #datatable-buttons6_wrapper .buttons-pdf, #datatable-buttons7_wrapper .buttons-pdf, #datatable-buttons8_wrapper .buttons-pdf, #datatable-buttons9_wrapper .buttons-pdf, #datatable-buttons10_wrapper .buttons-pdf {
+        position: absolute;
+        margin-left: 21%;
+        z-index: 100;
+        margin-top: 0px;
+        cursor: pointer;
+    }*/
+    #DataTable_CashBook_wrapper .dt-buttons {
+        position: absolute;
+        margin-left: 15%;
+    }
+
+    #DataTable_CashBook_filter {
+        position: absolute;
+        right: 5px;
+        top: 0px;
+    }
+
+    #DataTable_CashBook_wrapper {
+        padding-left: 2px !important;
+    }
+        #DataTable_CashBook_wrapper .buttons-pdf {
+            margin-left:1% !important;
+        }
+
+</style>
+@*<script src="~/Content/Scripts/Common/CommonJS.js"></script>*@
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<input type="hidden" id="cb_op_bal" value="@Model.Opening_Bal" />
+<input type="hidden" id="cb_op_bal_type" value="@Model.Opening_BalType" />
+<input type="hidden" id="cb_cl_bal" value="@Model.Closing_Bal" />
+<input type="hidden" id="cb_cl_bal_type" value="@Model.Closing_BalType" />
+
+<table id="DataTable_CashBook" class="table table-striped width1800 rowhighlighttbl CashBook itmfrz" cellspacing="0" width="100%">
+    <thead>
+        <tr class="sticky-header">
+            <th width="3%">@Resource.SrNo</th>
+            <th width="20%" >@Resource.GLAccount</th>
+            <th width="11%" class="itmStick">@Resource.GLVoucher <br /> @Resource.Number</th>
+            <th width="9%">@Resource.GLVoucher <br /> @Resource.Date</th>
+            <th style="display:none">@Resource.GLVoucher <br /> @Resource.Date</th>
+            <th width="26%">@Resource.Narration</th>
+            <th width="9%">@Resource.DebitAmount</th>
+            <th width="9%">@Resource.Credit <br /> @Resource.Amount</th>
+            <th width="9%">@Resource.Closing <br /> @Resource.Balance</th>            
+            <th width="4%">@Resource.Balance <br /> @Resource.Type</th>
+        </tr>
+    </thead>
+    <tbody>
+        @*@if (Model.CashBook_List != null)//Commented by Suraj Maurya on 20-06-2025 due to Process changed
+        {
+            foreach (var row in Model.CashBook_List)
+            {
+                rowId++;
+        <tr>
+            <td>@rowId</td>
+            <td>@row.Acc_Name</td>
+            <td id="Vou_No" class="ItmNameBreak itmStick tditemfrz">
+                <div class="col-sm-10 no-padding" id="">@row.Vou_No</div>
+                <div class="col-sm-2 i_Icon">
+                    <button type="button" id="VoucherDetail" class="calculator" onclick="OnClickIconBtn(event);" data-toggle="modal" data-target="#VoucherDetailMW" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.VoucherDetail"> </button>
+                </div>
+            </td>
+
+            <td id="Vou_Dt">@row.Vou_Dt</td>
+            <td id="Voudt" style="display:none">@row.VouDt</td>
+            <td class="narration">@row.Narr</td>
+            <td class="num_right">@row.Dr_Amt</td>
+            <td class="num_right">@row.Cr_Amt</td>
+            <td class="num_right">@row.Closing_Bal</td>
+            <td class="center">@row.Bal_Type</td>
+        </tr>
+            }
+        }*@
+    </tbody>
+</table>
+<table id="HdnTableCashBook" hidden cellspacing="0" width="100%">
+
+    <tbody>
+        @*@if (Model.CashBook_List != null)//Commented by Suraj Maurya on 20-06-2025 due to Process changed
+        {
+            foreach (var row in Model.CashBook_List)
+            {
+                rowId++;
+        <tr>
+            <td>@rowId</td>
+            <td id="Acc_Name">@row.Acc_Name</td>
+            <td id="Vou_No">@row.Vou_No</td>
+            <td id="Vou_Dt">@row.Vou_Dt</td>
+            <td id="Voudt" style="display:none">@row.VouDt</td>
+            <td id="Narr">@row.Narr</td>
+            <td id="Dr_Amt" class="num_right">@row.Dr_Amt</td>
+            <td id="Cr_Amt" class="num_right">@row.Cr_Amt</td>
+            <td id="Closing_Bal" class="num_right">@row.Closing_Bal</td>
+            <td id="Bal_Type">@row.Bal_Type</td>
+        </tr>
+            }
+        }*@
+    </tbody>
+</table>
+<script type="text/javascript">
+//Added by Suraj Maurya on 20-06-2025 due to Process changed
+    $(document).ready(function () {
+
+        CashBookData_dttbl()
+
+    });
+    function CashBookData_dttbl() {
+
+        debugger;
+        var search_prm = {
+            AccID: $("#acc_name").val(),
+            CurrId: $("#curr").val(),
+            From_dt: $("#txtFromdate").val(),
+            To_dt: $("#txtTodate").val()
+        }
+        var model = {
+            "search_prm": search_prm
+        }
+        $("#DataTable_CashBook").DataTable().destroy();
+        $("#DataTable_CashBook").DataTable({
+            dom: "Blfrtip",
+            "pageLength": 50,
+            "processing": true, // for show progress bar
+            "serverSide": true, // for process server side
+            "filter": true, // this is for disable filter (search box)
+            "orderMulti": false, // for disable multiple column at once
+            "ajax": {
+                "url": "/ApplicationLayer/CashBook/LoadDetailsDataTable",
+                "data": { model },
+                "type": "POST",
+                "datatype": "json",
+                "dataSrc": function (json) {
+                    footerData = json.footer; // Save for later use in footerCallback
+                    return json.data;
+                }
+            },
+            "columns": StkDtldataColumns(),
+            columnDefs: StkDtlDataColumnRenders(),
+            "footerCallback": function (row, data, start, end, display) {
+
+                if (!footerData) return;
+                footerData.map((val, index) => {
+                    $("#cb_op_bal").val(val.Opening_Bal);
+                    $("#cb_op_bal_type").val(val.Opening_BalType);
+                    $("#cb_cl_bal").val(val.Closing_Bal);
+                    $("#cb_cl_bal_type").val(val.Closing_BalType);
+
+                    $("#CB_OpeningBalance").val(val.Opening_Bal);
+                    if (val.Opening_BalType.trim() != "0") {
+                        $("#lbl_cb_opbaltype").text(val.Opening_BalType.trim());
+                        $("#Hdnlbl_cb_opbaltype").val(val.Opening_BalType.trim());
+                    }
+                    else {
+                        $("#lbl_cb_opbaltype").text("");
+                    }
+
+                    $("#CB_ClosingBalance").val(val.Closing_Bal);
+                    if (val.Closing_BalType.trim() != "0") {
+                        $("#lbl_cb_clbaltype").text(val.Closing_BalType.trim());
+                        $("#Hdnlbl_cb_clbaltype").val(val.Closing_BalType.trim());
+                    }
+                    else {
+                        $("#lbl_cb_clbaltype").text("");
+                    }
+
+                });
+            },
+             buttons: [
+                {
+                    extend: "csv",
+                    className: "btn-sm",
+                    action: function (e, dt, button, config) {
+                        var csvUrl = "/ApplicationLayer/CashBook/ExportCsv";
+                        let CsvName = $("title").text() + "_" + moment().format('YYYYMMDDhhmmss');
+                        Cmn_importDataToCSV(e, dt, button, config, csvUrl, CsvName);
+
+                    }
+
+                },
+                 {
+                     extend: "pdf",
+                     className: "btn-sm",
+                     action: function (e, dt, button, config) {
+                         GeneralLedgerPrint();
+
+                     }
+                 }],
+
+        });
+        //var exportbtn = `<button class="btn btn-default buttons-csv buttons-html5 btn-sm Csv" id="CsvData" onclick="AccountRecevablCSV()" tabindex="0" aria-controls="datatable-buttons5" href="#"><span>CSV</span></button>
+        //                <button class="btn btn-default buttons-pdf buttons-html5 btn-sm" onclick="GeneralLedgerPrint()" tabindex="0" aria-controls="datatable-buttons5" href="#"><span>Print</span></button>`;
+        //$("#DataTable_CashBook_length").append(exportbtn);
+    }
+    function StkDtldataColumns() {
+        var Array = [];
+        Array = [
+            { "data": "SrNo", "name": "SrNo", "autoWidth": true },
+            { "data": "acc_name", "name": "acc_name", "autoWidth": true, className: "" },
+            { "data": "doc_no", "name": "doc_no", "autoWidth": true, className: "ItmNameBreak itmStick tditemfrz" },
+            { "data": "doc_dt", "name": "doc_dt", "autoWidth": true },
+            { "data": "voudt", "name": "voudt", "autoWidth": true, className: "" },
+            { "data": "narr", "name": "narr", "autoWidth": true, className: "narration" },
+            { "data": "dr_amt", "name": "dr_amt", "autoWidth": true, className:"num_right" },
+            { "data": "cr_amt", "name": "cr_amt", "autoWidth": true, className: "num_right" },
+            { "data": "cloasing_amt", "name": "cloasing_amt", "autoWidth": true, className: "num_right" },
+            { "data": "closing_type", "name": "closing_type", "autoWidth": true, className: "center" }
+        ]
+        return Array;
+    }
+    function StkDtlDataColumnRenders() {
+        debugger;
+        var array = [];
+        array = [
+            {
+
+                render: (data, type, row) => {
+                    return `<div class="col-sm-10 no-padding" id="Vou_No">${data}</div>
+                            <div class="col-sm-2 i_Icon">
+                                <button type="button" id="VoucherDetail" class="calculator" onclick="OnClickIconBtn(event);" data-toggle="modal" data-target="#VoucherDetailMW" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.VoucherDetail"> </button>
+                            </div>`
+                },
+                targets: 2//supp_name
+            },
+
+            {
+                'createdCell': function (td, cellData, rowData, row, col) {
+                    $(td).attr('id', 'Vou_Dt');
+                },
+                targets: 3
+            },
+            {
+                'createdCell': function (td, cellData, rowData, row, col) {
+                    $(td).attr('id', 'Voudt');
+                    $(td).attr('hidden', 'hidden');
+                },
+                targets: 4
+            }
+        ]
+        return array;
+    }
+</script>
+@*@if (Session["CB_listByFilter"] != null)
+{
+    if (Session["CB_listByFilter"].ToString() == "CBlistByFilter")
+    {
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+        @Scripts.Render("~/Content/Scripts/DatatablesJs")
+    }
+    Session["CB_listByFilter"] = null;
+}*@

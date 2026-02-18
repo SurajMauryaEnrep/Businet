@@ -1,0 +1,83 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.InventoryManagement.StockReservation.StockReservation_Model
+@using EnRepMobileWeb.Resources;
+@{
+    var rowId = 0;
+}
+
+<table id="datatable-buttons" class="table table-striped " cellspacing="0" width="100%">
+    <thead>
+        <tr class="sticky-header">
+            <th width="3%"> @Resource.SrNo</th>
+            <th width="26%">@Resource.ItemName</th>
+            <th width="10%">@Resource.UOM</th>
+            <th width="15%">@Resource.Branch</th>
+            <th width="16%">@Resource.Warehouse</th>
+            <th width="10%">@Resource.Reserved @Resource.Quantity</th>
+            <th width="10%">@Resource.TotalStock</th>
+            <th width="10%">@Resource.AvailableStock</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (ViewBag.ItemDetails != null)
+        {
+            var rowIdx = 0;
+            foreach (System.Data.DataRow Row in ViewBag.ItemDetails.Rows)
+            {
+                rowIdx++;
+                
+        <tr id="@rowIdx">
+            <td class="sr_padding"><span id="SpanRowId">@rowIdx</span><input type="hidden" id="hdSpanRowId" value="@rowIdx" style="display: none;" /></td>
+            <td>
+                <div class="col-sm-11">
+                    <label id="lblitemname">@Row["item_name"].ToString()</label>
+                    <input type="hidden" id="hdItemId" value="@Row["item_id"].ToString()" style="display: none;" />
+                    <input type="hidden" id="ReshdWhId" value="@Row["wh_id"].ToString()" style="display: none;" />
+                    <input type="hidden" id="hdmListSubItem" value="@Row["sub_item"].ToString()" style="display: none;" />
+                </div> 
+                <div class="col-sm-1 i_Icon">
+                    <button type="button" class="calculator" onclick="OnClickIconBtn1(event);" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.ItemInformation"> @*<i class="fa fa-info" aria-hidden="true" title="@Resource.ItemInformation"></i>*@ </button>
+                </div>
+            </td>
+            <td>
+                <label id="lbluom">@Row["uom_alias"].ToString()</label>
+                <input type="hidden" id="hduomid" value="@Row["uom"].ToString()" style="display: none;" />
+            </td>
+            <td><label id="lblcompname">@Row["comp_nm"].ToString()</label></td>
+            <td>
+                <div class="col-sm-11"><label id="lblwhname">@Row["wh_name"].ToString()</label></div>
+            </td>
+            <td>
+                <div class="col-sm-11 num_right"><label id="lblresqty">@Row["res_qty"].ToString()</label></div>
+                <div class="col-sm-1 i_Icon">
+                    <button type="button" class="calculator" data-toggle="modal" onclick="OnClickReservedQtyIconBtn(event);"
+                            data-target="#UnReservedStockDetail" data-backdrop="static" data-keyboard="false">
+                    <img src="/Content/Images/iIcon1.png" alt="" title=" @Resource.ReservedStock @Resource.Detail"> 
+                    </button>
+                </div>
+            </td>
+            <td class="num_right"><label id="lblwhtotstk">@Row["wh_tot_stk"].ToString()</label></td>
+            <td class="num_right"><label id="lblwhavltstk">@Row["wh_avl_stk"].ToString()</label></td>
+
+        </tr>
+                    }
+                    }       
+            </tbody>
+    </table>
+@*@if (Session["CNFSearch"] != null)*@
+@if (Model.CNFSearch != null)
+{
+    //if (Session["CNFSearch"].ToString() == "CNF_Search")
+    if (Model.CNFSearch == "CNF_Search")
+    {
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+        @Scripts.Render("~/Content/Scripts/DatatablesJs")
+        //Session["CNFSearch"] = null;
+        Model.CNFSearch = null;
+    }
+}
+
+
+
+
+
+

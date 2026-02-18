@@ -1,0 +1,164 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.InventoryManagement.MIS.MaterialIssueDetail.MaterialIssueDetail_Model
+@using EnRepMobileWeb.Resources;
+<style>
+    #datatable-buttons1_wrapper .btn-group a:nth-child(3) {
+        display: inline-block;
+        position: absolute;
+    }
+</style>
+@{
+    string ValDigit = "0.";
+    var VD = Convert.ToInt32(Session["ValDigit"].ToString());
+    for (var i = 0; i < VD; i++)
+    {
+        ValDigit += "0";
+    }
+    //decimal total = 0;
+
+    var TableWidth = "width1500";
+    if (ViewBag.Issuetype != null)
+    {
+        if (ViewBag.Issuetype.ToString() == "E")
+        {
+            TableWidth = "width1800";
+        }
+    }
+}
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<table id="datatable-buttons1" class="table table-striped rowhighlighttbl mb-3 @TableWidth itmfrz" cellspacing="0">
+    <thead>
+        <tr class="sticky-header">
+            <th width="4%"> @Resource.SrNo</th>
+            <th hidden="hidden"> @Resource.SrNo</th>
+            <th width="20%" class="itmStick">@Resource.Item @Resource.Name</th>
+            <th hidden="hidden"> @Resource.ItemName</th>
+            <th width="8%" title="Unit Of Measure"> @Resource.UOM</th>
+            <th width="10%">@Resource.Issue @Resource.Number</th>
+            <th hidden="hidden">@Resource.Issue @Resource.Date</th>
+            <th width="10%">@Resource.Issue @Resource.Date</th>
+            @if (ViewBag.Issuetype != null)
+            {
+                if (ViewBag.Issuetype.ToString() == "E")
+                {
+                    <th width="10%">@Resource.Returnable</th>
+                }
+            }
+            <th width="10%">@Resource.Requirement @Resource.Area</th>
+            @if (ViewBag.Issuetype != null)
+            {
+                if (ViewBag.Issuetype.ToString() != "I")
+                {
+                    <th width="10%">@Resource.Issued @Resource.to1</th>
+                }
+            }
+            <th width="10%">@Resource.Requisition @Resource.Number</th>
+            <th hidden="hidden">@Resource.Requisition @Resource.Date</th>
+            <th width="8%">@Resource.Requisition @Resource.Date</th>
+            <th width="12%">@Resource.Warehouse</th>
+            <th width="8%">@Resource.Issued @Resource.Quantity</th>
+            @if (ViewBag.Issuetype != null)
+            {
+                if (ViewBag.Issuetype.ToString() == "E")
+                {
+                    <th width="8%">@Resource.ReceiptQuantity</th>
+                    <th width="8%">@Resource.PendingQuantity</th>
+                }
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @if (ViewBag.IESissueReport != null)
+        {
+            var srno = 1;
+            foreach (System.Data.DataRow dtr in ViewBag.IESissueReport.Rows)
+            {
+                <tr>
+                    <td>@srno</td>
+                    <td id="hdnItemId" hidden="hidden">@dtr["item_id"].ToString()</td>
+                    <td id="itmName" class="ItmNameBreak itmStick tditemfrz">
+                        <div class="col-sm-11 no-padding" id="multiWrapper"><span id="ItmNameSpan"> @dtr["item_name"].ToString()</span></div>
+                        <div class="col-sm-1 i_Icon">
+                            <button type="button" id="ItmInfoBtnIcon" class="calculator" onclick="BindItemInfoBtnClick(event);" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.ItemInformation">  </button>
+                        </div>
+                    </td>
+
+                    <td id="ItemName" hidden="hidden">@dtr["item_name"].ToString()</td>
+                    <td id="uomName">@dtr["uom_name"].ToString()</td>
+                    <td id="tdIssueNo">@dtr["issue_no"].ToString()</td>
+                    <td id="tdIssuedate" hidden="hidden">@dtr["issuedt1"].ToString()</td>
+                    <td>@dtr["issue_dt"].ToString()</td>
+                    @if (ViewBag.Issuetype != null)
+                    {
+                        if (ViewBag.Issuetype.ToString() == "E")
+                        {
+                            <td>@dtr["return_able"].ToString()</td>
+                        }
+                    }
+                    <td>@dtr["reqarea"].ToString()</td>
+                    @if (ViewBag.Issuetype.ToString() != "I")
+                    {
+                        <td>@dtr["IssueTo"].ToString()</td>
+                    }
+                    <td>@dtr["mrs_no"].ToString()</td>
+                    <td hidden="hidden">@dtr["mrsdt1"].ToString()</td>
+                    <td>@dtr["mrs_dt"].ToString()</td>
+                    <td>@dtr["wh_name"].ToString()</td>
+                    <td>
+                        <div class="col-sm-10 lpo_form no-padding num_right" ><span id="issueQty"> @dtr["issue_qty"].ToString()</span></div>
+                        <div class="col-sm-2 i_Icon no-padding" id="div_SubItemGrnQty">
+                            @if (dtr["sub_item"].ToString() == "Y")
+                            {
+                                <button type="button" id="SubItemGrnQty" class="calculator subItmImg" onclick="return SubItemDetailsPopUp('SUBITM',event)" data-toggle="modal" data-target="#SubItem" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+                            }
+                            else
+                            {
+                                <button type="button" id="SubItemGrnQty" class="calculator subItmImg" data-toggle="modal" disabled data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+                            }
+                        </div>
+                    </td>
+                    @if (ViewBag.Issuetype != null)
+                    {
+                        if (ViewBag.Issuetype.ToString() == "E")
+                        {
+                            <td>
+                                <div class="col-sm-10 lpo_form no-padding num_right" ><span id="rec_qtyQty">@dtr["rec_qty"].ToString()</span></div>
+                                <div class="col-sm-2 i_Icon no-padding" id="div_SubItemGrnQty">
+                                    @if (dtr["sub_item"].ToString() == "Y")
+                                    {
+                                        <button type="button" id="SubItemGrnQty" class="calculator subItmImg" onclick="return SubItemDetailsPopUp('ExterRec_qty',event)" data-toggle="modal" data-target="#SubItem" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+                                    }
+                                    else
+                                    {
+                                        <button type="button" id="SubItemGrnQty" class="calculator subItmImg" data-toggle="modal" disabled data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+                                    }
+                                </div>
+                            </td>
+                            <td>
+                                <div class="col-sm-10 lpo_form no-padding num_right"><span  id="pend_qtyQty">@dtr["pend_qty"].ToString()</span></div>
+                                <div class="col-sm-2 i_Icon no-padding" id="div_SubItemGrnQty">
+                                    @if (dtr["sub_item"].ToString() == "Y")
+                                    {
+                                        <button type="button" id="SubItemGrnQty" class="calculator subItmImg" onclick="return SubItemDetailsPopUp('ExterPendingQty',event)" data-toggle="modal" data-target="#SubItem" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+                                    }
+                                    else
+                                    {
+                                        <button type="button" id="SubItemGrnQty" class="calculator subItmImg" data-toggle="modal" disabled data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+                                    }
+                                </div>
+                            </td>
+                        }
+                    }
+                </tr>
+                srno = srno + 1;
+            }
+        }
+    </tbody>
+</table>
+@if (Model.SearchStatus != null)
+{
+    if (Model.SearchStatus == "1")
+    {
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+        @Scripts.Render("~/Content/Scripts/DatatablesJs")
+    }
+}

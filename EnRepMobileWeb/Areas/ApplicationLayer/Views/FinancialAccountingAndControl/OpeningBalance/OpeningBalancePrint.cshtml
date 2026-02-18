@@ -1,0 +1,94 @@
+﻿<style>
+    .th_con {
+        paddingtop: 5px;
+        paddingbottom: 5px;
+        font-weight: bold;
+        text-align: center;
+        border-top: 1px solid #000000;
+        border-left: 1px solid #000000;
+        font-size: 10px;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .td_con {
+        paddingtop: 5px;
+        paddingbottom: 5px;
+        paddingleft: 5px;
+        paddingright: 5px;
+        font-weight: bold;
+        text-align: center;
+        border-top: solid 1px #000000;
+        border-bottom: solid .5px #000000;
+        border-left: .5px solid #000000;
+        font-size: 9px;
+        font-weight: normal;
+        text-align: left;
+    }
+
+    .td_con_right {
+        border-right: solid 1px #000000;
+    }
+
+    .num_right {
+        text-align: right;
+    }
+    .num_center {
+        text-align:center;
+    }
+</style>
+<div style="width:100%; background-color:#000000">
+    <div style="width:100%; margin:0 auto; background-color:#ffffff;">
+        <table style="width:100%;">
+            <tr>
+                <td>
+                    @Html.Partial("~/Areas/ApplicationLayer/Views/FinancialAccountingAndControl/MIS/GeneralLedger/GLHeaderPrint.cshtml")
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                        <thead>
+                            <tr>
+                                <th width="3%" class="th_con">S.NO.</th>
+                                <th width="16%" class="th_con">Account Name</th>
+                                <th width="7%" class="th_con">Account Type</th>
+                                <th width="22%" class="th_con">Account Group</th>                              
+                                <th width="5%" class="th_con">Financial <br /> Year</th>
+                                <th width="5%" class="th_con">Currency</th>
+                                <th width="6%" class="th_con">Conversion <br /> Rate</th>
+                                <th width="9%" class="th_con">Opening Balance<br /> (In Specific) Debit</th>
+                                <th width="9%" class="th_con">Opening Balance<br /> (In Specific) Credit</th>
+                                <th width="9%" class="th_con">Opening Balance<br /> (In Base) Debit</th>
+                                <th width="9%" class="th_con td_con_right">Opening Balance<br /> (In Base) Credit</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (ViewBag.Details != null)
+                            {
+                                var rowno = 1;
+                                foreach (System.Data.DataRow dr in ViewBag.Details.Rows)
+                                {
+                                    <tr>
+                                        <td class="td_con">@rowno</td>
+                                        <td class="td_con">@dr["acc_name"]</td>
+                                        <td class="td_con ">@dr["AccType"]</td>
+                                        <td class="td_con ">@dr["acc_group_name"]</td>
+                                        <td class="td_con ">@dr["fin_y"]</td>
+                                        <td class="td_con num_center">@dr["curr_name"].ToString()</td>
+                                        <td class="td_con num_right ">@dr["conv_rate"]</td>
+                                        <td class="td_con num_right ">@dr["sp_bal_dr"]</td>
+                                        <td class="td_con num_right ">@dr["sp_bal_cr"]</td>
+                                        <td class="td_con num_right ">@dr["bs_bal_dr"]</td>
+                                        <td class="td_con num_right td_con_right">@dr["bs_bal_cr"]</td>
+                                    </tr>
+                                    rowno = rowno + 1;
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>

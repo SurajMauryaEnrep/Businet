@@ -1,0 +1,753 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.Procurement.ImportPurchase.ImportTracking.ImportTracking_Model
+@using EnRepMobileWeb.MODELS.Common;
+@using EnRepMobileWeb.Resources;
+
+@if (Session["UserId"] == null)
+{
+    Response.Redirect("~/Login");
+}
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+@*/*----------------THIS PAGE IS CREATED BY HINA SHARMA ON 13-02-2025----------------------------------*/*@
+<style>
+    /* #datatable-buttons_wrapper .buttons-pdf {
+        display: normal !important;
+    }*/
+    #datatable-buttons_wrapper .btn-group a:nth-child(3) {
+        display: block !important
+    }
+</style>
+<script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+<script src="~/Content/Css/build/js/sweetalert.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/Procurement/ImportPurchase/ImportTracking/ImportTracking.js"></script>
+@{ 
+    if (Model.TransType == "Update")
+    {
+        if (Model.Command == "Edit")
+        {
+            
+            //Disable = false;
+            ViewBag.Disable = false;
+            //}
+        }
+        else
+        {
+            //Disable = true;
+            ViewBag.Disable = true;
+        }
+    }
+    else
+    {
+        if (Model.Command == "Refresh")
+        {
+            //Disable = true;
+            ViewBag.Disable = true;
+        }
+        if (Model.Command == "New")
+        {
+            //Disable = false;
+            ViewBag.Disable = false;
+        }
+    }
+}
+@{
+    if (Model.Message != null)
+    {
+
+        if (Model.Message == "Save")
+        {
+            <script type="text/javascript">
+                swal("", $("#savemsg").text(), "success");
+            </script>
+        }
+
+        //Model.Message = null;
+    }
+    if (Model.Message == "Save"||Model.BtnName=="BtnSave")
+    {
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $("#btn_edit").attr("disabled", false);
+                $("#btn_edit").css("filter", "");
+                $("#btn_refresh").attr("disabled", false);
+                $("#btn_refresh").css("filter", "");
+                $("#ddl_SrcDocNo").attr("disabled", true);
+                $("#BtnSearch").hide();
+            });
+        </script>
+    }
+}
+<title>@Model.Title</title>
+@using (Html.BeginForm("ImportTrackingBtnCommand", "ImportTracking", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    {
+<div class="row">
+    
+    <!-- Import Tracking Attachment Start -->
+
+    <div id="PreviewITAttachment" class="modal fade show" aria-modal="true" role="dialog">
+        <div class="modal-dialog" style=" max-width:800px;">
+            <div class="modal-content" id="PreviewShowItAttachment">
+
+            </div>
+        </div>
+    </div>
+
+    <div id="ITAttachment" class="modal fade show" aria-modal="true" role="dialog">
+
+
+        <div class="modal-dialog" style=" max-width:800px;">
+            <div class="modal-content" id="ShowItAttachment">
+                @*/*------------------Attachment Start----------------*/*@
+                @{
+                    //ViewBag.Disable = Disable;
+                    ViewBag.Disable = ViewBag.Disable;
+                }
+                @Html.Partial("~/Areas/Common/Views/Comn_PartialAttatchmentDetail.cshtml")
+                @Html.HiddenFor(model => model.attatchmentdetail, new { @id = "hdn_Attatchment_details" })
+                @*/*------------------Attachment End----------------*/*@
+                @*<div class="modal-header">
+                        <h2>Import Tracking Attachment</h2>
+                        <button type="button" class="close" data-dismiss="modal">×</button>
+                    </div>
+                    <div class="modal-body pop_top">
+                        <div id="PartialImageBind">
+                            <script src="/Content/Scripts/Common/CommonJS1.js"></script>
+                            <table id="hdn_attatchment_list" style="display:none;">
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="form-group" id="FilesUpload">
+                            <section class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="headingFive">
+                                    <h4 class="panel-title"> <a class="" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFive" aria-expanded="true" aria-controls="collapseFive"> Attachment<span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a> </h4>
+                                </div>
+
+                                <div id="collapseFive" class="panel-collapse collapse show" role="tabpanel" aria-labelledby="headingFive" style="">
+                                    <div class="panel-body">
+                                        <div id="PartialImageBind">
+
+                                            <script src="/Content/Scripts/Common/CommonJS1.js"></script>
+
+
+
+                                            <table id="hdn_attatchment_list" style="display:none;">
+                                                <tbody>
+                                                </tbody>
+                                            </table>
+
+
+
+
+                                        </div>
+
+                                        <div class="form-group" id="FilesUpload">
+                                            <div class="file-input theme-fa file-input-ajax-new">
+                                                <div class="file-preview ">
+                                                    <button type="button" class="close fileinput-remove" aria-label="Close">
+                                                        <span aria-hidden="true">×</span>
+                                                    </button>    <div class=" file-drop-zone">
+                                                        <div class="file-drop-zone-title">Drag &amp; drop files here …</div>
+                                                        <div class="file-preview-thumbnails">
+                                                        </div>
+                                                        <div class="clearfix"></div>    <div class="file-preview-status text-center text-success"></div>
+                                                        <div class="kv-fileinput-error file-error-message" style="display: none;"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="kv-upload-progress kv-hidden" style="display: none;">
+                                                    <div class="progress">
+                                                        <div class="progress-bar bg-success progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%;">
+                                                            0%
+                                                        </div>
+                                                    </div>
+                                                </div><div class="clearfix"></div>
+                                                <div class="input-group file-caption-main">
+                                                    <div class="file-caption form-control  kv-fileinput-caption" tabindex="500">
+                                                        <span class="file-caption-icon"></span>
+                                                        <input class="file-caption-name" onkeydown="return false;" onpaste="return false;" placeholder="Select files...">
+                                                    </div>
+                                                    <div class="input-group-btn input-group-append">
+                                                        <button type="button" tabindex="500" title="Clear selected files" class="btn btn-default btn-secondary fileinput-remove fileinput-remove-button"><i class="glyphicon glyphicon-trash"></i>  <span class="hidden-xs">Remove</span></button>
+                                                        <button type="button" tabindex="500" title="Abort ongoing upload" class="btn btn-default btn-secondary kv-hidden fileinput-cancel fileinput-cancel-button"><i class="glyphicon glyphicon-ban-circle"></i>  <span class="hidden-xs">Cancel</span></button>
+                                                        <a href="#" tabindex="500" title="Upload selected files" class="btn btn-default btn-secondary fileinput-upload fileinput-upload-button"><i class="glyphicon glyphicon-upload"></i>  <span class="hidden-xs">Upload</span></a>
+                                                        <div tabindex="500" class="btn btn-primary btn-file"><i class="glyphicon glyphicon-folder-open"></i>&nbsp;  <span class="hidden-xs">Browse …</span><input id="file-1" type="file" multiple="" class="file" data-overwrite-initial="false" data-min-file-count="1" name="ItemFiles"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" id="" onclick="">Close</button>
+                    </div>*@
+            </div>
+        </div>
+        <table id="Temphdn_Doc_AttachDetailTbl" hidden>
+            <tbody>
+                @if (ViewBag.TempHdnAttachmentData != null)
+                {
+                    foreach (System.Data.DataRow dr in ViewBag.TempHdnAttachmentData.Rows)
+                    {
+                        <tr>
+                            <td><input type="text" id="tmp_srnoattachid" value='@dr["tmpsrnoattachid"]'></td>
+                            <td><input type="text" id="tmp_fileName" value='@dr["tmpfilename"]'></td>
+                            <td><input type="text" id="tmp_filePath" value='@dr["tmpfilepath"]'></td>
+                        </tr>
+
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Import Tracking Attachment End -->
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <h2 class="col-md-8 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                @Html.HiddenFor(model => model.Create_id, new { @id = "Create_ID" })
+                @Html.HiddenFor(model => model.UserID, new { @id = "User_ID" })
+                @Html.HiddenFor(model => model.ListFilterData1, new { @id = "ListFilterData", value = Model.ListFilterData1 })
+                @Html.HiddenFor(model => model.Combo_SrNoDate, new { @id = "HdnDocNo_ForAttach" })
+                @Html.HiddenFor(Model => Model.Title, new { @id = "hdn_title" })
+                @Html.HiddenFor(Model => Model.TblEditFlag, new { @id = "hdn_TblEditFlag" })
+                @Html.HiddenFor(model => model.TransType, new { @id = "hdn_TransType" })
+                <input type="hidden" id="DocumentMenuId" value="@ViewBag.DocumentMenuId" />
+                <div id="" class="col-md-4 col-sm-12 work_flow heading_right_padding">
+                    @{
+                        var btnName = Model.BtnName;
+                        switch (btnName)
+                        {
+
+                            case "BtnEdit":
+                                <ul>
+                                    @if (ViewBag.VBRoleList != null)
+                                    {
+                                        foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                        {
+
+                                            if (Row["feature_id"].ToString() == "105101140130002")
+                                            {
+                                                @*if (Model.Command == "Edit")
+                                        {
+                                            <li>
+
+                                                <button class="edit"
+                                                        title="@Resource.Edit" disabled style="filter: grayscale(100%)" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+
+                                            </li>
+                                        }
+                                        else
+                                        {*@
+                                                <li>
+
+                                                    <button class="edit"
+                                                            title="@Resource.Edit" disabled style="filter: grayscale(100%)" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+
+                                                </li>
+                                                //}
+
+                                            }
+
+
+                                        }
+                                    }
+                                    <li>
+                                        @if (Model.Command == "Edit")
+
+                                        {
+                                            <button class="save"
+                                                    onclick="return InsertImportNewDocDetail()" title="@Resource.Save" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                        }
+                                        else
+                                        {
+                                            <button class="save"
+                                                    title="@Resource.Save" disabled style="filter: grayscale(100%)" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                        }
+                                    </li>
+
+                                    <li>
+                                        <button class="refresh"
+                                                title="@Resource.Refresh" type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                                    </li>
+
+                                </ul>
+                                break;
+
+                            case "Refresh":
+                                <ul>
+                                    @if (ViewBag.VBRoleList != null)
+                                    {
+                                        foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                        {
+
+                                            if (Row["feature_id"].ToString() == "105101140130002")
+                                            {
+                                                
+                                                <li>
+                                                    <button class="edit"
+                                                            title="@Resource.Edit" @*disabled style="filter: grayscale(100%)"*@ type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                </li>
+                                                
+                                            }
+
+
+                                        }
+                                    }
+                                    <li>
+                                        <button class="save"
+                                                title="@Resource.Save" disabled style="filter: grayscale(100%)" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                    </li>
+
+                                    <li>
+                                        <button class="refresh"
+                                                title="@Resource.Refresh" @*disabled style="filter: grayscale(100%)"*@ type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                                    </li>
+
+                                </ul>
+                                break;
+                            case "BtnToDetailPage":
+                                <ul>
+                                    @if (ViewBag.VBRoleList != null)
+                                    {
+                                        foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                        {
+
+                                            if (Row["feature_id"].ToString() == "105101140130002")
+                                            {
+                                                
+                                                <li>
+                                                    <button class="edit"
+                                                            title="@Resource.Edit" type="submit" onclick="ImpTrckDtlEnable_EditBtn()" id="btn_edit" name="Command" value="Edit"></button>
+                                                </li>
+
+
+                                                //else
+                                                //{
+                                                //    <li>
+                                                //        <button class="edit" disabled style="filter: grayscale(100%)"
+                                                //        title="@Resource.Edit" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                //    </li>
+                                                //}
+                                            }
+
+
+                                        }
+                                    }
+
+
+
+                                    <li>
+                                        <button class="save"
+                                                title="@Resource.Save" disabled style="filter: grayscale(100%)" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                    </li>
+
+
+                                    <li>
+                                        <button class="refresh"
+                                                title="@Resource.Refresh" @*disabled style="filter: grayscale(100%)"*@ type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                                    </li>
+
+                                </ul>
+                                break;
+                            case "BtnSave":
+                                <ul>
+                                    @if (ViewBag.VBRoleList != null)
+                                    {
+                                        foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                        {
+
+                                            if (Row["feature_id"].ToString() == "105101140130002")
+                                            {
+                                                <li>
+
+                                                    <button class="edit"
+                                                            title="@Resource.Edit" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                </li>
+                                            }
+
+
+                                        }
+                                    }
+                                    <li>
+                                        <button class="save"
+                                                title="@Resource.Save" disabled style="filter: grayscale(100%)" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                    </li>
+
+
+
+                                    <li>
+                                        <button class="refresh"
+                                                title="@Resource.Refresh" type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                                    </li>
+
+                                </ul>
+                                break;
+
+
+                        }
+                    }
+                    @*<ul>
+
+                <li>
+                    <button class="edit"
+                            title="@Resource.Edit" disabled type="submit" id="btn_edit" name="Command" value="Edit" onclick="EnableEditkBtn()"></button>
+                </li>
+
+                <li>
+                    <button class="save"
+                            title="@Resource.Save" type="submit" onclick="" id="btn_save" name="Command" value="Save"></button>
+                </li>
+
+                <li>
+                    <button class="refresh"
+                            title="@Resource.Refresh" type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                </li>
+
+
+            </ul>*@
+                </div>
+                <div class="clearfix"></div>
+
+                <!--<div class="x_title pad_mar ">
+    <div class="col-md-12 col-sm-12 icon_tool ">-->
+                <!--<span>Collapsible / Accordion </span>-->
+                <!--<div class="approved_by">
+                <ul>
+                    <li>
+                        <span>@Resource.CreatedBy<br><b></b></span>
+                    </li>
+                    <li>
+                        <span>@Resource.Createdon<br><b></b></span>
+                    </li>
+                    <li>
+                        <span>@Resource.ApprovedBy<br><b></b></span>
+                    </li>
+                    <li>
+                        <span>@Resource.ApprovedOn<br><b></b></span>
+                    </li>
+                    <li>
+                        <span>@Resource.AmendedBy<br><b></b></span>
+                    </li>
+                    <li>
+                        <span>@Resource.AmendedOn<br><b></b></span>
+                    </li>
+                    <li>
+                        <span>@Resource.Status<br /><b></b></span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </div>-->
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12 ">
+
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                @*<div class="col-md-3 col-sm-12 pl-0">*@
+                <div class="col-md-55 col-sm-12 pl-0">
+                    <label class="col-form-label label-align">@Resource.SupplierName <span class="required">*</span></label>
+
+                    @*<select class="form-control" id="SupplierName" name="Status">
+                            <option value="">All</option>
+                            <option value="">AB Supplier Test</option>
+                            <option value="">A.ASWIN11sdadasdas</option>
+                        </select>*@
+                    @*<select class="form-control" id="SupplierName" name="Status" disabled>
+                        <option value="">
+                            Torex Industries
+                        </option>
+
+                    </select>*@
+                    @if (Model.Command == "Edit" || Model.Command == "Update")
+                        {
+                            @Html.DropDownListFor(model => model.SuppID, new SelectList(Model.SupplierNameList, "supp_id", "supp_name"), new { @class = "form-control", @id = "SupplierName", @onchange = "OnChangeSuppName(this)", disabled = "disabled" })
+                        }
+                        else
+                        {
+                            @Html.DropDownListFor(model => model.SuppID, new SelectList(Model.SupplierNameList, "supp_id", "supp_name"), new { @class = "form-control", @id = "SupplierName", @onchange = "OnChangeSuppName(this)" })
+                        }
+                        @Html.HiddenFor(model => model.SuppID, new { @id = "Hdn_SupplierID" })
+                        @Html.HiddenFor(model => model.SuppName, new { @id = "Hdn_SuppName" })
+                        @Html.ValidationMessageFor(model => model.SuppID, String.Empty, new { @style = "color:red;!important", @id = "SpanSuppNameErrorMsg" })
+
+                        <input type="hidden" id="SuppNameList" value='@Url.Action("GetAutoCompleteSearchSuppList", "ImportTracking")' />
+                </div>
+                @*<div class="col-md-3 col-sm-12 pl-0">*@
+                <div class="col-md-55 col-sm-12 pl-0">
+                    <label class="col-form-label label-align">@Resource.OrderNumber <span class="required">*</span></label>
+                    @*<select class="form-control" id="OrderNumber" name="Status">
+                            <option value="">All</option>
+                            <option value="">B1/01/25/DPO0000003</option>
+                            <option value="">B1/01/25/DPO0000002</option>
+                        </select>*@
+                    @*<select class="form-control" id="OrderNumber" name="Status" disabled>
+                        <option value="">
+                            DM/10/25/IPO000001
+                        </option>
+
+                    </select>*@
+                    @if (Model.Command == "Edit")
+                        {
+                            @Html.DropDownListFor(model => model.SrcDocNo, new SelectList(Model.DocNoLists, "SrcDocnoId", "SrcDocnoVal")
+                        , new { @class = "form-control", @id = "ddl_SrcDocNo", @onchange = "OnChangeSrcPONo(this)", disabled = "disabled" })
+                        }
+                        else
+                        {
+                            @Html.DropDownListFor(model => model.SrcDocNo, new SelectList(Model.DocNoLists, "SrcDocnoId", "SrcDocnoVal")
+                        , new { @class = "form-control", @id = "ddl_SrcDocNo", @onchange = "OnChangeSrcPONo(this)" })
+                        }
+
+
+                        @Html.HiddenFor(model => model.SrcDocNo, new { @id = "hdn_SrcDocNo" })
+                        <span id="SpanSrcDocNoErrorMsg" class="error_message"></span>
+                </div>
+                <div class="col-md-55 col-sm-12 pl-0">
+                    <label class="col-form-label label-align">@Resource.OrderDate</label>
+                    @*<input value="2025-10-08" class="form-control" disabled="disabled" id="OrderDate" maxlength="20" name="OrderDate" placeholder="@Resource.OrderDate" readonly="readonly" type="date">*@
+                    @Html.TextBoxFor(model => model.SrcDocDate, "{0:yyyy-MM-dd}", new { @class = "form-control", @id = "txt_SrcDocDate", @placeholder = "Source Document Date", @readonly = "readonly", type = "date" })
+                        @Html.HiddenFor(model => model.SrcDocDate, new { @id = "hdn_SrcDocDate" })
+                </div>
+                <div class="col-md-55 col-sm-12 pl-0">
+                    <label class="col-form-label label-align">@Resource.ImportFileNumber</label>
+                    @*<input value="" class="form-control" id="ImportFileNumber" maxlength="50" name="ImportFileNumber" placeholder="@Resource.ImportFileNumber" readonly="readonly" type="text">*@
+                    @Html.TextBoxFor(model => model.ImpFileNo, new { @id = "txt_imp_file_no", @class = "form-control", @autocomplete = "off", @readonly = "readonly", @maxlength = "50", @type = "text", @placeholder = Resource.ImportFileNumber, @onblur = "this.placeholder='" + Resource.ImportFileNumber + "'" })
+                    @Html.HiddenFor(model => model.ImpFileNo, new { @id = "hdn_ImpFileNo" })
+                </div>
+                <div class="col-md-55 col-sm-12 pl-0">
+                    <label class="col-form-label label-align">@Resource.Currency</label>
+                    @*<input value="" class="form-control" id="txt_Currency" maxlength="50" name="Currencynm" placeholder="@Resource.Currency" readonly="readonly" type="text">*@
+                    @Html.TextBoxFor(model => model.Currency, new { @id = "txt_Currency", @class = "form-control", @autocomplete = "off", @readonly = "readonly", @maxlength = "50", @type = "text", @placeholder = Resource.Currency, @onblur = "this.placeholder='" + Resource.Currency + "'" })
+                    @Html.HiddenFor(model => model.Curr_id, new { @id = "hdn_Curr_id" })
+                </div>
+                <div class="col-md-55 col-sm-12 pl-0">
+                    <label class="col-form-label label-align">@Resource.TradeTerms </label>
+                    @*<input value="" class="form-control" id="txt_TradeTerms" maxlength="30" name="TradeTermsnm" placeholder="@Resource.TradeTerms" readonly="readonly" type="text">*@
+                    @Html.TextBoxFor(model => model.Trade_Term, new { @id = "txt_TradeTerms", @class = "form-control", @autocomplete = "off", @readonly = "readonly", @maxlength = "20", @type = "text", @placeholder = Resource.TradeTerms, @onblur = "this.placeholder='" + Resource.TradeTerms + "'" })
+                    @Html.HiddenFor(model => model.Trade_Term, new { @id = "hdn_Trade_Term" })
+                </div>
+
+                <div class="col-md-55 col-sm-12 pl-0">
+                    <label class="col-form-label label-align">@Resource.CountryOfOrigin </label>
+                    @*<input value="" class="form-control" id="txt_CountryOfOrigin" maxlength="200" name="CountryOfOriginnm" placeholder="@Resource.CountryOfOrigin" readonly="readonly" type="text">*@
+                    @Html.TextBoxFor(model => model.CntryOrigin, new { @id = "txt_CountryOfOrigin", @class = "form-control", @autocomplete = "off", @readonly = "readonly", @maxlength = "50", @type = "text", @placeholder = Resource.CountryOfOrigin, @onblur = "this.placeholder='" + Resource.CountryOfOrigin + "'" })
+                    @Html.HiddenFor(model => model.CntryOrigin, new { @id = "hdn_CntryOrigin" })
+                </div>
+                <div class="col-md-55 col-sm-12 pl-0">
+                    <label class="col-form-label label-align">@Resource.PortOfOrigin </label>
+                    @*<input value="" class="form-control" id="txt_PortOfOrigin" maxlength="50" name="PortOfOriginnm" placeholder="@Resource.PortOfOrigin" readonly="readonly" type="text">*@
+                    @Html.TextBoxFor(model => model.PortOrigin, new { @id = "txt_PortOfOrigin", @class = "form-control", @autocomplete = "off", @readonly = "readonly", @maxlength = "50", @type = "text", @placeholder = Resource.PortOfOrigin, @onblur = "this.placeholder='" + Resource.PortOfOrigin + "'" })
+                    @Html.HiddenFor(model => model.PortOrigin, new { @id = "hdn_PortOrigin" })
+                </div>
+                <div class="col-md-55 col-sm-12 pl-0">
+                    <label class="col-form-label label-align">@Resource.remarks </label>
+                    @*<input value="" class="form-control" id="txt_Remark" maxlength="300" name="Remarksnm" placeholder="@Resource.remarks" readonly="readonly" type="text">*@
+                    @*@Html.TextBoxFor(model => model.Remarks, new { @id = "txt_Remarks", @class = "form-control", @autocomplete = "off", @readonly = "readonly", @maxlength = "300", @type = "text", @placeholder = Resource.remarks, @onblur = "this.placeholder='" + Resource.remarks + "'" })*@
+                    @Html.TextAreaFor(model => model.Remarks, new { @class = "form-control remarksmessage", @cols = "20", @id = "txt_Remarks", @maxlength = "300", @name = "detailremarks", @autocomplete = "off", @readonly = "readonly", @placeholder = @Resource.remarks, @rows = "2", })
+                </div>
+                @*<div class="col-md-3 col-sm-12 pl-0">*@
+                @*<div class="col-md-5 col-sm-12 pl-0">
+                        <label class="col-form-label label-align">@Resource.OrderDate</label>
+                        <input value="" class="form-control" disabled="disabled" id="OrderDate" maxlength="20" name="OrderDate" placeholder="@Resource.OrderDate" readonly="readonly" type="date">
+                    </div>
+                    <div class="col-md-5 col-sm-12 pl-0 pr-0">
+                        <label class="col-form-label label-align">@Resource.ImportFileNumber</label>
+                        <input value="" class="form-control" id="ImportFileNumber" maxlength="50" name="ImportFileNumber" placeholder="@Resource.ImportFileNumber" readonly="readonly" type="text">
+                    </div>*@
+                @if (Model.Command == "Edit")
+                {
+                    <div class="col-md-2 col-sm-12 pl-0" style="display:none">
+                        <button type="button" class="btn btn-primary btn-sm margintop20" id="BtnSearch" onclick="SearchImportTrackListData()">
+                            <i class="fa fa-search" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-md-2 col-sm-12 pl-0">
+                        <button type="button" class="btn btn-primary btn-sm margintop20" id="BtnSearch" onclick="SearchImportTrackListData()">
+                            <i class="fa fa-search" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                }
+
+                @*</div>*@
+                <div class="clear"></div>
+                <div class="col-md-55 col-sm-12 pl-0 ">
+                    <label class="col-form-label label-align">@Resource.Date <span class="required"> *</span></label>
+                    @*<input class="form-control" id="" max="" name="FromDate" onchange="" type="date" value="2024-09-01">*@
+                    @if (Model.Command == "Edit")
+                    {
+                        @Html.TextBoxFor(model => model.Date, "{0:yyyy-MM-dd}", new
+
+                        {
+                                                                                   @class = "form-control",
+                                                                                   @id = "txt_Date",
+                                                                                   @placeholder = "Date",
+                                                                                   type = "date",
+                                                                                   @onchange = "OnChangeDate(this)",
+                                                                                   onkeydown = "return false"
+
+                                                                                  })
+                    }
+                    else
+                    {
+                        @Html.TextBoxFor(model => model.Date, "{0:yyyy-MM-dd}", new
+
+                        {
+                                                   @class = "form-control",
+                                                   @id = "txt_Date",
+                                                   @placeholder = "Date",
+                                                   type = "date",
+                                                   @onchange = "OnChangeDate(this)",
+                                                   onkeydown = "return false",
+                                                   disabled = "disabled"
+                                                  })
+                    }
+
+                    @Html.HiddenFor(model => model.Date, new { @id = "hdn_Date" })
+                    @Html.HiddenFor(model => model.EditSrNoforAttch, new { @id = "hdn_EditSrNoforAttch" })
+                    <span id="SpanDateErrorMsg" class="error_message"></span>
+                </div>
+                <div class="col-md-55 col-sm-12 pl-0">
+                    <label class="col-form-label label-align">@Resource.DocumentNumber <span class="required"> *</span></label>
+                    @*<input id="DocumentNumber " class="form-control" name="DocumentNumber" placeholder="@Resource.DocumentNumber">*@
+                    @if (Model.Command == "Edit")
+                    {
+                        @Html.TextBoxFor(model => model.DocNo, new { @id = "txt_DocNo", @class = "form-control remarksmessage", @autocomplete = "off", @maxlength = "20", @type = "text", @placeholder = Resource.DocumentNumber, @onchange = "OnChangeDocNo()", onmouseover = "OnMouseOver(this)", @onblur = "this.placeholder='" + Resource.DocumentNumber + "'" })
+                    }
+                    else
+                    {
+                        @Html.TextBoxFor(model => model.DocNo, new { @id = "txt_DocNo", @class = "form-control remarksmessage", @autocomplete = "off", @maxlength = "20", @type = "text", @placeholder = Resource.DocumentNumber, @onchange = "OnChangeDocNo()", onmouseover = "OnMouseOver(this)", disabled = "disabled", @onblur = "this.placeholder='" + Resource.DocumentNumber + "'" })
+                    }
+                    <span id="SpanDocNoErrorMsg" class="error_message"></span>
+                </div>
+                <div class="col-md-55 col-sm-12 pl-0">
+                    <label class="col-form-label label-align">@Resource.DocumentDate <span class="required"> *</span></label>
+                    @*<input class="form-control" id="" max="" name="FromDate" onchange="" type="date" value="2024-09-01">*@
+                    @if (Model.Command == "Edit")
+                    {
+                        @Html.TextBoxFor(model => model.DocDate, "{0:yyyy-MM-dd}", new
+                        {
+                            @class = "form-control",
+                            @id = "txt_DocDate",
+                            @placeholder = "Document Date",
+                            type = "date",
+                            @onchange = "OnChangeDocDate()",
+                            onkeydown = "return false"
+
+                        })
+                    }
+                    else
+                    {
+                        @Html.TextBoxFor(model => model.DocDate, "{0:yyyy-MM-dd}", new
+                                                   {
+                                                       @class = "form-control",
+                                                       @id = "txt_DocDate",
+                                                       @placeholder = "Document Date",
+                                                       type = "date",
+                                                       @onchange = "OnChangeDocDate()",
+                                                       onkeydown = "return false",
+                                                       disabled = "disabled"
+                                                   })
+                    }
+                    @Html.HiddenFor(model => model.DocDate, new { @id = "hdn_DocDate" })
+                    <span id="SpanDocDateErrorMsg" class="error_message"></span>
+                </div>
+                <div class="col-md-55 col-sm-12 pl-0 pr-0">
+                    <label class="col-form-label label-align">@Resource.Status <span class="required"> *</span></label>
+                    @*<textarea class="form-control remarksmessage" cols="20" id="Status" maxlength="300" name="Remarks" placeholder="@Resource.Status" rows="2" onmouseover="" title=""></textarea>*@
+                    @if (Model.Command == "Edit")
+                    {
+                        @Html.TextAreaFor(model => model.Status, new { @class = "form-control remarksmessage", @cols = "20", @id = "txt_Status", @maxlength = "500", @name = "detailStatus", @autocomplete = "off", @placeholder = @Resource.Status, @rows = "2", @onchange = "OnChangeStatus()" })
+                    }
+                    else
+                    {
+                        @Html.TextAreaFor(model => model.Status, new { @class = "form-control remarksmessage", @cols = "20", @id = "txt_Status", @maxlength = "500", @name = "detailStatus", @autocomplete = "off", @placeholder = @Resource.Status, @rows = "2", @onchange = "OnChangeStatus()", disabled = "disabled" })
+                    }
+                    <span id="SpanStatusErrorMsg" class="error_message"></span>
+                </div>
+                <div class="col-md-1 col-sm-12 margin25">
+                    @if (Model.Command == "Edit")
+                    {
+                        <div class="col-md-6 col-sm-12 pr-0" id="div_AttachId" >
+                            <button type="button" id="btn_headerattach" disabled class="calculator" data-toggle="modal" onclick="OnClkViewAttachDtlRowWise(this,event,'New')" data-target="#ITAttachment" data-backdrop="static" data-keyboard="false"><i type="" class="fa fa-paperclip tracking-attach" onclick="" aria-hidden="true" title="@Resource.Attachment"></i></button>
+
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-md-6 col-sm-12 pr-0" id="div_AttachId" style="display:none">
+                            <button type="button" id="" class="calculator" data-toggle="modal" onclick="" data-target="#ITAttachment" data-backdrop="static" data-keyboard="false"><i type="" class="fa fa-paperclip tracking-attach" onclick="" aria-hidden="true" title="@Resource.Attachment"></i></button>
+
+                        </div>
+                    }
+                    @if (Model.Command == "Edit")
+                    {
+                        <div class="col-md-6 col-sm-12 pl-0" id="divAddNew_IT">
+                            <a href="#" id="">
+                                <div class="plus_icon1">
+                                    <i class="fa fa-plus" id="BtnAttribute" onclick="AddNewDocDetail()" title="@Resource.PopulateItemDetail"></i>
+                                </div>
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-md-6 col-sm-12 pl-0" id="divAddNew_IT" style="display:none">
+                            <a href="#" id="">
+                                <div class="plus_icon1">
+                                    <i class="fa fa-plus" id="BtnAttribute" onclick="AddNewDocDetail()" title="@Resource.PopulateItemDetail"></i>
+                                </div>
+                            </a>
+                        </div>
+                    }
+                    <div class="col-md-1 col-sm-12" id="divUpdate_IT" style="display:none;">
+                        <div class="col-md-1 col-sm-12">
+                            <a href="#" style="color:#ffffff;">
+                                <div class="plus_icon1 margin5" id="divUpdate" style="display: block;"> <i class="fa fa-refresh ref" id="ParaItemUpdateBtn" onclick="OnClickItemUpdateBtn()" title="Update"></i> </div>
+                                <input type="hidden" id="hdnUpdateInTable" />
+                            </a>
+                        </div>
+                    </div>
+
+
+
+                </div>
+                <div class="col-md-1 col-sm-12 margin25">
+
+
+                </div>
+                @*<div class="card-box table-responsive dy_table">
+                    <div class="price_item_detail">
+                    <div class=" col-sm-12 pl-0">
+                    <div class="tableFixHead">*@
+                @*<h2>@Resource.ItemDetail</h2>*@
+                <div class="col-md-12 col-sm-12 padding_right mt-2 pl-0">
+                    <div id="" class="x_panel margin_top_zero">
+                        <div class="x_content">
+                            <div class="card-box table-responsive dy_table">
+                                <div id="tbody_ImpTrackList" class="sticky-table sticky-ltr-cells sb-container container-example1">
+                                    @Html.HiddenFor(model => model.NewDocumentDetail, new { @id = "hdnNewDocDetail" })
+                                    @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialImportTrackingList.cshtml")
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    }
+    }

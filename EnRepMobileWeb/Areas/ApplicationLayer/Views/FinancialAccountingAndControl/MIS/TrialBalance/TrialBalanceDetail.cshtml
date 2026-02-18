@@ -1,0 +1,259 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.FinancialAccountingAndControl.MIS.TrialBalance.TrialBalanceModel
+@using EnRepMobileWeb.Resources;
+@if (Session["UserId"] == null)
+{
+    Response.Redirect("~/Login");
+}
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+<script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/FinancialAccountingAndControl/MIS/TrialBalance/TrialBalanceJs.js"></script>
+<style>
+.treegrid-indent {
+    width: 0px;
+    height: 16px;
+    display: inline-block;
+    position: relative;
+}
+.treegrid-expander {
+    width: 0px;
+    height: 16px;
+    display: inline-block;
+    position: relative;
+    left: -25px;
+    cursor: pointer;
+}
+#thtrailbal tr > th {
+    position: sticky;
+    padding: .5rem;
+    z-index: 2;
+    top: 0;
+}
+
+</style>
+<title>@Model.Title</title>
+@using (Html.BeginForm("TrialBalanceSave", "TrialBalance", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+<div class="row">
+    <div id="div_glDetail" class="modal fade" role="dialog">
+        <div class="modal-dialog" style="min-width:1000px;">
+            <div id="div_gldetails_popup">
+            </div>
+        </div>
+    </div>
+    <!-- Trial Balance Closing Balance Detail -->
+    <div id="ClosingBalanceDetail" class="modal fade show" role="dialog" aria-modal="true">
+        <div class="modal-dialog pop_csv" style="min-width:1200px;">
+            <div id="div_debitcreditAndClosingdetails">
+                @Html.Partial("~/Areas/Common/Views/PartialTrialBalanceClosingBalanceDetail.cshtml")
+            </div>
+        </div>
+    </div>
+    <!-- Partial General Ledger Voucher Detail Month Wise -->
+    <div id="VoucherDetailMW" class="modal fade" role="dialog">
+        <div class="modal-dialog" style=" max-width:800px;">
+            <div id="gl_mwvoucherdetails">
+                @Html.Partial("~/Areas/Common/Views/Comn_PartialGeneralLedgerVoucherDetailMW.cshtml")
+            </div>
+        </div>
+    </div>
+    <!-- Cost Center Detail -->
+    <div id="CostCenterDetail" class="modal fade" role="dialog">
+        <div class="modal-dialog" style="max-width:800px;">
+            <div id="gl_ccdeatilsdis">
+                @Html.Partial("~/Areas/Common/Views/Cmn_PartialCostCenterDetailDisplay.cshtml")
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <h2 class="col-md-9 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                <input type="hidden" id="DocumentMenuId" value="@ViewBag.DocumentMenuId" />@*/*Add by Hina sharma on 19-11-2024 to loader*/*@
+
+                <div id="" class="col-md-2 col-sm-12 no-margin no-padding ">
+                    <div class="col-md-6 col-sm-12 no-margin" style="text-align:right;">
+                        <label class="col-form-label label-align">@Resource.ReportType</label>
+                    </div>
+                    <div class="col-md-6 col-sm-12 no-margin no-padding ">
+                        @Html.DropDownListFor(model => model.ReportType, new SelectList(new List<Object>
+                                {
+                       new { value = "SU", text = @Resource.Summary },
+                                new { value = "DE", text =@Resource.Detailed  },
+                   },
+                                                 "value",
+                                                 "text"
+                                                 ), new { @id = "rpt_type", @onchange = "OnChangeReportTypeddl()", @class = "form-control" })
+                    </div>
+                </div>
+                @*<div id="" class="col-md-3 col-sm-12 no-margin no-padding ">
+                    <div class="col-md-5 col-sm-12 no-margin" style="text-align:right;">
+                        <label class="col-form-label label-align">@Resource.BalanceBy</label>
+                    </div>
+                    <div class="col-md-7 col-sm-12 no-margin no-padding ">
+                        @if (ViewBag.VBRoleList != null)
+                        {
+                            var rowcount = 0;
+                            foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                            {
+                                ++rowcount;
+                                if (Row["feature_id"].ToString() == "105104135101001")
+                                {
+                                    @Html.DropDownListFor(model => model.BalanceType, new SelectList(new List<Object>
+                               {
+                               new { value = "BW", text = @Resource.BranchWise },
+                               new { value = "HW", text =@Resource.HOWise  },
+                               },
+                                                "value",
+                                                "text"
+                                                ), new { @id = "bal_type", @onchange = "OnChangeBalanceByddl()", @class = "form-control" })
+                                }
+
+                                if (Row["feature_id"].ToString() == "105104135101002")
+                                {
+                                    if (Row["feature_id"].ToString() == "105104135101002" && @rowcount == 1)
+                                    {
+                                        @Html.DropDownListFor(model => model.BalanceType, new SelectList(new List<Object>
+                                                          {
+                                      new { value = "BW", text = @Resource.BranchWise },
+                                                          },
+                                                  "value",
+                                                  "text"
+                                                  ), new { @id = "bal_type", @onchange = "OnChangeBalanceByddl()", @class = "form-control" })
+
+
+                                    }
+                                    <input type="hidden" id="hdn_csvfile" value="Y" />
+                                }
+                                else
+                                {
+                                    <input type="hidden" id="hdn_csvfile" value="N" />
+                                }
+                            }
+                        }
+                        else
+                        {
+                            @Html.DropDownListFor(model => model.BalanceType, new SelectList(new List<Object>
+                                           {
+                       new { value = "BW", text = @Resource.BranchWise },
+                                           },
+                                  "value",
+                                  "text"
+                                  ), new { @id = "bal_type", @onchange = "OnChangeBalanceByddl()", @class = "form-control" })
+                            <input type="hidden" id="hdn_csvfile" value="N" />
+                        }
+                    </div>
+                </div>*@
+                <div class="col-md-1 col-sm-12 heading_right_padding" id="div_GeneratePDF_TB" style="display:none">
+                    <ul>
+                        <li>
+                            <button type="button" id="btn_GeneratePDF_TB" class="calculator" data-toggle="modal" onclick="GenerateBalanceSheetPDF_TB(event)" data-target="#" data-backdrop="static" data-keyboard="false"><img src="~/Content/Images/pdf.png" width="32" height="32" alt="" title="@Resource.TrialBalance"></button>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="x_title pad_mar ">
+                    <div class="col-md-12 col-sm-12 icon_tool padding_zero no-padding">
+                        <div class="col-md-4 col-sm-12">
+                            <label class="col-form-label label-align">@Resource.AccountName</label>
+                            <select class="form-control" id="acc_name" name="acc_name">
+                                <option selected="selected" value="0">ALL</option>
+                            </select>
+                            <input type="hidden" id="GLListName" value='@Url.Action("GetAutoCompleteGLList", "TrialBalance")' />
+                        </div>
+                        <div class="col-md-4 col-sm-12">
+                            <label class="col-form-label label-align">@Resource.AccountGroup</label>
+                            <select class="form-control" id="acc_group" name="acc_group">
+                                <option selected="selected" value="0">ALL</option>
+                            </select>
+                            <input type="hidden" id="GLAccGrp" value='@Url.Action("GetAutoCompleteAccGrp", "TrialBalance")' />
+                        </div>
+                        <div class="col-md-4 col-sm-12">
+                            <label class="col-form-label label-align">@Resource.AccountType</label>
+
+                            @Html.DropDownListFor(model => model.AccountType, new SelectList(new List<Object>
+                       {
+                         new { value = "0", text = "---Select---" },
+                         new { value = "7", text = "Bank"  },
+                         new { value = "1", text = "Customer"  },
+                         new { value = "8" , text = "Cash" },
+                         new { value = "4" , text = "Employee" },
+                         new { value = "9", text = "Exchange Fluctuation"  },
+                         new { value = "12" , text = "Interbranch" },
+                         new { value = "11" , text = "Others" },
+                         new { value = "10" , text = "Retained Earning" },
+                         new { value = "2" , text = "Supplier" },
+                         new { value = "3", text = "Service Provider"  },
+                         new { value = "5", text = "Transporter"  },
+                         new { value = "6" , text = "Tax" },
+                         new { value = "13", text = "Tax Authority"  }
+                       },
+                         "value",
+                         "text"
+                         ), new { @id = "acc_type", @class = "form-control" })
+
+                        </div>
+                        <div id="div_brch" class="col-md-4 col-sm-12 multiselectBranch">
+                            <label class="col-form-label label-align">@Resource.Branch</label>
+                            @Html.DropDownListFor(model => model.Branch, new SelectList(Model.BranchList, "br_id", "br_name"), new { @id = "branch", @multiple = "multiple", @class = "form-control" })
+                        </div>
+                        <div class="col-md-2 col-sm-12">
+                            <label class="col-form-label label-align">@Resource.Upto</label>
+                            @*@Html.TextBoxFor(model => model.UpToDate, new { @class = "form-control", @id = "txtuptodate", @placeholder = "dd-MMM-yyyy", @type = "date" })*@
+                            @Html.TextBoxFor(model => model.UpToDate, new { @class = "form-control", @id = "txtuptodate", @type = "date", @Value = System.DateTime.Now.ToString("yyyy-MM-dd"), @max = System.DateTime.Now.ToString("yyyy-MM-dd") })
+
+                        </div>
+                        <div class="col-md-2 col-sm-12 margintop20">
+                            <label class="col-form-label label-align col-md-10 col-sm-12"> @Resource.IncludeZeroBalance</label>
+                            <div class="custom-control custom-switch col-md-2 col-sm-12">
+                                <input type="checkbox" class="custom-control-input col-md-3 col-sm-12 margin-switch" onchange="CheckedIncludeZeroStock()" id="IncludeZeroStock" checked="checked">
+                                <label class="custom-control-label col-md-9 col-sm-12" for="IncludeZeroStock" style="padding: 3px 0px;">  </label>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-12  pl-0 pr-0">
+                            <div class="col-md-9 col-sm-12 mt-3" id="rdo_currfilter" style="display:none">
+                                <label class="col-form-label label-align font-weight-bold" style="padding-right:10px;">@Resource.Currency</label>
+                                @Resource.Base<span>&nbsp;</span>
+                                <input checked="checked" class="" id="rdo_Base" name="TrialBalance" type="radio" value="BS">
+                                <span>&nbsp;</span> @Resource.Specific<span>&nbsp;</span>
+                                <input class="" id="rdo_Specific" name="TrialBalance" type="radio" value="SP">
+                                @Html.HiddenFor(model => model.AccountGroupName, new { @id = "hdn_AcGrpName" })
+                                @Html.HiddenFor(model => model.AccountTypeName, new { @id = "hdn_AcTypName" })
+                                @Html.HiddenFor(model => model.Currency, new { @id = "hdn_currency" })
+                            </div>
+                            <div class="col-md-3 col-sm-12">
+                                <button type="button" class="btn btn-primary btn-sm margintop20" id="BtnSearch" onclick="OnClickBtnSearch();"><i class="fa fa-search" aria-hidden="true"></i></button>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @Html.HiddenFor(model => model.PrintPDFData, new { @id = "AccountPayblePrintData" })
+    @Html.HiddenFor(model => model.PrintTotalPDFData, new { @id = "TrialBalTotalPrintData" })
+    @Html.HiddenFor(model => model.PrintBrIdListPDFData, new { @id = "BRIDListPrintData" })
+    @Html.HiddenFor(model => model.hdnPDFPrint, new { @id = "hdnPDFPrint" })
+    @Html.HiddenFor(model => model.hdnCSVPrint, new { @id = "hdnCSVPrint" })
+    @Html.HiddenFor(model => model.searchValue, new { @id = "searchValue" })
+    @Html.HiddenFor(model => model.InsightButton, new { @id = "InsightButton" })
+    @Html.HiddenFor(model => model.InsightButtonData, new { @id = "InsightButtonData" })
+    @Html.HiddenFor(model => model.Allfilters, new { @id = "Allfilters" })
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1">
+            <div class="x_content mar_pad1">
+                <div class="card-box table-responsive dy_table">
+                    <div id="divtrialbaldetailstable" class="sticky-table sticky-ltr-cells sb-container container-example1 StockDetailTable">
+                        @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialTrialBalanceList.cshtml")
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+}
+<!-- page content end -->

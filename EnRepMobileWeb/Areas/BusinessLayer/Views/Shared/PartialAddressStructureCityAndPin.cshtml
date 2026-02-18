@@ -1,0 +1,212 @@
+﻿<style>
+  
+
+    .hidden {
+        display: none;
+    }
+</style>
+
+@using EnRepMobileWeb.Resources;
+@{
+    var EditFlag = "N";
+    var DeleteFlag = "N";
+    if (ViewBag.VBRoleList != null)
+    {
+        foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+        {
+            if (Row["feature_id"].ToString() == "103190002")
+            {
+                EditFlag = "Y";
+            }
+            if (Row["feature_id"].ToString() == "103190004")
+            {
+                DeleteFlag = "Y";
+            }
+        }
+    }
+}
+@*//Modifed by Shubham Maurya on 16-12-2022 add id in State and country Detail//*@
+@*<table id="datatable-buttons2" class="table table-bordered rowhighlighttbl " width="100%">*@
+<table id="City_Table" class="table table-bordered rowhighlighttbl " width="100%">
+    <thead>
+        <tr class="sticky-header">
+            <th width="2%">@Resource.SrNo</th>
+            <th style="display:none;"></th>
+            <th> @Resource.City</th>
+            @*<th> @Resource.Pin</th>*@
+            <th style="display:none;"></th>
+            <th> @Resource.DistrictAndZone</th>
+            <th style="display:none;"></th>
+            <th> @Resource.StateAndProvince</th>
+            <th style="display:none;"></th>
+            <th> @Resource.Country</th>
+            <th width="4%">&nbsp;</th>
+            <th width="4%">&nbsp;</th>
+            <th style="display:none;"></th>
+        </tr>
+    </thead>
+    <tbody id="CityAndPin_tbody">
+    </tbody>
+</table>
+
+
+
+<script>
+    $(document).ready(function () {
+
+
+        const table = $("#City_Table").DataTable({
+            "pageLength": 50,
+            processing: true,
+            serverSide: true,
+            filter: true,
+            orderMulti: false,
+           // dom: 'Bfrtip',
+            ajax: {
+                url: "/BusinessLayer/AddressStructure/LoadData",
+                type: "POST",
+                datatype: "json"
+            },
+            columns: [
+                { data: "srno", name: "srno", "autoWidth": true},
+                { data: "city_id", name: "city_id", className: "hidden", "autoWidth": true},
+                { data: "city_name", name: "city_name", "id": "cityname", "autoWidth": true},
+                { data: "district_id", name: "district_id", className: "hidden", "autoWidth": true },  // hidden but included in export
+                { data: "district_name", name: "district_name", "id": "district_nm", "autoWidth": true  },
+                { data: "state_id", name: "state_id", className: "hidden", "autoWidth": true},        // hidden but included in export
+                { data: "state_name", name: "state_name", "id": "statnm", "autoWidth": true  },
+                { data: "country_id", name: "country_id", className: "hidden", "autoWidth": true},    // hidden but included in export
+                { data: "country_name", name: "country_name", "id": "countrname", "autoWidth": true },
+                { data: "", name: "", "id": "", "autoWidth": true },
+                { data: "", name: "", "id": "", "autoWidth": true },
+
+                { data: "dependcy", name: "dependcy",className: "hidden" }
+            ],
+            "columnDefs": StkDtlDataColumnRenders(),
+
+
+        });
+        EditCity();
+    });
+    function StkDtlDataColumnRenders() {
+        const deleteFlag = '@DeleteFlag'; // Razor variable
+        var array = [];
+        array = [
+            {
+                'targets': 0,
+                'createdCell': function (td, cellData, rowData, row, col) {
+                    $(td).attr('class', 'srno');
+                }
+            },
+            {
+                'targets': 1,
+                'createdCell': function (td, cellData, rowData, row, col) {
+                    $(td).attr('id', 'cityid');
+                }
+            },
+            {
+                'targets': 2,
+                'createdCell': function (td, cellData, rowData, row, col) {
+                    $(td).attr('id', 'cityname');
+                }
+            },
+            {
+                'targets': 3,
+                'createdCell': function (td, cellData, rowData, row, col) {
+                    $(td).attr('id', 'distid');
+                }
+            },
+            {
+                'targets': 4,
+                'createdCell': function (td, cellData, rowData, row, col) {
+                    $(td).attr('id', 'district_nm');
+                }
+            },
+            {
+                'targets': 5,
+                'createdCell': function (td, cellData, rowData, row, col) {
+                    $(td).attr('id', 'statid');
+                }
+            },
+            {
+                'targets': 6,
+                'createdCell': function (td, cellData, rowData, row, col) {
+                    $(td).attr('id', 'statnm');
+                }
+            },
+            {
+                'targets': 7,
+                'createdCell': function (td, cellData, rowData, row, col) {
+                    $(td).attr('id', 'countrID');
+                }
+            },
+            {
+                'targets': 8,
+                'createdCell': function (td, cellData, rowData, row, col) {
+                    $(td).attr('id', 'countrname');
+                }
+            },
+            {
+                render: (data, type, row) =>  `${data}`,
+
+                targets: 1
+            },
+            {
+                render: (data, type, row) => `${data}`,
+                targets: 2
+            },
+            {
+                render: (data, type, row) => `${data}`,
+                targets: 3
+            },
+            {
+                render: (data, type, row) => `${data}`,
+                targets: 4
+            },
+            {
+                render: (data, type, row) => `${data}`,
+                targets: 5
+            },
+            {
+                render: (data, type, row) => `${data}`,
+                targets: 6
+            },
+            {
+                render: (data, type, row) => `${data}`,
+                targets: 7
+            },
+            {
+                render: (data, type, row) => `${data}`,
+                targets: 8
+            },
+            {
+                data: "dependcy", name: "dependcyEdit",
+                render: function (d, type, row) {
+                    return row.dependcy === "NotExit"
+                        ? '<i class="fa fa-edit editrecordCity" aria-hidden="true" title="Edit"></i>'
+                        : '<i class="fa fa-edit editrecordCity" aria-hidden="true" title="Edit"></i>';
+                },
+                 targets: 9
+            },
+            {
+                data: "dependcy", name: "dependcyDelete",
+                render: function (d, type, row) {
+                    if (deleteFlag === 'Y') {
+                        return row.dependcy === "NotExit"
+                            ? '<i class="fa fa-trash red" onclick="functionConfirm_City(this)" title="Delete"></i>'
+                            : '<i class="fa fa-trash red disabled" style="filter:grayscale(100%)" title="Delete" disabled></i>';
+                    }
+                    return '';
+                },
+                 targets: 10
+            },
+
+              {
+                  render: (data, type, row) =>  `<input type="hidden" id="hdndependcy1" value='${data}'>`,
+                targets: 11
+            },
+        ];
+        return array;
+    }
+</script>
+

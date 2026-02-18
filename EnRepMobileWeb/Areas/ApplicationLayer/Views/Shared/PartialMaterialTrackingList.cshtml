@@ -1,0 +1,146 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.SubContracting.MIS.MaterialTracking.MaterialTracking_Model
+@using EnRepMobileWeb.Resources;
+@{
+    var rowId = 0;
+}
+
+<table id="datatable-buttons" class="table table-striped table-bordered width2400 rowhighlighttbl itmfrz" style="width:100%;">
+
+    @*<table id="datatable-buttons" class="table table-striped table-bordered width2400 RowHighLight">*@
+    <thead>
+        <tr class="sticky-header">
+            <th width="4%">@Resource.SrNo</th>
+            <th width="15%" class="itmStick">@Resource.MaterialName</th>
+            <th width="4%">@Resource.UOM</th>
+            <th width="10%">@Resource.Contractor <br /> @Resource.Name</th>
+            <th width="7%">@Resource.Job <br /> @Resource.Order @Resource.Number</th>
+            <th width="6%">@Resource.Job <br /> @Resource.Order @Resource.Date</th>
+            <th width="16%">@Resource.Operation <br /> @Resource.Output @Resource.Product</th>
+            <th width="4%">@Resource.UOM</th>
+            <th width="6%">@Resource.Order <br /> @Resource.Quantity</th>
+            <th width="7%">@Resource.Issued <br /> @Resource.Quantity</th>
+            <th width="7%">@Resource.Consumed <br /> @Resource.Quantity</th>
+            <th width="7%">@Resource.Return <br /> @Resource.Quantity</th>
+            <th width="7%">@Resource.Balance <br /> @Resource.Quantity</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.MaterialTrackList != null)
+        {
+            foreach (var row in Model.MaterialTrackList)
+            {
+                rowId++;
+                <tr>
+                    <td>@rowId</td>
+                    <td class="ItmNameBreak itmStick tditemfrz">
+                        <div class=" col-sm-11 no-padding"><span id="tblMTMatrlItmNameSpan">@row.MaterialName</span></div>
+                        <div class="col-sm-1 i_Icon">
+                            @*<button type="button" class="calculator" onclick="OnClickOpOutPrdctIconBtn(event);" data-toggle="modal" data-target="#OperationOutputProduct" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Operation @Resource.Output @Resource.Product">   </button>*@
+                            <button type="button" id="ItmInfoBtnIcon" class="calculator" onclick="OnClickMTMaterialIconBtn(event);" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Material @Resource.Detail"> @*<i class="fa fa-info" aria-hidden="true" title=" @Resource.ItemInformation"></i>*@ </button>
+                            <input type="hidden" id="hdnMTMtrlId" value="@row.MaterialID" />
+                        </div>
+                    </td>
+
+                    <td id="tblMTMtrlUom"><input type="hidden" id="hdnMTMtrlUomId" value="@row.MaterialUOMId" /> @row.MaterialUOM</td>
+
+                    <td id="tblMTSuppName"><input type="hidden" id="hfMTSuppId" value="@row.SupplierId" />@row.SupplierName</td>
+                    <td id="tblMTOrdNo">@row.OrderNo</td>
+                    <td id="tblMTOrddate"><input type="hidden" id="hfMTOrderDT" value="@row.OrderDt" />@row.OrderDate</td>
+                    <td>
+                        <div class=" col-sm-11 no-padding"><span id="tblMTOpOutItmNameSpan">@row.OpOutProductName</span></div>
+                        <div class="col-sm-1 i_Icon">
+                            <button type="button" id="ItmInfoBtnIcon" class="calculator" onclick="OnClickMTOpOutPrdctIconBtn(event);" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Operation @Resource.Output @Resource.Product"></button>
+                            <input type="hidden" id="hdnMTOpoutPrcdtId" value="@row.OpOutProductID" />
+                        </div>
+                    </td>
+
+                    <td id="tblMTOpOutUom"><input type="hidden" id="hdnMTOpoutUomId" value="@row.OpOutUOMId" /> @row.OpOutUOM</td>
+                    <td class="num_right" id="tblMTOrdQty">@row.OrderQuantity</td>
+                    <td class="num_right">
+                        <div class=" col-sm-10 no-padding"><span id="tblMTIssueQty">@row.IssueQuantity</span></div>
+                        <div class="col-sm-2 i_Icon">
+                            <button type="button" class="calculator" onclick="OnClickMTAllQtyIconBtn(event,'Issue');" data-toggle="modal" data-target="#MISIssuedQuantityDetail" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Issued @Resource.Quantity ">   </button>
+                        </div>
+                    </td>
+                    <td class="num_right">
+                        <div class=" col-sm-10 no-padding"><span id="tblMTConsumeQty">@row.ConsumeQuantity</span></div>
+                        <div class="col-sm-2 i_Icon">
+                            <button type="button" class="calculator" onclick="OnClickMTAllQtyIconBtn(event,'Consume');" data-toggle="modal" data-target="#MISConsumedQuantityDetail" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Consumed @Resource.Quantity ">   </button>
+                        </div>
+                    </td>
+                    <td class="num_right">
+                        <div class=" col-sm-10 no-padding"><span id="tblMTRetrnQty">@row.ReturnQuantity</span></div>
+                        <div class="col-sm-2 i_Icon">
+                            <button type="button" class="calculator" onclick="" data-toggle="modal" data-target="" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Return @Resource.Quantity ">   </button>
+                        </div>
+                    </td>
+                    <td class="num_right" id="tblMTBalancQty">@row.BalanceQuantity</td>
+                    @*<td class="num_right">
+                            <div class=" col-sm-10 no-padding"><span id="tblMTBalancQty">@row.BalanceQuantity</span></div>
+                            <div class="col-sm-2 i_Icon">
+                                <button type="button" class="calculator" onclick="" data-toggle="modal" data-target="" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Balance @Resource.Quantity ">   </button>
+                            </div>
+                        </td>*@
+                </tr>
+            }
+        }
+        @*<tr>
+                <td>01</td>
+                <td>Apex India Pvt. Ltd.</td>
+                <td>B1/12/23/SCO0000059</td>
+                <td>18-12-2023</td>
+                <td>
+                    <div class=" col-sm-11 no-padding"><span id="">4697 U Sheet</span></div>
+                    <div class="col-sm-1 i_Icon">
+                        <button type="button" id="ItmInfoBtnIcon" class="calculator" onclick="" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Operation  @Resource.Output @Resource.Product">  </button>
+
+                    </div>
+                </td>
+                <td>Pcs</td>
+                <td class="num_right">50.000</td>
+                <td class="" id="">
+                    <div class="col-sm-11"><span id=""> 5225 SF/1</span></div>
+                    <div class="col-sm-1 i_Icon">
+                        <button type="button" id="" class="calculator iButton" onclick="" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false">  <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.MaterialDetail">  </button>
+                    </div>
+                </td>
+                <td>Pcs</td>
+                <td class="num_right" id="">
+                    <div class="col-sm-11"><span id=""> 10816.80000</span></div>
+                    <div class="col-sm-1 i_Icon">
+                        <button type="button" id="" class="calculator iButton" onclick="" data-toggle="modal" data-target="#MISIssuedQuantityDetail" data-backdrop="static" data-keyboard="false">  <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Issued @Resource.Detail">  </button>
+                    </div>
+                </td>
+
+                <td class="num_right" id="">
+                    <div class="col-sm-11"><span id=""> 10816.80000</span></div>
+                    <div class="col-sm-1 i_Icon">
+                        <button type="button" id="" class="calculator iButton" onclick="" data-toggle="modal" data-target="#MISConsumedQuantityDetail" data-backdrop="static" data-keyboard="false">  <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Consumed @Resource.Quantity">  </button>
+                    </div>
+                </td>
+                <td class="num_right" id="">
+                    <div class="col-sm-11"><span id=""> 10816.80000</span></div>
+                    <div class="col-sm-1 i_Icon">
+                        <button type="button" id="" class="calculator iButton" onclick="" data-toggle="modal" data-target="#IssueDetail" data-backdrop="static" data-keyboard="false">  <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Return @Resource.Quantity">  </button>
+                    </div>
+                </td>
+                <td class="num_right" id="">
+                    <div class="col-sm-11"><span id=""> 10816.80000</span></div>
+                    <div class="col-sm-1 i_Icon">
+                        <button type="button" id="" class="calculator iButton" onclick="" data-toggle="modal" data-target="#IssueDetail" data-backdrop="static" data-keyboard="false">  <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Balance @Resource.Quantity">  </button>
+                    </div>
+                </td>
+            </tr>*@
+    </tbody>
+</table>
+@{
+    if (Model.MtrlTrackSearch != null)
+    {
+        if (Model.MtrlTrackSearch == "SEARCH")
+        {
+            @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+            @Scripts.Render("~/Content/Scripts/DatatablesJs")
+            Model.MtrlTrackSearch = null;
+        }
+    }
+}

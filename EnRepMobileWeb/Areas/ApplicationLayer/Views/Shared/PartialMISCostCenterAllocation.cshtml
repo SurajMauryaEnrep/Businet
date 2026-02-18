@@ -1,0 +1,130 @@
+﻿
+@using EnRepMobileWeb.Resources;
+@using System.Data;
+@{
+    decimal TotalActualAmount = 0;
+}
+    <div class="modal-content" style="min-width:700px;">
+        <div class="modal-header">
+            <h2>@Resource.CostCenterDetail</h2>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <div class="modal-body" style="padding-top:0px;">
+            <div class="row">
+                <div class="col-md-12 col-sm-12 no-padding">
+                    <div class="col-md-5 col-sm-12">
+                        <label class="col-form-label label-align">@Resource.GLAccount</label>
+                        <input id="CC_GLAccount1" class="form-control" autocomplete="off" type="text" name="GLAccount" placeholder="@Resource.GLAccount" readonly>
+                    </div>
+                    <div class="col-md-3 col-sm-12">
+                        <label class="col-form-label label-align">@Resource.Amount</label>
+                        <input id="CC_GLAmount1" class="form-control num_right" autocomplete="off" type="text" name="Amount" placeholder="0000.00" disabled="">
+                    </div>
+                </div>
+                <!-- MIS Expense Detail -->
+                @*<div id="ExpenseDetail" class="modal fade" role="dialog">
+                        <div class="modal-dialog" id="popupExpenseDetail" style=" max-width:800px;">
+                            @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialMISExpenseDetail.cshtml")
+                        </div>
+                    </div>*@
+            </div>
+            <div class="card-box table-responsive dy_table margin10">
+                <div class="tableFixHead height55VH ">
+                    <table class="table table-striped margin5" id="tbl_costcenterdis">
+                        <thead>
+                            <tr class="sticky-header">
+                                <th width="20%">@Resource.CostCenter @Resource.Type</th>
+                                <th hidden="hidden"> @Resource.CostCenter@Resource.Type </th>
+                                <th width="20%">@Resource.CostCenter</th>
+                                <th hidden="hidden"> @Resource.CostCenter </th>
+                                <th width="20%">@Resource.Budget @Resource.Amount</th>
+                                <th width="20%"> @Resource.Actual @Resource.Amount</th>
+                                <th hidden="hidden"> @Resource.StartDate </th>
+                                <th hidden="hidden"> @Resource.EndDate </th>
+                                <th hidden="hidden"> @Resource.AccountID </th>
+                                <th width="20%"> @Resource.Variance <br />@Resource.InPercentage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @if (ViewBag.ccdetail != null && ViewBag.ccvaldetail != null)
+                            {
+                                if (ViewBag.ccdetail.Rows.Count > 0 && ViewBag.ccvaldetail.Rows.Count > 0)
+                                {
+                                    foreach (System.Data.DataRow dr in ViewBag.ccdetail.Rows)
+                                    {
+                                        var pcc_id = dr["cc_id"].ToString();
+                            <tr>
+                                <td id="CCtype_Name">@dr["cc_name"]</td>
+                                <td id="CCtype_NameID" hidden="hidden">@dr["cc_id"].ToString()</td>
+                                <td class="no-padding" colspan="4">
+                                    <table border="0" width="100%">
+                                        <tbody>
+                                            @foreach (System.Data.DataRow dr1 in ViewBag.ccvaldetail.Rows)
+                                            {
+                                                var ccc_id = dr1["cc_id"].ToString();
+                                                if (pcc_id == ccc_id)
+                                                {
+                                                    <tr>
+                                                        <td width="25%" id="CC_Name">@dr1["cc_val_name"]</td>
+                                                        <td id="CC_NameId" hidden="hidden">@dr1["cc_val_id"].ToString()</td>
+                                                        <td width="25%" id="CC_Amount" class="num_right">@dr1["cc_amt"]</td>
+                                                        @*<td width="25%" id="Actual_Amount" class="num_right">@dr["ActualAmount"]</td>*@
+                                                        <td width="25%" id="CC_Actual_Amount" class="num_right">
+                                                            @*/*Add by Hina on 09-10-2024 to show actual amount*/*@
+                                                            <div class=" col-sm-11 no-padding">
+                                                                @dr1["ActualAmount"]
+                                                            </div>
+                                                            <div class="col-sm-1 i_Icon">
+                                                                @*<button type="button" class="calculator" onclick="GetLedgerDetails1(event);" data-toggle="modal" data-target="#" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Amount @Resource.Detail">   </button>*@
+                                                                <button type="button" class="calculator" onclick="GetLedgerDetails1(event);" data-toggle="modal" data-target="#ExpenseDetail" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Expense @Resource.Detail">   </button>
+                                                            </div>
+                                                        </td>
+                                                        <td id="tdFromDate" hidden="hidden">@dr1["FinStDate"].ToString()</td>
+                                                        <td id="tdToDate" hidden="hidden">@dr1["FinEndDate"].ToString()</td>
+                                                        <td id="tdAccId" hidden="hidden">@dr1["acc_id"].ToString()</td>
+                                                        @*<td width="25%">
+                                    <div class=" col-sm-11 no-padding">
+                                        0.00
+                                    </div>
+                                    <div class="col-sm-1 i_Icon">
+                                        <button type="button" class="calculator" onclick="GetLedgerDetails1(event);" data-toggle="modal" data-target="#" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Amount @Resource.Detail">   </button>
+                                    </div>
+                                </td>*@
+                                                        <td width="20%">@dr1["Variance"]</td>
+                                                    </tr>
+                                                    TotalActualAmount = TotalActualAmount + Convert.ToDecimal(dr1["ActualAmount"]);@*/*Add by Hina on 09-10-2024 to show actual amount*/*@
+                                                }
+                                            }
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td class="num_right"><strong>@Resource.Total</strong></td>
+                                                <td class="num_right" placeholder="00.00" style="width:17%;"><strong>@dr["scc_amt"]</strong> </td>
+                                                @*<td class="num_right">0.00</td>*@
+                                                <td class="num_right">
+                                                    @*/*Add by Hina on 09-10-2024 to show actual amount*/*@
+                                                <div class=" col-sm-11 no-padding">
+                                                    <strong>@TotalActualAmount</strong>
+                                                </div>
+                                                <div class="col-sm-1 i_Icon">
+                                                </div>
+
+                                            </td>
+                                            <td>&nbsp;</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </tr>
+                                    }
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">@Resource.Close</button>
+        </div>
+    </div>

@@ -1,0 +1,65 @@
+﻿
+@model EnRepMobileWeb.MODELS.ApplicationLayer.InventoryManagement.StockTake.StockTakeList_Model
+@using EnRepMobileWeb.Resources;
+@{
+    var rowId = 0;
+}
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/InventoryManagement/StockTake/StockTakeList.js"></script>
+
+<table id="datatable-buttons" class="table table-striped width1400 rowhighlighttbl itmfrz" cellspacing="0">
+    <thead>
+        <tr class="sticky-header">
+            <th width="3%">@Resource.SrNo</th>
+            <th class="itmStick">@Resource.StockTakeNumber</th>
+            <th width="12%">@Resource.StockTakeDate</th>
+            <th hidden>@Resource.StockTakeDate</th>
+            <th width="20%">@Resource.Warehouse</th>
+            <th>@Resource.Status</th>
+            <th width="10%">@Resource.CreatedBy</th>
+            <th width="12%">@Resource.Createdon</th>
+            <th width="10%">@Resource.ApprovedBy</th>
+            <th width="12%">@Resource.ApprovedOn</th>
+        </tr>
+    </thead>
+    <tbody id="">
+        @if (Model.StockTakeList != null)
+        {
+            foreach (var row in Model.StockTakeList)
+            {
+                rowId++;
+                <tr>
+                    <td>@rowId</td>
+                    <td id="STKNumber" class="ItmNameBreak itmStick tditemfrz">@row.STKNumber</td>
+                    <td>@row.STKDate</td>
+                    <td style="display:none;" id="hdSTKDate">@row.hdSTKDate</td>
+                    <td>@row.Warehouse</td>
+                    <td id="Doc_Status">@row.STKStatus</td>
+                    <td>@row.create_by</td>
+                    <td>@row.CreatedON</td>
+                    <td>@row.app_by</td>
+                    <td>@row.ApprovedOn</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+@*@if (Session["STKSearch"] != null)*@
+@if (Model.STKSearch != null)
+{
+    //if (Session["STKSearch"].ToString() == "STKSearch")
+    if (Model.STKSearch == "STKSearch")
+    {
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+        @Scripts.Render("~/Content/Scripts/DatatablesJs")
+        //Session["STKSearch"] = null;
+        Model.STKSearch = null;
+    }
+}
+
+
+
+
+
+
+

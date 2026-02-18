@@ -1,0 +1,460 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.ProductionAndPlanning.MIS.ProductionAnalysis.ProductionAnalysis_Model
+@using EnRepMobileWeb.Resources;
+@using System.Data;
+@{
+    string ValDigit = "0.";
+    var VD = Convert.ToInt32(Session["ValDigit"].ToString());
+    for (var i = 0; i < VD; i++)
+    {
+        ValDigit += "0";
+    }
+    string QtyDigit = "0.";
+    var QD = Convert.ToInt32(Session["QtyDigit"].ToString());
+    for (var i = 0; i < QD; i++)
+    {
+        QtyDigit += "0";
+    }
+    string RateDigit = "0.";
+    var RD = Convert.ToInt32(Session["ValDigit"].ToString());
+    for (var i = 0; i < RD; i++)
+    {
+        RateDigit += "0";
+    }
+    decimal advQty = 0, OrdQty = 0, PrdsQty = 0, QcAcc = 0, QcRew = 0, QcRej = 0, EstVal = 0, ActVal = 0, qcqty=0;
+    var InsightType = Model.InsightType;
+    var width = "width2200";
+    if(InsightType== "orderqty")
+    {
+        width = "width900";
+    }
+    if(InsightType== "produceqty")
+    {
+        width = "width1500";
+    }
+    if(InsightType == "AnalysisQcQty" || InsightType == "accept_qty" || InsightType == "rework_qty" || InsightType == "reject_qty")
+    {
+        width = "width1700";
+    }
+}
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+@*<script>
+    $(document).ready(function () {
+        $(".rowhighlighttbl1 >tbody").bind("click", function (e) {
+            var clickedrow = $(e.target).closest("tr");
+            debugger;
+            $(e.target).closest("tr").parent().find("tr").css("background-color", "#ffffff");
+            $(clickedrow).css("background-color", "rgba(38, 185, 154, .16)");
+        });
+    })
+</script>*@
+<style>
+    #tblProdAnalysisDetail .Product_Name {
+        width: 20% !important;
+    }
+
+    #tblProdAnalysisDetail .CostVariation {
+        width: 6% !important;
+    }
+</style>
+<div class="modal-content">
+    <div class="modal-header">
+        <h2>@Resource.ProductionDetail</h2>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body" style="padding-top:0px;">
+
+        @if (@ViewBag.ProductionAnalysisDetails != null)
+        {
+            if (ViewBag.ProductionAnalysisDetails.Rows.Count > 0)
+            {
+                var shflName = Model.shflId;
+                var opName = Model.opId;
+                var ItemName = Model.ItemName;
+                var UOM = Model.UOM;
+                var Qty = Model.Qty;
+                if (InsightType == "orderqty"|| InsightType == "produceqty" || InsightType == "AnalysisQcQty" || InsightType == "accept_qty" || InsightType == "rework_qty" || InsightType == "reject_qty")
+                {
+                    <div class="col-md-4 col-sm-12" style="padding-left:0px;">
+                        <label class="col-form-label label-align">@Resource.ProductName</label>
+                        <input id="ProductName" class="form-control" value="@ItemName" autocomplete="off" type="text" name="ProductName" placeholder="@Resource.ProductName" disabled="">
+                    </div>
+                    <div class="col-md-4 col-sm-12" style="padding-left:0px;">
+                        <label class="col-form-label label-align">@Resource.UOM</label>
+                        <input id="ProductName" class="form-control" value="@UOM" autocomplete="off" type="text" name="ProductName" placeholder="@Resource.ProductName" disabled="">
+                    </div>
+                    <div class="col-md-4 col-sm-12" style="padding-left:0px;">
+                        @if (InsightType == "orderqty")
+                        {
+                            <label class="col-form-label label-align">@Resource.OrderedQuantity</label>
+                        }
+                        else if (InsightType == "produceqty")
+                        {
+                            <label class="col-form-label label-align">@Resource.ProducedQuantity</label>
+                        }
+                        else if (InsightType == "produceqty")
+                        {
+                            <label class="col-form-label label-align">@Resource.ProducedQuantity</label>
+                        }
+                        else if (InsightType == "produceqty")
+                        {
+                            <label class="col-form-label label-align">@Resource.ProducedQuantity</label>
+                        }
+                        else if (InsightType == "produceqty")
+                        {
+                            <label class="col-form-label label-align">@Resource.ProducedQuantity</label>
+                        }
+                        else
+                        {
+                            <label class="col-form-label label-align">@Resource.QC @Resource.Quantity</label>
+                        }
+                        <input id="ProductName" class="form-control" value="@Qty" autocomplete="off" type="text" name="ProductName" placeholder="@Resource.ProductName" disabled="">
+                    </div>
+                }
+                else
+                {
+                    <div class="col-md-4 col-sm-12" style="padding-left:0px;">
+                        <label class="col-form-label label-align">@Resource.ProductName</label>
+                        <input id="ProductName" class="form-control" value="@ViewBag.ProductionAnalysisDetails.Rows[0]["item_name"]" autocomplete="off" type="text" name="ProductName" placeholder="@Resource.ProductName" onblur="this.placeholder = '@Resource.ProductName'" disabled="">
+                    </div>
+                    <div class="col-md-4 col-sm-12" style="padding-left:0px;">
+                        <label class="col-form-label label-align">@Resource.ShopfloorName</label>
+                        @Html.TextBoxFor(Model => shflName, new { @class = "form-control", @disabled = "true", @id = "txtshflName" })
+                    </div>
+                    <div class="col-md-4 col-sm-12" style="padding-left:0px;">
+                        <label class="col-form-label label-align">@Resource.OperationName</label>
+                        @*<input id="plOpName1" class="form-control" autocomplete="off" type="text" name="ProductName" placeholder="@Resource.OperationName" onblur="this.placeholder = '@Resource.ProductName'" disabled="">*@
+                        @Html.TextBoxFor(model => opName, new { @class = "form-control", @disabled = "true", @id = "opName3" })
+                    </div>
+                }
+                var shflName1 = Model.shflId;
+            }
+
+        }
+        else
+        {
+            <div class="col-md-4 col-sm-12" style="padding-left:0px;">
+                <label class="col-form-label label-align">@Resource.ProductName</label>
+                <input id="ProductName" class="form-control" autocomplete="off" type="text" name="ProductName" placeholder="@Resource.ProductName" onblur="this.placeholder = '@Resource.ProductName'" disabled="">
+            </div>
+            <div class="col-md-4 col-sm-12" style="padding-left:0px;">
+                <label class="col-form-label label-align">@Resource.ShopfloorName</label>
+                <input id="ProductName" class="form-control" autocomplete="off" type="text" name="ProductName" placeholder="@Resource.ShopfloorName" onblur="this.placeholder = '@Resource.ProductName'" disabled="">
+            </div>
+            <div class="col-md-4 col-sm-12" style="padding-left:0px;">
+                <label class="col-form-label label-align">@Resource.OperationName</label>
+                <input id="ProductName" class="form-control" autocomplete="off" type="text" name="ProductName" placeholder="@Resource.OperationName" onblur="this.placeholder = '@Resource.ProductName'" disabled="">
+            </div>
+        }
+        <div class="clearfix"></div>
+        <div class="card-box table-responsive dy_table margin10">
+            <div class="sticky-table sticky-ltr-cells sb-container container-example1 OrderHistory height40VH pop_csv">
+                <table id="tblProdAnalysisDetail" class="table table-striped @width table-bordered rowhighlighttbl itmfrz" style="width:100%">
+                    <thead>
+                        <tr class="sticky-header">
+                            @if (InsightType == "orderqty" || InsightType == "produceqty")
+                            {
+                                <th width="1%"> @Resource.SrNo</th>
+                                <th width="10%" class="Product_Name itmStick"> @Resource.Product <br /> @Resource.Name</th>
+                                <th hidden="hidden"></th>
+                                <th width="7%"> @Resource.UOM</th>
+                                <th width="10%">@Resource.Order <br /> @Resource.NumberAndDate</th>
+                                <th hidden="hidden"></th>
+                                <th hidden="hidden"></th>
+                                <th width="6%">@Resource.Ordered <br /> @Resource.Quantity</th>
+                                if (InsightType == "produceqty")
+                                {
+                                    <th width="10%">@Resource.Confirmation <br /> @Resource.NumberAndDate</th>
+                                    <th hidden="hidden"></th>
+                                    <th hidden="hidden"></th>
+                                    <th width="6%">@Resource.Produced <br /> @Resource.Quantity</th>
+                                    <th width="6%">@Resource.Estimated <br /> @Resource.Value</th>
+                                    <th width="6%">@Resource.Actual <br /> @Resource.Value</th>
+                                    <th class="CostVariation">@Resource.CostVariation <br /> @Resource.InPercentage</th>
+                                }
+                            }
+                            else if (InsightType == "AnalysisQcQty" || InsightType == "accept_qty" || InsightType == "rework_qty" || InsightType == "reject_qty")
+                            {
+                                <th width="1%"> @Resource.SrNo</th>
+                                <th class="Product_Name itmStick"> @Resource.Product <br /> @Resource.Name</th>
+                                <th hidden="hidden"></th>
+                                <th width="7%"> @Resource.UOM</th>
+                                <th width="10%">@Resource.Confirmation <br /> @Resource.NumberAndDate</th>
+                                <th width="6%">@Resource.Produced <br /> @Resource.Quantity</th>
+                                <th hidden="hidden"></th>
+                                <th hidden="hidden"></th>
+                                <th width="10%">@Resource.QC <br /> @Resource.NumberAndDate</th>
+                                <th hidden="hidden"></th>
+                                <th hidden="hidden"></th>
+                                <th width="6%">@Resource.QC <br /> @Resource.Quantity</th>
+                                <th width="6%">@Resource.QC <br /> @Resource.Accepted</th>
+                                <th width="6%">@Resource.QC <br /> @Resource.Reworkable</th>
+                                <th width="6%">@Resource.QCRejected</th>
+                            }
+                            else
+                            {
+                                <th width="1%"> @Resource.SrNo</th>
+                                <th class="Product_Name itmStick"> @Resource.Product <br /> @Resource.Name</th>
+                                <th hidden="hidden"></th>
+                                <th width="7%"> @Resource.UOM</th>
+                                <th width="10%">@Resource.Order <br /> @Resource.NumberAndDate</th>
+                                <th hidden="hidden"></th>
+                                <th hidden="hidden"></th>
+                                <th width="6%">@Resource.Ordered <br /> @Resource.Quantity</th>
+                                <th width="10%">@Resource.Confirmation <br /> @Resource.NumberAndDate</th>
+                                <th hidden="hidden"></th>
+                                <th hidden="hidden"></th>
+                                <th width="6%">@Resource.Produced <br /> @Resource.Quantity</th>
+                                <th width="10%">@Resource.QC <br /> @Resource.NumberAndDate</th>
+                                <th width="6%">@Resource.QC <br /> @Resource.Quantity</th>
+                                <th width="6%">@Resource.QC <br /> @Resource.Accepted</th>
+                                <th width="6%">@Resource.QC <br /> @Resource.Reworkable</th>
+                                <th width="6%">@Resource.QCRejected</th>
+                                <th width="6%">@Resource.Estimated <br /> @Resource.Value</th>
+                                <th width="6%">@Resource.Actual <br /> @Resource.Value</th>
+                                <th class="CostVariation">@Resource.CostVariation <br /> @Resource.InPercentage</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (ViewBag.ProductionAnalysisDetails != null)
+                        {
+                            var srno = 1;
+                            foreach (DataRow dr in ViewBag.ProductionAnalysisDetails.Rows)
+                            {
+                        <tr>
+                            @if (InsightType == "orderqty" || InsightType == "produceqty")
+                            {
+                                <td width="2%">@srno</td>
+                                <td width="3%" id="itm_nm" class="ItmNameBreak itmStick tditemfrz">@dr["item_name"].ToString()</td>
+                                <td hidden="hidden" id="Hdn_product_id">@dr["product_id"].ToString()</td>
+                                <td width="3%" id="ProdAnlyUom">@dr["uom_alias"].ToString()</td>
+                                <td>@dr["jc_no_And_dt"].ToString()</td>
+                                <td hidden="hidden" id="hdn_jc_no">@dr["jc_no"].ToString()</td>
+                                <td hidden="hidden" id="hdn_jc_dt">@dr["jc_dt"].ToString()</td>
+                                <td class="num_right"><span id="txtOrderQty">@Convert.ToDecimal(dr["orderqty"]).ToString(QtyDigit)</span></td>
+                                if (InsightType == "produceqty")
+                                {
+                                    <td>@dr["cnf_no_And_dt"].ToString()</td>
+                                    <td hidden="hidden" id="hdn_cnf_no">@dr["cnf_no"].ToString()</td>
+                                    <td hidden="hidden" id="hdn_cnf_dt">@dr["cnf_dt"].ToString()</td>
+                                    @*<td>@dr["qc_no_And_dt"].ToString()</td>*@
+                                    @*<td class="num_right"><span id="txtProduceQty">@Convert.ToDecimal(dr["produceqty"]).ToString(QtyDigit)</span></td>*@
+                                    <td class="num_right"><span id="txtProduceQty">@Convert.ToDecimal(dr["produceqty"]).ToString(QtyDigit)</span></td>
+                                    <td>
+                                        <div class="col-sm-10 num_right no-padding"><span>@Convert.ToDecimal(dr["estimatedcost"]).ToString(ValDigit)</span></div>
+                                        <div class="col-sm-2 i_Icon">
+                                            <button type="button" class="calculator" onclick="OnClickEstimateValue(event)" data-toggle="modal" data-target="#EstimatedCost" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Detail"></button>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="col-sm-10 num_right no-padding"><span>@Convert.ToDecimal(dr["actualcost"]).ToString(ValDigit)</span></div>
+                                        <div class="col-sm-2 i_Icon">
+                                            <button type="button" class="calculator" onclick="OnClickActualValue(event)" data-toggle="modal" data-target="#ActualCost" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Detail"></button>
+                                        </div>
+                                    </td>
+                                    <td class="num_right">@Convert.ToDecimal(dr["costvariation"]).ToString(ValDigit)</td>
+                                }
+                            }
+                            else if (InsightType == "AnalysisQcQty" || InsightType == "accept_qty" || InsightType == "rework_qty" || InsightType == "reject_qty")
+                            {
+                                <td width="2%">@srno</td>
+                                <td width="3%" id="itm_nm" class="ItmNameBreak itmStick tditemfrz">@dr["item_name"].ToString()</td>
+                                <td hidden="hidden" id="Hdn_product_id">@dr["product_id"].ToString()</td>
+                                <td width="3%" id="ProdAnlyUom">@dr["uom_alias"].ToString()</td>
+                                <td>@dr["cnf_no_And_dt"].ToString()</td>
+                                <td class="num_right"><span id="txtProduceQty">@Convert.ToDecimal(dr["produceqty"]).ToString(QtyDigit)</span></td>
+
+                                <td hidden="hidden" id="hdn_cnf_no">@dr["cnf_no"].ToString()</td>
+                                <td hidden="hidden" id="hdn_cnf_dt">@dr["cnf_dt"].ToString()</td>
+                                <td>
+                                    <div class="col-sm-10 no-padding">
+                                        @dr["qc_no_And_dt"].ToString()
+                                    </div>
+                                    <div class="col-sm-2 i_Icon">
+                                        <button type="button" onclick="OnClickReceiveQtybtn(event);" id="ParameterEvlsnPopUp" class="calculator" data-toggle="modal" data-target="#RecQuant" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.QCDetail">  </button>
+                                        @*<a onclick="OnClickReceiveQtybtn(event);" id="ParameterEvlsnPopUp" data-toggle="modal" data-target="#RecQuant" data-backdrop="static" data-keyboard="false" class="calculator">
+                        <img src="/Content/Images/iIcon1.png" height="22" width="22" id="ParamEvluationImg" aria-hidden="true" title="@Resource.ParameterEvaluation" />
+                    </a>*@
+                                    </div>
+                                </td>
+                                <td hidden="hidden" id="hdn_qc_no">@dr["qc_no"].ToString()</td>
+                                <td hidden="hidden" id="hdn_qc_dt">@dr["qc_dt"].ToString()</td>
+                                @*<td class="num_right"><span id="txtProduceQty">@Convert.ToDecimal(dr["produceqty"]).ToString(QtyDigit)</span></td>*@
+                                <td class="num_right">@Convert.ToDecimal(dr["qcqty"]).ToString(QtyDigit)</td>
+                                <td class="num_right">
+                                    <div class="col-sm-10 no-padding" id="AcceptQty">
+                                        @Convert.ToDecimal(dr["accept_qty"]).ToString(QtyDigit)
+                                    </div>
+                                    <div class="col-sm-2 i_Icon">
+                                        <button type="button" onclick="return onClickReasonRemarks(event,'Accept')" id="BtnReasonForAccecpt" class="calculator" data-toggle="modal" data-target="#ReasonRemarks" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Accepted @Resource.remarks">  </button>
+                                    </div>
+                                    <input hidden id="ReasonForAccecpt" value='@dr["reason_acpt"].ToString()' />
+                                </td>
+                                <td class="num_right">
+                                    <div class="col-sm-10 no-padding" id="ReworkableQty">
+                                        @Convert.ToDecimal(dr["rework_qty"]).ToString(QtyDigit)
+                                    </div>
+                                    <div class="col-sm-2 i_Icon">
+                                        <button type="button" onclick="return onClickReasonRemarks(event,'rework')" id="BtnReasonForRework" class="calculator" data-toggle="modal" data-target="#ReasonRemarks" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Reworkable @Resource.remarks">  </button>
+                                    </div>
+                                    <input hidden id="ReasonForRework" value='@dr["reason_rwk"].ToString()' />
+                                </td>
+                                <td class="num_right">
+                                    <div class="col-sm-10 no-padding" id="RejectQty">
+                                        @Convert.ToDecimal(dr["reject_qty"]).ToString(QtyDigit)
+                                    </div>
+                                    <div class="col-sm-2 i_Icon">
+                                        <button type="button" onclick="return onClickReasonRemarks(event,'reject')" id="BtnReasonForReject" class="calculator" data-toggle="modal" data-target="#ReasonRemarks" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Rejected @Resource.remarks">  </button>
+                                    </div>                                   
+                                    <input hidden id="ReasonForReject" value='@dr["reason_rej"].ToString()' />
+                                    <input hidden id="ReasonForReject_ID" value='@dr["reason_rej_id"].ToString()' />
+                                    <input hidden id="ReasonForReject_Name" value='@dr["reason_rej__Remarks"].ToString()' />
+                                </td>
+                            }
+                            else
+                            {
+                                <td width="2%">@srno</td>
+                                <td width="3%" id="itm_nm" class="ItmNameBreak itmStick tditemfrz">@dr["item_name"].ToString()</td>
+                                <td hidden="hidden" id="Hdn_product_id">@dr["product_id"].ToString()</td>
+                                <td width="3%" id="ProdAnlyUom">@dr["uom_alias"].ToString()</td>
+                                <td>@dr["jc_no_And_dt"].ToString()</td>
+                                <td hidden="hidden" id="hdn_jc_no">@dr["jc_no"].ToString()</td>
+                                <td hidden="hidden" id="hdn_jc_dt">@dr["jc_dt"].ToString()</td>
+                                <td class="num_right"><span id="txtOrderQty">@Convert.ToDecimal(dr["orderqty"]).ToString(QtyDigit)</span></td>
+                                <td>@dr["cnf_no_And_dt"].ToString()</td>
+                                <td hidden="hidden" id="hdn_cnf_no">@dr["cnf_no"].ToString()</td>
+                                <td hidden="hidden" id="hdn_cnf_dt">@dr["cnf_dt"].ToString()</td>
+                                <td class="num_right"><span id="txtProduceQty">@Convert.ToDecimal(dr["produceqty"]).ToString(QtyDigit)</span></td>
+                                <td>@dr["qc_no_And_dt"].ToString()</td>
+                                <td class="num_right">@Convert.ToDecimal(dr["qcqty"]).ToString(QtyDigit)</td>
+                                <td class="num_right">@Convert.ToDecimal(dr["accept_qty"]).ToString(QtyDigit)</td>
+                                <td class="num_right">@Convert.ToDecimal(dr["rework_qty"]).ToString(QtyDigit)</td>
+                                <td class="num_right">@Convert.ToDecimal(dr["reject_qty"]).ToString(QtyDigit)</td>
+                                <td>
+                                    <div class="col-sm-10 num_right no-padding"><span>@Convert.ToDecimal(dr["estimatedcost"]).ToString(ValDigit)</span></div>
+                                    <div class="col-sm-2 i_Icon">
+                                        <button type="button" class="calculator" onclick="OnClickEstimateValue(event)" data-toggle="modal" data-target="#EstimatedCost" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Detail"></button>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="col-sm-10 num_right no-padding"><span>@Convert.ToDecimal(dr["actualcost"]).ToString(ValDigit)</span></div>
+                                    <div class="col-sm-2 i_Icon">
+                                        <button type="button" class="calculator" onclick="OnClickActualValue(event)" data-toggle="modal" data-target="#ActualCost" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Detail"></button>
+                                    </div>
+                                </td>
+                                <td class="num_right">@Convert.ToDecimal(dr["costvariation"]).ToString(ValDigit)</td>
+                            }
+                        </tr>
+                                srno = srno + 1;
+                                if(InsightType == "produceqty"|| InsightType == "AnalysisQcQty" || InsightType == "accept_qty" || InsightType == "rework_qty" || InsightType == "reject_qty")
+                                {
+                                    if(InsightType == "AnalysisQcQty" || InsightType == "accept_qty" || InsightType == "rework_qty" || InsightType == "reject_qty")
+                                    {
+                                        qcqty = qcqty + Convert.ToDecimal(dr["qcqty"]);
+                                        QcAcc = QcAcc + Convert.ToDecimal(dr["accept_qty"]);
+                                        QcRew = QcRew + Convert.ToDecimal(dr["rework_qty"]);
+                                        QcRej = QcRej + Convert.ToDecimal(dr["reject_qty"]);
+                                    }
+                                    EstVal = EstVal + Convert.ToDecimal(dr["estimatedcost"]);
+                                    ActVal = ActVal + Convert.ToDecimal(dr["actualcost"]);
+                                }
+                                else if(InsightType == "orderqty")
+                    {
+
+                    }
+                                else
+                                {
+                                    qcqty = qcqty + Convert.ToDecimal(dr["qcqty"]);
+                                    QcAcc = QcAcc + Convert.ToDecimal(dr["accept_qty"]);
+                                    QcRew = QcRew + Convert.ToDecimal(dr["rework_qty"]);
+                                    QcRej = QcRej + Convert.ToDecimal(dr["reject_qty"]);
+                                    EstVal = EstVal + Convert.ToDecimal(dr["estimatedcost"]);
+                                    ActVal = ActVal + Convert.ToDecimal(dr["actualcost"]);
+                                }
+
+                            }
+
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr class="total">
+                            @if (InsightType == "produceqty")
+                            {
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                                <td hidden="hidden">&nbsp;</td>
+                                <td>&nbsp;</td>
+                                <td align="right"></td>
+                                <td class="num_right"></td>
+                                <td>&nbsp;</td>
+
+                                if (InsightType == "produceqty")
+                                {
+                                    <td hidden="hidden">&nbsp;</td>
+                                    <td hidden="hidden">&nbsp;</td>
+                                    <td align="right"><strong>@Resource.Total</strong></td>
+
+                                    <td class="num_right"><strong>@EstVal.ToString(QtyDigit)</strong></td>
+                                    <td class="num_right"><strong>@ActVal.ToString(QtyDigit)</strong></td>
+                                    <td>&nbsp;</td>
+                                }
+                            }
+                            else if (InsightType == "orderqty")
+                            {
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                            }
+                            else if (InsightType == "AnalysisQcQty" || InsightType == "accept_qty" || InsightType == "rework_qty" || InsightType == "reject_qty")
+                            {
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                                <td hidden="hidden">&nbsp;</td>
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                                <td class="num_right"></td>
+                                <td hidden="hidden">&nbsp;</td>
+                                <td hidden="hidden">&nbsp;</td>
+                                <td align="right"><strong>@Resource.Total</strong></td>
+                                <td class="num_right"><strong>@qcqty.ToString(QtyDigit)</strong></td>
+                                <td class="num_right"><strong>@QcAcc.ToString(QtyDigit)</strong></td>
+                                <td class="num_right"><strong>@QcRew.ToString(QtyDigit)</strong></td>
+                                <td class="num_right"><strong>@QcRej.ToString(QtyDigit)</strong></td>
+                            }
+                            else
+                            {
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                                <td hidden="hidden">&nbsp;</td>
+                                <td>&nbsp;</td>
+                                <td align="right"></td>
+                                <td class="num_right"></td>
+                                <td>&nbsp;</td>
+                                <td class="num_right"></td>
+                                <td hidden="hidden">&nbsp;</td>
+                                <td hidden="hidden">&nbsp;</td>
+                                <td align="right"><strong>@Resource.Total</strong></td>
+                                <td class="num_right"><strong>@qcqty.ToString(QtyDigit)</strong></td>
+                                <td class="num_right"><strong>@QcAcc.ToString(QtyDigit)</strong></td>
+                                <td class="num_right"><strong>@QcRew.ToString(QtyDigit)</strong></td>
+                                <td class="num_right"><strong>@QcRej.ToString(QtyDigit)</strong></td>
+                                <td class="num_right"><strong>@EstVal.ToString(QtyDigit)</strong></td>
+                                <td class="num_right"><strong>@ActVal.ToString(QtyDigit)</strong></td>
+                                <td>&nbsp;</td>
+                            }
+
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" id="" onclick="OnClickSerialDiscardAndExit()">@Resource.Close</button>
+    </div>
+</div>
+
+
+

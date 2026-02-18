@@ -1,0 +1,74 @@
+﻿@using EnRepMobileWeb.Resources;
+@{
+    var i = 0;
+}
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/Procurement/PurchaseRequisition/PurchaseRequisition.js"></script>
+<table id="datatable-buttons" class="table table-striped width2000 rowhighlighttbl itmfrz" cellspacing="0" width="100%">
+    <thead>
+        <tr class="sticky-header">
+            <th></th>
+            <th width="2%"> @Resource.SrNo</th>
+            <th class="itmStick" width="5%">@Resource.Requisition <br /> @Resource.Number</th>
+            <th width="7%">@Resource.Requisition <br /> @Resource.Date</th>
+            <th hidden>@Resource.RequisitionDate</th>
+            <th width="7%">@Resource.Source <br /> @Resource.Type</th>
+            <th width="8%">@Resource.SourceDocumentNumber</th>
+            <th width="9%">@Resource.SourceDocumentDate</th>
+            <th width="8%">@Resource.Requirement <br /> @Resource.Area</th>
+            <th width="8%">@Resource.RequestedBy</th>
+            <th width="7%">@Resource.Status</th>
+            <th width="7%">@Resource.CreatedBy</th>
+            <th width="6%">@Resource.Createdon</th>
+            <th width="7%">@Resource.ApprovedBy</th>
+            <th width="6%">@Resource.ApprovedOn</th>
+            <th width="7%">@Resource.AmendedBy</th>
+            <th width="6%">@Resource.AmendedOn</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @if (ViewBag.PRDetailsList != null)
+        {
+            foreach (System.Data.DataRow item in ViewBag.PRDetailsList.Rows)
+            {
+                i = i + 1;
+        <tr>
+            <td class="center">
+                <a class="tooltip-test" id="RequisitionTrackingDetail" href="" onclick="OnClickOrderTrackingBtn(event);" data-toggle="modal" data-target="#PurchaseRequisitionTracking" data-backdrop="static" data-keyboard="false" title="@Resource.Requisition  @Resource.Tracking @Resource.Detail">
+                    <img src="/Content/Images/PurchaseOrderTracking2.png" title="@Resource.Requisition @Resource.Tracking @Resource.Detail" width="20" height="20">
+                </a>
+            </td>
+            <td class="sorting_1">@i</td>
+            <td id="pr_no" class="ItmNameBreak itmStick tditemfrz">@item["pr_no"].ToString()</td>
+            <td>@item["PRDate"].ToString()</td>
+            <td hidden="hidden" id="prdateID">@item["Pr_date"].ToString()</td>
+            <td>@item["SourceType"].ToString()</td>
+            <td>@item["src_doc_no"].ToString()</td>
+            <td>@item["src_doc_dt"].ToString()</td>
+            <td id="reqArea">@item["reqArea"].ToString()</td>
+            <td id="req_by">@item["req_by"].ToString()</td>
+            <td id="Doc_Status">@item["Status"].ToString()</td>
+            <td>@item["create_by"].ToString()</td>
+            <td>@item["CreateDate"].ToString()</td>
+            <td>@item["app_by"].ToString()</td>
+            <td>@item["ApproveDate"].ToString()</td>
+            <td>@item["mod_by"].ToString()</td>
+            <td>@item["ModifyDate"].ToString()</td>
+
+        </tr>
+            }
+        }
+    </tbody>
+</table>
+@*@if (Session["PRSearch"] != null)*@
+@if (Model.PRSearch != null)
+{
+    //if (Session["PRSearch"].ToString() == "PR_Search")
+    if (Model.PRSearch == "PR_Search")
+    {
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+        @Scripts.Render("~/Content/Scripts/DatatablesJs")
+        Model.PRSearch = null;
+    }
+}

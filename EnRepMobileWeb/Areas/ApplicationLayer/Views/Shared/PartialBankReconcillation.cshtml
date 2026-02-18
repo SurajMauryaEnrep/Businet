@@ -1,0 +1,152 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.FinancialAccountingAndControl.BankRecancellation.BankRecancellation_Model
+@using EnRepMobileWeb.Resources;
+@{
+    var rowId = 0;
+}
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<table id="datatable-buttons5" class="table table-striped width1700 itmfrz rowhighlighttbl itmfrz" cellspacing="0" width="100%">
+    <thead>
+        <tr class="sticky-header">
+            <th width="3%">@Resource.SrNo</th>
+            <th width="12%" >@Resource.BankName</th>
+            @*<th width="8%">@Resource.Currency</th>*@
+            <th width="10%" class="itmStick">@Resource.Voucher <br /> @Resource.Number</th>
+            <th width="7%">@Resource.Voucher <br /> @Resource.Date</th>
+            <th width="8%">@Resource.Voucher <br /> @Resource.Type </th>
+            <th width="8%">@Resource.Instrument <br /> @Resource.Number</th>
+            <th width="7%">@Resource.Instrument <br /> @Resource.Date</th>
+            @*<th width="7%">@Resource.Instrument <br /> @Resource.Type</th>*@
+            <th width="8%">@Resource.Amount <br /> @Resource.InBase</th>
+            <th width="8%">@Resource.Amount <br /> @Resource.InSpecific</th>
+            <th width="8%">@Resource.Status</th>
+            <th width="6%">@Resource.Clearing @Resource.Date</th>
+            <th width="12%">@Resource.ReasonForReturn</th>
+            <th hidden></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model._VoucherList != null)
+        {
+            foreach (var row in Model._VoucherList)
+            {
+                rowId++;
+                <tr id="tr_@rowId">
+                    <td>@rowId</td>
+                    <td id="Par_BankName" >@row.Bank_Name</td>
+                    @*<td class="center">INR</td>*@
+                    <td id="Par_VouNo" class="ItmNameBreak itmStick tditemfrz">@row.Vou_No</td>
+                    <td id="Par_Voudt">@row.VouDt</td>
+                    <td id="Par_VouType">@row.Vou_type </td>
+                    <td id="Par_InsNum">@row.Ins_Num</td>
+                    <td id="Par_Insdt">@row.Ins_dt</td>
+                    @*<td>Instrument Type </td>*@
+                    <td class="num_right" id="Par_Amtbs">@row.Amt_bs</td>
+                    <td class="num_right" id="Par_Amtsp">@row.Amt_sp</td>
+
+                    <td id="">
+
+                        <div class="col-sm-10"><span id="Par_Status_@rowId">@row.Status</span></div>
+                        @if (@row.Status == "" || @row.Status == "Un-Cleared")
+                        {
+                            <div class="col-sm-2 i_Icon">
+                                <button type="button" id="Par_CalculatorIcon_@rowId" class="calculator iButton" onclick="OnclickCalculatorIcon(event,@rowId)" data-toggle="modal" data-target="#StatusUpdate" data-backdrop="static" data-keyboard="false">
+                                    <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Status @Resource.Update">
+                                </button>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="col-sm-1 i_Icon" style="display:none">
+                                <button type="button" id="Par_CalculatorIcon_@rowId" class="calculator iButton" onclick="OnclickCalculatorIcon(event,@rowId)" data-toggle="modal" data-target="#StatusUpdate" data-backdrop="static" data-keyboard="false">
+                                    <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Status @Resource.Update">
+                                </button>
+                            </div>
+                        }
+                    </td>
+                    <td>@row.Cl_dt<span id="Par_Cldt_@rowId"></span></td>
+                    <td>@row.Rsn_Ret<span id="Par_RsonFrRet_@rowId"></span></td>
+                    <td hidden>
+                        <input type="hidden" id="hdnInsdt" value="@row.InstrDate" />
+                        <input type="hidden" id="hdn_status_@rowId" value="@row.Status" />
+                        <input type="hidden" id="hdn_ClDt_@rowId" value="@row.Cl_dt" />
+                        <input type="hidden" id="hdnVouDt" value="@row.Vou_dt" />
+                        <input type="hidden" id="hdnInsDate" value="@row.InsDt" />
+                        <input type="hidden" id="rowId" value="@rowId" />
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+<div class="col-md-12 margin10 no-padding">
+    <table class="table table-bordered po_total_th">
+        <thead>
+            <tr class="">
+                <th class="right_aligh text_normal">
+                    @Resource.Uncleared  @Resource.Receipts
+                </th>
+                    <th class="right_aligh text_normal">
+                        <input id="BankReco_UCR" class="form-control tax_cal text_bold" autocomplete="off" type="text" name="TxtAssessableValue" placeholder="0000.00" value="@Model.UnReceipt" disabled="">
+                    </th>
+                <th class="right_aligh text_normal">
+                    @Resource.Cleared  @Resource.Receipts
+                </th>
+                    <th class="right_aligh text_normal">
+                        <input id="BankReco_CLR" class="form-control tax_cal text_bold" autocomplete="off" type="text" name="NetOrderValueSpe" placeholder="0000.00" value="@Model.ClReceipt" disabled="">
+                    </th>
+                <th class="right_aligh text_normal">
+                    @Resource.Returned  @Resource.Receipts
+                </th>
+                    <th class="right_aligh text_normal">
+                        <input id="BankReco_RER" class="form-control tax_cal text_bold" autocomplete="off" type="text" name="" placeholder="0000.00" value="@Model.ReReceipt" disabled="">
+                    </th>
+            </tr>
+            <tr class="">
+                <th class="right_aligh text_normal">
+                    @Resource.Uncleared  @Resource.Payments
+                </th>
+                    <th class="right_aligh text_normal">
+                        <input id="BankReco_UCP" class="form-control tax_cal text_bold" autocomplete="off" type="text" name="TxtAssessableValue" placeholder="0000.00" value="@Model.UnPayment" disabled="">
+                    </th>
+                <th class="right_aligh text_normal">
+                    @Resource.Cleared  @Resource.Payments
+                </th>
+                    <th class="right_aligh text_normal">
+                        <input id="BankReco_CLP" class="form-control tax_cal text_bold" autocomplete="off" type="text" name="NetOrderValueSpe" placeholder="0000.00" value="@Model.ClPayment" disabled="">
+                    </th>
+                <th class="right_aligh text_normal">
+                    @Resource.Returned  @Resource.Payments
+                </th>
+                    <th class="right_aligh text_normal">
+                        <input id="BankReco_REP" class="form-control tax_cal text_bold" autocomplete="off" type="text" name="" placeholder="0000.00" value="@Model.RePayment" disabled="">
+                    </th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+@if (Model.VouSearch != null)
+{
+
+    if (Model.VouSearch == "Vou_Search")
+    {
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+        @Scripts.Render("~/Content/Scripts/DatatablesJs")
+
+        Model.VouSearch = null;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

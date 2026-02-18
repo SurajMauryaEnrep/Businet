@@ -1,0 +1,78 @@
+﻿@using EnRepMobileWeb.Resources;
+@using System.Data;
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<div class="modal-content" style="min-width:700px;">
+    <div class="modal-header">
+        <h2>@Resource.CostCenterDetail</h2>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body" style="padding-top:0px;">
+        <div class="row">
+            <div class="col-md-12 col-sm-12 no-padding">
+                <div class="col-md-5 col-sm-12">
+                    <label class="col-form-label label-align">@Resource.GLAccount</label>
+                    <input id="CC_GLAccount" class="form-control" autocomplete="off" type="text" name="GLAccount" placeholder="@Resource.GLAccount" disabled>
+                </div>
+                <div class="col-md-3 col-sm-12">
+                    <label class="col-form-label label-align">@Resource.Amount</label>
+                    <input id="CC_GLAmount" class="form-control num_right" autocomplete="off" type="text" name="Amount" placeholder="0000.00" disabled="">
+                </div>
+            </div>
+        </div>
+        <div class="card-box table-responsive dy_table margin10">
+            <div class="tableFixHead height55VH ">
+                <table class="table table-striped margin5 rowhighlightMultiTable " id="tbl_costcenterdis">
+                    <thead>
+                        <tr class="sticky-header">
+                            <th>@Resource.CostCenter @Resource.Type</th>
+                            <th>@Resource.CostCenter</th>
+                            <th>@Resource.Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @if (ViewBag.ccdetail != null && ViewBag.ccvaldetail != null)
+                        {
+                            if (ViewBag.ccdetail.Rows.Count > 0 && ViewBag.ccvaldetail.Rows.Count > 0)
+                            {
+                                foreach (System.Data.DataRow dr in ViewBag.ccdetail.Rows)
+                                {
+                                    var pcc_id = dr["cc_id"].ToString();
+                                    <tr class="parent-row">
+                                        <td id="CCtype_Name">@dr["cc_name"]</td>
+                                        <td class="no-padding" colspan="2">
+                                            <table border="0" class=" rowhighlighttblInnerTable" width="100%">
+                                                <tbody>
+                                                    @foreach (System.Data.DataRow dr1 in ViewBag.ccvaldetail.Rows)
+                                                    {
+                                                        var ccc_id = dr1["cc_id"].ToString();
+                                                        if (pcc_id == ccc_id)
+                                                        {
+                                                        <tr class="inner-row">
+                                                            <td id="CC_Name" style="width:266px;">@dr1["cc_val_name"]</td>
+                                                            <td id="CC_Amount" class="num_right">@dr1["cc_amt"]</td>
+                                                          </tr>
+                                                        }
+                                                    }
+                                                </tbody>
+                                                <tfoot>
+                                                    <tr>
+                                                        <td class="num_right" style="width:50%;"><strong>@Resource.Total</strong></td>
+                                                        <td class="num_right" placeholder="00.00" style="width:17%;"><strong>@dr["scc_amt"]</strong> </td>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
+                                    </tr>
+                                }
+                            }
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+            <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" >@Resource.Close</button>
+    </div>
+</div>

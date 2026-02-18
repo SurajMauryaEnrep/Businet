@@ -1,0 +1,106 @@
+﻿
+@using EnRepMobileWeb.Resources;
+@using System.Data;
+
+<script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+<script src="~/Content/Css/build/js/sweetalert.js"></script>
+
+<style>
+    .OrderHistory #datatable-buttons10_filter {
+        right: 20% !important;
+    }
+
+    .OrderHistory .buttons-csv {
+        margin-left: 22% !important;
+    }
+
+    .buttons-csv {
+        display: none;
+    }
+
+    #tbl_PriceListDetail .item_name {
+        width: 25% !important;
+    }
+
+    #tbl_PriceListDetail .sr_no {
+        width: 3% !important;
+    }
+</style>
+<div class="modal-content" id="">
+    <div class="modal-header">
+        <h2> @Resource.PriceList @Resource.Detail</h2>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body pop_top">
+        <div class="row">
+            <div class="col-md-3 col-sm-12">
+                <label class="col-form-label label-align">@Resource.ItemName</label>
+                <input id="P_ItemName" class="form-control" value="" autocomplete="off" type="text" name="itemname" placeholder="@Resource.ItemName" disabled="">
+            </div>
+            <div class="col-md-2 col-sm-12">
+                <label class="col-form-label label-align">
+                    @Resource.UOM
+                </label>
+                <input value="" disabled class="form-control" data-val="true" data-val-date="" id="P_UOM" name="P_UOM" placeholder="@Resource.UOM" type="text">
+            </div>
+            <div class="card-box table-responsive dy_table margintop10">
+                <div id="" class="sticky-table sticky-ltr-cells sb-container container-example1 OrderHistory height30VH">
+                    <table id="tbl_PriceListDetail" class="table table-striped table-bordered rowhighlighttbl width800">
+                        <thead>
+                            <tr class="sticky-header">
+                                <th width="2%" class="sr_no">@Resource.SrNo</th>
+                                <th width="45%" class="item_name">@Resource.PriceListName</th>
+                                <th hidden="hidden"></th>
+                                <th width="10%"> @Resource.MRP</th>
+                                <th width="15%">@Resource.MRPDiscount <br />  @Resource.InPercentage</th>
+                                <th width="15%">@Resource.Discount <br />  @Resource.InPercentage</th>
+                                <th width="10%">@Resource.Effective <br />  @Resource.Price</th>
+                                <th width="3%"> &nbsp;</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (ViewBag.PriceList != null)
+                            {
+                                var srNo = 1;
+                                foreach (System.Data.DataRow dr in ViewBag.PriceList.Rows)
+                                {
+                            <tr>
+                                <td class="sr_padding">@srNo</td>
+                                <td>@dr["list_name"].ToString()</td>
+                                <td hidden="hidden" id="list_no">@dr["list_no"].ToString()</td>
+                                <td class="num_right" id="Pl_mrp">@dr["mrp"].ToString()</td>
+                                <td class="num_right" id="pl_disc_mrp">@dr["disc_mrp"].ToString()</td>
+                                <td class="num_right" id="pl_disc_perc">@dr["disc_perc"].ToString()</td>
+                                <td id="pl_effect_price" class="num_right">@dr["effect_price"].ToString()</td>
+                                <td id="pl_item_id" hidden="hidden">@dr["item_id"].ToString()</td>
+                                @if (ViewBag.PriceListdisable == "Y")
+                                {
+                                    <td style="text-align:center;"><input type="checkbox" disabled class="margin-switch" onclick="onclickplselect(event)" id="plselect"></td>
+                                }
+                                else
+                                {
+                                    <td style="text-align:center;"><input type="checkbox" class="margin-switch" onclick="onclickplselect(event)" id="plselect"></td>
+                                }
+                            </tr>
+                                    srNo = srNo + 1;
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        @if (ViewBag.PriceListdisable == "Y")
+        {
+            <button type="button" id="" class="btn btn-primary btn-sm" data-dismiss="modal">@Resource.Close</button>
+        }
+        else
+        {
+            <button type="button" id="btnplOrderQtySaveAndExit" data-dismiss="modal" onclick="OnClickSaveExistBtn()" class="btn btn-primary btn-sm">@Resource.SaveAndExit </button>
+            <button type="button" id="btnOrderQtyDiscardAndExit" class="btn btn-primary btn-sm" data-dismiss="modal">@Resource.DiscardAndExit</button>
+        }
+    </div>
+</div>

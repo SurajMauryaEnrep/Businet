@@ -1,0 +1,1238 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.FinancialAccountingAndControl.PaymentAdvice.PaymentAdviceModel
+@using EnRepMobileWeb.Resources;
+@using System.Data
+@*@if (Session["UserId"] == null)
+    {
+        Response.Redirect("~/Login");
+    }*@
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+<script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+<script src="~/Content/Css/build/js/sweetalert.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/FinancialAccountingAndControl/PaymentAdvice/PaymentAdvice.js"></script>
+@*/*start Add by Hina on 28-02-2024 to chk Financial year exist or not*/*@
+@{
+    if (TempData["Message"] != null)
+    {
+        if (TempData["Message"] == "Financial Year not Exist")
+        {
+            <script type="text/javascript">
+                swal("", $("#FinancialYearDoesNotExistTransactionCanNotBeDone").text(), "warning");
+            </script>
+        }
+
+    }
+    if (TempData["FBMessage"] != null)
+    {
+        if (TempData["FBMessage"] == "Financial Book Closing")
+        {
+            <script type="text/javascript">
+                swal("", $("#BooksAreClosedEntryCanNotBeMadeInThisFinancialYear").text(), "warning");
+            </script>
+        }
+
+    }
+}
+@*/*End to chk Financial year exist or not*/*@
+@{ //var rowId = 0;
+    var Disable = true;
+    var disablePrintbtn = "";
+    if (Model.TransType == "Update")
+    {
+        if (Model.Command == "Edit")
+        {
+            Disable = false;
+        }
+        else
+        {
+            Disable = true;
+        }
+    }
+    else
+    {
+        if (Model.Command == "Refresh")
+        {
+            Disable = true;
+        }
+        else
+        {
+            Disable = false;
+        }
+    }
+    if (Model.AdviceNo == null || ((Model.DocumentStatus == "D" || Model.DocumentStatus == "A") && Model.Command == "Edit"))/*Add || ((Model.DocumentStatus == "D" || Model.DocumentStatus == "A") && Model.Command == "Edit") by Hina sharma on 16-10-2024*/
+    {
+        disablePrintbtn = "disabled style=filter:grayscale(100%)";
+    }
+
+}
+@{
+
+    if (Model.Message != null)
+    {
+        Model.hdnsaveApprovebtn = null;
+        if (Model.Message == "Save")
+        {
+            <script type="text/javascript">
+                swal("", $("#savemsg").text(), "success");
+                //sessionStorage.removeItem("OpeningDetailSession");
+            </script>
+        }
+        if (Model.Message == "Deleted")
+        {
+            <script type="text/javascript">
+                swal("", $("#deletemsg").text(), "success");
+                //.removeItem("OpeningDetailSession");
+            </script>
+        }
+        if (Model.Message == "Approved")
+        {
+            <script type="text/javascript">
+                swal("", $("#approvemsg").text(), "success");
+                //sessionStorage.removeItem("BillDetailSession");
+            </script>
+        }
+        @*if (Model.Message == "Cancelled")
+            {
+                <script type="text/javascript">
+                    swal("", $("#cancelmsg").text(), "success");
+                    sessionStorage.removeItem("BillDetailSession");
+                </script>
+            }*@
+        Model.Message = "";
+    }
+}
+<title>@Model.Title</title>
+@using (Html.BeginForm("ActionCommandPayAdvDetail", "PaymentAdvice", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    {
+<div class="row">
+    <!-- Forward Information -->
+    <div id="Forward_Pop" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/Common/Views/PartialForward.cshtml")
+        </div>
+    </div>
+    <!-- Workflow Information -->
+    <div id="WorkflowInformation" class="modal fade" role="dialog">
+        <div class="modal-dialog" style="max-width:700px;">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/Common/Views/_WorkFlow.cshtml")
+        </div>
+    </div>
+
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                
+                <h2 class="col-md-6 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                <div id="wizard" class="form_wizard wizard_horizontal col-md-2 col-sm-12 work_flow">
+                    @if (ViewBag.AppLevel.Rows.Count > 0)
+                    {
+                        @Html.Partial("~/Areas/Common/Views/_PartialWorkflowBar.cshtml")
+                    }
+                </div>
+                <input type="hidden" id="DocumentMenuId" value="@ViewBag.DocumentMenuId" />
+                <div id="" class="col-md-4 col-sm-12 work_flow heading_right_padding">
+                    @{
+                        //var btnName = Model.BtnName;
+                        var btnName = Model.BtnName;
+                        switch (btnName)
+                        {
+                            case "BtnAddNew":
+                                <ul>
+                                    @if (ViewBag.VBRoleList != null)
+                                    {
+                                        foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                        {
+                                            if (Row["feature_id"].ToString() == "105104118001")
+                                            {
+                                                <li>
+                                                    <button class="add"
+                                                            title="@Resource.AddNew" disabled style="filter: grayscale(100%)" type="submit" id="btn_add" name="Command" value="AddNew" onclick="EnableAddkBtn()"></button>
+                                                </li>
+                                            }
+                                            if (Row["feature_id"].ToString() == "105104118002")
+                                            {
+                                                <li>
+                                                    <button class="edit"
+                                                            title="@Resource.Edit" disabled style="filter: grayscale(100%)" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                </li>
+                                            }
+                                            if (Row["feature_id"].ToString() == "105104118004")
+                                            {
+                                                <li>
+                                                    <button class="delete"
+                                                            title="@Resource.Delete" onclick="return functionConfirm(this)" disabled style="filter: grayscale(100%)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                </li>
+                                            }
+                                        }
+                                    }
+
+                                    <li>
+                                        <button class="save"
+                                                title="@Resource.Save" type="submit" onclick="return  InsertPayAdvDetail();" id="btn_save" name="Command" value="Save"></button>
+                                    </li>
+                                    @if (ViewBag.AppLevel.Rows.Count > 0)
+                                    {
+                                        <li>
+                                            <button class="forward"
+                                                    title="@Resource.Forward" disabled style="filter: grayscale(100%)" type="submit" id="btn_forward" name="Command" value="Forward"></button>
+                                        </li>
+                                    }
+
+                                    <li>
+                                        <button class="approve"
+                                                title="@Resource.Approve" disabled style="filter: grayscale(100%)" type="submit" id="btn_approve" name="Command" value="Approve"></button>
+                                    </li>
+                                    @if (ViewBag.AppLevel.Rows.Count > 0)
+                                    {
+                                        <li>
+                                            <button class="workflow" title="@Resource.Workflow" type="button" id="btn_workflow" onclick="ForwardHistoryBtnClick();" name="Command" value="Workflow" data-toggle="modal" data-target="#WorkflowInformation" data-backdrop="static" data-keyboard="false"></button>
+                                        </li>
+                                    }
+
+                                    <li>
+                                        <button class="refresh"
+                                                title="@Resource.Refresh" type="submit" id="btn_refresh" name="Command" value="Refresh" onclick="RemoveSession()"></button>
+                                    </li>
+                                    @if (ViewBag.VBRoleList != null)
+                                    {
+                                        foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                        {
+                                            if (Row["feature_id"].ToString() == "105104118005")
+                                            {
+                                                <li>
+                                                    <button class="print"
+                                                            title="@Resource.Print" @disablePrintbtn type="submit" id="btn_print" name="Command" value="Print"></button>
+                                                </li>
+                                            }
+                                        }
+                                    }
+                                    <li>
+                                        <button class="back"
+                                                title="@Resource.Back" type="submit" id="btn_back" name="Command" onclick="RemoveSession()" value="BacktoList"></button>
+                                    </li>
+                                </ul>
+                                break;
+                            case "BtnEdit":
+                                <ul>
+                                    @if (ViewBag.VBRoleList != null)
+                                    {
+                                        foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                        {
+                                            if (Row["feature_id"].ToString() == "105104118001")
+                                            {
+                                                <li>
+                                                    <button class="add"
+                                                            title="@Resource.AddNew" disabled style="filter: grayscale(100%)" type="submit" id="btn_add" name="Command" value="AddNew" onclick="EnableAddkBtn()"></button>
+                                                </li>
+                                            }
+                                            if (Row["feature_id"].ToString() == "105104118002")
+                                            {
+                                                <li>
+                                                    @if (Model.DocumentStatus == "A" || Model.DocumentStatus == "D")
+                                                    {
+                                                        if (Model.Command == "Edit")
+                                                        {
+                                                            <button class="edit"
+                                                                    title="@Resource.Edit" disabled style="filter: grayscale(100%)" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                        }
+                                                        else
+                                                        {
+                                                            <button class="edit"
+                                                                    title="@Resource.Edit" type="submit" id="btn_edit" name="Command" onclick="return EnableEditkBtnVou()" value="Edit"></button>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <button class="edit"
+                                                                title="@Resource.Edit" disabled style="filter: grayscale(100%)" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                    }
+                                                </li>
+                                            }
+                                            if (Row["feature_id"].ToString() == "105104118004")
+                                            {
+                                                <li>
+                                                    @if (Model.DocumentStatus == "D")
+                                                    {
+                                                        if (Model.Command == "Edit")
+                                                        {
+                                                            <button class="delete"
+                                                                    title="@Resource.Delete" disabled style="filter: grayscale(100%)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                        }
+                                                        else
+                                                        {
+                                                            <button class="delete"
+                                                                    title="@Resource.Delete" onclick="return functionConfirm(this)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                        }
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <button class="delete"
+                                                                title="@Resource.Delete" disabled style="filter: grayscale(100%)" onclick="return functionConfirm(this)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+
+                                                    }
+                                                    @Html.HiddenFor(m => m.DeleteCommand, new { @id = "HdDeleteCommand" })
+                                                </li>
+                                            }
+                                        }
+                                    }
+                                    <li>
+                                        @if (Model.DocumentStatus == "D"|| Model.DocumentStatus == "F")
+                                        {
+                                            if (Model.Command == "Edit")
+                                            {
+                                                <button class="save"
+                                                        title="@Resource.Save" onclick="return InsertPayAdvDetail()" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                            }
+                                            else
+                                            {
+                                                <button class="save"
+                                                        title="@Resource.Save" disabled style="filter: grayscale(100%)" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                            }
+
+                                        }
+                                        else
+                                        {
+                                            <button class="save"
+                                                    title="@Resource.Save" disabled style="filter: grayscale(100%)" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                        }
+                                    </li>
+                                    @if (ViewBag.AppLevel.Rows.Count > 0)
+                                    {
+                                        <li>
+                                            @if (Model.DocumentStatus == "A")
+                                            {
+                                                <button class="forward"
+                                                        title="@Resource.Forward" disabled style="filter: grayscale(100%)" type="submit" id="btn_forward" name="Command" value="Forward"></button>
+                                            }
+                                            else
+                                            {
+                                                <button class="forward"
+                                                        title="@Resource.Forward" disabled style="filter: grayscale(100%)" type="submit" id="btn_forward" name="Command" value="Forward"></button>
+                                            }
+                                        </li>
+                                    }
+
+                                    <li>
+                                        @if (Model.DocumentStatus == "D")
+                                        {
+                                            if (Model.Command == "Edit")
+                                            {
+                                                <button class="approve"
+                                                        title="@Resource.Approve" disabled style="filter: grayscale(100%)" type="submit" id="btn_approve" name="Command" value="Approve"></button>
+                                            }
+                                            else
+                                            {
+                                                <button class="approve"
+                                                        title="@Resource.Approve" type="submit" onclick="approveonclick()" id="btn_approve" name="Command" value="Approve"></button>
+                                            }
+                                        }
+                                        else
+                                        {
+
+                                            <button class="approve"
+                                                    title="@Resource.Approve" disabled style="filter: grayscale(100%)" type="submit" id="btn_approve" name="Command" value="Approve" onclick="EnableApproveBtn()"></button>
+
+                                        }
+                                    </li>
+                                    @if (ViewBag.AppLevel.Rows.Count > 0)
+                                    {
+                                        <li>
+                                            <button class="workflow" title="@Resource.Workflow" type="button" id="btn_workflow" onclick="ForwardHistoryBtnClick();" name="Command" value="Workflow" data-toggle="modal" data-target="#WorkflowInformation" data-backdrop="static" data-keyboard="false"></button>
+                                        </li>
+                                    }
+
+                                    <li>
+                                        @if (Model.Command == "Edit")
+                                        {
+                                            <button class="refresh"
+                                                    title="@Resource.Refresh" type="submit" id="btn_refresh" name="Command" value="Refresh" onclick="RemoveSession()"></button>
+                                        }
+                                        else
+                                        {
+                                            <button class="refresh"
+                                                    title="@Resource.Refresh" disabled style="filter: grayscale(100%)" type="submit" id="btn_refresh" name="Command" value="Refresh" onclick="RemoveSession()"></button>
+                                        }
+                                    </li>
+                                    @if (ViewBag.VBRoleList != null)
+                                    {
+                                        foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                        {
+                                            if (Row["feature_id"].ToString() == "105104118005")
+                                            {
+                                                <li>
+                                                    @if (Model.DocumentStatus == "A")
+                                                    {
+
+                                                        <button class="print"
+                                                                title="@Resource.Print" @disablePrintbtn type="submit" id="btn_print" name="Command" value="Print"></button>
+                                                    }
+                                                    else
+                                                    {
+                                                        <button class="print"
+                                                                title="@Resource.Print" @disablePrintbtn type="submit" id="btn_print" name="Command" value="Print"></button>
+                                                    }
+
+                                                </li>
+                                            }
+                                        }
+                                    }
+
+                                    <li>
+                                        <button class="back"
+                                                title="@Resource.Back" type="submit" id="btn_back" name="Command" onclick="RemoveSession()" value="BacktoList"></button>
+                                    </li>
+                                </ul>
+                                break;
+                            case "BtnDelete":
+                                <ul>
+                                    @if (ViewBag.VBRoleList != null)
+                                    {
+                                        foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                        {
+                                            if (Row["feature_id"].ToString() == "105104118001")
+                                            {
+                                                <li>
+                                                    <button class="add"
+                                                            title="@Resource.AddNew" type="submit" id="btn_add" name="Command" value="AddNew"></button>
+                                                </li>
+                                            }
+                                            if (Row["feature_id"].ToString() == "105104118002")
+                                            {
+                                                <li>
+                                                    <button class="edit"
+                                                            title="@Resource.Edit" disabled style="filter: grayscale(100%)" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                </li>
+                                            }
+                                            if (Row["feature_id"].ToString() == "105104118004")
+                                            {
+                                                <li>
+                                                    <button class="delete"
+                                                            title="@Resource.Delete" disabled style="filter: grayscale(100%)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                </li>
+                                            }
+                                        }
+                                    }
+
+
+
+                                    <li>
+                                        <button class="save"
+                                                title="@Resource.Save" disabled style="filter: grayscale(100%)" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                    </li>
+                                    @if (ViewBag.AppLevel.Rows.Count > 0)
+                                    {
+                                        <li>
+                                            <button class="forward"
+                                                    title="@Resource.Forward" disabled style="filter: grayscale(100%)" type="submit" id="btn_forward" name="Command" value="Forward"></button>
+                                        </li>
+                                    }
+
+                                    <li>
+                                        <button class="approve"
+                                                title="@Resource.Approve" disabled style="filter: grayscale(100%)" type="submit" id="btn_approve" name="Command" value="Approve"></button>
+                                    </li>
+                                    @if (ViewBag.AppLevel.Rows.Count > 0)
+                                    {
+                                        <li>
+                                            <button class="workflow" title="@Resource.Workflow" type="button" id="btn_workflow" onclick="ForwardHistoryBtnClick();" name="Command" value="Workflow" data-toggle="modal" data-target="#WorkflowInformation" data-backdrop="static" data-keyboard="false"></button>
+                                        </li>
+                                    }
+
+                                    <li>
+                                        <button class="refresh"
+                                                title="@Resource.Refresh" disabled style="filter: grayscale(100%)" type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                                    </li>
+                                    @if (ViewBag.VBRoleList != null)
+                                    {
+                                        foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                        {
+                                            if (Row["feature_id"].ToString() == "105104118005")
+                                            {
+                                                <li>
+                                                    <button class="print"
+                                                            title="@Resource.Print" @disablePrintbtn type="submit" id="btn_print" name="Command" value="Print"></button>
+                                                </li>
+                                            }
+                                        }
+                                    }
+
+                                    <li>
+                                        <button class="back"
+                                                title="@Resource.Back" type="submit" id="btn_back" onclick="RemoveSession()" name="Command" value="BacktoList"></button>
+                                    </li>
+                                </ul>
+                                break;
+                            case "Refresh":
+                                <ul>
+                                    @if (ViewBag.VBRoleList != null)
+                                    {
+                                        foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                        {
+                                            if (Row["feature_id"].ToString() == "105104118001")
+                                            {
+                                                <li>
+                                                    <button class="add"
+                                                            title="@Resource.AddNew" type="submit" id="btn_add" name="Command" value="AddNew"></button>
+                                                </li>
+                                            }
+                                            if (Row["feature_id"].ToString() == "105104118002")
+                                            {
+                                                <li>
+                                                    <button class="edit" Session
+                                                            title="@Resource.Edit" disabled style="filter: grayscale(100%)" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                </li>
+                                            }
+                                            if (Row["feature_id"].ToString() == "105104118004")
+                                            {
+                                                <li>
+                                                    <button class="delete"
+                                                            title="@Resource.Delete" disabled style="filter: grayscale(100%)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                </li>
+                                            }
+                                        }
+                                    }
+
+
+
+                                    <li>
+                                        <button class="save"
+                                                title="@Resource.Save" disabled style="filter: grayscale(100%)" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                    </li>
+                                    @if (ViewBag.AppLevel.Rows.Count > 0)
+                                    {
+                                        <li>
+                                            <button class="forward"
+                                                    title="@Resource.Forward" disabled style="filter: grayscale(100%)" type="submit" id="btn_forward" name="Command" value="Forward"></button>
+                                        </li>
+                                    }
+
+                                    <li>
+                                        <button class="approve"
+                                                title="@Resource.Approve" disabled style="filter: grayscale(100%)" type="submit" id="btn_approve" name="Command" value="Approve"></button>
+                                    </li>
+                                    @if (ViewBag.AppLevel.Rows.Count > 0)
+                                    {
+                                        <li>
+                                            <button class="workflow" title="@Resource.Workflow" type="button" id="btn_workflow" onclick="ForwardHistoryBtnClick();" name="Command" value="Workflow" data-toggle="modal" data-target="#WorkflowInformation" data-backdrop="static" data-keyboard="false"></button>
+                                        </li>
+                                    }
+
+                                    <li>
+                                        <button class="refresh"
+                                                title="@Resource.Refresh" disabled style="filter: grayscale(100%)" type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                                    </li>
+                                    @if (ViewBag.VBRoleList != null)
+                                    {
+                                        foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                        {
+                                            if (Row["feature_id"].ToString() == "105104118005")
+                                            {
+                                                <li>
+                                                    <button class="print" title="@Resource.Print" @disablePrintbtn type="submit" id="btn_print" name="Command" value="Print"></button>
+                                                </li>
+                                            }
+                                        }
+                                    }
+
+                                    <li>
+                                        <button class="back" title="@Resource.Back" type="submit" id="btn_back" onclick="RemoveSession()" name="Command" value="BacktoList"></button>
+                                    </li>
+                                </ul>
+                                break;
+                            case "BtnToDetailPage":
+                                <ul>
+                                    @if (ViewBag.VBRoleList != null)
+                                    {
+                                        foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                        {
+                                            if (Row["feature_id"].ToString() == "105104118001")
+                                            {
+                                                <li>
+                                                    <button class="add"
+                                                            title="@Resource.AddNew" type="submit" id="btn_add" name="Command" value="AddNew"></button>
+                                                </li>
+                                            }
+                                            if (Row["feature_id"].ToString() == "105104118002")
+                                            {
+                                                if (Model.DocumentStatus == "D"|| Model.DocumentStatus == "F" || Model.DocumentStatus == "A")
+                                                {
+                                                    <li>
+                                                        <button class="edit" title="@Resource.Edit" type="submit" id="btn_edit" onclick="return EnableEditkBtnVou()" name="Command" value="Edit"></button>
+                                                    </li>
+                                                }
+                                                else
+                                                {
+                                                    <li>
+                                                        <button class="edit" disabled style="filter: grayscale(100%)" title="@Resource.Edit" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                    </li>
+                                                }
+                                            }
+                                            if (Row["feature_id"].ToString() == "105104118004")
+                                            {
+                                                if (Model.DocumentStatus == "D")
+                                                {
+                                                    <li>
+                                                        <button class="delete"
+                                                                title="@Resource.Delete" onclick="return functionConfirm(this)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                    </li>
+                                                }
+                                                else
+                                                {
+                                                    <li>
+                                                        <button class="delete"
+                                                                title="@Resource.Delete" disabled style="filter: grayscale(100%)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                    </li>
+                                                }
+                                                @Html.HiddenFor(m => m.DeleteCommand, new { @id = "HdDeleteCommand" })
+                                            }
+                                        }
+                                    }
+                                    <li>
+                                        <button class="save"
+                                                title="@Resource.Save" disabled style="filter: grayscale(100%)" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                    </li>
+                                    @if (ViewBag.AppLevel.Rows.Count > 0)
+                                    {
+                                        <li>
+                                            @if (Model.DocumentStatus == "D" || Model.DocumentStatus == "F")
+                                            {
+                                                if (ViewBag.ForwardEnbl == "Y")
+                                                {/*start Add by Hina on 28-02-2024 to chk Financial year exist or not*/
+                                                    if (ViewBag.Message == "Financial Year not Exist" || ViewBag.MessageFB == "Financial Book Closing")
+                                                    {/*data-target="" value will be balnk in this case*/
+                                                        <button class="forward"
+                                                                title="@Resource.Forward" type="button" onclick="return ForwardBtnClick()" data-toggle="modal" data-target="" id="Btn_Forward" name="Command" value="Forward"></button>
+                                                    }/*End to chk Financial year exist or not*/
+                                                    else
+                                                    {
+                                                        <button class="forward"
+                                                                title="@Resource.Forward" type="button" onclick="return ForwardBtnClick()" data-toggle="modal" data-target="#Forward_Pop" id="Btn_Forward" name="Command" value="Forward"></button>
+                                                    }/*Commented by Hina on 28-02-2024 to chk Financial year exist or not*/
+                                                    @*<button class="forward"
+                                            title="@Resource.Forward" type="submit" onclick="return ForwardBtnClick()" data-toggle="modal" data-target="#Forward_Pop" id="Btn_Forward" name="Command" value="Forward"></button>*@
+                                                }
+                                                else
+                                                {
+                                                    <button class="forward"
+                                                            title="@Resource.Forward" disabled style="filter: grayscale(100%)" type="submit" id="btn_forward" name="Command" value="Forward"></button>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <button class="forward"
+                                                        title="@Resource.Forward" disabled style="filter: grayscale(100%)" type="submit" id="btn_forward" name="Command" value="Forward"></button>
+                                            }
+                                        </li>
+                                    }
+
+                                    <li>
+                                        @if (Model.DocumentStatus == "D" || Model.DocumentStatus == "F")
+                                        {
+                                            if (ViewBag.Approve == "Y")
+                                            {
+                                                if (ViewBag.AppLevel.Rows.Count > 0)
+                                                {/*start Add by Hina on 28-02-2024 to chk Financial year exist or not*/
+                                                    if (ViewBag.Message == "Financial Year not Exist" || ViewBag.MessageFB == "Financial Book Closing")
+                                                    {/*data-target="" value will be balnk in this case*/
+                                                        <button class="approve"
+                                                                title="@Resource.Approve" type="button" onclick="return ForwardBtnClick()" data-toggle="modal" data-target="" id="Btn_Approve" name="Command" value="Approve"></button>
+
+                                                    }/*End to chk Financial year exist or not*/
+                                                    else
+                                                    {
+                                                        <button class="approve"
+                                                                title="@Resource.Approve" type="button" onclick="return ForwardBtnClick()" data-toggle="modal" data-target="#Forward_Pop" id="Btn_Approve" name="Command" value="Approve"></button>
+
+                                                    }/*Commented by Hina on 28-02-2024 to chk Financial year exist or not*/
+                                                    @*<button class="approve"
+                                            title="@Resource.Approve" type="submit" onclick="return ForwardBtnClick()" data-toggle="modal" data-target="#Forward_Pop" id="Btn_Approve" name="Command" value="Approve"></button>*@
+                                                }
+                                                else
+                                                {
+                                                    <button class="approve"
+                                                            title="@Resource.Approve" type="submit" onclick="approveonclick()" id="btn_approve" name="Command" value="Approve"></button>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <button class="approve"
+                                                        title="@Resource.Approve" disabled style="filter: grayscale(100%)" type="submit" id="Btn_Approve" name="Command" value="Approve"></button>
+
+                                                @*<a class="tooltip-test" href="#" title="@Resource.Approve"><img src="~/Content/Images/approve_green.png" width="28" height="28" alt="Approve" disabled style="filter: grayscale(100%)" id="Btn_Approve"></a>*@
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <button class="approve"
+                                                    title="@Resource.Approve" disabled style="filter: grayscale(100%)" type="submit" id="btn_approve" name="Command" value="Approve"></button>
+                                        }
+                                    </li>
+                                    @if (ViewBag.AppLevel.Rows.Count > 0)
+                                    {
+                                        @*<li>
+                                    <a class="tooltip-test" href="#" title="@Resource.Workflow">
+                                        <img src="~/Content/Images/workflow1.png" width="28" height="28" alt="Add" id="Btn_Workflow" onclick="ForwardHistoryBtnClick();" data-toggle="modal" data-target="#WorkflowInformation" data-backdrop="static" data-keyboard="false">
+                                    </a>
+                                </li>*@
+                                        <li>
+                                            <button class="workflow" title="@Resource.Workflow"
+                                                    type="submit" id="Btn_Workflow" onclick="return ForwardHistoryBtnClick();" data-toggle="modal" data-target="#WorkflowInformation" name="Command" value="Workflow"></button>
+                                        </li>
+                                    }
+
+                                    <li>
+                                        <button class="refresh"
+                                                title="@Resource.Refresh" disabled style="filter: grayscale(100%)" type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                                    </li>
+                                    @if (ViewBag.VBRoleList != null)
+                                    {
+                                        foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                        {
+                                            if (Row["feature_id"].ToString() == "105104118005")
+                                            {
+                                                <li>
+                                                    <button class="print"
+                                                            title="@Resource.Print" @disablePrintbtn type="submit" id="btn_print" name="Command" value="Print"></button>
+                                                </li>
+                                            }
+                                        }
+                                    }
+
+                                    <li>
+                                        <button class="back"
+                                                title="@Resource.Back" type="submit" id="btn_back" onclick="RemoveSession()" name="Command" value="BacktoList"></button>
+                                    </li>
+                                </ul>
+                                break;
+                            case "BtnSave":
+                                <ul>
+                                    @if (ViewBag.VBRoleList != null)
+                                    {
+                                        foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                        {
+                                            if (Row["feature_id"].ToString() == "105104118001")
+                                            {
+                                                <li>
+                                                    <button class="add"
+                                                            title="@Resource.AddNew" type="submit" id="btn_add" name="Command" value="AddNew"></button>
+                                                </li>
+                                            }
+                                            if (Row["feature_id"].ToString() == "105104118002")
+                                            {
+                                                <li>
+                                                    <button class="edit"
+                                                            title="@Resource.Edit" type="submit" id="btn_edit" onclick="return EnableEditkBtnVou()" name="Command" value="Edit"></button>
+                                                </li>
+                                            }
+                                            if (Row["feature_id"].ToString() == "105104118004")
+                                            {
+                                                if (Model.DocumentStatus == "A")
+                                                {
+                                                    <li>
+                                                        <button class="delete"
+                                                                title="@Resource.Delete" type="submit" id="btn_del" disabled style="filter: grayscale(100%)" name="Command" value="Delete"></button>
+                                                    </li>
+                                                }
+                                                else
+                                                {
+                                                    <li>
+                                                        <button class="delete"
+                                                                title="@Resource.Delete" onclick="return functionConfirm(this)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                    </li>
+
+                                                }
+                                                @Html.HiddenFor(m => m.DeleteCommand, new { @id = "HdDeleteCommand" })
+                                            }
+                                        }
+                                    }
+
+
+
+                                    <li>
+                                        <button class="save"
+                                                title="@Resource.Save" disabled style="filter: grayscale(100%)" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                    </li>
+                                    @if (ViewBag.AppLevel.Rows.Count > 0)
+                                    {
+                                        <li>
+                                            @if (Model.DocumentStatus == "D")
+                                            {
+                                                if (ViewBag.ForwardEnbl == "Y")
+                                                {
+                                                    <button class="forward"
+                                                            title="@Resource.Forward" type="button" onclick="return ForwardBtnClick()" data-toggle="modal" data-target="#Forward_Pop" id="Btn_Forward" name="Command" value="Forward"></button>
+
+                                                    @*<a class="tooltip-test" href="#" title="@Resource.Forward"><img src="~/Content/Images/forward_orange.png" width="28" height="28" alt="Forward" onclick="ForwardBtnClick()" data-toggle="modal" data-target="#Forward_Pop" data-backdrop="static" data-keyboard="false" title="@Resource.Forward" id="Btn_Forward"></a>*@
+                                                }
+                                                else
+                                                {
+                                                    <button class="forward"
+                                                            title="@Resource.Forward" disabled style="filter: grayscale(100%)" type="submit" id="btn_forward" name="Command" value="Forward"></button>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <button class="forward"
+                                                        title="@Resource.Forward" disabled style="filter: grayscale(100%)" type="submit" id="btn_forward" name="Command" value="Forward"></button>
+                                            }
+                                        </li>
+                                    }
+
+                                    <li>
+                                        @if (Model.DocumentStatus == "D" || Model.DocumentStatus == "F")
+                                        {
+                                            if (ViewBag.Approve == "Y")
+                                            {
+                                                if (ViewBag.AppLevel.Rows.Count > 0)
+                                                {
+                                                    <button class="approve"
+                                                            title="@Resource.Approve" type="button" onclick="return ForwardBtnClick()" data-toggle="modal" data-target="#Forward_Pop" id="Btn_Approve" name="Command" value="Approve"></button>
+
+                                                    @*<a class="tooltip-test" href="#" title="@Resource.Approve"><img src="~/Content/Images/approve_green.png" width="28" height="28" alt="Approve" onclick="ForwardBtnClick()" data-toggle="modal" data-target="#Forward_Pop" data-backdrop="static" data-keyboard="false" id="Btn_Approve"></a>*@
+                                                }
+                                                else
+                                                {
+                                                    <button class="approve"
+                                                            title="@Resource.Approve" type="submit" onclick="approveonclick()" id="btn_approve" name="Command" value="Approve"></button>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <button class="approve"
+                                                        title="@Resource.Approve" disabled style="filter: grayscale(100%)" type="submit" id="Btn_Approve" name="Command" value="Approve"></button>
+
+                                                @*<a class="tooltip-test" href="#" title="@Resource.Approve"><img src="~/Content/Images/approve_green.png" width="28" height="28" alt="Approve" disabled style="filter: grayscale(100%)" id="Btn_Approve"></a>*@
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <button class="approve"
+                                                    title="@Resource.Approve" disabled style="filter: grayscale(100%)" type="submit" id="btn_approve" name="Command" value="Approve"></button>
+                                        }
+                                    </li>
+                                    @if (ViewBag.AppLevel.Rows.Count > 0)
+                                    {
+                                        <li>
+                                            @*<a class="tooltip-test" href="#" title="@Resource.Workflow">
+                                        <img src="~/Content/Images/workflow1.png" width="28" height="28" alt="Add" id="Btn_Workflow" onclick="ForwardHistoryBtnClick();" data-toggle="modal" data-target="#WorkflowInformation" data-backdrop="static" data-keyboard="false">
+                                    </a>*@
+                                            <button class="workflow" title="@Resource.Workflow"
+                                                    type="submit" id="Btn_Workflow" onclick="return ForwardHistoryBtnClick();" data-toggle="modal" data-target="#WorkflowInformation" name="Command" value="Workflow"></button>
+
+                                        </li>
+                                    }
+
+                                    <li>
+                                        <button class="refresh"
+                                                title="@Resource.Refresh" type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                                    </li>
+                                    @if (ViewBag.VBRoleList != null)
+                                    {
+                                        foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                        {
+                                            if (Row["feature_id"].ToString() == "105104118005")
+                                            {
+                                                <li>
+                                                    <button class="print"
+                                                            title="@Resource.Print" @disablePrintbtn type="submit" id="btn_print" name="Command" value="Print"></button>
+                                                </li>
+                                            }
+                                        }
+                                    }
+
+                                    <li>
+                                        <button class="back"
+                                                title="@Resource.Back" type="submit" id="btn_back" name="Command" onclick="RemoveSession()" value="BacktoList"></button>
+                                    </li>
+                                </ul>
+                                break;
+                            case "BtnApprove":
+                                <ul>
+                                    @if (ViewBag.VBRoleList != null)
+                                    {
+                                        foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                        {
+                                            if (Row["feature_id"].ToString() == "105104118001")
+                                            {
+                                                <li>
+                                                    <button class="add"
+                                                            title="@Resource.AddNew" type="submit" id="btn_add" name="Command" value="AddNew"></button>
+                                                </li>
+                                            }
+                                            if (Row["feature_id"].ToString() == "105104118002")
+                                            {
+                                                <li>
+                                                    <button class="edit"
+                                                            title="@Resource.Edit" type="submit" id="btn_edit" onclick="return EnableEditkBtnVou()" name="Command" value="Edit"></button>
+                                                </li>
+                                            }
+                                            if (Row["feature_id"].ToString() == "105104118004")
+                                            {
+                                                <li>
+                                                    <button class="delete"
+                                                            title="@Resource.Delete" disabled style="filter: grayscale(100%)" onclick="return functionConfirm(this)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                </li>
+                                            }
+                                        }
+                                    }
+                                    <li>
+                                        <button class="save"
+                                                title="@Resource.Save" disabled style="filter: grayscale(100%)" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                    </li>
+                                    @if (ViewBag.AppLevel.Rows.Count > 0)
+                                    {
+                                        if (Model.DocumentStatus == "A")
+                                        {
+                                            <li>
+                                                <button class="forward"
+                                                        title="@Resource.Forward" disabled style="filter: grayscale(100%)" type="submit" id="btn_forward" name="Command" value="Forward"></button>
+                                            </li>
+                                        }
+                                        else
+                                        {
+                                            <li>
+                                                <button class="forward"
+                                                        title="@Resource.Forward" type="submit" id="btn_forward" name="Command" value="Forward"></button>
+                                            </li>
+
+                                        }
+                                    }
+
+                                    @if (Model.DocumentStatus == "A")
+                                    {
+                                        <li>
+                                            <button class="approve"
+                                                    title="@Resource.Approve" disabled style="filter: grayscale(100%)" type="submit" id="btn_approve" name="Command" value="Approve"></button>
+                                        </li>
+                                    }
+                                    else
+                                    {
+                                        <li>
+                                            <button class="approve"
+                                                    title="@Resource.Approve" type="submit" onclick="approveonclick()" id="btn_approve" name="Command" value="Approve"></button>
+                                        </li>
+                                    }
+                                    @if (ViewBag.AppLevel.Rows.Count > 0)
+                                    {
+                                        <li>
+                                            <button class="workflow"
+                                                    title="@Resource.Workflow" disabled style="filter: grayscale(100%)" type="submit" id="btn_workflow" name="Command" value="Workflow"></button>
+                                        </li>
+                                    }
+
+                                    <li>
+                                        <button class="refresh"
+                                                title="@Resource.Refresh" type="submit" onclick="RemoveSession()" id="btn_refresh" name="Command" value="Refresh"></button>
+                                    </li>
+                                    @if (ViewBag.VBRoleList != null)
+                                    {
+                                        foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                        {
+                                            if (Row["feature_id"].ToString() == "105104118005")
+                                            {
+                                                <li>
+                                                    <button class="print"
+                                                            title="@Resource.Print" @disablePrintbtn type="submit" id="btn_print" name="Command" value="Print"></button>
+                                                </li>
+                                            }
+                                        }
+                                    }
+
+                                    <li>
+                                        <button class="back"
+                                                title="@Resource.Back" type="submit" id="btn_back" name="Command" onclick="RemoveSession()" value="BacktoList"></button>
+                                    </li>
+                                </ul>
+                                break;
+
+                        }
+                    }
+                    @*<ul>
+                <li>
+                    <button class="add" title="@Resource.AddNew" disabled style="filter: grayscale(100%)" type="submit" id="btn_add" name="Command" value="AddNew"></button>
+                </li>
+                <li>
+                    <button class="edit" title="@Resource.Edit" disabled style="filter: grayscale(100%)" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                </li>
+                <li>
+                    <button class="delete" title="@Resource.Delete" disabled style="filter: grayscale(100%)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                </li>
+                <li>
+                    <button class="save" title="@Resource.Save" type="submit" onclick="return CheckFormValidation();" id="btn_save" name="Command" value="Save"></button>
+                </li>
+                <li>
+                    <button class="forward" title="@Resource.Forward" disabled style="filter: grayscale(100%)" type="submit" id="btn_forward" name="Command" value="Forward"></button>
+                </li>
+                <li>
+                    <button class="approve" title="@Resource.Approve" disabled style="filter: grayscale(100%)" type="submit" id="btn_approve" name="Command" value="Approve"></button>
+                </li>
+                <li>
+                    <button class="workflow" title="@Resource.Workflow" disabled style="filter: grayscale(100%)" type="submit" id="btn_workflow" name="Command" value="Workflow"></button>
+                </li>
+                <li>
+                    <button class="refresh" title="@Resource.Refresh" type="submit" id="btn_refresh" name="Command" value="Refresh" onclick="EnableRefreshBtn()"></button>
+                </li>
+                <li>
+                    <button class="print" title="@Resource.Print" type="submit" id="btn_print" name="Command" value="Print"></button>
+                </li>
+                <li>
+                    <button class="back" title="@Resource.Back" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                </li>
+            </ul>*@
+                </div>
+                <div class="clearfix"></div>
+                <div class="x_title pad_mar ">
+                    <div class="col-md-12 col-sm-12 icon_tool ">
+                        <!--<span>Collapsible / Accordion </span>-->
+                        <div class="approved_by">
+                            @*<ul>
+                        <li><span>@Resource.CreatedBy<br><b></b></span></li>
+                        <li><span>@Resource.Createdon<br><b></b></span></li>
+                        <li><span>@Resource.ApprovedBy<br><b></b></span></li>
+                        <li><span>@Resource.ApprovedOn<br><b></b></span></li>
+                        <li><span>@Resource.AmendedBy<br><b></b></span></li>
+                        <li><span>@Resource.AmendedOn<br><b></b></span></li>
+                        <li>
+                            <span>
+                                @Resource.Status<br><b>
+                                </b>
+                            </span>
+                        </li>
+                    </ul>*@
+                            <ul class="margin0 padding0">
+                                <li><span>@Resource.CreatedBy<br><b>@Html.DisplayFor(model => model.Create_by)</b></span></li>
+                                <li><span>@Resource.Createdon<br><b>@Html.DisplayFor(model => model.Create_on)</b></span></li>
+                                <li><span>@Resource.ApprovedBy<br><b>@Html.DisplayFor(model => model.Approved_by)</b></span></li>
+                                <li><span>@Resource.ApprovedOn<br><b>@Html.DisplayFor(model => model.Approved_on)</b></span></li>
+                                <li><span>@Resource.AmendedBy<br><b>@Html.DisplayFor(model => model.Amended_by)</b></span></li>
+                                <li><span>@Resource.AmendedOn<br><b>@Html.DisplayFor(model => model.Amended_on)</b></span></li>
+                                <li>
+                                    <span>@Resource.Status<br><b>@Html.DisplayFor(model => model.PayAdvStatus)</b></span>
+                                    @Html.HiddenFor(model => model.Status, new { @id = "hdnPAStatus" })
+                                </li>
+                            </ul>
+                            @Html.HiddenFor(model => model.WFBarStatus, new { @id = "WFBarStatus" })
+                            @Html.HiddenFor(model => model.WFStatus, new { @id = "WFStatus" })
+                            @Html.HiddenFor(model => model.Create_id, new { @id = "Create_ID" })
+
+                            @Html.HiddenFor(model => model.PayAdvItemDetails, new { @id = "hdn_PayAdvItemDetail" })
+
+                            @Html.HiddenFor(model => model.TransType, new { @id = "TransType" })
+                            @Html.HiddenFor(model => model.DocumentStatus, new { @id = "DocumentStatus" })
+                            @Html.HiddenFor(model => model.Command, new { @id = "Command" })
+                        </div>
+                        @Html.HiddenFor(m => m.ListFilterData1, new { @id = "ListFilterData1", value = Model.ListFilterData1 })
+                        @Html.HiddenFor(model => model.WF_Status1, new { @id = "WF_Status1" })
+                        @Html.HiddenFor(model => model.hdnsaveApprovebtn, new { @id = "hdnsavebtn" })
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <div class="row">
+                    <div class="col-md-12 col-sm-12">
+                        <div class="col-md-55 col-sm-12">
+                            <label class="col-form-label label-align">@Resource.AdviceNumber </label>
+                            @*<input class="form-control" disabled="disabled" id="AdviceNumber" maxlength="20" name="AdviceNumber" placeholder="@Resource.AdviceNumber" readonly="readonly" type="text" value="">*@
+                            @*@Html.HiddenFor(model => model.AdviceNo, new { @id = "hdInvAdjNo" })*@
+                            @Html.TextBoxFor(model => model.AdviceNo, new { @readonly = "readonly", @id = "txt_AdviceNumber", @maxlength = "20", @class = "form-control", @placeholder = @Resource.AdviceNumber })
+                        </div>
+                        <div class="col-md-55 col-sm-12 pl-0">
+                            <label class="col-form-label label-align">@Resource.AdviceDate </label>
+                            @*<input class="form-control" disabled="disabled" id="AdviceDate" maxlength="20" name="AdviceDate" placeholder="@Resource.AdviceDate" readonly="readonly" type="text" value="">*@
+                            @Html.TextBoxFor(model => model.AdviceDate, new { @class = "form-control", @id = "txt_AdviceDate", @type = "date", @readonly = "readonly", @max = System.DateTime.Now.ToString("yyyy-MM-dd") })
+                        </div>
+
+                        <div class="col-md-55 col-sm-12 pl-0">
+                            <label class="col-form-label label-align">@Resource.FromDate</label>
+                            @*<input class="form-control" data-val="true" id="" name="" type="date" value="2025-07-10">*@
+                            @if (Disable || Model.Command == "Edit")
+                            {
+                                @Html.TextBoxFor(model => model.FromDate_Dt, new { @class = "form-control", @id = "txtFromdate_Dtl", @onchange = "FromToDateValidation_Dtl()", @type = "date", @max = DateTime.Now.ToString("yyyy-MM-dd"), disabled = "disabled" })
+
+                            }
+                            else
+                            {
+                                @Html.TextBoxFor(model => model.FromDate_Dt, new { @class = "form-control", @id = "txtFromdate_Dtl", @onchange = "FromToDateValidation_Dtl()", @type = "date", @max = DateTime.Now.ToString("yyyy-MM-dd") })
+                            }
+
+                            @Html.HiddenFor(model => model.FromDate_Dt, new { id = "hdn_FromdateDtl" })
+                        </div>
+                        <div class="col-md-55 col-sm-12 pl-0" id="">
+                            <label class="col-form-label label-align">@Resource.ToDate</label>
+                            @*<input class="form-control" data-val="true" id="" name="" type="date" value="2025-07-10">*@
+                            @if (Disable || Model.Command == "Edit")
+                            {
+                                @Html.TextBoxFor(model => model.ToDate_Dt, new { @class = "form-control", @id = "txtTodate_Dtl", @placeholder = "dd-MM-yyyy", @onchange = "VoucherDateValidation()", @type = "date", @max = DateTime.Now.ToString("yyyy-MM-dd"), @Value = @DateTime.Now.ToString("yyyy-MM-dd"), disabled = "disabled" })
+                            }
+                            else
+                            {
+                                @Html.TextBoxFor(model => model.ToDate_Dt, new { @class = "form-control", @id = "txtTodate_Dtl", @placeholder = "dd-MM-yyyy", @onchange = "VoucherDateValidation()", @type = "date", @max = DateTime.Now.ToString("yyyy-MM-dd"), @Value = @DateTime.Now.ToString("yyyy-MM-dd") })
+                            }
+                            @Html.HiddenFor(model => model.ToDate_Dt, new { id = "hdn_ToDateDtl" })
+                        </div>
+                        @*<div class="col-md-55 col-sm-12 pl-0">
+                                <label class="col-form-label label-align">@Resource.GLAccount</label>
+                                <select class="form-control" id="GLAccount" name="GLAccount">
+                                    <option selected="selected" value="">GL Account</option>
+                                    <option value="">GL Account 1</option>
+                                    <option value="">GL Account 2</option>
+                                    <option value="">GL Account 3</option>
+                                </select>
+                            </div>*@
+
+
+                        @*<div class="col-md-55 col-sm-12">
+                                <label class="col-form-label label-align">@Resource.InstrumentType </label>
+                                <select class="form-control" id="InstrumentType" name="InstrumentType">
+
+                                    <option value="" selected="selected">Instrument Type</option>
+                                    <option value="">Instrument Type 1</option>
+                                    <option value="">Instrument Type 2</option>
+                                </select>
+                            </div>*@
+                        <div class="col-md-55 col-sm-12">
+                            <label class="col-form-label label-align">@Resource.InstrumentType</label>
+                            @if (Disable || Model.Command == "Edit")
+                            {
+
+                                @Html.DropDownListFor(model => model.InstrumentType, new SelectList(new List<Object>
+                                {
+                                                new { value = "0", text = "---All---"  },
+                               new { value = "C", text = "Cheque"  },
+                                new { value = "D", text = "Demand Draft"  },
+                                new { value = "P" , text = "Digital Payment" },
+                                new { value = "O" , text = "Online Transfer" },
+
+                                },
+                                              "value",
+                                              "text"
+                                              ), new { @class = "form-control", @id = "ddl_InstrumentType", disabled = "disabled" })
+                            }
+                            else
+                            {
+                                @Html.DropDownListFor(model => model.InstrumentType, new SelectList(new List<Object>
+                               {
+                               new { value = "0", text = "---All---"  },
+                               new { value = "C", text = "Cheque"  },
+                                new { value = "D", text = "Demand Draft"  },
+                                new { value = "P" , text = "Digital Payment" },
+                                new { value = "O" , text = "Online Transfer" },
+
+                               },
+"value",
+"text"
+), new { @class = "form-control", @id = "ddl_InstrumentType", @onchange = "OnchangeInstrumentType()" })
+                            }
+                            @Html.HiddenFor(model => model.InstrumentType, new { @id = "hdInstrumentType" })
+                        </div>
+                        <div class="col-md-55 col-sm-12">
+                            <label class="col-form-label label-align">@Resource.Bank @Resource.Account<spn class="required"> * </spn></label>
+                            @if (Disable || Model.Command == "Edit")
+                            {
+                                @Html.DropDownListFor(model => model.bank_acc_id, new SelectList(Model.BankAccNameList, "bank_acc_id", "bank_acc_name"), new { @class = "form-control", disabled = "disabled", @id = "ddlBankAccName" });
+
+                            }
+                            else
+                            {
+                                @Html.DropDownListFor(model => model.bank_acc_id, new SelectList(Model.BankAccNameList, "bank_acc_id", "bank_acc_name"), new { @class = "form-control", @id = "ddlBankAccName", onchange = "OnChangeBankCoa()" })
+
+                            }
+                            @Html.ValidationMessageFor(model => model.bank_acc_id, String.Empty, new { @id = "vmBankAccName" })
+                            <input type="hidden" id="hdBankList" value='@Url.Action("GetAutoCompleteBankDetail", "PaymentAdvice")' />
+                            @Html.HiddenFor(model => model.bank_acc_id, new { @id = "hdnBankName" })
+
+                        </div>
+                        @if (Disable || Model.Command == "Edit")
+                        {
+
+                        }
+                        else
+                        {
+                            <div class="col-md-2 col-sm-12">
+                                <button type="button" class="btn btn-primary btn-sm margintop20" id="BtnSearch" onclick="SearchPayAdvDetails()"><i class="fa fa-search" aria-hidden="true" title="@Resource.Detail"></i></button>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="clear"></div>
+                @*<div class="row">
+                        <div class="col-md-12 col-sm-12">
+                            <div class="card-box table-responsive dy_table">
+                                <div class=" col-sm-12">
+                                    <div class="tableFixHead">
+                                        <h2 class="col-md-9 col-sm-12 no-padding mt-3">@Resource.ItemDetail</h2>
+                                        <div class="col-md-3 col-sm-12 no-padding num_right mt-3 mb-2"><label class="label pt-1 col-md-4 col-sm-12 num_right pr-0" for="SearchItmDetailsTbl">@Resource.Search @Resource.Item : </label><input type="text" class="form-control col-md-7 col-sm-12" id="SearchItmDetailsTbl" onkeyup="FilterItemDetail(event)" /> </div>
+                                        <table id="" class="table table-bordered  itmfrz">
+                                            <thead>
+                                                <tr class="headings">
+                                                    <th class="" width="4%">
+                                                        <input type="checkbox" class="tableflat float-left ml-1" id="" onclick="">
+                                                    </th>
+                                                    <th width="4%">@Resource.SrNo</th>
+                                                    <th width="16%" class="itmStick">@Resource.Voucher @Resource.Number</th>
+                                                    <th width="10%">  @Resource.Voucher @Resource.Date </th>
+                                                    <th width="12%">@Resource.BankAccount</th>
+                                                    <th width="15%">@Resource.GLAccount</th>
+                                                    <th width="12%">@Resource.Amount</th>
+                                                    <th width="12%">@Resource.InstrumentType</th>
+                                                    <th width="15%">@Resource.InstrumentNumber</th>
+
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td class="center"><input type="checkbox" class="tableflat" id=""></td>
+                                                    <td class="sr_padding">01</td>
+                                                    <td class="ItmNameBreak itmStick tditemfrz">B1/08/24/FGR0000006</td>
+                                                    <td>29-08-2024</td>
+                                                    <td>798259878765  </td>
+                                                    <td>B1/08/24/FGR0000006</td>
+                                                    <td class="num_right">87698.000</td>
+                                                    <td>Demand Draft</td>
+                                                    <td>456345</td>
+
+                                                </tr>
+
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>*@
+
+
+
+
+                <div class="row mt-3">
+                    <div class="col-md-12 col-sm-12 ">
+                        <div class="x_panel mar_pad1 ">
+                            <div class="x_content mar_pad1">
+                                <div class="card-box table-responsive dy_table">
+                                    <div id="DivPaymentAdviceItemDetail" class="sticky-table sticky-ltr-cells sb-container container-example1">
+                                        @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialPaymentAdviceItemDetail.cshtml")
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    }
+}

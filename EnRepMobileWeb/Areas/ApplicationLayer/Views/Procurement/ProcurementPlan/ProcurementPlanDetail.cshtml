@@ -1,0 +1,482 @@
+﻿@using EnRepMobileWeb.MODELS.Common;
+@using EnRepMobileWeb.Resources;
+
+@if (Session["UserId"] == null)
+{
+    Response.Redirect("~/Login");
+}
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+
+<script>
+    $(document).ready(function () {
+
+        $('#SourceDocument').multiselect({
+            includeSelectAllOption: true,
+            enableFiltering: true,
+            enableCaseInsensitiveFiltering: true,
+            buttonWidth: '100%',
+            nonSelectedText: "---All---",
+            numberDisplayed: 1
+        });
+
+    });
+</script>
+<style>
+    button.multiselect {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+</style>
+<div class="row">
+    <!-- Procurement Plan Order Detail Start -->
+    <div id="ProcurementPlanOrderDetail" class="modal fade" role="dialog">
+        <div class="modal-dialog" id="" style=" max-width:800px;">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialProcurementPlanOrderDetail.cshtml")
+        </div>
+    </div>
+    <!-- Procurement Plan Order Detail Start End -->
+
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <h2 class="col-md-5 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                <div id="wizard" class="form_wizard wizard_horizontal col-md-3 col-sm-12 work_flow">
+                    <ul class="wizard_steps">
+                        <li>
+                            <a href="#step-1" class="disabled" isdone="1" onclick="ForwardBarHistoryClick()" data-toggle="modal" data-target="#WorkflowInformation" data-backdrop="static" data-keyboard="false" rel="1" id="a_1">
+                                <span class="step_no">1</span>
+                            </a>
+                        </li>
+                    </ul>
+                    <input type="hidden" id="hdDoc_No" value="">
+                </div>
+                <div id="" class="col-md-4 col-sm-12 work_flow heading_right_padding">
+                    <ul>
+                        <li>
+                            <button class="add"
+                                    title="@Resource.AddNew" disabled type="submit" id="btn_add" name="Command" value="AddNew" onclick="RemoveSessionData()"></button>
+                        </li>
+                        <li>
+                            <button class="edit"
+                                    title="@Resource.Edit" disabled type="submit" id="btn_edit" name="Command" value="Edit" onclick="EnableEditkBtn()"></button>
+                        </li>
+                        <li>
+                            <button class="delete"
+                                    title="@Resource.Delete" disabled type="submit" id="btn_del" name="Command" value="Delete"></button>
+                        </li>
+                        <li>
+                            <button class="save"
+                                    title="@Resource.Save" type="submit" onclick="" id="btn_save" name="Command" value="Save"></button>
+                        </li>
+                        <li>
+                            <button class="forward"
+                                    title="@Resource.Forward" type="submit" id="btn_forward" name="Command" value="Forward"></button>
+                        </li>
+                        <li>
+                            <button class="approve"
+                                    title="@Resource.Approve" type="submit" id="btn_approve" name="Command" value="Approve"></button>
+                        </li>
+                        <li>
+                            <button class="workflow" title="@Resource.Workflow" type="button" id="btn_workflow" onclick="" name="Command" value="Workflow" data-toggle="modal" data-target="#WorkflowInformation" data-backdrop="static" data-keyboard="false"></button>
+                        </li>
+                        <li>
+                            <button class="refresh"
+                                    title="@Resource.Refresh" type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                        </li>
+                        <li>
+                            <button class="print"
+                                    title="@Resource.Print" type="submit" id="btn_print" name="Command" value="Print"></button>
+                        </li>
+                        <li>
+                            <button class="back"
+                                    title="@Resource.Back" disabled style="filter: grayscale(100%)" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="clearfix"></div>
+                <div class="x_title pad_mar ">
+                    <div class="col-md-12 col-sm-12 icon_tool ">
+                        <!--<span>Collapsible / Accordion </span>-->
+                        <div class="approved_by">
+                            <ul>
+                                <li>
+                                    <span>@Resource.CreatedBy<br><b></b></span>
+                                </li>
+                                <li>
+                                    <span>@Resource.Createdon<br><b></b></span>
+                                </li>
+                                <li>
+                                    <span>@Resource.ApprovedBy<br><b></b></span>
+                                </li>
+                                <li>
+                                    <span>@Resource.ApprovedOn<br><b></b></span>
+                                </li>
+                                <li>
+                                    <span>@Resource.AmendedBy<br><b></b></span>
+                                </li>
+                                <li>
+                                    <span>@Resource.AmendedOn<br><b></b></span>
+                                </li>
+                                <li>
+                                    <span>@Resource.Status<br /><b></b></span>
+                                </li>
+
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <article class="panel-group bs-accordion" id="accordion" role="tablist" aria-multiselectable="true">
+                    <section class="panel panel-default">
+                        <div class="panel-heading" role="tab" id="headingOne">
+                            <h4 class="panel-title">  <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne"> @Resource.Plan @Resource.Detail<span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a></h4>
+                        </div>
+                        <div id="collapseOne" class="panel-collapse in collapse show" role="tabpanel" aria-labelledby="headingOne" style="">
+                            @*<form class="accordian_form_bg" action="" method="post" novalidate>*@
+                            <div class="panel-body">
+                                <div class="col-md-3 col-sm-12">
+                                    <label class="col-form-label label-align">@Resource.Plan @Resource.Number</label>
+                                    <input value="" class="form-control" disabled="disabled" id="PlanNumber" maxlength="20" name="PlanNumber" placeholder="@Resource.Plan @Resource.Number" readonly="readonly" type="text">
+                                </div>
+                                <div class="col-md-3 col-sm-12 pl-0">
+                                    <label class="col-form-label label-align">@Resource.Plan @Resource.Date</label>
+                                    <input class="form-control" data-val="true" data-val-date="" data-val-required="" id="PlanDate" name="PlanDate" readonly="readonly" type="date" value="2024-09-18">
+                                </div>
+                                <div class="col-md-3 col-sm-12 pl-0">
+                                    <label class="col-form-label label-align">@Resource.remarks</label>
+                                    <textarea class="form-control remarksmessage" cols="20" id="PlanRemarks" maxlength="50" name="PlanRemarks" placeholder="@Resource.remarks" rows="2" onmouseover="OnMouseOver(this)" title="@Resource.remarks"></textarea>
+                                </div>
+                                <div class="col-md-2 col-sm-12 float-lg-right">
+                                    <div class="cancelled">
+                                        <label>
+                                            <input class="js-switch" data-val="true" data-val-required="" id="CancelFlag" name="CancelFlag" type="checkbox" value="true" data-switchery="true">
+                                            Cancelled
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="clear"></div>
+                                @*<div class="col-md-3 col-sm-12">
+                                                <label class="col-form-label label-align">@Resource.Source  @Resource.Document</label>
+
+                                                    <select class="form-control" id="SourceDocument"  name="SourceDocument" multiple>
+
+                                                        <option value="">All</option>
+                                                        <option value="">Production Plan</option>
+                                                        <option value="">Material Requirement Plan</option>
+                                                        <option value="">Sales Order</option>
+                                                    </select>
+                                    </div>*@
+                                @*<div class="col-md-3 col-sm-12" id="ddlwarehouse">
+                                        <label class="col-form-label label-align">@Resource.Source  @Resource.Document</label>
+
+                                        <select class="form-control" id="SourceDocument" multiple="multiple" name="SourceDocument">
+                                            <option value="pp">Production Plan</option>
+                                            <option value="mrp">Material Requirement Plan</option>
+                                            <option value="so">Sales Order</option>
+                                        </select>
+                                    </div>*@
+
+                                <div class="col-md-3 col-sm-12">
+                                    <label class="col-form-label label-align">@Resource.Requisition  @Resource.Number</label>
+                                    <select class="form-control" id="ddlStatus" name="Status">
+                                        <option value="">All</option>
+                                        <option value="">Requisition Number</option>
+                                        <option value="">Requisition Number 1</option>
+                                        <option value="">Requisition Number 2</option>
+                                        <option value="">Requisition Number 3</option>
+                                        <option value="">Requisition Number 4</option>
+                                        <option value="">Requisition Number 5</option>
+                                    </select>
+                                    @*<input value="" class="form-control" id="RequisitionNumber" maxlength="20" name="RequisitionNumber" placeholder="@Resource.Requisition  @Resource.Number" type="text">*@
+                                </div>
+                                <div class="col-md-3 col-sm-12 pl-0">
+                                    <label class="col-form-label label-align">@Resource.Requisition  @Resource.Date</label>
+                                    <input value="" class="form-control" id="RequisitionDate" maxlength="20" name="RequisitionDate" placeholder="@Resource.Requisition  @Resource.Date" type="text" disabled="disabled">
+                                </div>
+                                <div class="col-md-3 col-sm-12 pl-0">
+                                    <div class="col-md-10 col-sm-12 pl-0">
+                                        <label class="col-form-label label-align">@Resource.Requirement  @Resource.Area</label>
+                                        <input value="" class="form-control" id="RequirementArea" maxlength="20" name="RequirementArea" placeholder="@Resource.Requirement  @Resource.Area" type="text" disabled="disabled">
+                                    </div>
+                                    <div class="col-md-2 col-sm-12 margin25">
+                                        <a href="#">
+                                            <div class="plus_icon1"> <i class="fa fa-plus" id="BtnAttribute" onclick="AddAttribute()" session="" title="@Resource.PopulateItemDetail" data-original-title=""></i> </div>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="card-box table-responsive dy_table">
+                                    <div class="price_item_detail">
+                                        <div class=" col-sm-12">
+                                            <div class="tableFixHead">
+                                                @*<h2>@Resource.ItemDetail</h2>*@
+                                                <table id="" class="table table-bordered width1400 mt-3 itmfrz width2500">
+                                                    <thead>
+                                                        <tr class="headings">
+                                                            <th width="2%"></th>
+                                                            <th width="2%">@Resource.SrNo</th>
+                                                            <th width="12%">@Resource.Item @Resource.Description</th>
+                                                            <th width="5%" title="@Resource.UnitOfMeasure"> @Resource.UOM </th>
+                                                            <th width="7%">@Resource.Pending @Resource.Requisition<br />@Resource.Quantity</th>
+                                                            <th width="7%">@Resource.Available <br />@Resource.Stock </th>
+                                                            <th width="7%">@Resource.Pending @Resource.Order @Resource.Quantity</th>
+                                                            <th width="6%">@Resource.InTransit @Resource.Quantity</th>
+                                                            <th width="6%">@Resource.Required @Resource.Quantity</th>
+                                                            <th width="6%">@Resource.OrderToProcure</th>
+                                                            <th width="6%">@Resource.Supplier  @Resource.Name</th>
+                                                            <th width="6%">@Resource.Supplier  @Resource.Type</th>
+                                                            <th width="5%">@Resource.Currency</th>
+                                                            <th width="5%">@Resource.Price</th>
+                                                            <th width="5%">@Resource.Lead @Resource.Time</th>
+                                                            <th width="6%">@Resource.Delivery  @Resource.Date</th>
+                                                            <th width="6%">@Resource.Procured @Resource.Quantity</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td class=" red center">
+                                                                <i class="deleteIcon fa fa-trash" aria-hidden="true" title="Delete"></i>
+                                                            </td>
+                                                            <td><input id="SrNo" class="form-control" autocomplete="off" type="text" name="SrNo" placeholder="@Resource.SrNo" readonly="readonly"></td>
+                                                            <td>
+                                                                <div class="col-sm-11 no-padding">
+                                                                    <input id="PPItemName" class="form-control" autocomplete="off" type="text" name="PPItemName" placeholder="@Resource.ItemName" readonly="readonly">
+                                                                </div>
+                                                                <div class="col-sm-1 i_Icon">
+                                                                    <button type="button" class="calculator subItmImg" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" onclick="OnClickIconBtn(event);" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.ItemInformation">  </button>
+                                                                </div>
+                                                            </td>
+                                                            <td><input id="UOM" class="form-control" autocomplete="off" type="text" name="UOM" placeholder="@Resource.UOM" readonly="readonly"></td>
+                                                            <td>
+                                                                <div class="col-sm-9 no-padding">
+                                                                    <input id="PendingRequisitionQuantity" class="form-control num_right" name="PendingRequisitionQuantity" placeholder="0000.00" readonly="readonly">
+                                                                </div>
+                                                                <div class="col-sm-3 no-padding">
+                                                                    <div class="col-sm-7 i_Icon no-padding" id="div_SubItemAvlQty">
+                                                                        <button type="button" id="SubItemAvlQty" class="calculator subItmImg" data-toggle="modal" onclick="return GetSubItemAvlStock(event)" data-target="#SubItemStock" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="Sub-Item Detail"> </button>
+                                                                    </div>
+                                                                    <div class="col-sm-5 i_Icon">
+                                                                        <button type="button" class="calculator subItmImg" data-toggle="modal" data-target="#PPRequisitionDetail" data-backdrop="static" onclick="" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.RequisitionDetail">  </button>
+                                                                    </div>
+                                                                </div>
+
+                                                            </td>
+                                                            <td>
+                                                                <div class="col-sm-9 no-padding">
+                                                                    <input id="AvailableStock" class="form-control num_right" name="AvailableStock" placeholder="0000.00" readonly="readonly">
+                                                                </div>
+                                                                <div class="col-sm-3 no-padding">
+                                                                    <div class="col-sm-7 i_Icon no-padding" id="div_SubItemAvlQty">
+                                                                        <button type="button" id="SubItemAvlQty" class="calculator subItmImg" data-toggle="modal" onclick="return GetSubItemAvlStock(event)" data-target="#SubItemStock" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="Sub-Item Detail"> </button>
+                                                                    </div>
+                                                                    <div class="col-sm-5 i_Icon">
+                                                                        <button type="button" class="calculator subItmImg" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" onclick="OnClickIconBtn(event);" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.ItemInformation">  </button>
+                                                                    </div>
+                                                                </div>
+
+                                                            </td>
+                                                            <td>
+                                                                <div class="col-sm-9 lpo_form no-padding">
+                                                                    <input id="PendingOrderQuantity" class="form-control num_right" name="PendingOrderQuantity" placeholder="0000.00" readonly="readonly">
+                                                                </div>
+                                                                <div class="col-sm-3 no-padding">
+                                                                    <div class="col-sm-7 i_Icon no-padding" id="div_SubItemAvlQty">
+                                                                        <button type="button" id="SubItemAvlQty" class="calculator subItmImg" data-toggle="modal" onclick="return GetSubItemAvlStock(event)" data-target="#SubItemStock" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="Sub-Item Detail"> </button>
+                                                                    </div>
+                                                                    <div class="col-sm-5 i_Icon">
+                                                                        <button type="button" class="calculator subItmImg" data-toggle="modal" data-target="#ProcurementPlanOrderDetail" data-backdrop="static" onclick="OnClickIconBtn(event);" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.OrderDetail">  </button>
+                                                                    </div>
+                                                                </div>
+
+                                                            </td>
+                                                            <td>
+                                                                <div class="col-sm-9 lpo_form no-padding">
+                                                                    <input id="InTransitQuantity" class="form-control num_right" name="InTransitQuantity" placeholder="0000.00" readonly="readonly">
+                                                                </div>
+                                                                <div class="col-sm-3 no-padding">
+                                                                    <div class="col-sm-7 i_Icon no-padding" id="div_SubItemAvlQty">
+                                                                        <button type="button" id="SubItemAvlQty" class="calculator subItmImg" data-toggle="modal" onclick="return GetSubItemAvlStock(event)" data-target="#SubItemStock" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="Sub-Item Detail"> </button>
+                                                                    </div>
+                                                                    <div class="col-sm-5 i_Icon">
+                                                                        <button type="button" class="calculator subItmImg" data-toggle="modal" data-target="#ProcurementPlanOrderDetail" data-backdrop="static" onclick="OnClickIconBtn(event);" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.OrderDetail">  </button>
+                                                                    </div>
+                                                                </div>
+
+                                                            </td>
+                                                            <td>
+                                                                <div class="col-sm-10 lpo_form no-padding">
+                                                                    <input id="RequiredQuantity" class="form-control num_right" name="RequiredQuantity" placeholder="0000.00" readonly="readonly">
+                                                                </div>
+                                                                <div class="col-sm-2 i_Icon no-padding" id="div_SubItemAvlQty">
+                                                                    <button type="button" id="SubItemAvlQty" class="calculator subItmImg" data-toggle="modal" onclick="return GetSubItemAvlStock(event)" data-target="#SubItemStock" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="Sub-Item Detail"> </button>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="col-sm-10 lpo_form no-padding">
+                                                                    <input id="OrderToProcure" class="form-control num_right" name="OrderToProcure" placeholder="0000.00" readonly="readonly">
+                                                                </div>
+                                                                <div class="col-sm-2 i_Icon no-padding" id="div_SubItemAvlQty">
+                                                                    <button type="button" id="SubItemAvlQty" class="calculator subItmImg" data-toggle="modal" onclick="return GetSubItemAvlStock(event)" data-target="#SubItemStock" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="Sub-Item Detail"> </button>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <input id="SupplierName" value="" class="form-control" autocomplete="off" type="text" name="SupplierName" placeholder="@Resource.Supplier @Resource.Name" disabled="">
+                                                            </td>
+                                                            <td>
+                                                                <input id="SupplierType" value="" class="form-control" autocomplete="off" type="text" name="SupplierType" placeholder="@Resource.Supplier @Resource.Type" disabled="">
+                                                            </td>
+
+                                                            <td>
+                                                                <input id="Currency" value="" class="form-control" autocomplete="off" type="text" name="Currency" placeholder="@Resource.Currency" disabled="">
+                                                            </td>
+                                                            <td>
+                                                                <input id="Price" value="" class="form-control" autocomplete="off" type="text" name="Price" placeholder="@Resource.Price" disabled="">
+                                                            </td>
+                                                            <td>
+                                                                <input id="LeadTime" value="" class="form-control" autocomplete="off" type="text" name="LeadTime" placeholder="@Resource.Lead   @Resource.Time" disabled="">
+                                                            </td>
+                                                            <td>
+                                                                <input class="form-control" id="DeliveryDate" max="2024-09-17" name="DeliveryDate" onchange="" type="date" value="">
+                                                            </td>
+                                                            <td>
+                                                                <div class="col-sm-9 lpo_form no-padding">
+                                                                    <input id="ProcuredQuantity" class="form-control num_right" name="ProcuredQuantity" placeholder="0000.00" readonly="readonly">
+                                                                </div>
+                                                                <div class="col-sm-3 no-padding">
+                                                                    <div class="col-sm-7 i_Icon no-padding" id="div_SubItemAvlQty">
+                                                                        <button type="button" id="SubItemAvlQty" class="calculator subItmImg" data-toggle="modal" onclick="return GetSubItemAvlStock(event)" data-target="#SubItemStock" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="Sub-Item Detail"> </button>
+                                                                    </div>
+                                                                    <div class="col-sm-5 i_Icon">
+                                                                        <button type="button" class="calculator subItmImg" data-toggle="modal" data-target="#ProcurementPlanOrderDetail" data-backdrop="static" onclick="OnClickIconBtn(event);" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.OrderDetail">  </button>
+                                                                    </div>
+                                                                </div>
+
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @*</form>*@
+                        </div>
+                    </section>
+                    <section class="panel panel-default">
+                        <div class="panel-heading" role="tab" id="headingTwo">
+                            <h4 class="panel-title">  <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" class="collapsed" aria-controls="collapseTwo"> @Resource.Purchase @Resource.Order @Resource.Detail<span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a></h4>
+                        </div>
+                        <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo" style="">
+                            <div class="panel-body">
+                                <div class="card-box table-responsive dy_table">
+                                    <div class="price_item_detail">
+                                        <div class=" col-sm-12">
+                                            <div class="tableFixHead">
+                                                @*<h2>@Resource.ItemDetail</h2>*@
+                                                <table id="" class="table table-bordered mt-3">
+                                                    <thead>
+                                                        <tr class="headings">
+                                                            <th width="4%">@Resource.SrNo</th>
+                                                            <th width="15%">@Resource.Order @Resource.Number</th>
+                                                            <th width="15%">@Resource.Order @Resource.Date</th>
+                                                            <th width="21%">@Resource.Supplier @Resource.Name</th>
+                                                            <th width="15%">@Resource.Currency</th>
+                                                            <th width="15%">@Resource.Order @Resource.Type</th>
+                                                            <th width="15%">@Resource.Validity @Resource.Date</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td><input id="SrNo" class="form-control" autocomplete="off" type="text" name="SrNo" placeholder="@Resource.SrNo" readonly="readonly"></td>
+                                                            <td>
+                                                                <input id="OrderNumber" class="form-control" type="text" name="OrderNumber" placeholder="@Resource.Order @Resource.Number" readonly="readonly">
+                                                            </td>
+                                                            <td>
+                                                                <input id="OrderDate" class="form-control" type="date" name="OrderDate" placeholder="@Resource.Order @Resource.Date" readonly="readonly">
+                                                            </td>
+                                                            <td>
+                                                                <input id="SupplierName" value="" class="form-control" type="text" name="SupplierName" placeholder="@Resource.Supplier @Resource.Name" readonly="readonly">
+                                                            </td>
+                                                            <td>
+                                                                <input id="Currency" value="" class="form-control" autocomplete="off" type="text" name="Currency" placeholder="@Resource.Currency" readonly="readonly">
+                                                            </td>
+                                                            <td>
+                                                                <input id="OrderType" value="" class="form-control" type="text" name="OrderType" placeholder="@Resource.Order @Resource.Type" readonly="readonly">
+                                                            </td>
+                                                            <td>
+                                                                <input id="ValidityDate" value="" class="form-control" autocomplete="off" type="date" name="ValidityDate" placeholder="@Resource.Validity @Resource.Date" readonly="readonly">
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    <section class="panel panel-default">
+                        <div class="panel-heading" role="tab" id="headingFive">
+                            <h4 class="panel-title"> <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive"> Attachment<span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a> </h4>
+                        </div>
+                        <div id="collapseFive" class="panel-collapse collapse hide" role="tabpanel" aria-labelledby="headingFive">
+                            <div class="panel-body">
+                                <div id="PartialImageBind">
+                                    <script src="/Content/Scripts/Common/CommonJS1.js"></script>
+                                    <table id="hdn_attatchment_list" style="display:none;">
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="form-group" id="FilesUpload">
+                                    <div class="file-input theme-fa file-input-ajax-new">
+                                        <div class="file-preview ">
+                                            <button type="button" class="close fileinput-remove" aria-label="Close">
+                                                <span aria-hidden="true">×</span>
+                                            </button>    <div class=" file-drop-zone">
+                                                <div class="file-drop-zone-title">Drag &amp; drop files here …</div>
+                                                <div class="file-preview-thumbnails">
+                                                </div>
+                                                <div class="clearfix"></div>    <div class="file-preview-status text-center text-success"></div>
+                                                <div class="kv-fileinput-error file-error-message" style="display: none;"></div>
+                                            </div>
+                                        </div>
+                                        <div class="kv-upload-progress kv-hidden" style="display: none;">
+                                            <div class="progress">
+                                                <div class="progress-bar bg-success progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%;">
+                                                    0%
+                                                </div>
+                                            </div>
+                                        </div><div class="clearfix"></div>
+                                        <div class="input-group file-caption-main">
+                                            <div class="file-caption form-control  kv-fileinput-caption" tabindex="500">
+                                                <span class="file-caption-icon"></span>
+                                                <input class="file-caption-name" onkeydown="return false;" onpaste="return false;" placeholder="Select files...">
+                                            </div>
+                                            <div class="input-group-btn input-group-append">
+                                                <button type="button" tabindex="500" title="Clear selected files" class="btn btn-default btn-secondary fileinput-remove fileinput-remove-button"><i class="glyphicon glyphicon-trash"></i>  <span class="hidden-xs">Remove</span></button>
+                                                <button type="button" tabindex="500" title="Abort ongoing upload" class="btn btn-default btn-secondary kv-hidden fileinput-cancel fileinput-cancel-button"><i class="glyphicon glyphicon-ban-circle"></i>  <span class="hidden-xs">Cancel</span></button>
+                                                <a href="#" tabindex="500" title="Upload selected files" class="btn btn-default btn-secondary fileinput-upload fileinput-upload-button"><i class="glyphicon glyphicon-upload"></i>  <span class="hidden-xs">Upload</span></a>
+                                                <div tabindex="500" class="btn btn-primary btn-file"><i class="glyphicon glyphicon-folder-open"></i>&nbsp;  <span class="hidden-xs">Browse …</span><input id="file-1" type="file" multiple="" class="file" data-overwrite-initial="false" data-min-file-count="1" name="ItemFiles"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </article>
+            </div>
+        </div>
+    </div>
+</div>

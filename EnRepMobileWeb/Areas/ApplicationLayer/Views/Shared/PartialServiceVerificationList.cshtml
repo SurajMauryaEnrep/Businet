@@ -1,0 +1,65 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.Procurement.ServiceVerification.ServiceVerificationListModel
+@using EnRepMobileWeb.Resources;
+@{
+    var rowId = 0;
+}
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/Procurement/ServiceVerification/ServiceVerificationList.js"></script>
+<table id="datatable-buttons" class="table table-striped table-bordered width1800 rowhighlighttbl itmfrz" style="width:100%;">
+    <thead>
+        <tr class="sticky-header">
+            <th width="3%">@Resource.SrNo</th>
+            <th width="10%" class="itmStick">@Resource.Verification <br /> @Resource.Number</th>
+            <th width="7%">@Resource.Verification <br /> @Resource.Date</th>
+            <th width="7%" hidden>@Resource.Verification <br /> @Resource.Date</th>
+            <th width="10%">@Resource.Order <br /> @Resource.Number</th>
+            <th width="7%">@Resource.Order <br /> @Resource.Date</th>
+            <th width="14%">@Resource.SupplierName</th>
+            <th width="7%">@Resource.Status</th>
+            <th width="7%">@Resource.CreatedBy</th>
+            <th width="7%">@Resource.Createdon</th>
+            <th width="7%">@Resource.ApprovedBy</th>
+            <th width="7%">@Resource.ApprovedOn</th>
+            <th width="7%">@Resource.AmendedBy</th>
+            <th width="7%">@Resource.AmendedOn</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.VerificationList != null)
+        {
+            foreach (var row in Model.VerificationList)
+            {
+                rowId++;
+        <tr>
+            <td>@rowId</td>
+            <td id="VerNo" class="ItmNameBreak itmStick tditemfrz">@row.VerNo</td>
+            <td>@row.VerDate</td>
+            <td style="display:none;" id="VerDt">@row.VerDt</td>            
+            <td>@row.SourceDocNo</td>
+            <td>@row.SourceDocDt</td>
+            <td id="SuppName">@row.SuppName</td>
+            <td id="Doc_Status">@row.VerStauts</td>
+            <td>@row.create_by</td>
+            <td>@row.CreateDate</td>
+            <td>@row.app_by</td>
+            <td>@row.ApproveDate</td>
+            <td>@row.mod_by</td>
+            <td>@row.ModifyDate</td>         
+
+        </tr>
+            }
+        }
+
+    </tbody>
+</table>
+@*@if (Session["VerSearch"] != null)*@
+    @if (Model.VerSearch != null)
+    {
+        if (Model.VerSearch == "Ver_Search")/*if (Session["VerSearch"].ToString() == "Ver_Search")*/
+        {
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+        @Scripts.Render("~/Content/Scripts/DatatablesJs")
+            //Session["VerSearch"] = null;
+            Model.VerSearch = null;
+        }
+    }

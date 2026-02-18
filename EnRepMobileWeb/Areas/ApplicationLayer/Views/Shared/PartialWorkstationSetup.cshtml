@@ -1,0 +1,51 @@
+﻿@using EnRepMobileWeb.Resources
+@{
+    Int32 count = 0;
+}
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/ProductionAndPlanning/WorkstationSetup/WorkstationSetup.js"></script>
+
+<table id="datatable-buttons" class="table table-striped table-bordered rowhighlighttbl width1400 itmfrz">
+    <thead>
+        <tr class="sticky-header">
+            <th hidden="hidden"></th>
+            <th hidden="hidden"></th>
+            <th hidden="hidden"></th>
+            <th width="3%">@Resource.SrNo</th>
+            <th width="10%" class="itmStick">@Resource.WorkstationName</th>
+            <th width="10%">@Resource.ShopfloorName</th>
+            <th width="10%">@Resource.OperatorName</th>
+            <th width="9%">@Resource.OperationStartDate</th>
+            <th width="10%">@Resource.SerialNumber</th>
+            <th width="12%">@Resource.CreatedBy</th>
+            <th width="12%">@Resource.Createdon</th>
+            <th width="12%">@Resource.AmendedBy</th>
+            <th width="12%">@Resource.AmendedOn</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (ViewBag.GetWSDetails != null)
+        {
+            foreach (System.Data.DataRow item in ViewBag.GetWSDetails.Rows)
+            {
+                count++;
+                <tr>
+                    <td hidden="hidden" id="tbl_comp_id">@item["comp_id"]</td>
+                    <td hidden="hidden" id="tbl_br_id">@item["br_id"]</td>
+                    <td hidden="hidden" id="tbl_ws_id">@item["ws_id"]</td>
+                    <td>@count</td>
+                    <td class="ItmNameBreak itmStick tditemfrz">@item["ws_name"]</td>
+                    <td>@item["shfl_name"]</td>
+                    <td>@item["op_name"]</td>
+                    <td>@item["op_st_date"]</td>
+                    <td>@item["sr_no"]</td>
+                    <td>@item["create_by"]</td>
+                    <td>@item["create_dt"]</td>
+                    <td>@item["mod_by"]</td>
+                    <td>@item["mod_dt"]</td>
+                </tr>
+            }
+        }
+        </tbody>
+</table>
+

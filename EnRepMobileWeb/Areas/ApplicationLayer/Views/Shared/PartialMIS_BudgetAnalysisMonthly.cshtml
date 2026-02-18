@@ -1,0 +1,437 @@
+﻿@using EnRepMobileWeb.Resources;
+@{
+        string ValDigit = "0.";
+        var VD = Convert.ToInt32(Session["ValDigit"].ToString());
+        for (var i = 0; i < VD; i++)
+        {
+            ValDigit += "0";
+        }
+        //decimal total = 0;
+    }
+<style>
+    #datatable-buttons2_wrapper .btn-group a:nth-child(3) {
+        display: inline-block;
+        position: absolute;
+    }
+</style>
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<table id="datatable-buttons2" class="table table-striped width3500 itmfrz" cellspacing="0">
+    <thead>
+        <tr class="sticky-header">
+            <th width="2%">&nbsp;</th>
+            <th width="10%" class="itmStick">&nbsp;</th>
+            <th width="13%">&nbsp;</th>
+            @if (ViewBag.MonthName != null)
+            {
+                if (ViewBag.MonthName.Rows.Count > 0)
+                {
+                    for (int i = 1; i <= ViewBag.MonthName.Rows.Count; i++)
+                    {
+                        var className = "";
+                        if (i == 1 || i == 5 || i == 9)
+                        {
+                            className = "light_cream_colour";
+                        }
+                        else if (i == 2 || i == 6 || i == 10)
+                        {
+                            className = "light_blue_colour";
+                        }
+                        else if (i == 3 || i == 7 || i == 11)
+                        {
+                            className = "light_blue1_colour";
+                        }
+                        else
+                        {
+                            className = "light_cream1_colour";
+                        }
+
+                        if (ViewBag.MonthName.Rows[0]["qtr"].ToString() == "0" && ViewBag.MonthName.Rows[0]["mnth"].ToString() == "0")
+                        {
+                            <th width="5%" class="@className">&nbsp;</th>
+                            <th width="5%" class="@className">@ViewBag.MonthName.Rows[i - 1]["MnthName"].ToString()</th>
+                            <th width="5%" class="@className">&nbsp;</th>
+                        }
+                        if (ViewBag.MonthName.Rows[0]["qtr"].ToString() != "0" && ViewBag.MonthName.Rows[0]["mnth"].ToString() == "0")
+                        {
+                            if (ViewBag.MonthName.Rows[0]["qtr"].ToString().Contains("1"))
+                            {
+                                if (i == 1 || i == 2 || i == 3)
+                                {
+                                    <th width="5%" class="@className">&nbsp;</th>
+                                    <th width="5%" class="@className">@ViewBag.MonthName.Rows[i - 1]["MnthName"].ToString()</th>
+                                    <th width="5%" class="@className">&nbsp;</th>
+                                }
+                            }
+
+                            if (ViewBag.MonthName.Rows[0]["qtr"].ToString().Contains("2"))
+                            {
+                                if (i == 4 || i == 5 || i == 6)
+                                {
+                                    <th width="5%" class="@className">&nbsp;</th>
+                                    <th width="5%" class="@className">@ViewBag.MonthName.Rows[i - 1]["MnthName"].ToString()</th>
+                                    <th width="5%" class="@className">&nbsp;</th>
+                                }
+                            }
+                            if (ViewBag.MonthName.Rows[0]["qtr"].ToString().Contains("3"))
+                            {
+                                if (i == 7 || i == 8 || i == 9)
+                                {
+                                    <th width="5%" class="@className">&nbsp;</th>
+                                    <th width="5%" class="@className">@ViewBag.MonthName.Rows[i - 1]["MnthName"].ToString()</th>
+                                    <th width="5%" class="@className">&nbsp;</th>
+                                }
+                            }
+                            if (ViewBag.MonthName.Rows[0]["qtr"].ToString().Contains("4"))
+                            {
+                                if (i == 10 || i == 11 || i == 12)
+                                {
+                                    <th width="5%" class="@className">&nbsp;</th>
+                                    <th width="5%" class="@className">@ViewBag.MonthName.Rows[i - 1]["MnthName"].ToString()</th>
+                                    <th width="5%" class="@className">&nbsp;</th>
+                                }
+                            }
+                        }
+                        if (ViewBag.MonthName.Rows[0]["mnth"].ToString() != "0")
+                        {
+                            if (ViewBag.MonthName.Rows[0]["mnth"].ToString() == ViewBag.MonthName.Rows[i - 1]["MnthName"].ToString())
+                            {
+                                <th width="5%" class="@className">&nbsp;</th>
+                                <th width="5%" class="@className">@ViewBag.MonthName.Rows[i - 1]["MnthName"].ToString()</th>
+                                <th width="5%" class="@className">&nbsp;</th>
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                <th width="5%" class="light_cream_colour">&nbsp;</th>
+                <th width="5%" class="light_cream_colour">April, 23</th>
+                <th width="5%" class="light_cream_colour">&nbsp;</th>
+                <th width="5%" class="light_blue_colour">&nbsp;</th>
+                <th width="5%" class="light_blue_colour">May, 23</th>
+                <th width="5%" class="light_blue_colour">&nbsp;</th>
+                <th width="5%" class="light_blue1_colour">&nbsp;</th>
+                <th width="5%" class="light_blue1_colour">June, 23</th>
+                <th width="5%" class="light_blue1_colour">&nbsp;</th>
+                <th width="5%" class="light_cream1_colour">&nbsp;</th>
+                <th width="5%" class="light_cream1_colour">July, 23</th>
+                <th width="5%" class="light_cream1_colour">&nbsp;</th>
+            }
+        </tr>
+
+        <tr class="sticky-header">
+            <th width="2%">@Resource.SrNo</th>
+            <th width="14%" class="itmStick">@Resource.GLAccount</th>
+            <th width="23%">@Resource.GLGroup</th>
+            @if (ViewBag.MonthName != null)
+            {
+                if (ViewBag.MonthName.Rows.Count > 0)
+                {
+                    for (int i = 1; i <= ViewBag.MonthName.Rows.Count; i++)
+                    {
+                        var className = "";
+                        if (i == 1 || i == 5 || i == 9)
+                        {
+                            className = "light_cream_colour";
+                        }
+                        else if (i == 2 || i == 6 || i == 10)
+                        {
+                            className = "light_blue_colour";
+                        }
+                        else if (i == 3 || i == 7 || i == 11)
+                        {
+                            className = "light_blue1_colour";
+                        }
+                        else
+                        {
+                            className = "light_cream1_colour";
+                        }
+                        if (ViewBag.MonthName.Rows[0]["qtr"].ToString() == "0" && ViewBag.MonthName.Rows[0]["mnth"].ToString() == "0")
+                        {
+                            <th width="3%" class="@className">@Resource.Budget  <br /> @Resource.Amount</th>
+                            <th width="3%" class="@className">@Resource.Actual  <br /> @Resource.Amount</th>
+                            <th width="3%" class="@className">@Resource.Variance <br /> @Resource.InPercentage</th>
+                        }
+                        if (ViewBag.MonthName.Rows[0]["qtr"].ToString() != "0" && ViewBag.MonthName.Rows[0]["mnth"].ToString() == "0")
+                        {
+                            if (ViewBag.MonthName.Rows[0]["qtr"].ToString().Contains("1"))
+                            {
+                                if (i == 1 || i == 2 || i == 3)
+                                {
+                                    <th width="3%" class="@className">@Resource.Budget  <br /> @Resource.Amount</th>
+                                    <th width="3%" class="@className">@Resource.Actual  <br /> @Resource.Amount</th>
+                                    <th width="3%" class="@className">@Resource.Variance <br /> @Resource.InPercentage</th>
+                                }
+                            }
+
+                            if (ViewBag.MonthName.Rows[0]["qtr"].ToString().Contains("2"))
+                            {
+                                if (i == 4 || i == 5 || i == 6)
+                                {
+                                    <th width="3%" class="@className">@Resource.Budget  <br /> @Resource.Amount</th>
+                                    <th width="3%" class="@className">@Resource.Actual  <br /> @Resource.Amount</th>
+                                    <th width="3%" class="@className">@Resource.Variance <br /> @Resource.InPercentage</th>
+                                }
+                            }
+                            if (ViewBag.MonthName.Rows[0]["qtr"].ToString().Contains("3"))
+                            {
+                                if (i == 7 || i == 8 || i == 9)
+                                {
+                                    <th width="3%" class="@className">@Resource.Budget  <br /> @Resource.Amount</th>
+                                    <th width="3%" class="@className">@Resource.Actual  <br /> @Resource.Amount</th>
+                                    <th width="3%" class="@className">@Resource.Variance <br /> @Resource.InPercentage</th>
+                                }
+                            }
+                            if (ViewBag.MonthName.Rows[0]["qtr"].ToString().Contains("4"))
+                            {
+                                if (i == 10 || i == 11 || i == 12)
+                                {
+                                    <th width="3%" class="@className">@Resource.Budget  <br /> @Resource.Amount</th>
+                                    <th width="3%" class="@className">@Resource.Actual  <br /> @Resource.Amount</th>
+                                    <th width="3%" class="@className">@Resource.Variance <br /> @Resource.InPercentage</th>
+                                }
+                            }
+                        }
+                        if (ViewBag.MonthName.Rows[0]["mnth"].ToString() != "0")
+                        {
+                            if (ViewBag.MonthName.Rows[0]["mnth"].ToString() == ViewBag.MonthName.Rows[i - 1]["MnthName"].ToString())
+                            {
+                                <th width="3%" class="@className">@Resource.Budget  <br /> @Resource.Amount</th>
+                                <th width="3%" class="@className">@Resource.Actual  <br /> @Resource.Amount</th>
+                                <th width="3%" class="@className">@Resource.Variance <br /> @Resource.InPercentage</th>
+                            }
+                        }
+                    }
+                }
+            }
+
+            else
+            {
+
+                <th width="3%" class="light_blue_colour">@Resource.Budget  <br /> @Resource.Amount</th>
+                <th width="3%" class="light_blue_colour">@Resource.Actual  <br /> @Resource.Amount</th>
+                <th width="3%" class="light_blue_colour">@Resource.Variance <br /> @Resource.InPercentage</th>
+
+                <th width="3%" class="light_blue1_colour">@Resource.Budget  <br /> @Resource.Amount</th>
+                <th width="3%" class="light_blue1_colour">@Resource.Actual  <br /> @Resource.Amount</th>
+                <th width="3%" class="light_blue1_colour">@Resource.Variance <br /> @Resource.InPercentage</th>
+
+                <th width="3%" class="light_cream1_colour">@Resource.Budget  <br /> @Resource.Amount</th>
+                <th width="3%" class="light_cream1_colour">@Resource.Actual  <br /> @Resource.Amount</th>
+                <th width="3%" class="light_cream1_colour">@Resource.Variance <br /> @Resource.InPercentage</th>
+
+                <th width="3%" class="light_cream1_colour">@Resource.Budget  <br /> @Resource.Amount</th>
+                <th width="3%" class="light_cream1_colour">@Resource.Actual  <br /> @Resource.Amount</th>
+                <th width="3%" class="light_cream1_colour">@Resource.Variance <br /> @Resource.InPercentage</th>
+            }
+        </tr>
+    </thead>
+    <tbody id="">
+        @if (ViewBag.MonthlyBAReport != null)
+        {
+            var srno = 1;
+            foreach (System.Data.DataRow dtr in ViewBag.MonthlyBAReport.Rows)
+            {
+                <tr>
+                    <td>@srno</td>
+                    <td class="ItmNameBreak itmStick tditemfrz">@dtr["acc_name"].ToString()</td>
+                    <td>@dtr["AccGroupName"].ToString()</td>
+
+                    @if (ViewBag.MonthlyBAReport.Rows[0]["qtr"].ToString() == "0" && ViewBag.MonthlyBAReport.Rows[0]["mnth"].ToString() == "0")
+                    {
+                        <td class="light_cream_colour num_right">@dtr["M1BudgetAmount"].ToString()</td>
+                        <td class="light_cream_colour num_right">@dtr["M1Amt"].ToString()</td>
+                        <td class="num_right light_cream_colour">@dtr["M1Variance"].ToString()</td>
+                        <td class="light_blue_colour num_right">@dtr["M2BudgetAmount"].ToString()</td>
+                        <td class="light_blue_colour num_right">@dtr["M2Amt"].ToString()</td>
+                        <td class="num_right light_blue_colour">@dtr["M2Variance"].ToString()</td>
+                        <td class="light_blue1_colour num_right">@dtr["M3BudgetAmount"].ToString()</td>
+                        <td class="light_blue1_colour num_right">@dtr["M3Amt"].ToString()</td>
+                        <td class="num_right light_blue1_colour">@dtr["M3Variance"].ToString()</td>
+                        <td class="light_cream1_colour num_right">@dtr["M4BudgetAmount"].ToString()</td>
+                        <td class="light_cream1_colour num_right">@dtr["M4Amt"].ToString()</td>
+                        <td class="num_right light_cream1_colour">@dtr["M4Variance"].ToString()</td>
+
+                        <td class="light_cream_colour num_right">@dtr["M5BudgetAmount"].ToString()</td>
+                        <td class="light_cream_colour num_right">@dtr["M5Amt"].ToString()</td>
+                        <td class="num_right light_cream_colour">@dtr["M5Variance"].ToString()</td>
+                        <td class="light_blue_colour num_right">@dtr["M6BudgetAmount"].ToString()</td>
+                        <td class="light_blue_colour num_right">@dtr["M6Amt"].ToString()</td>
+                        <td class="num_right light_blue_colour">@dtr["M6Variance"].ToString()</td>
+                        <td class="light_blue1_colour num_right">@dtr["M7BudgetAmount"].ToString()</td>
+                        <td class="light_blue1_colour num_right">@dtr["M7Amt"].ToString()</td>
+                        <td class="num_right light_blue1_colour">@dtr["M7Variance"].ToString()</td>
+                        <td class="light_cream1_colour num_right">@dtr["M8BudgetAmount"].ToString()</td>
+                        <td class="light_cream1_colour num_right">@dtr["M8Amt"].ToString()</td>
+                        <td class="num_right light_cream1_colour">@dtr["M8Variance"].ToString()</td>
+
+                        <td class="light_cream_colour num_right">@dtr["M9BudgetAmount"].ToString()</td>
+                        <td class="light_cream_colour num_right">@dtr["M9Amt"].ToString()</td>
+                        <td class="num_right light_cream_colour">@dtr["M9Variance"].ToString()</td>
+                        <td class="light_blue_colour num_right">@dtr["M10BudgetAmount"].ToString()</td>
+                        <td class="light_blue_colour num_right">@dtr["M10Amt"].ToString()</td>
+                        <td class="num_right light_blue_colour">@dtr["M10Variance"].ToString()</td>
+                        <td class="light_blue1_colour num_right">@dtr["M11BudgetAmount"].ToString()</td>
+                        <td class="light_blue1_colour num_right">@dtr["M11Amt"].ToString()</td>
+                        <td class="num_right light_blue1_colour">@dtr["M11Variance"].ToString()</td>
+                        <td class="light_cream1_colour num_right">@dtr["M12BudgetAmount"].ToString()</td>
+                        <td class="light_cream1_colour num_right">@dtr["M12Amt"].ToString()</td>
+                        <td class="num_right light_cream1_colour">@dtr["M12Variance"].ToString()</td>
+                    }
+                    @if (ViewBag.MonthlyBAReport.Rows[0]["qtr"].ToString() != "0" && ViewBag.MonthlyBAReport.Rows[0]["mnth"].ToString() == "0")
+                    {
+                        if (ViewBag.MonthlyBAReport.Rows[0]["qtr"].ToString().Contains("1"))
+                        {
+                            //if (srno == 1 || srno == 2 || srno == 3)
+                            //{
+                                <td class="light_cream_colour num_right">@dtr["M1BudgetAmount"].ToString()</td>
+                                <td class="light_cream_colour num_right">@dtr["M1Amt"].ToString()</td>
+                                <td class="num_right light_cream_colour">@dtr["M1Variance"].ToString()</td>
+                                <td class="light_blue_colour num_right">@dtr["M2BudgetAmount"].ToString()</td>
+                                <td class="light_blue_colour num_right">@dtr["M2Amt"].ToString()</td>
+                                <td class="num_right light_blue_colour">@dtr["M2Variance"].ToString()</td>
+                                <td class="light_blue1_colour num_right">@dtr["M3BudgetAmount"].ToString()</td>
+                                <td class="light_blue1_colour num_right">@dtr["M3Amt"].ToString()</td>
+                                <td class="num_right light_blue1_colour">@dtr["M3Variance"].ToString()</td>
+                            //}
+                        }
+
+                        if (ViewBag.MonthlyBAReport.Rows[0]["qtr"].ToString().Contains("2"))
+                        {
+                            //if (srno == 4 || srno == 5 || srno == 6)
+                            //{
+                                <td class="light_cream1_colour num_right">@dtr["M4BudgetAmount"].ToString()</td>
+                                <td class="light_cream1_colour num_right">@dtr["M4Amt"].ToString()</td>
+                                <td class="num_right light_cream1_colour">@dtr["M4Variance"].ToString()</td>
+
+                                <td class="light_cream_colour num_right">@dtr["M5BudgetAmount"].ToString()</td>
+                                <td class="light_cream_colour num_right">@dtr["M5Amt"].ToString()</td>
+                                <td class="num_right light_cream_colour">@dtr["M5Variance"].ToString()</td>
+                                <td class="light_blue_colour num_right">@dtr["M6BudgetAmount"].ToString()</td>
+                                <td class="light_blue_colour num_right">@dtr["M6Amt"].ToString()</td>
+                                <td class="num_right light_blue_colour">@dtr["M6Variance"].ToString()</td>
+                            //}
+                        }
+                        if (ViewBag.MonthlyBAReport.Rows[0]["qtr"].ToString().Contains("3"))
+                        {
+                            //if (srno == 7 || srno == 8 || srno == 9)
+                            //{
+                                <td class="light_blue1_colour num_right">@dtr["M7BudgetAmount"].ToString()</td>
+                                <td class="light_blue1_colour num_right">@dtr["M7Amt"].ToString()</td>
+                                <td class="num_right light_blue1_colour">@dtr["M7Variance"].ToString()</td>
+                                <td class="light_cream1_colour num_right">@dtr["M8BudgetAmount"].ToString()</td>
+                                <td class="light_cream1_colour num_right">@dtr["M8Amt"].ToString()</td>
+                                <td class="num_right light_cream1_colour">@dtr["M8Variance"].ToString()</td>
+
+                                <td class="light_cream_colour num_right">@dtr["M9BudgetAmount"].ToString()</td>
+                                <td class="light_cream_colour num_right">@dtr["M9Amt"].ToString()</td>
+                                <td class="num_right light_cream_colour">@dtr["M9Variance"].ToString()</td>
+                            //}
+                        }
+                        if (ViewBag.MonthlyBAReport.Rows[0]["qtr"].ToString().Contains("4"))
+                        {
+                            //if (srno == 10 || srno == 11 || srno == 12)
+                            //{
+                                <td class="light_blue_colour num_right">@dtr["M10BudgetAmount"].ToString()</td>
+                                <td class="light_blue_colour num_right">@dtr["M10Amt"].ToString()</td>
+                                <td class="num_right light_blue_colour">@dtr["M10Variance"].ToString()</td>
+                                <td class="light_blue1_colour num_right">@dtr["M11BudgetAmount"].ToString()</td>
+                                <td class="light_blue1_colour num_right">@dtr["M11Amt"].ToString()</td>
+                                <td class="num_right light_blue1_colour">@dtr["M11Variance"].ToString()</td>
+                                <td class="light_cream1_colour num_right">@dtr["M12BudgetAmount"].ToString()</td>
+                                <td class="light_cream1_colour num_right">@dtr["M12Amt"].ToString()</td>
+                                <td class="num_right light_cream1_colour">@dtr["M12Variance"].ToString()</td>
+                            //}
+                        }
+                    }
+                    @if ( ViewBag.MonthlyBAReport.Rows[0]["mnth"].ToString() != "0")
+                    {
+                        if (ViewBag.MonthlyBAReport.Rows[0]["mnth"].ToString() == ViewBag.MonthName.Rows[0]["MnthName"].ToString())
+                        {
+                            <td class="light_cream_colour num_right">@dtr["M1BudgetAmount"].ToString()</td>
+                            <td class="light_cream_colour num_right">@dtr["M1Amt"].ToString()</td>
+                            <td class="num_right light_cream_colour">@dtr["M1Variance"].ToString()</td>
+                        }
+                        if (ViewBag.MonthlyBAReport.Rows[0]["mnth"].ToString() == ViewBag.MonthName.Rows[1]["MnthName"].ToString())
+                        {
+                            <td class="light_cream_colour num_right">@dtr["M2BudgetAmount"].ToString()</td>
+                            <td class="light_cream_colour num_right">@dtr["M2Amt"].ToString()</td>
+                            <td class="num_right light_cream_colour">@dtr["M2Variance"].ToString()</td>
+                        }
+                        if (ViewBag.MonthlyBAReport.Rows[0]["mnth"].ToString() == ViewBag.MonthName.Rows[2]["MnthName"].ToString())
+                        {
+                            <td class="light_cream_colour num_right">@dtr["M3BudgetAmount"].ToString()</td>
+                            <td class="light_cream_colour num_right">@dtr["M3Amt"].ToString()</td>
+                            <td class="num_right light_cream_colour">@dtr["M3Variance"].ToString()</td>
+                        }
+                        if (ViewBag.MonthlyBAReport.Rows[0]["mnth"].ToString() == ViewBag.MonthName.Rows[3]["MnthName"].ToString())
+                        {
+                            <td class="light_cream_colour num_right">@dtr["M4BudgetAmount"].ToString()</td>
+                            <td class="light_cream_colour num_right">@dtr["M4Amt"].ToString()</td>
+                            <td class="num_right light_cream_colour">@dtr["M4Variance"].ToString()</td>
+                        }
+                        if (ViewBag.MonthlyBAReport.Rows[0]["mnth"].ToString() == ViewBag.MonthName.Rows[4]["MnthName"].ToString())
+                        {
+                            <td class="light_cream_colour num_right">@dtr["M5BudgetAmount"].ToString()</td>
+                            <td class="light_cream_colour num_right">@dtr["M5Amt"].ToString()</td>
+                            <td class="num_right light_cream_colour">@dtr["M5Variance"].ToString()</td>
+                        }
+                        if (ViewBag.MonthlyBAReport.Rows[0]["mnth"].ToString() == ViewBag.MonthName.Rows[5]["MnthName"].ToString())
+                        {
+                            <td class="light_cream_colour num_right">@dtr["M6BudgetAmount"].ToString()</td>
+                            <td class="light_cream_colour num_right">@dtr["M6Amt"].ToString()</td>
+                            <td class="num_right light_cream_colour">@dtr["M6Variance"].ToString()</td>
+                        }
+                        if (ViewBag.MonthlyBAReport.Rows[0]["mnth"].ToString() == ViewBag.MonthName.Rows[6]["MnthName"].ToString())
+                        {
+                            <td class="light_cream_colour num_right">@dtr["M7BudgetAmount"].ToString()</td>
+                            <td class="light_cream_colour num_right">@dtr["M7Amt"].ToString()</td>
+                            <td class="num_right light_cream_colour">@dtr["M7Variance"].ToString()</td>
+                        }
+                        if (ViewBag.MonthlyBAReport.Rows[0]["mnth"].ToString() == ViewBag.MonthName.Rows[7]["MnthName"].ToString())
+                        {
+                            <td class="light_cream_colour num_right">@dtr["M8BudgetAmount"].ToString()</td>
+                            <td class="light_cream_colour num_right">@dtr["M8Amt"].ToString()</td>
+                            <td class="num_right light_cream_colour">@dtr["M8Variance"].ToString()</td>
+                        }
+                        if (ViewBag.MonthlyBAReport.Rows[0]["mnth"].ToString() == ViewBag.MonthName.Rows[8]["MnthName"].ToString())
+                        {
+                            <td class="light_cream_colour num_right">@dtr["M9BudgetAmount"].ToString()</td>
+                            <td class="light_cream_colour num_right">@dtr["M9Amt"].ToString()</td>
+                            <td class="num_right light_cream_colour">@dtr["M9Variance"].ToString()</td>
+                        }
+                        if (ViewBag.MonthlyBAReport.Rows[0]["mnth"].ToString() == ViewBag.MonthName.Rows[9]["MnthName"].ToString())
+                        {
+                            <td class="light_cream_colour num_right">@dtr["M10BudgetAmount"].ToString()</td>
+                            <td class="light_cream_colour num_right">@dtr["M10Amt"].ToString()</td>
+                            <td class="num_right light_cream_colour">@dtr["M10Variance"].ToString()</td>
+                        }
+                        if (ViewBag.MonthlyBAReport.Rows[0]["mnth"].ToString() == ViewBag.MonthName.Rows[10]["MnthName"].ToString())
+                        {
+                            <td class="light_cream_colour num_right">@dtr["M11BudgetAmount"].ToString()</td>
+                            <td class="light_cream_colour num_right">@dtr["M11Amt"].ToString()</td>
+                            <td class="num_right light_cream_colour">@dtr["M11Variance"].ToString()</td>
+                        }
+                        if (ViewBag.MonthlyBAReport.Rows[0]["mnth"].ToString() == ViewBag.MonthName.Rows[11]["MnthName"].ToString())
+                        {
+                            <td class="light_cream_colour num_right">@dtr["M12BudgetAmount"].ToString()</td>
+                            <td class="light_cream_colour num_right">@dtr["M12Amt"].ToString()</td>
+                            <td class="num_right light_cream_colour">@dtr["M12Variance"].ToString()</td>
+                        }
+                    }
+                  
+                </tr>
+                srno = srno + 1;
+            }
+        }
+    </tbody>
+</table>
+@if (Model.Search != null)
+{
+    if (Model.Search == "SEARCH")
+    {
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+        @Scripts.Render("~/Content/Scripts/DatatablesJs")
+    }
+}

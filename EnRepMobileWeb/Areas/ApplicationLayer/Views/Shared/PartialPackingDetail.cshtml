@@ -1,0 +1,180 @@
+﻿@using EnRepMobileWeb.Resources;
+@{
+    var dsbl = "";
+    if (Model.Disable || Model.StatusCode == "A" && Model.Amend=="")
+    {
+        dsbl = "disabled";
+    }
+}
+<div class="modal-content">
+    <div class="modal-header">
+        <h2>@Resource.Packing @Resource.Detail</h2>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body" style="padding-top: 0px;">
+        <div class="row">
+            <div class="col-md-7 col-sm-12">
+                <label class="col-form-label label-align">@Resource.ItemName</label>
+                <input id="box_Pack_ItemName" disabled class="form-control" autocomplete="off" type="text" name="ItemName" placeholder="ItemName" onblur="this.placeholder='ItemName'">
+
+            </div>
+            <div class="col-md-2 col-sm-12" style="padding-left: 0px;">
+                <label class="col-form-label label-align"> @Resource.UOM</label>
+                <input id="box_Pack_UOM" disabled class="form-control" autocomplete="off" type="text" name="UOM" placeholder="@Resource.UOM">
+
+            </div>
+            <div class="col-md-3 col-sm-12" style="padding-left: 0px;">
+                <label class="col-form-label label-align">@Resource.Packed @Resource.Quantity</label>
+                <input id="box_Pack_Quantity" disabled class="form-control num_right" autocomplete="off" type="text" name="OrderQuantity" placeholder="@Resource.OrderQuantity" onblur="this.placeholder = '@Resource.OrderQuantity'">
+            </div>
+        </div>
+        <!--<div class="row">
+            <div class="col-md-7 col-sm-12">
+                <label class="col-form-label label-align">@Resource.ItemName</label>
+                <input id="Pack_ItemName" disabled class="form-control" autocomplete="off" maxlength="25" tabindex="5" type="text" name="ItemName" placeholder="ItemName" onblur="this.placeholder='ItemName'">
+                <input type="hidden" id="hd_Pack_ItemId" value="" />
+            </div>
+            <div class="col-md-2 col-sm-12" style="padding-left: 0px;">
+                <label class="col-form-label label-align"> @Resource.UOM</label>
+                <input id="Pack_UOM" disabled class="form-control" autocomplete="off" maxlength="25" tabindex="5" type="text" name="UOM" placeholder="@Resource.UOM">
+                <input type="hidden" id="hd_Pack_UOMId" value="" />
+            </div>
+            <div class="col-md-3 col-sm-12" style="padding-left: 0px;">
+                <label class="col-form-label label-align">@Resource.Packed @Resource.Quantity</label>
+                <input id="Pack_Quantity" disabled class="form-control num_right" autocomplete="off" maxlength="25" tabindex="5" type="text" name="OrderQuantity" placeholder="@Resource.OrderQuantity" onblur="this.placeholder = '@Resource.OrderQuantity'">
+            </div>
+            <div class="col-md-4 col-sm-12 no-padding">
+                <div class="col-md-4 col-sm-12">
+                    <label class="col-form-label label-align">@Resource.SerialFrom</label>
+                    <input id="Pack_SerialFrom" @dsbl class="form-control num_right" onkeypress="return Cmn_IntValueonly(this,event)" autocomplete="off" onchange="OnchangePackSerialFrom()" maxlength="25" tabindex="5" type="text" name="SerialFrom" placeholder="0000.00">
+                    <span id="Pack_SerialFromError" class="field-validation-valid" style="color:red !important;"></span>
+                    <input hidden id="Hdn_PackSrNo" />
+                </div>
+                <div class="col-md-4 col-sm-12" style="padding-left: 0px;">
+                    <label class="col-form-label label-align">@Resource.SerialTo</label>
+                    <input id="Pack_SerialTo" @dsbl class="form-control num_right" onkeypress="return Cmn_IntValueonly(this,event)" autocomplete="off" onchange="OnchangePackSerialTo()" maxlength="25" tabindex="5" type="text" name="SerialTo" placeholder="0000.00">
+                    <span id="Pack_SerialToError" class="field-validation-valid" style="color:red !important;"></span>
+                </div>
+                <div class="col-md-4 col-sm-12" style="padding-left: 0px;">
+                    <label class="col-form-label label-align">@Resource.QtyPack</label>
+                    <input id="Pack_QtyPack" @dsbl class="form-control num_right" onkeypress="return PackDetails_QtyFloatValueonly(this,event)" onchange="OnchangeSrQtyPerPack()" autocomplete="off" type="text" name="QtyPack" placeholder="0000.00">
+                    <span id="Pack_QtyPackError" class="field-validation-valid" style="color:red !important;"></span>
+                </div>
+            </div>
+            <div class="col-md-8 col-sm-12 pl-0">
+
+                <div class="col-md-55 col-sm-12" style="padding-left: 0px;">
+                    <label class="col-form-label label-align">@Resource.NetWeight@Resource.PerPiece</label>
+                    <input id="netweightperpiece" @dsbl class="form-control num_right" onkeypress="return PackDetails_AmtFloatWghtValueonly(this,event)" onchange="OnchangeSrNetWeightperpiece()" autocomplete="off" type="text" name="GrossWeightPerPiece" placeholder="0000.00">
+                    <span id="piece_NetWeightError" class="field-validation-valid" style="color:red !important;"></span>
+                </div>
+                <div class="col-md-55 col-sm-12" style="padding-left: 0px;">
+                    <label class="col-form-label label-align">@Resource.NetWeightPack-->@*@Resource.NetWeight*@<!--</label>
+                    <input id="Pack_NetWeight" @dsbl  class="form-control num_right" onkeypress="return PackDetails_AmtFloatWghtValueonly(this,event)" onchange="OnchangeSrNetWeight()" autocomplete="off" type="text" name="NetWeight" placeholder="0000.00">
+                    <span id="Pack_NetWeightError" class="field-validation-valid" style="color:red!important;"></span>
+                </div>
+                <div class="col-md-55 col-sm-12" style="padding-left: 0px;">
+                    <label class="col-form-label label-align">@Resource.GrossWeight @Resource.PerPiece</label>
+                    <input id="grossweightperpiece" disabled @dsbl class="form-control num_right" onkeypress="return PackDetails_AmtFloatWghtValueonly(this,event)" onchange="OnchangeSrGrossWeightperpiece()" autocomplete="off" type="text" name="GrossWeightPerPiece" placeholder="0000.00">
+                    <span id="piece_GrossWeightError" class="field-validation-valid" style="color:red !important;"></span>
+                </div>
+                <div class="col-md-55 col-sm-12" style="padding-left: 0px;">
+                    <label class="col-form-label label-align">@Resource.GrossWeightPack-->@*@Resource.GrossWeight*@<!--</label>
+                    <input id="Pack_GrossWeight" @dsbl class="form-control num_right" onkeypress="return PackDetails_AmtFloatWghtValueonly(this,event)" onchange="OnchangeSrGrossWeight()" autocomplete="off" type="text" name="GrossWeight" placeholder="0000.00">
+                    <span id="Pack_GrossWeightError" class="field-validation-valid" style="color:red !important;"></span>
+                </div>
+
+                <div class="col-md-1 col-sm-12">
+                    @if (!Model.Disable && Model.StatusCode != "A")
+                    {
+                        <a href="#">
+                            <div class="plus_icon1" style="margin-top: 30px;" id="Icon_AddNewPackDetails"> <i class="fa fa-plus" onclick="OnClickAddPackDetail();" id="" title="Add New"></i> </div>
+                        </a>
+                    }
+                    else
+                    {
+                        if (Model.Amend == "Amend")
+                        {
+                            <a href="#">
+                                <div class="plus_icon1" style="margin-top: 30px;" id="Icon_AddNewPackDetails"> <i class="fa fa-plus" onclick="OnClickAddPackDetail();" id="" title="Add New"></i> </div>
+                            </a>
+                        }
+                    }
+                </div>
+            </div>
+            </div>-->
+            <div id="" class="card-box table-responsive price_item_detail dy_table margin20">
+                <div id="" class="sticky-table sticky-ltr-cells sb-container container-example1 OrderHistory height30VH ">
+                    <table id="Tbl_PackingDetail" data-order="" class="table table-striped table-bordered rowhighlighttbl width1500" style="width:100%">
+                        <thead>
+                            <tr class="sticky-header">
+                                @*<th width="3%">&nbsp;</th>
+        <th width="3%">&nbsp;</th>*@
+                                <th>@Resource.SerialFrom</th>
+                                <th>@Resource.SerialTo</th>
+
+
+                                @*<th>@Resource.QtyPack</th>*@
+                                <th>@Resource.QtyOuterPack</th>
+                                @*<th>@Resource.TotalPacks</th>*@
+                                <th>@Resource.TotalOuterPacks</th>
+                                <th>@Resource.QtyInnerPack</th>
+                                <th>@Resource.TotalInnerPacks</th>
+                                @*<th>@Resource.Physical <br />  @Resource.Packs</th>*@
+                                <th>@Resource.PhysicalOuterPacks</th>
+                                <th>@Resource.Packed <br />  @Resource.Quantity</th>
+                                <th>@Resource.NetWeight @Resource.PerPiece</th> @*added this source By Nitesh 24-11-2023 *@
+                                <th>@Resource.NetWeightPack</th>
+                                <th>@Resource.Total @Resource.NetWeight</th>
+                                <th>@Resource.GrossWeight @Resource.PerPiece</th> @*added this source By Nitesh 24-11-2023 *@
+                                <th>@Resource.GrossWeightPack</th>
+                                <th>@Resource.Total @Resource.GrossWeight</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                        <tfoot>
+                            <tr class="total">
+                                <td colspan="2" style="text-align:right;"><strong> @Resource.Total</strong></td>
+                                <td class="num_right"><strong><span id="tf_TotalPacks"></span></strong></td>
+                                <td class="num_right"><strong><span id="">&nbsp;</span></strong></td>
+                                <td class="num_right"><strong><span id="">&nbsp;</span></strong></td>
+                                <td class="num_right"><strong><span id="">&nbsp;</span></strong></td>
+                                <td class="num_right"><strong><span id="tf_PhyPacks"></span></strong></td>
+                                <td class="num_right"><strong><span id="tf_TotalQty"></span></strong></td>
+                                <td class="num_right"><strong><span id="">&nbsp;</span></strong></td>@*added this source By Nitesh 24-11-2023 *@
+                                <td class="num_right"><strong><span id="">&nbsp;</span></strong></td> 
+                                <td class="num_right"><strong><span id="tf_TotalNetWeight"></span></strong></td>
+                                <td class="num_right"><strong><span id="">&nbsp;</span></strong></td>@*added this source By Nitesh 24-11-2023 *@
+                                <td class="num_right"><strong><span id="">&nbsp;</span></strong></td>
+                                <td class="num_right"><strong><span id="tf_TotalGrossWeight"></span></strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    <div class="modal-footer">
+        @if (!Model.Disable && Model.StatusCode != "A")
+        {
+            @*<button type="button" id="PD_btnOrderQtyReset" onclick="ResetPackDetails()" class="btn btn-primary btn-sm">@Resource.Reset</button>
+            <button type="button" id="PD_btnOrderQtySaveAndExit" onclick="SaveAndExitPackDetails()" class="btn btn-primary btn-sm">@Resource.SaveAndExit</button>
+            <button type="button" id="PD_btnOrderQtyDiscardAndExit" class="btn btn-primary btn-sm" data-dismiss="modal">@Resource.DiscardAndExit</button>*@
+
+        }
+        else
+        {
+            if (Model.Amend == "Amend")
+            {
+                @*<button type="button" id="PD_btnOrderQtyReset" onclick="ResetPackDetails()" class="btn btn-primary btn-sm">@Resource.Reset</button>
+                <button type="button" id="PD_btnOrderQtySaveAndExit" onclick="SaveAndExitPackDetails()" class="btn btn-primary btn-sm">@Resource.SaveAndExit</button>
+                <button type="button" id="PD_btnOrderQtyDiscardAndExit" class="btn btn-primary btn-sm" data-dismiss="modal">@Resource.DiscardAndExit</button>*@
+
+            }
+        }
+        <button type="button" id="" class="btn btn-primary btn-sm" data-dismiss="modal">@Resource.Close</button>
+    </div>
+</div>
+
+
+

@@ -1,0 +1,163 @@
+﻿@using EnRepMobileWeb.Resources;
+@{ var Disable = true;
+    if (Session["TransType"].ToString() == "Update")
+    {
+        if (Session["Command"].ToString() == "Edit")
+        {
+            Disable = false;
+        }
+        else
+        {
+            Disable = true;
+        }
+    }
+    else
+    {
+        if (Session["Command"].ToString() == "Refresh")
+        {
+            Disable = true;
+        }
+        else
+        {
+            Disable = false;
+        }
+    }
+}
+<div class="modal-content">
+    <div class="modal-header">
+        <h2>@Resource.OtherChargesCalculator</h2> <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body pop_top">
+        <div class="col-md-3 col-sm-12 pop_right pop_left">
+            <label class="col-form-label label-align">@Resource.OtherCharges <span class="required">*</span> </label>
+            @if (Disable)
+            {
+                <select class="form-control" id="OtherCharge_DDL" onchange="OnChangeOC();" style="margin-bottom: 0px;" disabled>
+                </select>
+                <span id="SpanOCName" class="error_message"></span>
+            }
+            else
+            {
+                <select class="form-control" id="OtherCharge_DDL" onchange="OnChangeOC();" style="margin-bottom: 0px;">
+                </select>
+                <span id="SpanOCName" class="error_message"></span>
+            }
+        </div>
+        <div class="col-md-2 col-sm-12 pop_right pop_left">
+            <label class="col-form-label label-align">@Resource.Currency</label>
+            <input id="OCCurrency" class="form-control" readonly maxlength="20" type="text" name="OCCurrency" placeholder="0000.00" style="margin-bottom: 0px;">
+
+        </div>
+        <div class="col-md-2 col-sm-12 pop_right pop_left">
+            <label class="col-form-label label-align">@Resource.ExchangeRate <span class="required">*</span></label>
+            <input id="OCconv_rate" maxlength="3" readonly class="form-control num_right" type="text" name="OCconv_rate" placeholder="0000:00">
+
+        </div>
+
+        <div class="col-md-2 col-sm-12 pop_right pop_left">
+            <label class="col-form-label label-align"> @Resource.Amount  @Resource.InSpecific</label>
+            @if (Disable)
+            {
+                <input id="TxtOCAmt" class="form-control date num_right" autocomplete="off" maxlength="10" onchange="OnChangeOCAmount();" onkeypress="return CmnAmtFloatVal(this,event);" type="text" name="TxtOCAmt" placeholder="0000.00" style="margin-bottom: 0px;" disabled>
+                <span id="SpanOCAmt" class="error_message"></span>
+            }
+            else
+            {
+                <input id="TxtOCAmt" class="form-control date num_right" autocomplete="off" maxlength="10" onchange="OnChangeOCAmount();" onkeypress="return CmnAmtFloatVal(this,event);" type="text" name="TxtOCAmt" placeholder="0000.00" style="margin-bottom: 0px;">
+                <span id="SpanOCAmt" class="error_message"></span>
+            }
+        </div>
+        <div class="col-md-2 col-sm-12 pop_right pop_left">
+            <label class="col-form-label label-align">@Resource.Amount @Resource.InBase</label>
+            <input id="TxtOCAmtInBs" readonly class="form-control date num_right" autocomplete="off" maxlength="10" type="text" name="TxtOCAmtInBs" placeholder="0000.00" style="margin-bottom: 0px;">
+            <span id="" class="error_message"></span>
+        </div>
+
+
+        <div class="col-md-1 col-sm-12 pop_right pop_left">
+            @if (Disable)
+            {
+
+            }
+            else
+            {
+                <a href="#">
+                    <div class="plus_icon1 margin25"> <i class="fa fa-plus" id="AddOCDetailBtn" onclick="AddOCDetail()" title="Add New"></i> </div>
+                </a>
+            }
+
+        </div>
+        <div class="clear"></div>
+        <div class="tableFixHead height30VH">
+            <table class="table table-bordered margin15" style="" id="Tbl_OC_Deatils">
+                <thead>
+                    <tr>
+                        <th width="4%">&nbsp;</th>  
+                        <th class="center" width="40%">@Resource.OtherCharges</th>
+                        <th hidden="hidden">&nbsp;</th>
+                        <th>@Resource.Currency</th>
+                        <th>@Resource.ExchangeRate</th>
+                        <th>@Resource.Amount <br /> @Resource.InSpecific</th>
+                        <th>@Resource.Amount <br /> @Resource.InBase</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+                <tfoot>
+                    <tr class="total">
+                        <td>&nbsp;</td>
+                        <td class="num_right"><strong> @Resource.TotalOtherCharges</strong></td>
+                        @*<td class="num_right"><strong>0000.00</strong></td>*@
+                        <td></td>
+                        <td></td>
+                        <td class="num_right"><strong><span id="Total_OC_Amount"></span></strong></td>
+                        <td class="num_right"><strong><span id="Total_OC_AmountInBs"></span></strong></td>
+                    </tr>
+                </tfoot>
+            </table>
+
+            <div style="padding:0px; padding-top:15px; display:none;">
+                <table class="table table-bordered" style="" id="ht_Tbl_OC_Deatils">
+                    <thead>
+                        <tr>
+                            <th>@Resource.OtherCharges</th>
+                            <th>@Resource.Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @if (ViewBag.OCDetail != null)
+                        {
+                            foreach (System.Data.DataRow Row in ViewBag.OCDetail.Rows)
+                            {
+                                <tr>
+                                    <td id="OC_name">@Row["oc_name"].ToString()</td>
+                                    <td id="OC_Curr">@Row["curr_name"].ToString()</td>
+                                    <td id="OC_Conv">@Row["conv_rate"].ToString()</td>
+                                    <td hidden="hidden" id="OC_ID">@Row["oc_id"].ToString()</td>
+                                    <td class="num_right" id="OCAmtSp">@Row["oc_val"].ToString()</td>
+                                    <td class="num_right" id="OCAmtBs">@Row["OCValBs"].ToString()</td>
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+    <div class="modal-footer">
+        @if (Disable)
+        {
+
+        }
+        else
+        {
+            <button type="button" class="btn btn-primary btn-sm" id="SaveAndExitBtn_OC" onclick="OnClickSaveAndExit_OC_Btn();">@Resource.SaveAndExit</button>
+            <button type="button" class="btn btn-primary btn-sm" id="DiscardAndExit_OC" data-dismiss="modal" onclick="OnClickDiscardAndExit_OC_Btn();">@Resource.DiscardAndExit</button>
+        }
+    </div>
+</div>
+

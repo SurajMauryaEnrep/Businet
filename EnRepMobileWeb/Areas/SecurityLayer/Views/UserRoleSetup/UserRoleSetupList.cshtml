@@ -1,0 +1,92 @@
+﻿@model EnRepMobileWeb.MODELS.SecurityLayer.UserRoleSetup.UserRoleSetup_Model
+
+@using EnRepMobileWeb.Resources;
+@using System.Data
+@if (Session["UserId"] == null)
+{
+    Response.Redirect("~/Login");
+}
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+<script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+<script src="~/Content/Scripts/SecurityLayer/UserRoleSetup/UserRoleSetup.js"></script>
+
+<title>@Model.Title</title>
+<div class="clearfix"></div>
+<div class="row">
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <h2 class="col-md-6 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                <div id="" class="col-md-6 col-sm-12 heading_right_padding">
+                    <ul>
+                        @if (ViewBag.VBRoleList != null)
+                        {
+                            foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                            {
+                                if (Row["feature_id"].ToString() == "104105001")
+                                {
+                                    <li>
+                                        <a class="tooltip-test" title=" @Resource.AddNew" href="@Url.Action("AddUserRoleSetupDetail","UserRoleSetup")"><img src="~/Content/Images/addgreen.png" width="32" height="32" id="Btn_AddCust" alt="Add"></a>
+                                    </li>
+                                }
+                            }
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+   
+                        <div class="col-md-12 col-sm-12">
+                            <div id="Itm_Details_List" class="x_panel margin_top_zero">
+                                <div class="x_content">                                   
+                                        <div class="card-box table-responsive dy_table">
+                                            <div class="sticky-table sticky-ltr-cells sb-container container-example1">
+                                                @Html.Partial("~/Areas/SecurityLayer/Views/Shared/_PartialUserRoleSetupList.cshtml")
+                                                @*<table id="datatable-buttons" class="table table-striped table-bordered">
+                                                        <thead>
+                                                            <tr class="sticky-header">
+                                                                <th>@Resource.SrNo</th>
+                                                                <th>@Resource.RoleName</th>
+                                                                <th>@Resource.HO</th>
+                                                                <th>@Resource.Createdon</th>
+                                                                <th>@Resource.AmendedOn</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td>01</td>
+                                                                <td>Role1</td>
+                                                                <td>Alaska</td>
+                                                                <td>01/01/2021 10:10</td>
+                                                                <td>03/01/2021 12:10</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>02</td>
+                                                                <td>Role2</td>
+                                                                <td>Alaska</td>
+                                                                <td>01/01/2021 10:10</td>
+                                                                <td>03/01/2021 12:10</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>03</td>
+                                                                <td>Role3</td>
+                                                                <td>Alaska</td>
+                                                                <td>01/01/2021 10:10</td>
+                                                                <td>03/01/2021 12:10</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>*@
+                                            </div>
+                                        </div>
+                                  
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- page content end -->

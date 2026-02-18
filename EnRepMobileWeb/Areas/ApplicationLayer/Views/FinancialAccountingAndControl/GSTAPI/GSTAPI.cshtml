@@ -1,0 +1,186 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.FinancialAccountingAndControl.GSTAPI.GstApiModel
+@using EnRepMobileWeb.Resources;
+@using System.Data
+@*@if (Session["UserId"] == null)
+    {
+        Response.Redirect("~/Login");
+    }*@
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+<script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/FinancialAccountingAndControl/GSTAPI/GSTAPI.js"></script>
+
+<title>@Model.Title</title>
+<style>
+    .grayScale {
+        filter: grayscale(100%);
+    }
+    /*.i_Icon img {
+        height: 24px;
+    }*/
+    #GSTR_Preview .fa-search {
+        font-size: 18px;
+        color: #007bff;
+        font-weight: bold;
+    }
+</style>
+<div class="row">
+    <!-- Invoice Detail -->
+    <div id="InvoiceDetail" class="modal fade show" role="dialog" aria-modal="true">
+        <div class="modal-dialog" id="InvoiceDetailPopUp" style="min-width:1000px;">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialSaleInvItemDetails.cshtml")
+        </div>
+    </div>
+    <!-- Service Invoice Detail -->
+    <div id="ServiceInvoiceDetail" class="modal fade show" role="dialog" aria-modal="true">
+        <div class="modal-dialog" id="ServiceInvoiceDetailPopUp" style="min-width:1000px;">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialSaleInvItemDetails.cshtml")
+        </div>
+    </div>
+    <!-- Item Information -->
+    <div id="ItemInfo" class="modal fade show" role="dialog" aria-modal="true">
+        <div class="modal-dialog" style="min-width:700px;">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/Common/Views/_ItemInfomation.cshtml")
+        </div>
+    </div>
+    <!-- Error Detail -->
+    <div id="ErrorDetail" class="modal fade show" role="dialog" aria-modal="true">
+        <div class="modal-dialog" id="divErrorDetail" style="min-width:600px;">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/Common/Views/Cmn_PartialErrorDetail.cshtml")
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12 ">
+        <div id="divLoader" style="display:none;">
+            <img src="~/Content/Images/loader.gif" />
+        </div>
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <h2 class="col-md-8 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName  </h2>
+                <div id="" class="col-md-4 col-sm-12 heading_right_padding">
+                    <ul>
+                        <li class="pr-2" style="display:none;" id="li_BtnGSTR_Preview">
+                            <button class="calculator i_Icon "
+                                    title="@Resource.Preview" type="button" id="GSTR_Preview" onclick="ReconsileData_CSV();" name="Command" value="Generate">
+                                @*<img src="/Content/Images/magnifier_search.png" alt="" title="Invoice Preview">*@
+                                <i class="fa fa-search pt-1" aria-hidden="true"></i>
+                            </button>
+                        </li>
+                        <li class="pr-2">
+                            <button class="generate grayScale"
+                                    title="@Resource.Generate" disabled type="submit" id="btn_generate" onclick="functionConfirm();" name="Command" value="Generate"></button>
+                        </li>
+                        <li>
+                            <button class="refresh"
+                                    title="@Resource.Refresh" type="submit" id="btn_refresh" onclick="RefreshBtnClick()" name="Command" value="Refresh"></button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="x_title pad_mar ">
+                    <div class="col-md-12 col-sm-12 icon_tool padding_zero">
+                        <div class="col-md-12 col-sm-12 no-padding ">
+                            <div class="col-md-2 col-sm-12 pl-0 pb-2 pl-2">
+                                <label class="col-form-label label-align">@Resource.Data @Resource.Type</label>
+                                <select class="form-control" id="ddldataType" onchange="OnChangeDataType();" name="Status">
+                                    <option value="0" selected="selected"> ---Select---</option>
+                                    <option value="SI">Sale Invoice </option>
+                                    <option value="SC"> Sale Cancellation </option>
+                                    <option value="SSI">Service Sale Invoice </option>
+                                    <option value="SSC">Service Sale Cancellation </option>
+                                    @*<option value="PRT" disabled>Purchase Return </option>*@
+                                    @*Added by Suraj on 02-08-2024 for Scrap Sale Invoice*@
+                                    <option value="SCI">Direct Sale Invoice</option>
+                                    <option value="SCC">Direct Sale Cancellation</option>
+                                    <option value="IBS">Inter Branch Sales</option>
+                                    <option value="IBSC">Inter Branch Sales Cancellation</option>
+                                    <option value="SRT">Sale Return </option>
+                                    <option value="SR">Sale Register </option>
+                                    <option value="PR">Purchase Register</option>
+                                    @*Added by Suraj on 02-08-2024 for Scrap Sale Invoice End*@
+                                    @*<option value="SPI" disabled>Service Purchase Invoice</option>
+                <option value="CPI" disabled>Consumable Purchase Invoice </option>
+                <option value="ST" disabled>Stock Transfer </option>
+                <option value="SCMD" disabled>Sub-Contract Material Dispatch </option>*@
+                                    @*<option value="SCI" disabled>Sub-Contract Invoice </option>*@
+                                </select>
+                                <span id="rqDataType" class="field-validation-valid" style="color:red"></span>
+                            </div>
+                            <div id="divFromToDate">
+                                <div class="col-md-2 col-sm-12 pb-2">
+                                    <label class="col-form-label label-align">@Resource.FromDate </label>
+                                    @Html.TextBoxFor(model => model.FromDate, new { @class = "form-control", @id = "txtFromdate", @type = "date", onchange = "SetMinToDate();", @max = DateTime.Now.ToString("yyyy-MM-dd") })
+                                    @*<input class="form-control" id="txtFromdate" max="2023-09-25" name="FromDate" onchange="FromToDateValidation(); SetMinToDate();" type="date" value="2023-09-01">*@
+                                </div>
+                                <div class="col-md-2 col-sm-12 pl-0 pb-2">
+                                    <label class="col-form-label label-align">@Resource.ToDate</label>
+                                    @Html.TextBoxFor(model => model.ToDate, new { @class = "form-control", @id = "txtTodate", @placeholder = "dd-MM-yyyy", @type = "date", @max = DateTime.Now.ToString("yyyy-MM-dd") })
+                                    @*<input value="@DateTime.Now.ToString("yyyy-MM-dd")" class="form-control" id="txtTodate" max="@DateTime.Now.ToString("yyyy-MM-dd")" name="ToDate" onchange="FromToDateValidation()" placeholder="dd-MMM-yyyy" type="date">*@
+                                </div>
+                            </div>
+                            <div id="divMonthYear" style="display:none" class="col-md-2 col-sm-12 pl-0 pb-2">
+                                <label class="col-form-label label-align">@Resource.Month @Resource.Year</label>
+                                @Html.DropDownListFor(model => model.MonthYear, new SelectList(Model.FinMonthYear, "MnthYear", "FinMonthYearName"), new { @class = "form-control", id = "ddlMonthYear", onchange = "GetGstPostingData();" })
+                            </div>
+                            <div id="divGstCat" style="display:none" class="col-md-2 col-sm-12 pl-0 pb-2">
+                                <label class="col-form-label label-align">@Resource.GST @Resource.Category</label>
+                                @Html.DropDownListFor(model => model.Gst_Cat, new SelectList(new List<SelectListItem> {
+                                                                                                       new SelectListItem {Text="---Select---",Value="0" },
+                                                                                                       new SelectListItem {Text="Registered",Value="RR" },
+                                                                                                       new SelectListItem {Text="Un-Registered",Value="UR" },
+                                                                                                         new SelectListItem {Text="Exempted",Value="EX" },
+                                                                                                      new SelectListItem {Text="Composition",Value="CO" },
+                                                                                                      new SelectListItem {Text="SEZ",Value="SZ" },
+                                                                                                       }, "Value", "Text"
+                                                        ), new { @class = "form-control", @id = "Gst_Cat", @onchange = "GetGstPostingData()", @name = "Gst_Cat" })
+                            </div>
+                            <div id="divStatus" class="col-md-2 col-sm-12 pl-0 pb-2">
+                                <label class="col-form-label label-align">@Resource.Document @Resource.Status</label>
+                                <select class="form-control" id="ddlDocStatus" onchange="DataTypeRequired();GetGstPostingData();" name="Status">
+                                    <option value="0"> ---ALL---</option>
+                                    <option value="P">Pending</option>
+                                    <option value="S">Success</option>
+                                    <option value="F">Failed</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 col-sm-12 pb-2 mt-4 pl-0 pr-0">
+                                <div id="Div_GSTR_Date" class="col-md-10 col-sm-12 pl-0 pb-2" style="display:none;">
+                                    <input id="GSTR_DateBillWise" name="EinvDateOption" type="radio" value="B">
+                                    <label class="col-form-label label-align mr-2" for="GSTR_DateBillWise">@Resource.BillDate @Resource.Wise</label> @*<br />*@
+                                    <input id="GSTR_DateInvWise" name="EinvDateOption" type="radio" value="I" checked="checked">
+                                    <label class="col-form-label label-align" for="GSTR_DateInvWise">@Resource.InvoiceDate @Resource.Wise</label>
+                                </div>
+                                <div class="col-md-2 col-sm-12 no-padding">
+                                    <button type="button" class="btn btn-primary btn-sm " id="BtnSearch" onclick="GetGstPostingData();"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                </div>
+                                @*<div id="divStatus" class="col-md-12 col-sm-12 pl-0 pb-2">
+
+            </div>*@
+                            </div>
+
+                            <div class="clear"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <div class="card-box table-responsive dy_table">
+                    <div class="sticky-table sticky-ltr-cells sb-container container-example1" id="" style="height:68vh;">
+                        <div id="divGstApiPostingData">
+                            @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialGSTAPI.cshtml")
+                            @*@Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialGSTAPISaleRegister.cshtml")*@
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- page content end -->

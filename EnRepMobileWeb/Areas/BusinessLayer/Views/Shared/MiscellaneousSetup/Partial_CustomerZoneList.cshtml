@@ -1,0 +1,70 @@
+﻿@using EnRepMobileWeb.Resources;
+@{
+    var EditFlag = "N";
+    var DeleteFlag = "N";
+    if (ViewBag.VBRoleList != null)
+    {
+        foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+        {
+            if (Row["feature_id"].ToString() == "103205150002")
+            {
+                EditFlag = "Y";
+            }
+            if (Row["feature_id"].ToString() == "103205150004")
+            {
+                DeleteFlag = "Y";
+            }
+        }
+    }
+}
+<table id="datatable-buttons" class="table table-bordered data_table_full_width rowhighlighttbl">
+    <thead>
+        <tr class="sticky-header">
+            <th width="1%">@Resource.SrNo</th>
+            <th>  @Resource.Customer @Resource.Zone</th>
+            <th hidden="hidden"></th>
+            <th hidden="hidden"></th>
+            <th width="3%"> &nbsp;</th>
+            <th width="3%"> &nbsp;</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            var i = 0;
+        }
+        @if (ViewBag.CustomerZone != null)
+        {
+            foreach (System.Data.DataRow dr in ViewBag.CustomerZone.Rows)
+            {
+                i = i + 1;
+                <tr role="row" class="odd">
+                    <td class="sorting_1">@i</td>
+                    <td id="setup_val">@dr["setup_val"].ToString()</td>
+                    <td hidden="hidden" id="settypeid">@dr["setup_type_id"].ToString()</td>
+                    <td hidden="hidden" id="setup_id">@dr["setup_id"].ToString()</td>
+                    <td class="center">
+                        @if (EditFlag == "Y")
+                        {
+
+                            <i type="submit" class="fa fa-edit" onclick="EditCustomerZone(event)" aria-hidden="true" title="@Resource.Edit"></i>
+                        }
+                    </td>
+                    <td class="center">
+                        @if (DeleteFlag == "Y")
+                        {
+                            if (@dr["Checkdependcy"].ToString() == "Y")
+                            {
+                                <i class="fa fa-trash" disabled="disabled" aria-hidden="true" title="@Resource.Delete" onclick=""></i>
+                            }
+                            else
+                            {
+                                <i class="fa fa-trash red" aria-hidden="true" title="@Resource.Delete" onclick="return functionConfirm(event,'CustomerZone')"></i>
+                            }
+
+                        }
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

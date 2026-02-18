@@ -1,0 +1,625 @@
+﻿@using EnRepMobileWeb.MODELS.Common;
+@using EnRepMobileWeb.Resources;
+
+@if (Session["UserId"] == null)
+{
+    Response.Redirect("~/Login");
+}
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+
+<script>
+    $(document).ready(function () {
+
+        $('#SourceDocument').multiselect({
+            includeSelectAllOption: true,
+            enableFiltering: true,
+            enableCaseInsensitiveFiltering: true,
+            buttonWidth: '100%',
+            nonSelectedText: "---All---",
+            numberDisplayed: 1
+        });
+
+    });
+</script>
+
+    <style >
+    .tableFixHead thead th {
+        background-color: #ffffff !important;
+        
+    }
+    table#ProductKickOff th {
+        background-color: #ffffff !important;
+    }
+        .circle {
+            width: 20px;
+            height: 20px;
+            border-radius: 20px;
+        }
+        
+</style>
+
+<div class="row">
+    <!-- Description Information Start-->
+    <div class="modal fade" id="textareaModal" tabindex="-1">
+        <div class="modal-dialog" style="max-width:600px;">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/Common/Views/Comn_PartialDescription.cshtml")
+
+        </div>
+    </div>
+    <!-- Description Information End-->
+    <!-- Procurement Plan Order Detail Start -->
+    <div id="ProcurementPlanOrderDetail" class="modal fade" role="dialog">
+        <div class="modal-dialog" id="" style=" max-width:800px;">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialProcurementPlanOrderDetail.cshtml")
+        </div>
+    </div>
+    <!-- Procurement Plan Order Detail Start End -->
+
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <h2 class="col-md-5 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                @*<div id="wizard" class="form_wizard wizard_horizontal col-md-3 col-sm-12 work_flow">
+                        <ul class="wizard_steps">
+                            <li>
+                                <a href="#step-1" class="disabled" isdone="1" onclick="ForwardBarHistoryClick()" data-toggle="modal" data-target="#WorkflowInformation" data-backdrop="static" data-keyboard="false" rel="1" id="a_1">
+                                    <span class="step_no">1</span>
+                                </a>
+                            </li>
+                        </ul>
+                        <input type="hidden" id="hdDoc_No" value="">
+                    </div>*@
+                <div id="" class="col-md-7 col-sm-12 work_flow heading_right_padding">
+                    <ul>
+                        <li>
+                            <button class="add"
+                                    title="@Resource.AddNew" disabled type="submit" id="btn_add" name="Command" value="AddNew" onclick="RemoveSessionData()"></button>
+                        </li>
+                        <li>
+                            <button class="edit"
+                                    title="@Resource.Edit" disabled type="submit" id="btn_edit" name="Command" value="Edit" onclick="EnableEditkBtn()"></button>
+                        </li>
+                        <li>
+                            <button class="delete"
+                                    title="@Resource.Delete" disabled type="submit" id="btn_del" name="Command" value="Delete"></button>
+                        </li>
+                        <li>
+                            <button class="save"
+                                    title="@Resource.Save" type="submit" onclick="" id="btn_save" name="Command" value="Save"></button>
+                        </li>
+                        @*<li>
+                                <button class="forward"
+                                        title="@Resource.Forward" type="submit" id="btn_forward" name="Command" value="Forward"></button>
+                            </li>*@
+                        <li>
+                            <button class="approve"
+                                    title="@Resource.Approve" type="submit" id="btn_approve" name="Command" value="Approve"></button>
+                        </li>
+                        @*<li>
+                                <button class="workflow" title="@Resource.Workflow" type="button" id="btn_workflow" onclick="" name="Command" value="Workflow" data-toggle="modal" data-target="#WorkflowInformation" data-backdrop="static" data-keyboard="false"></button>
+                            </li>*@
+                        <li>
+                            <button class="refresh"
+                                    title="@Resource.Refresh" type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                        </li>
+                        <li>
+                            <button class="print"
+                                    title="@Resource.Print" type="submit" id="btn_print" name="Command" value="Print"></button>
+                        </li>
+                        <li>
+                            <a class="back" href="/ApplicationLayer/ProductKickOff/ProductKickOff"
+                                    title="@Resource.Back"  type="submit" id="btn_back" name="Command" value="BacktoList"></a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="clearfix"></div>
+                <div class="x_title pad_mar ">
+                    <div class="col-md-12 col-sm-12 icon_tool ">
+                        <!--<span>Collapsible / Accordion </span>-->
+                        <div class="approved_by">
+                            <ul>
+                                <li>
+                                    <span>@Resource.CreatedBy<br><b>Neeraj</b></span>
+                                </li>
+                                <li>
+                                    <span>@Resource.Createdon<br><b>10-12-2025 15:43</b></span>
+                                </li>
+                                <li>
+                                    <span>@Resource.ApprovedBy<br><b>Surendar Singh</b></span>
+                                </li>
+                                <li>
+                                    <span>@Resource.ApprovedOn<br><b></b></span>
+                                </li>
+                                <li>
+                                    <span>@Resource.AmendedBy<br><b>12-12-2025 13:50</b></span>
+                                </li>
+                                <li>
+                                    <span>@Resource.AmendedOn<br><b></b></span>
+                                </li>
+                                <li>
+                                    <span>@Resource.Status<br /><b>Approved</b></span>
+                                </li>
+
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <div class="col-md-12 col-sm-12 pl-0 mb-3">
+                    <div class="col-md-55 col-sm-12 pl-0">
+                        <label class="col-form-label label-align">Product Description</label>
+                        <select class="form-control" id="ProductDescription" name="ProductDescription">
+                            <option value="">All</option>
+                            <option value="" selected="selected">Engine Mount -TMT</option>
+                            <option value="">V-Belt 1208</option>
+                        </select>
+                    </div>
+                    <div class="col-md-55 col-sm-12 pl-0">
+                        <label class="col-form-label label-align">UOM</label>
+                        <input value="Pcs" class="form-control" id="UOM" maxlength="20" name="UOM" placeholder="Pcs" type="text" disabled="disabled">
+                    </div>
+                    <div class="col-md-55 col-sm-12 pl-0">
+                        <label class="col-form-label label-align">Attribute</label>
+                        <select class="form-control" id="Attribute" name="Attribute">
+                            <option value="">All</option>
+                            <option value="">Serial # / Kick Off #</option>
+                            <option value="">Kick off Date (DD/MM/YYYY)</option>
+                            <option value="" selected="selected">Competitor # (Optional)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-55 col-sm-12 pl-0">
+                        <label class="col-form-label label-align">Main</label>
+                        <input value="0809222025SKT51203" class="form-control" id="Main" maxlength="20" name="Main" placeholder="0809222025SKT51203" type="text">
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="col-md-2 col-sm-12 pl-0">
+                        <label class="col-form-label label-align">SG-9799HY</label>
+                        <input value="SG-9799HY" class="form-control" id="SG-9799HY" maxlength="20" name="SG-9799HY" placeholder="SG-9799HY" type="text">
+                    </div>
+                    <div class="col-md-2 col-sm-12 pl-0">
+                        <label class="col-form-label label-align">SG-3213</label>
+                        <input value="SG-3213" class="form-control" id="SG-3213" maxlength="20" name="SG-3213" placeholder="SG-3213" type="text">
+                    </div>
+                    <div class="col-md-2 col-sm-12 pl-0">
+                        <label class="col-form-label label-align">SG-3368</label>
+                        <input value="SG-3368" class="form-control" id="SG-3368" maxlength="20" name="SG-3368" placeholder="SG-3368" type="text">
+                    </div>
+                    <div class="col-md-2 col-sm-12 pl-0">
+                        <label class="col-form-label label-align">SG-9959</label>
+                        <input value="SG-9959" class="form-control" id="SG-9959" maxlength="20" name="SG-9959" placeholder="SG-9959" type="text">
+                    </div>
+                    <div class="col-md-2 col-sm-12 pl-0">
+                        <label class="col-form-label label-align">SG-3200</label>
+                        <input value="SG-3200" class="form-control" id="SG-3200" maxlength="20" name="SG-3200" placeholder="SG-3200" type="text">
+                    </div>
+                    <div class="col-md-2 col-sm-12 pl-0">
+                        <div class="col-md-10 col-sm-12 pl-0 pr-0">
+                            <label class="col-form-label label-align">SG-3233</label>
+                            <input value="SG-3233" class="form-control" id="SG-3233" maxlength="20" name="SG-3233" placeholder="SG-3233" type="text">
+                        </div>
+                        <div class="col-md-2 col-sm-12 margin28 mb-2">
+                            <a href="#">
+                                <div class="plus_icon1"> <i class="fa fa-plus" id="BtnAttribute" onclick="OnClickAddButton()" title="Populate Item Detail" data-original-title=""></i> </div>
+                            </a>
+                        </div>
+                        <div class="clearfix"></div>
+
+                    </div>
+                </div>
+                    
+
+                   
+                <div class="card-box table-responsive dy_table">
+                    <div class="col-md-12 no-padding">
+                        <div class="">
+                            <div class="tableFixHead height55VH">
+                                <table id="ProductKickOff" class="table table-bordered width1400 itmfrz ">
+                                    <thead>
+                                        <tr class="headings">
+                                            <th width="22%">Attribute Name</th>
+                                            <th width="11%">Main</th>
+                                            <th width="11%">SG-9799HY</th>
+                                            <th width="11%">SG-3213</th>
+                                            <th width="11%">SG-3368</th>
+                                            <th width="11%">SG-9959</th>
+                                            <th width="11%">SG-3200</th>
+                                            <th width="11%">SG-3233</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Product Image</td>
+                                            <td class="center">
+                                                <img src="~/Content/Images/ProductKickoff.png" height="80" />
+                                            </td>
+                                            <td class="center">
+                                                <img src="~/Content/Images/ProductKickoff1.png" height="80" />
+                                            </td>
+                                            <td class="center">
+                                                <img src="~/Content/Images/ProductKickoff2.png" height="80" />
+                                            </td>
+                                            <td class="center">
+                                                <img src="~/Content/Images/ProductKickoff3.png" height="80" />
+                                            </td>
+                                            <td class="center">
+                                                <img src="~/Content/Images/ProductKickoff4.png" height="80" />
+                                            </td>
+                                            <td class="center">
+                                                <img src="~/Content/Images/ProductKickoff5.png" height="80" />
+                                            </td>
+                                            <td class="center">
+                                                <img src="~/Content/Images/ProductKickoff6.png" height="80" />
+                                            </td>
+
+                                        </tr>
+                                        <tr>
+                                            <td>Serial # / Kick Off #</td>
+                                            <td>0809222025SKT51203</td>
+                                            <td>0809222025SKT51203</td>
+                                            <td>0809222025SKT51203</td>
+                                            <td>0809222025SKT51203</td>
+                                            <td>0809222025SKT51203</td>
+                                            <td>0809222025SKT51203</td>
+                                            <td>0809222025SKT51203</td>
+
+                                        </tr>
+                                        <tr>
+                                            <td>Kick off Date (DD/MM/YYYY)</td>
+                                            <td>22-09-2025</td>
+                                            <td>22-09-2025</td>
+                                            <td>22-09-2025</td>
+                                            <td>22-09-2025</td>
+                                            <td>22-09-2025</td>
+                                            <td>22-09-2025</td>
+                                            <td>22-09-2025</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Sigma Kit #</td>
+                                            <td>SKT-51203</td>
+                                            <td>SKT-51203</td>
+                                            <td>SKT-51203</td>
+                                            <td>SKT-51203</td>
+                                            <td>SKT-51203</td>
+                                            <td>SKT-51203</td>
+                                            <td>SKT-51203</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Sigma Part #</td>
+                                            <td>SPI-51203</td>
+                                            <td>SPI-51203</td>
+                                            <td>BT-51203</td>
+                                            <td>JB-51203</td>
+                                            <td>SST-2091</td>
+                                            <td>BRG-9906</td>
+                                            <td>SMT-2091</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Competitor # (Optional)</td>
+                                            <td>160300522</td>
+                                            <td>160300522</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>SM5898</td>
+                                            <td>SM5898</td>
+                                            <td>SM5898</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Plant Part Number - ERP Code #</td>
+                                            <td>AC-51203-00</td>
+                                            <td>AC-51203-00</td>
+                                            <td>AC-51203-01</td>
+                                            <td>AC-51203-02</td>
+                                            <td>AC-02091-01</td>
+                                            <td>AC-09906-S1</td>
+                                            <td>SM-02091-00</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Product Decsription</td>
+                                            <td>Lower Insulator</td>
+                                            <td>Lower Insulator</td>
+                                            <td>Dust Cover</td>
+                                            <td>Jounce Bumper</td>
+                                            <td>Spring Seat</td>
+                                            <td>Bearing</td>
+                                            <td>Strut Mount</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Color Code </td>
+                                            <td><div class="circle alert-success"></div></td>
+                                            <td><div class="circle alert-success"></div></td>
+                                            <td><div class="circle alert-warning"></div></td>
+                                            <td><div class="circle alert-warning"></div></td>
+                                            <td><div class="circle alert-success"></div></td>
+                                            <td><div class="circle alert-success"></div></td>
+                                            <td><div class="circle alert-success"></div></td>
+                                        </tr>
+                                        <tr>
+                                            <td>NPD Category</td>
+                                            <td>SG1</td>
+                                            <td>SG1</td>
+                                            <td>NPD2</td>
+                                            <td>NPD2</td>
+                                            <td>SG2</td>
+                                            <td>SG2</td>
+                                            <td>SG1</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Reason for NPD Category </td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Handed Over to</td>
+                                            <td>MR. SANJEEV KHOKHAR</td>
+                                            <td>MR. SANJEEV KHOKHAR</td>
+                                            <td>MR. SANJEEV KHOKHAR</td>
+                                            <td>MR. SANJEEV KHOKHAR</td>
+                                            <td>MR. SANJEEV KHOKHAR</td>
+                                            <td>MR. SANJEEV KHOKHAR</td>
+                                            <td>MR. SANJEEV KHOKHAR</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Customer Code :</td>
+                                            <td>SGI // KYB</td>
+                                            <td>SGI // KYB</td>
+                                            <td>SGI // KYB</td>
+                                            <td>SGI // KYB</td>
+                                            <td>SGI // KYB</td>
+                                            <td>SGI // KYB</td>
+                                            <td>SGI // KYB</td>
+
+
+                                        </tr>
+                                        <tr>
+                                            <td>Validation Level</td>
+                                            <td>V1</td>
+                                            <td>V1</td>
+                                            <td>V2.1/V2</td>
+                                            <td>V1</td>
+                                            <td>V1</td>
+                                            <td>V1</td>
+                                            <td>V2.1</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Existing tooling if any / consolidation with Sigma / Competitor #</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Project code /Phase
+                                            <td>KYB FRONT ASSEMBLY PROJECT</td>
+                                            <td>KYB FRONT ASSEMBLY PROJECT</td>
+                                            <td>KYB FRONT ASSEMBLY PROJECT</td>
+                                            <td>KYB FRONT ASSEMBLY PROJECT</td>
+                                            <td>KYB FRONT ASSEMBLY PROJECT</td>
+                                            <td>KYB FRONT ASSEMBLY PROJECT</td>
+                                            <td>KYB FRONT ASSEMBLY PROJECT</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Application, Make , Model,year,location</td>
+                                            <td>2015-2023 FORD MUSTANG</td>
+                                            <td>2015-2023 FORD MUSTANG</td>
+                                            <td>2015-2023 FORD MUSTANG</td>
+                                            <td>2015-2023 FORD MUSTANG</td>
+                                            <td>2015-2023 FORD MUSTANG</td>
+                                            <td>2015-2023 FORD MUSTANG</td>
+                                            <td>2015-2023 FORD MUSTANG</td>
+                                        </tr>
+                                        <tr>
+                                            <td>MOQ (Optional) :</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td>First Production lot</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Estimated Annual Qty</td>
+                                            <td>1,000</td>
+                                            <td>1,000</td>
+                                            <td>1,000</td>
+                                            <td>1,000</td>
+                                            <td>1,000</td>
+                                            <td>1,000</td>
+                                            <td>1,000</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Priority code : AA ,A, B, C  ; AA being highest</td>
+                                            <td>AA</td>
+                                            <td>AA</td>
+                                            <td>AA</td>
+                                            <td>AA</td>
+                                            <td>AA</td>
+                                            <td>AA</td>
+                                            <td>AA	</td>
+                                            
+                                        </tr>
+                                        <tr>
+                                            <td>Product Launch Target Date</td>
+                                            <td>NA</td>
+                                            <td>NA</td>
+                                            <td>NA</td>
+                                            <td>NA</td>
+                                            <td>NA</td>
+                                            <td>NA</td>
+                                            <td>NA	</td>
+                                           
+                                        </tr>
+                                        <tr>
+                                            <td>Project lifecycle code : A, B ,C or D ; A being Newest and D as Decline (Optional)</td>
+                                            <td>A</td>
+                                            <td>A</td>
+                                            <td>A</td>
+                                            <td>A</td>
+                                            <td>A</td>
+                                            <td>A</td>
+                                            <td>A</td>
+                                           
+                                        </tr>
+                                        <tr>
+                                            <td>Benchmark and Development sample : OEM # or aftermarket # </td>
+                                            <td>DG9Z8321A</td>
+                                            <td>DG9Z8321A</td>
+                                            <td>FR3Z18A047A</td>
+                                            <td>FR3Z3020B</td>
+                                            <td>FR3Z5A306A</td>
+                                            <td>FR3Z5A306A</td>
+                                            <td>FR3Z3A197A</td>
+                                           
+                                        </tr>
+                                        <tr>
+                                            <td>Part Cost (In Rs.)</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Development Cost in Rs.</td>
+                                            <td>NIL</td>
+                                            <td>NIL</td>
+                                            <td>RGR</td>
+                                            <td>RGR</td>
+                                            <td>NIL</td>
+                                            <td>NIL</td>
+                                            <td>NIL</td>
+                                            <td>NIL</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Development cost to be absorbed by (Sigma / Vendor / Customer)</td>
+                                            <td>NOT APPLICABLE ON IN-HOUSE PRODUCTS // SIGMA FOR RGR PRODUCTS</td>
+                                            <td>NOT APPLICABLE ON IN-HOUSE PRODUCTS // SIGMA FOR RGR PRODUCTS</td>
+                                            <td>NOT APPLICABLE ON IN-HOUSE PRODUCTS // SIGMA FOR RGR PRODUCTS</td>
+                                            <td>NOT APPLICABLE ON IN-HOUSE PRODUCTS // SIGMA FOR RGR PRODUCTS</td>
+                                            <td>NOT APPLICABLE ON IN-HOUSE PRODUCTS // SIGMA FOR RGR PRODUCTS</td>
+                                            <td>NOT APPLICABLE ON IN-HOUSE PRODUCTS // SIGMA FOR RGR PRODUCTS</td>
+                                            <td>NOT APPLICABLE ON IN-HOUSE PRODUCTS // SIGMA FOR RGR PRODUCTSv
+                                        </tr>
+                                        <tr>
+                                            <td>First Batch Quantity or PPAP Submission Quantity Required</td>
+                                            <td>NOT APPLICABLE</td>
+                                            <td>NOT APPLICABLE</td>
+                                            <td>NOT APPLICABLE</td>
+                                            <td>NOT APPLICABLE</td>
+                                            <td>NOT APPLICABLE</td>
+                                            <td>NOT APPLICABLE</td>
+                                            <td>NOT APPLICABLE</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Initial Sample Submission Target Date</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Position in Vehicle (Optional)</td>
+                                            <td>FRONT</td>
+                                            <td>FRONT</td>
+                                            <td>FRONT</td>
+                                            <td>FRONT</td>
+                                            <td>FRONT</td>
+                                            <td>FRONT</td>
+                                            <td>FRONT</td>
+                                        </tr>
+                                        <tr>
+                                            <td>OEM Qty. in SCIL</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>2</td>
+                                            <td>2</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>                                            
+                                        </tr>
+                                        <tr>
+                                            <td>Target for Balance OEM sample as per validation)</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+    </div>
+</div>
+    </div>
+<script>
+    function open_popupdes(id) {
+        debugger;
+        const myModal = new bootstrap.Modal(document.getElementById("textareaModal"));
+        $("#hdn_txtdes").val(id);
+        var des = $("#" + id).val();
+        document.getElementById("modalTextarea").value = des;
+        myModal.show();
+    }
+    // Open modal when clicking the main textarea
+
+    function onclick_save_close() {
+        debugger
+        var id = $("#hdn_txtdes").val();
+        document.getElementById(id).value = document.getElementById("modalTextarea").value;
+    }
+</script>
+<script>
+    document.getElementById('imageUpload').addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (event) {
+            const img = document.getElementById('preview');
+            img.src = event.target.result;
+            img.classList.remove('d-none');
+        };
+        reader.readAsDataURL(file);
+    });
+</script>

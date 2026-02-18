@@ -1,0 +1,1044 @@
+﻿@model EnRepMobileWeb.MODELS.BusinessLayer.GLDetail.GLDetailModel
+@using EnRepMobileWeb.Resources;
+@using System.Data
+@*//*** All Session Removed by shubham maurya on 21-12-2022 16:05***//*@
+@if (Session["UserId"] == null)
+{
+    Response.Redirect("~/Login");
+}
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+<script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+<script src="~/Content/Css/build/js/sweetalert.js"></script>
+<script src="~/Content/Scripts/BusinessLayer/GLSetup/GLDetail.js"></script>
+<style>
+    .custom-switch {
+        padding-left: 40px !important;
+    }
+
+    .custom-control-input {
+        position: absolute;
+        left: 2px;
+        z-index: 10;
+        width: 2rem;
+        height: 1.25rem;
+        opacity: 0;
+    }
+</style>
+<script>
+    function showPreview(event) {
+        if (event.target.files.length > 0) {
+            let src = URL.createObjectURL(event.target.files[0]);
+            let preview = document.getElementById("file-ip-1-preview");
+            preview.src = src;
+            preview.style.display = "block";
+        }
+    }
+</script>
+@{ var Disable = true;
+    if (Model.TransType != null)
+    {
+        //if (Session["TransType"].ToString() == "Update")
+        if (Model.TransType == "Update")
+        {
+            //if (Session["Command"].ToString() == "Edit")
+            if (Model.Command == "Edit")
+            {
+                Disable = false;
+            }
+            else
+            {
+                Disable = true;
+            }
+        }
+        else
+        {
+            Disable = false;
+        }
+
+        //if (Session["TransType"].ToString() == "Refresh")
+        if (Model.TransType == "Refresh")
+        {
+            Disable = true;
+        }
+        //if (Session["TransType"].ToString() == "Save")
+        if (Model.TransType == "Save")
+        {
+            //if (Session["Command"].ToString() == "Add")
+            if (Model.Command == "Add")
+            {
+                Disable = false;
+            }
+            else
+            {
+                Disable = true;
+            }
+        }
+    }
+    if (Model.Message != null)
+    {
+        //if (ViewBag.Message == "Duplicate")
+        if (Model.Message == "Duplicate")
+        {
+            Disable = false;
+        }
+    }
+}
+@{
+    if (Model.Message != null)
+    {
+        var str = Model.Message;
+        <script>
+            if ("@str" == "Save") {
+                $("#hdnSavebtn").val(null);
+                swal("", $("#savemsg").text(), "success");
+            }
+            if ("@str" == "Delete") {
+                $("#hdnSavebtn").val(null);
+            swal("", $("#deletemsg").text(), "success");
+            }
+            if ("@str" == "Approved") {
+                $("#hdnSavebtn").val(null);
+            swal("", $("#approvemsg").text(), "success");
+        }
+            if ("@str" == "Used") {
+                $("#hdnSavebtn").val(null);
+            swal("", $("#DependencyExist").text(), "warning");
+        }
+        if ("@str" == "Duplicate") {
+            $(document).ready(function () {
+                $("#hdnSavebtn").val(null);
+                document.getElementById("vmAcc_name").innerHTML = $("#valueduplicate").text();
+                $("#acc_name").css("border-color", "red");
+            });
+        }
+        </script>
+    }
+}
+<title>@Model.Title</title>
+@using (Html.BeginForm("GLSave", "GLDetail", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    {
+        <div class="row">
+            <!-- Upload Cheque Fromat Start -->
+            <div id="UploadChequeFromat" class="modal fade" role="dialog">
+                <div class="modal-dialog" style="min-width:700px;">
+                    <!-- Modal content-->
+                    @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialUploadChequeFromat.cshtml")
+                </div>
+            </div>
+            <!-- Upload Cheque Fromat End -->
+
+
+
+            <div class="col-md-12 col-sm-12 ">
+                <div class="x_panel mar_pad1 ">
+                    <div class="x_content mar_pad1">
+                        <h2 class="col-md-5 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                        <div id="wizard" class="form_wizard wizard_horizontal col-md-3 col-sm-12 work_flow">
+                            <div id="step-1">
+                            </div>
+                        </div>
+                        <div id="" class="col-md-4 col-sm-12 work_flow heading_right_padding">
+                            @{
+                                var btnName = Model.BtnName;
+                                switch (btnName)
+                                {
+                                    case "BtnAddNew":
+                                        <ul class="margin0 padding0">
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "103170001")
+                                                    {
+                                                        <li>
+                                                            <button class="add"
+                                                                    title="@Resource.AddNew" disabled style="filter: grayscale(100%)" type="submit" id="btn_add" name="Command" value="Add"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "103170002")
+                                                    {
+                                                        <li>
+                                                            <button class="edit"
+                                                                    title="@Resource.Edit" disabled style="filter: grayscale(100%)" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "103170004")
+                                                    {
+                                                        <li>
+                                                            <button class="delete"
+                                                                    title="@Resource.Delete" disabled style="filter: grayscale(100%)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                        </li>
+                                                    }
+                                                }
+                                            }
+                                            <li>
+                                                <button class="save"
+                                                        title="@Resource.Save" type="submit" id="btn_save" onclick="return validateGLInsertform();" name="Command" value="Save"></button>
+                                            </li>
+                                            <li>
+                                                <button class="refresh"
+                                                        title="@Resource.Refresh" type="submit" id="btn_refresh" onclick="mandatorydisable();" name="Command" value="Refresh"></button>
+                                            </li>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "103170005")
+                                                    {
+                                                        <li>
+                                                            <button class="print"
+                                                                    title="@Resource.Print" disabled style="filter: grayscale(100%)" type="submit" id="btn_print" name="Command" value="Print"></button>
+                                                        </li>
+                                                    }
+                                                }
+                                            }
+                                            <li>
+                                                <button class="back"
+                                                        title="@Resource.Back" disabled style="filter: grayscale(100%)" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                                            </li>
+                                        </ul>
+                                        break;
+                                    case "BtnSave":
+                                        <ul>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "103170001")
+                                                    {
+                                                        <li>
+                                                            <button class="add"
+                                                                    title="@Resource.AddNew" onclick="ActStatusDisable();" type="submit" id="btn_add" name="Command" value="Add"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "103170002")
+                                                    {
+                                                        <li>
+                                                            <button class="edit"
+                                                                    title="@Resource.Edit" type="submit" onclick="EnableActStat();" id="btn_edit" name="Command" value="Edit"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "103170004")
+                                                    {
+                                                        <li>
+                                                            <button class="delete"
+                                                                    onclick="return functionConfirm(this)" title="@Resource.Delete" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                        </li>
+                                                        @Html.HiddenFor(m => m.DeleteCommand, new { @id = "HdDeleteCommand" })
+                                                    }
+                                                }
+                                            }
+                                            <li>
+                                                <button class="save"
+                                                        title="@Resource.Save" disabled style="filter: grayscale(100%)" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                            </li>
+                                            <li>
+                                                <button class="refresh"
+                                                        title="@Resource.Refresh" disabled style="filter: grayscale(100%)" type="submit" id="btn_refresh" onclick="mandatorydisable();" name="Command" value="Refresh"></button>
+                                            </li>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "103170005")
+                                                    {
+                                                        <li>
+                                                            <button class="print"
+                                                                    title="@Resource.Print" disabled style="filter: grayscale(100%)" type="submit" id="btn_print" name="Command" value="Print"></button>
+                                                        </li>
+                                                    }
+                                                }
+                                            }
+                                            <li>
+                                                <button class="back"
+                                                        title="@Resource.Back" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                                            </li>
+                                        </ul>
+                                        break;
+                                    case "BtnEdit":
+                                        <ul>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "103170001")
+                                                    {
+                                                        <li>
+                                                            <button class="add"
+                                                                    title="@Resource.AddNew" disabled style="filter: grayscale(100%)" type="submit" id="btn_add" name="Command" value="Add"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "103170002")
+                                                    {
+                                                        <li>
+                                                            <button class="edit"
+                                                                    title="@Resource.Edit" disabled style="filter: grayscale(100%)" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "103170004")
+                                                    {
+                                                        <li>
+                                                            <button class="delete"
+                                                                    title="@Resource.Delete" disabled style="filter: grayscale(100%)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                        </li>
+                                                    }
+                                                }
+                                            }
+                                            <li>
+                                                <button class="save"
+                                                        title="@Resource.Save" type="submit" id="btn_save" onclick="return validateGLInsertform();" name="Command" value="Save"></button>
+                                            </li>
+                                            <li>
+                                                <button class="refresh"
+                                                        title="@Resource.Refresh" type="submit" id="btn_refresh" onclick="mandatorydisable();" name="Command" value="Refresh"></button>
+                                            </li>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "103170005")
+                                                    {
+                                                        <li>
+                                                            <button class="print"
+                                                                    title="@Resource.Print" disabled style="filter: grayscale(100%)" type="submit" id="btn_print" name="Command" value="Print"></button>
+                                                        </li>
+                                                    }
+                                                }
+                                            }
+                                            <li>
+                                                <button class="back"
+                                                        title="@Resource.Back" disabled style="filter: grayscale(100%)" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                                            </li>
+                                        </ul>
+                                        break;
+                                    case "BtnRefresh":
+                                        <ul>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "103170001")
+                                                    {
+                                                        <li>
+                                                            <button class="add"
+                                                                    title="@Resource.AddNew" onclick="ActStatusDisable();" type="submit" id="btn_add" name="Command" value="Add"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "103170002")
+                                                    {
+
+                                                        <li>
+                                                            <button class="edit"
+                                                                    title="@Resource.Edit" disabled style="filter: grayscale(100%)" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "103170004")
+                                                    {
+                                                        <li>
+                                                            <button class="delete"
+                                                                    title="@Resource.Delete" disabled style="filter: grayscale(100%)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                        </li>
+                                                    }
+                                                }
+                                            }
+                                            <li>
+                                                <button class="save"
+                                                        title="@Resource.Save" disabled style="filter: grayscale(100%)" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                            </li>
+                                            <li>
+                                                <button class="refresh"
+                                                        title="@Resource.Refresh" disabled style="filter: grayscale(100%)" type="submit" id="btn_refresh" onclick="mandatorydisable();" name="Command" value="Refresh"></button>
+                                            </li>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "103170005")
+                                                    {
+                                                        <li>
+                                                            <button class="print"
+                                                                    title="@Resource.Print" disabled style="filter: grayscale(100%)" type="submit" id="btn_print" name="Command" value="Print"></button>
+                                                        </li>
+                                                    }
+                                                }
+                                            }
+                                            <li>
+                                                <button class="back"
+                                                        title="@Resource.Back" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                                            </li>
+                                        </ul>
+                                        break;
+                                    case "BtnToDetailPage":
+                                        <ul>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "103170001")
+                                                    {
+                                                        <li>
+                                                            <button class="add"
+                                                                    title="@Resource.AddNew" onclick="ActStatusDisable();" type="submit" id="btn_add" name="Command" value="Add"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "103170002")
+                                                    {
+
+                                                        if (Model.acc_type == 1 || Model.acc_type == 2 || Model.acc_type == 6 || Model.acc_type == 3 || Model.acc_type == 4 || Model.acc_type == 5)
+                                                        {
+                                                            <li>
+                                                                <button class="edit" disabled style="filter: grayscale(100%)"
+                                                                        title="@Resource.Edit" type="submit" onclick="EnableActStat();" id="btn_edit" name="Command" value="Edit"></button>
+                                                            </li>
+                                                        }
+                                                        else
+                                                        {
+                                                            <li>
+                                                                <button class="edit"
+                                                                        title="@Resource.Edit" type="submit" onclick="EnableActStat();" id="btn_edit" name="Command" value="Edit"></button>
+                                                            </li>
+                                                        }
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "103170004")
+                                                    {
+                                                        if (Model.acc_type == 1 || Model.acc_type == 2 || Model.acc_type == 6 || Model.acc_type == 3 || Model.acc_type == 4 || Model.acc_type == 5)
+                                                        {
+                                                            <li>
+                                                                <button class="delete" disabled style="filter: grayscale(100%)"
+                                                                        onclick="return functionConfirm(this)" title="@Resource.Delete" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                            </li>
+                                                        }
+                                                        else
+                                                        {
+                                                            <li>
+                                                                <button class="delete"
+                                                                        onclick="return functionConfirm(this)" title="@Resource.Delete" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                            </li>
+                                                        }
+                                                        @Html.HiddenFor(m => m.DeleteCommand, new { @id = "HdDeleteCommand" })
+                                                    }
+                                                }
+                                            }
+                                            <li>
+                                                <button class="save"
+                                                        title="@Resource.Save" disabled style="filter: grayscale(100%)" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                            </li>
+                                            <li>
+                                                <button class="refresh"
+                                                        title="@Resource.Refresh" type="submit" disabled style="filter: grayscale(100%)" id="btn_refresh" onclick="mandatorydisable();" name="Command" value="Refresh"></button>
+                                            </li>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "103170005")
+                                                    {
+                                                        <li>
+                                                            <button class="print"
+                                                                    title="@Resource.Print" disabled style="filter: grayscale(100%)" type="submit" id="btn_print" name="Command" value="Print"></button>
+                                                        </li>
+                                                    }
+                                                }
+                                            }
+                                            <li>
+                                                <button class="back"
+                                                        title="@Resource.Back" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                                            </li>
+                                        </ul>
+                                        break;
+                                    case "Delete":
+                                        <ul>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "103170001")
+                                                    {
+                                                        <li>
+                                                            <button class="add"
+                                                                    title="@Resource.AddNew" onclick="ActStatusDisable();" type="submit" id="btn_add" name="Command" value="Add"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "103170002")
+                                                    {
+
+                                                        <li>
+                                                            <button class="edit"
+                                                                    title="@Resource.Edit" disabled style="filter: grayscale(100%)" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "103170004")
+                                                    {
+                                                        <li>
+                                                            <button class="delete"
+                                                                    title="@Resource.Delete" disabled style="filter: grayscale(100%)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                        </li>
+                                                    }
+                                                }
+                                            }
+                                            <li>
+                                                <button class="save"
+                                                        title="@Resource.Save" disabled style="filter: grayscale(100%)" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                            </li>
+                                            <li>
+                                                <button class="refresh"
+                                                        title="@Resource.Refresh" disabled style="filter: grayscale(100%)" type="submit" id="btn_refresh" onclick="mandatorydisable();" name="Command" value="Refresh"></button>
+                                            </li>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "103170005")
+                                                    {
+                                                        <li>
+                                                            <button class="print"
+                                                                    title="@Resource.Print" disabled style="filter: grayscale(100%)" type="submit" id="btn_print" name="Command" value="Print"></button>
+                                                        </li>
+                                                    }
+                                                }
+                                            }
+                                            <li>
+                                                <button class="back"
+                                                        title="@Resource.Back" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                                            </li>
+                                        </ul>
+                                        break;
+                                }
+                            }
+                        </div>
+                        <div class="x_title pad_mar ">
+                            <div class="col-md-12 col-sm-12 icon_tool ">
+                                <!--<span>Collapsible / Accordion </span>-->
+                                <div class="approved_by">
+                                    <ul>
+                                        <li><span>@Resource.CreatedBy<br><b>@Html.DisplayFor(model => model.createby)</b></span> </li>
+                                        <li><span> @Resource.Createdon<br><b>@Html.DisplayFor(model => model.creat_dt)</b></span></li>
+                                        <li><span>@Resource.AmendedBy<br> <b>@Html.DisplayFor(model => model.modby)</b></span></li>
+                                        <li><span>@Resource.AmendedOn<br> <b>@Html.DisplayFor(model => model.mod_dt)</b></span></li>
+                                    </ul>
+                                </div>
+                                @Html.HiddenFor(m => m.hdnSavebtn, new { @id = "hdnSavebtn" })
+                                @Html.HiddenFor(m => m.ListFilterData1, new { @id = "ListFilterData1", value = Model.ListFilterData1 })
+                                @if (Disable)
+                                {
+                                    <input hidden="hidden" id="Disable" value="Disable" />
+                                }
+                                else
+                                {
+                                    <input hidden="hidden" id="Enable" value="Enable" />
+                                }
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 col-sm-12 ">
+                <div class="x_panel mar_pad1 ">
+                    <div class="x_content mar_pad1">
+                        <article class="panel-group bs-accordion" id="accordion" role="tablist" aria-multiselectable="true">
+                            <section class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="headingOne">
+                                    <h4 class="panel-title"> <!--<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne"> Item detail <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a>--> <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne"> @Resource.AccountDetail <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a></h4>
+                                </div>
+                                <div id="collapseOne" class="panel-collapse in collapse show" role="tabpanel" aria-labelledby="headingOne" style="">
+                                    <div class="row">
+                                        <div class="col-md-12 col-sm-12">
+                                            <div class="panel-body" style="float:left; width:100%;">
+                                                <div class="col-md-3 col-sm-12">
+                                                    <label class="col-form-label label-align">@Resource.AccountType <span class="required">*</span></label>
+                                                    @if (Disable)
+                                                    {
+                                                        @Html.DropDownListFor(model => model.acc_type, new SelectList(new List<Object>
+                                                        {
+                                                       new { value = "", text = "---Select---"  },
+                                                       new { value = "7", text = "Bank"  },
+                                                        new { value = "1", text = "Customer"  },
+                                                         new { value = "8" , text = "Cash" },
+                                                         new { value = "4" , text = "Employee" },
+                                                           //new { value = "9", text = "Exchange Fluctuation"  },
+                                                            //new { value = "12" , text = "Interbranch" },
+                                                             new { value = "11" , text = "Others" },
+                                                              //new { value = "10" , text = "Retained Earning" },
+                                                        new { value = "2" , text = "Supplier" },
+                                                        new { value = "3", text = "Service Provider"  },
+                                                        new { value = "5", text = "Transporter"  },
+                                                        new { value = "6" , text = "Tax" },
+                                                        new { value = "13", text = "Tax Authority"  }
+                                                        },
+"value",
+"text"
+), new { @id = "acc_type", @class = "form-control", disabled = "disabled" })
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.DropDownListFor(model => model.acc_type, new List<SelectListItem>
+                                                       {
+                                                      new SelectListItem{ Value = "", Text = "---Select---" ,Selected=true},
+                                                       new SelectListItem{ Value = "7", Text = "Bank"  },
+                                                        new SelectListItem{ Value = "1", Text = "Customer",Disabled=true},
+                                                         new SelectListItem{ Value = "8" , Text = "Cash" },
+                                                         new SelectListItem{ Value = "4" , Text = "Employee",Disabled=true },
+                                                           //new SelectListItem{ Value = "9", Text = "Exchange Fluctuation"  },
+                                                            //new SelectListItem{ Value = "12" , Text = "Interbranch" },
+                                                             new SelectListItem{ Value = "11" , Text = "Others" },
+                                                              //new SelectListItem{ Value = "10" , Text = "Retained Earning" },
+                                                        new SelectListItem{ Value = "2" , Text = "Supplier",Disabled=true },
+                                                        new SelectListItem{ Value = "3", Text = "Service Provider",Disabled=true  },
+                                                        new SelectListItem{ Value = "5", Text = "Transporter", Disabled=true },
+                                                        new SelectListItem{ Value = "6" , Text = "Tax" ,Disabled=true},
+                                                        new SelectListItem{ Value = "13", Text = "Tax Authority"  }
+                                                       }, new { @id = "acc_type", @class = "form-control", @onchange = "OnChangeAccType()" })
+                                                    }
+                                                    @*<input type="text" disabled />*@
+                                                    @Html.ValidationMessageFor(model => model.acc_type, String.Empty, new { @style = "color:red;!important", @id = "vmAccounttype" })
+                                                    <span id="spanacctype" class="error_message"></span>
+                                                    @Html.HiddenFor(model => model.TransType)
+                                                </div>
+                                                <div class="col-md-6 col-sm-12 pl-0">
+                                                    <label class="col-form-label label-align"> @Resource.AccountGroup <span class="required">*</span> </label>
+                                                    @if (Disable)
+                                                    {
+                                                        @Html.DropDownListFor(model => model.acc_grp_id, new SelectList(Model.AccountGroupList, "acc_grp_id", "AccGroupChildNood"), new { @id = "GLAccGrp", @class = "form-control", disabled = "disabled", onchange = "OnChangeAccGrp()" })
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.DropDownListFor(model => model.acc_grp_id, new SelectList(Model.AccountGroupList, "acc_grp_id", "AccGroupChildNood"), new { @id = "GLAccGrp", @class = "form-control", onchange = "OnChangeAccGrp()" })
+                                                    }
+                                                    @Html.ValidationMessageFor(model => model.acc_grp_id, String.Empty, new { @style = "color:red;!important", @id = "vmAccountGroup" })
+                                                    <span id="SpanAccGrp" class="error_message"></span>
+                                                </div>
+                                                <div class="col-md-3 col-sm-12 pl-0">
+                                                    <label class="col-form-label label-align">@Resource.AccountName <span class="required">*</span> </label>
+                                                    @if (Disable)
+                                                    {
+                                                        @Html.TextBoxFor(model => model.acc_name, new { @id = "acc_name", @class = "form-control", maxlength = "100", @placeholder = "AccountName", disabled = "disabled", onchange = "OnChangeAccName()" })
+
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.TextBoxFor(model => model.acc_name, new { @id = "acc_name", @class = "form-control", @autocomplete = "off", maxlength = "100", @placeholder = "AccountName", onchange = "OnChangeAccName()", onkeypress = "OnChangeAccName()" })
+
+                                                    }
+                                                    @Html.ValidationMessageFor(model => model.acc_name, String.Empty, new { @style = "color:red;!important", @id = "vmAcc_name" })
+                                                    @Html.HiddenFor(model => model.acc_id)
+                                                    @Html.HiddenFor(model => model.GLCode)
+                                                    <span id="SpanGLname" class="error_message"></span>
+                                                </div>
+                                                @{
+                                                    var addclass = "";
+                                                    var acctype1 = ViewBag.Acctypedt;
+                                                    if (acctype1 == 1 || acctype1 == 2)
+                                                    {
+                                                        <div class="col-md-3 col-sm-12" id="Div_GLReportingGroup">
+                                                            <label class="col-form-label label-align"> @Resource.GLReportingGroup </label>
+
+                                                            @Html.TextBoxFor(model => model.GLReportingGroup, new { @id = "GLReportingGroup", @class = "form-control", maxlength = "100", @placeholder = "GLReportingGroup", disabled = "disabled" })
+                                                            @Html.HiddenFor(model => model.GLReportingGroup_ID, new { @id = "hdnGLReportingGroup_ID" })
+                                                        </div>
+                                                         addclass = "pl-0";
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="col-md-3 col-sm-12" id="Div_GLReportingGroup" style="display:none">
+                                                            <label class="col-form-label label-align"> @Resource.GLReportingGroup </label>
+
+                                                            @Html.TextBoxFor(model => model.GLReportingGroup, new { @id = "GLReportingGroup", @class = "form-control", maxlength = "100", @placeholder = "GLReportingGroup", disabled = "disabled" })
+                                                            @Html.HiddenFor(model => model.GLReportingGroup_ID, new { @id = "hdnGLReportingGroup_ID" })
+                                                        </div>
+                                                         addclass = "";
+                                                    }
+                                                }
+                                                <div class="col-md-2 col-sm-12 @addclass">
+                                                    <label class="col-form-label label-align">@Resource.CashFlowType</label>
+                                                    @if (Disable)
+                                                    {
+
+                                                        @Html.DropDownListFor(model => model.cf_type, new SelectList(new List<Object>
+                                                        {
+                                                        new { value = "", text = "---Select---"  },
+                                                         new { value = "F", text = "Financial"  },
+                                                          new { value = "I", text = "Investment"  },
+                                                             new { value = "O" , text = "Operational" },
+                                                        },
+              "value",
+              "text"
+              ), new { @class = "form-control", disabled = "disabled" })
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.DropDownListFor(model => model.cf_type, new SelectList(new List<Object>
+                                                       {
+                                                       new { value = "", text = "---Select---"  },
+                                                         new { value = "F", text = "Financial"  },
+                                                          new { value = "I", text = "Investment"  },
+                                                             new { value = "O" , text = "Operational" },
+                                                       },
+             "value",
+             "text"
+             ), new { @class = "form-control" })
+                                                    }
+                                                    @Html.ValidationMessageFor(model => model.cf_type, String.Empty, new { @style = "color:red;!important", @id = "vmcftype" })
+                                                </div>
+                                                <div class="custom-control custom-switch col-md-1 col-sm-12 margin25 leftpadding20">
+                                                    @if (Disable || Model.D_InActive == "Y")
+                                                    {
+                                                        @Html.CheckBoxFor(modal => modal.act_status_tr, new { @class = "custom-control-input col-md-3 col-sm-12 margin-switch", @checked = "checked", @id = "act_status_tr", disabled = "disabled", onclick = "OnActiveStatusChange()" })
+                                                    }
+                                                    else
+                                                    {
+                                                        //if (Session["TransType"].ToString() == "Save")
+                                                        if (Model.TransType == "Save"/*||Model.TransType=="Update"*/)
+                                                        {
+                                                            @Html.CheckBoxFor(modal => modal.act_status_tr, new { @class = "custom-control-input col-md-3 col-sm-12 margin-switch", @checked = "checked", @id = "act_status_tr", disabled = "disabled", onclick = "OnActiveStatusChange()" })
+                                                        }
+                                                        else
+                                                        {
+                                                            if (Model.plr == true || Model.ibt == true || Model.iwt == true || Model.bra == true)
+                                                            {
+                                                                @Html.CheckBoxFor(modal => modal.act_status_tr, new { @class = "custom-control-input col-md-3 col-sm-12 margin-switch", @checked = "checked", @id = "act_status_tr", disabled = "disabled", onclick = "OnActiveStatusChange()" })
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.CheckBoxFor(modal => modal.act_status_tr, new { @class = "custom-control-input col-md-3 col-sm-12 margin-switch", @checked = "checked", @id = "act_status_tr", onclick = "OnActiveStatusChange()" })
+                                                            }
+                                                        }
+                                                    }
+                                                    <label class="custom-control-label col-md-9 col-sm-12" for="act_status_tr" style="padding: 3px 0px;">@Resource.Active</label>
+                                                </div>
+                                                <div class="col-md-2 col-sm-12 pl-0 ">
+                                                    @{string Dnone = string.IsNullOrEmpty(Model.inact_reason) ? "none" : "";}
+                                                    <label class="col-form-label label-align">@Resource.InactiveReason <span id="reasonrequired" class="required" style="display:@Dnone;">*</span></label>
+                                                    @*@if (Session["TransType"].ToString() == "Update" || Session["TransType"].ToString() == "Save" || Disable)*@
+                                                    @if ((Model.TransType == "Update" && string.IsNullOrEmpty(Model.inact_reason)) || Model.TransType == "Save" || Disable)
+                                                    {
+                                                        @Html.TextBoxFor(model => model.inact_reason, new { @class = "form-control", @placeholder = "Inactive Reason", maxlength = "200", disabled = "disabled", @id = "inact_reason", @onchange = "OnChangeReason()", @onkeypress = "OnChangeReason()" })
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.TextBoxFor(model => model.inact_reason, new { @class = "form-control", @placeholder = "Inactive Reason", maxlength = "200", @onchange = "OnChangeReason()", @onkeypress = "OnChangeReason()", @id = "inact_reason" })
+                                                    }
+
+                                                    @Html.ValidationMessageFor(model => model.inact_reason, String.Empty, new { @style = "color:red;!important", @id = "vminactreason" })
+                                                </div>
+
+                                                @if (ViewBag.Acctypedt != null)
+                                                {
+                                                    var acctype = ViewBag.Acctypedt;
+                                                    if (acctype == 1 || acctype == 2 || acctype == 3 || acctype == 7 || acctype == 8)
+                                                    {
+                                                        <div class="col-md-1 col-sm-12 pl-0" id="CurrDiv">
+                                                            <label class="col-form-label label-align">@Resource.Currency</label>
+                                                            <div id="CurrencyDiv">
+                                                                @if (Disable)
+                                                                {
+                                                                    @Html.DropDownListFor(model => model.curr, new SelectList(Model.currList, "curr_id", "curr_name"), new { @class = "form-control", disabled = "disabled", @id = "curr" })
+                                                                }
+                                                                else
+                                                                {
+                                                                    if (Model.curr_depncy == "DisableCurrancy")
+                                                                    {
+                                                                        @Html.DropDownListFor(model => model.curr, new SelectList(Model.currList, "curr_id", "curr_name"), new { @class = "form-control", disabled = "disabled", @id = "curr" })
+                                                                    }
+                                                                    else if (Model.curr_depncy == "EnableCurrancy")
+                                                                    {
+                                                                        @Html.DropDownListFor(model => model.curr, new SelectList(Model.currList, "curr_id", "curr_name"), new { @class = "form-control", @id = "curr" })
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        @Html.DropDownListFor(model => model.curr, new SelectList(Model.currList, "curr_id", "curr_name"), new { @class = "form-control", @id = "curr" })
+                                                                    }
+                                                                }
+                                                                @Html.HiddenFor(model => model.curr, new { @id = "hdn_currid" })
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <div class="col-md-1 col-sm-12 pl-0" id="CurrDiv" style="display:none">
+                                                        <label class="col-form-label label-align">@Resource.Currency</label>
+                                                        <div id="CurrencyDiv">
+                                                            @if (Disable)
+                                                            {
+                                                                @Html.DropDownListFor(model => model.curr, new SelectList(Model.currList, "curr_id", "curr_name"), new { @class = "form-control", disabled = "disabled", @id = "curr" })
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.DropDownListFor(model => model.curr, new SelectList(Model.currList, "curr_id", "curr_name"), new { @class = "form-control", @id = "curr" })
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                }
+                                                <div class="clear">&nbsp;</div>
+                                                <hr style="margin-bottom: 5px; margin-top: 0px;"><hr />
+                                                <div class="row">
+                                                    <div class="col-md-12 col-sm-12">
+                                                        <!-- Blue Section-->
+                                                        <div class="custom-control custom-switch col-md-3 col-sm-12">
+                                                            @if (Disable)
+                                                            {
+                                                                @Html.CheckBoxFor(modal => modal.plr, new { @class = "custom-control-input  margin-switch", @checked = "checked", @id = "plr", disabled = "disabled" })
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.CheckBoxFor(modal => modal.plr, new { @class = "custom-control-input  margin-switch", @checked = "checked", @id = "plr", onclick = "ChcekAllToggle();" })
+                                                            }
+                                                            <label class="custom-control-label " for="plr">@Resource.ProfitAndLossReserveAccount</label>
+                                                        </div>
+                                                        <div class="custom-control custom-switch col-md-3 col-sm-12">
+                                                            @if (Disable)
+                                                            {
+                                                                @Html.CheckBoxFor(modal => modal.ibt, new { @class = "custom-control-input  margin-switch", @checked = "checked", @id = "ibt", disabled = "disabled" })
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.CheckBoxFor(modal => modal.ibt, new { @class = "custom-control-input  margin-switch", @checked = "checked", @id = "ibt", onclick = "ChcekAllToggle();" })
+                                                            }
+                                                            <label class="custom-control-label " for="ibt">@Resource.InterBranchTransferAccount</label>
+                                                        </div>
+                                                        <div class="custom-control custom-switch col-md-3 col-sm-12">
+                                                            @if (Disable)
+                                                            {
+                                                                @Html.CheckBoxFor(modal => modal.iwt, new { @class = "custom-control-input  margin-switch", @checked = "checked", @id = "iwt", disabled = "disabled" })
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.CheckBoxFor(modal => modal.iwt, new { @class = "custom-control-input  margin-switch", @checked = "checked", @id = "iwt", onclick = "ChcekAllToggle();" })
+                                                            }
+                                                            <label class="custom-control-label " for="iwt">@Resource.InterWarehouseTransferAccount</label>
+                                                        </div>
+                                                        <div class="custom-control custom-switch col-md-3 col-sm-12" id="OVToggle">
+                                                            @if (Disable)
+                                                            {
+                                                                @Html.CheckBoxFor(modal => modal.bra, new { @class = "custom-control-input  margin-switch", @checked = "checked", disabled = "disabled", @id = "bra" })
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.CheckBoxFor(modal => modal.bra, new { @class = "custom-control-input  margin-switch", @checked = "checked", @id = "bra", onclick = "ChcekAllToggle();" })
+                                                            }
+                                                            @*<label class="custom-control-label " for="TAp">Branch Remmitance Account</label>*@
+                                                            <label class="custom-control-label " for="TAp">@Resource.Branch @Resource.Remittance @Resource.Account</label>
+                                                        </div>
+                                                        <div class="custom-control custom-switch col-md-3 col-sm-12">
+                                                            @if (Disable)
+                                                            {
+                                                                @Html.CheckBoxFor(modal => modal.roa, new { @class = "custom-control-input  margin-switch", @checked = "checked", @id = "roa", disabled = "disabled" })
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.CheckBoxFor(modal => modal.roa, new { @class = "custom-control-input  margin-switch", @checked = "checked", @id = "roa", @onclick = "" })
+                                                            }
+                                                            <label class="custom-control-label " for="roa">@Resource.RoundOffAccount</label>
+                                                        </div>
+                                                        <div class="custom-control custom-switch col-md-3 col-sm-12">
+                                                            @if (Disable)
+                                                            {
+                                                                @Html.CheckBoxFor(modal => modal.egl, new { @class = "custom-control-input  margin-switch", @checked = "checked", @id = "egl", disabled = "disabled" })
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.CheckBoxFor(modal => modal.egl, new { @class = "custom-control-input  margin-switch", @checked = "checked", @id = "egl", @onclick = "" })
+                                                            }
+                                                            <label class="custom-control-label " for="egl">@Resource.ExchangeGainLoss</label>
+                                                        </div>
+                                                        <div class="custom-control custom-switch col-md-3 col-sm-12">
+                                                            @if (Disable)
+                                                            {
+                                                                @Html.CheckBoxFor(modal => modal.sta, new { @class = "custom-control-input  margin-switch", @checked = "checked", @id = "sta", disabled = "disabled" })
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.CheckBoxFor(modal => modal.sta, new { @class = "custom-control-input  margin-switch", @checked = "checked", @id = "sta", @onclick = "" })
+                                                            }
+                                                            <label class="custom-control-label " for="sta">@Resource.StockAdjustment</label>
+                                                        </div>
+                                                        <div class="custom-control custom-switch col-md-3 col-sm-12">
+                                                            @if (Disable)
+                                                            {
+                                                                @Html.CheckBoxFor(modal => modal.tr, new { @class = "custom-control-input  margin-switch", @checked = "checked", @id = "tr", disabled = "disabled" })
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.CheckBoxFor(modal => modal.tr, new { @class = "custom-control-input  margin-switch", @checked = "checked", @id = "tr", @onclick = "" })
+                                                            }
+                                                            @*<input class="custom-control-input  margin-switch" data-val="true" data-val-required="" disabled="disabled" id="TRA" name="TRA" type="checkbox" value="true"><input name="sta" type="hidden" value="false">*@
+                                                            <label class="custom-control-label " for="tr">@Resource.Tax @Resource.Receivable @Resource.Account</label>
+                                                        </div>
+                                                        <div class="custom-control custom-switch col-md-3 col-sm-12">
+                                                            @if (Disable)
+                                                            {
+                                                                @Html.CheckBoxFor(modal => modal.tp, new { @class = "custom-control-input  margin-switch", @checked = "checked", @id = "tp", disabled = "disabled" })
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.CheckBoxFor(modal => modal.tp, new { @class = "custom-control-input  margin-switch", @checked = "checked", @id = "tp", @onclick = "" })
+                                                            }
+                                                            @*<input class="custom-control-input  margin-switch" data-val="true" data-val-required="" disabled="disabled" id="TPA" name="TPA" type="checkbox" value="true"><input name="sta" type="hidden" value="false">*@
+                                                            <label class="custom-control-label " for="tp">@Resource.Tax @Resource.Payable @Resource.Account</label>
+                                                        </div>
+                                                        <div class="custom-control custom-switch col-md-3 col-sm-12" id="OVToggle">
+                                                            @if (Disable)
+                                                            {
+                                                                @Html.CheckBoxFor(modal => modal.TAp, new { @class = "custom-control-input  margin-switch", @checked = "checked", disabled = "disabled", @id = "TAp", onclick = "onoverdraft()" })
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.CheckBoxFor(modal => modal.TAp, new { @class = "custom-control-input  margin-switch", @checked = "checked", @id = "TAp", onclick = "onoverdraft()" })
+                                                            }
+                                                            @*<input class="custom-control-input  margin-switch" data-val="true" data-val-required="" disabled="disabled" id="TPA" name="TPA" type="checkbox" value="true"><input name="sta" type="hidden" value="false">*@
+                                                            <label class="custom-control-label " for="TAp">@Resource.Bank @Resource.Overdraft @Resource.Allowed</label>
+                                                        </div>
+                                                        <div class="col-md-2 col-sm-12" id="ODLimit">
+                                                            @if (Disable)
+                                                            {
+                                                                <label class="col-form-label label-align">@Resource.Overdraft  @Resource.Limit <span class="required">*</span></label>
+                                                                @Html.TextBoxFor(model => model.Overdraft_Limit, new { @class = "form-control", @Placeholder = "0000.00", @id = "Overdraft_Limit", @onchange = "OnChange()", @autocomplete = "off", onkeypress = "OnclickReqQty(this,event)", disabled = "disabled" })
+                                                                @Html.ValidationMessageFor(model => model.Overdraft_Limit, String.Empty, new { @style = "color:red;!important", @id = "vmOver" })
+                                                            }
+                                                            else
+                                                            {
+                                                                <label class="col-form-label label-align">@Resource.Overdraft  @Resource.Limit <span class="required">*</span></label>
+                                                                @Html.TextBoxFor(model => model.Overdraft_Limit, new
+                                                                {
+                                                                    @class = "form-control",
+                                                                    @Placeholder = "0000.00",
+                                                                    @id = "Overdraft_Limit",
+                                                                    @autocomplete = "off",
+                                                                    @onchange = "OnclickReqQty(this,event)"@*@onchange = "OnclickReqQty(this,event)"*@,
+@onkeypress = "return RqtyFloatValueonly(this, event)"
+})
+                                                                @Html.ValidationMessageFor(model => model.Overdraft_Limit, String.Empty, new { @style = "color:red;!important", @id = "vmOver" })
+                                                            }
+
+                                                            @*<input class="form-control num_right" disabled="disabled" id="Overdraft_Limit" maxlength="200" name="Overdraft_Limit" onchange="OnChangeReason()" onkeypress="OnChangeReason()" placeholder="0000.00" type="text" value="">
+                    <span class="field-validation-valid" data-valmsg-for="inact_reason" data-valmsg-replace="true" id="vminactreason" style="color:red;!important"></span>*@
+
+                                                        </div>
+
+
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @Html.HiddenFor(model => model.GLBranchDetail, new { id = "hdCustomerBranchList" })
+                            </section>
+                            <section class="panel panel-default" id="bankdetailModule">
+                                <div class="panel-heading" role="tab" id="headingFour">
+                                    <h4 class="panel-title"> <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFour" aria-expanded="true" aria-controls="collapseFour"> @Resource.BankDetail <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a> </h4>
+                                </div>
+                                <div id="collapseFour" class="panel-collapse " role="tabpanel" aria-labelledby="headingFour">
+                                    <div class="row">
+                                        <div class="col-md-12 col-sm-12 mb-2 pb-3">
+                                            <div class="col-md-55 col-sm-12">
+                                                <label class="col-form-label label-align">@Resource.Bank @Resource.Address <span class="required"> *</span> </label>
+                                                @if (Disable)
+                                                {
+                                                    @Html.TextAreaFor(m => m.bank_add, new { @id = "BankAddress", @cols = "20", disabled = "disabled", @class = "form-control remarksmessage", @autocomplete = "off", @maxlength = "100", @tabindex = "", @type = "text", @name = "BankAddress", @placeholder = @Resource.Bank + ' ' + @Resource.Address })
+                                                }
+                                                else
+                                                {
+                                                    @Html.TextAreaFor(m => m.bank_add, new { @id = "BankAddress", @cols = "20", @class = "form-control remarksmessage", @autocomplete = "off", @maxlength = "100", @tabindex = "", @type = "text", @name = "BankAddress", @placeholder = @Resource.Bank + ' ' + @Resource.Address, @onkeypress = "onkeypressAddress()" })
+                                                }
+
+                                                @Html.ValidationMessageFor(model => model.bank_add, String.Empty, new { @style = "color:red;!important", @id = "vmbank_add" })
+                                                @*<textarea class="form-control remarksmessage" cols="20" id="BankAddress" maxlength="100" name="BankAddress" placeholder="@Resource.Bank @Resource.Address"></textarea>*@
+                                            </div>
+                                            <div class="col-md-55 col-sm-12">
+                                                <label class="col-form-label label-align">@Resource.Account @Resource.Number<span class="required"> *</span></label>
+                                                @if (Disable)
+                                                {
+                                                    @Html.TextAreaFor(m => m.acc_no, new { @id = "AccountNumber", @class = "form-control", disabled = "disabled", @autocomplete = "off", @maxlength = "50", @tabindex = "5", @type = "text", @name = "AccountNumber", @placeholder = Resource.Account + ' ' + Resource.Number })
+                                                }
+                                                else
+                                                {
+                                                    @Html.TextAreaFor(m => m.acc_no, new { @id = "AccountNumber", @class = "form-control", @autocomplete = "off", @maxlength = "25", @tabindex = "5", @type = "text", @name = "AccountNumber", @placeholder = Resource.Account + ' ' + Resource.Number, @onkeypress = "onkeypressAcco()" })
+                                                }
+                                                @Html.ValidationMessageFor(model => model.acc_no, String.Empty, new { @style = "color:red;!important", @id = "vmbank_acc_no" })
+                                                @*<input id="AccountNumber" class="form-control" autocomplete="off" maxlength="25" tabindex="5" type="text" name="AccountNumber" placeholder="@Resource.Account @Resource.Number">*@
+                                            </div>
+                                            <div class="col-md-55 col-sm-12">
+                                                <label class="col-form-label label-align">@Resource.SWIFT_Code <span class="required"> *</span></label>
+                                                @if (Disable)
+                                                {
+                                                    @Html.TextAreaFor(m => m.swift_code, new { @id = "SWIFT_Code", @class = "form-control", disabled = "disabled", @autocomplete = "off", @maxlength = "25", @tabindex = "5", @type = "text", @name = "SWIFT_Code", @placeholder = Resource.SWIFT_Code })
+                                                }
+                                                else
+                                                {
+                                                    @Html.TextAreaFor(m => m.swift_code, new { @id = "SWIFT_Code", @class = "form-control", @autocomplete = "off", @maxlength = "25", @tabindex = "5", @type = "text", @name = "SWIFT_Code", @placeholder = Resource.SWIFT_Code, @onkeypress = "onkeypressshiftcode()" })
+                                                }
+                                                @Html.ValidationMessageFor(model => model.swift_code, String.Empty, new { @style = "color:red;!important", @id = "vmswift_code" })
+                                                @*<input id="SWIFT_Code" class="form-control" autocomplete="off" maxlength="25" tabindex="5" type="text" name="SWIFT_Code" placeholder="@Resource.SWIFT_Code">*@
+                                            </div>
+                                            <div class="col-md-55 col-sm-12">
+                                                <label class="col-form-label label-align">@Resource.IFSC_Code <span class="required"> *</span> </label>
+                                                @if (Disable)
+                                                {
+                                                    @Html.TextAreaFor(m => m.ifsc_code, new { @id = "IFSC_Code", @class = "form-control", disabled = "disabled", @autocomplete = "off", @maxlength = "25", @tabindex = "5", @type = "text", @name = "IFSC_Code", @placeholder = Resource.IFSC_Code })
+                                                }
+                                                else
+                                                {
+                                                    @Html.TextAreaFor(m => m.ifsc_code, new { @id = "IFSC_Code", @class = "form-control", @autocomplete = "off", @maxlength = "25", @tabindex = "5", @type = "text", @name = "IFSC_Code", @placeholder = Resource.IFSC_Code, @onkeypress = "onkeypressifsccode()" })
+                                                }
+                                                @Html.ValidationMessageFor(model => model.ifsc_code, String.Empty, new { @style = "color:red;!important", @id = "vmifsc_code" })
+                                                @*<input id="IFSC_Code" class="form-control" autocomplete="off" maxlength="25" tabindex="5" type="text" name="IFSC_Code" placeholder="@Resource.IFSC_Code">*@
+                                            </div>
+                                            @*<div class="col-sm-1 margin28 i_Icon pr-0 pl-0">
+                                                    <button type="button" id="UploadChequeFromat" class="calculator" onclick="GetContectDeatilSupplier()" data-toggle="modal" data-target="#ContactDetail" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.ContactDetail">  </button>
+                                                </div>*@
+                                            <div class="col-md-55 col-sm-12 margin25">
+                                                <a href="#" class="UploadCheque" data-toggle="modal" data-target="#UploadChequeFromat" data-backdrop="static" data-keyboard="false">@Resource.Upload @Resource.Cheque @Resource.Format</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                            @*@Html.Partial("~/Areas/BusinessLayer/Views/Shared/CustomerBanchPartialView.cshtml")*@
+                            @Html.Partial("~/Areas/BusinessLayer/Views/Shared/CustomerBanchPartialView_New.cshtml")
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+<!-- page content end -->
+@*<script>
+        $(document).ready(function () {
+            ReadBranchList();
+        });
+
+        function ReadBranchList() {
+            debugger;
+            var Branches = new Array();
+            $("#CustBrDetail TBODY TR").each(function () {
+                debugger;
+                var row = $(this);
+                var Branch = {};
+                Branch.Id = row.find("#hdCustomerBranchId").val();
+                var checkBoxId = "#cust_act_stat_" + Branch.Id;
+                if (row.find(checkBoxId).is(":checked")) {
+                    Branch.BranchFlag = "Y";
+                }
+                else {
+                    Branch.BranchFlag = "N";
+                }
+                Branches.push(Branch);
+            });
+            debugger;
+            var str = JSON.stringify(Branches);
+            $('#hdCustomerBranchList').val(str);
+        }
+        function ActStatusDisable() {
+            debugger;
+            ($("#act_status_tr").is(":checked"))
+            $("#act_status_tr").prop("disabled", true);
+        }
+    </script>*@

@@ -1,0 +1,229 @@
+﻿@using EnRepMobileWeb.Resources;
+@{
+    //string ValDigit = "0.";
+    //var VD = Convert.ToInt32(Session["ValDigit"].ToString());
+    //for (var i = 0; i < VD; i++)
+    //{
+    //    ValDigit += "0";
+    //}
+    //string QtyDigit = "0.";
+    //var QD = Convert.ToInt32(Session["QtyDigit"].ToString());
+    //for (var i = 0; i < QD; i++)
+    //{
+    //    QtyDigit += "0";
+    //}
+    //string RateDigit = "0.";
+    //var RD = Convert.ToInt32(Session["ValDigit"].ToString());
+    //for (var i = 0; i < RD; i++)
+    //{
+    //    RateDigit += "0";
+    //}
+}
+<style>
+    #datatable-buttons3_wrapper .btn-group a:nth-child(3) {
+        display: inline-block;
+        position: absolute;
+    }
+</style>
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+@if (ViewBag.flag == "SDProductGroupWiseSummary")
+{
+    <table id="ProductGroupWiseSummary" class="table table-striped width1600  rowhighlighttbl itmfrz" cellspacing="0" width="100%">
+        <thead>
+            <tr class="sticky-header">
+                <th width="3%">@Resource.SrNo</th>
+                <th width="18%" class="itmStick">@Resource.Group @Resource.Name</th>
+                <th hidden="hidden"></th>
+                <th width="7%">@Resource.Currency</th>
+                <th hidden="hidden"></th>
+                @*<th hidden="hidden"></th>*@
+                <th width="9%">@Resource.SaleAmount <br /> @Resource.InSpecific</th>
+                <th width="9%">@Resource.SaleAmount <br /> @Resource.InBase</th>
+                <th width="9%">@Resource.TaxAmount <br /> @Resource.InSpecific</th>
+                <th width="9%">@Resource.TaxAmount <br /> @Resource.InBase</th>
+                <th width="9%">@Resource.OtherCharges <br /> @Resource.InSpecific</th>
+                <th width="9%">@Resource.OtherCharges <br /> @Resource.InBase</th>
+                <th width="9%">@Resource.InvoiceAmount  <br /> @Resource.InSpecific</th>
+                <th width="9%">@Resource.InvoiceAmount  <br /> @Resource.InBase </th>
+                <th hidden="hidden"></th>
+            </tr>
+        </thead>
+        <tbody id="">
+            @if (ViewBag.SalesDetailProductGroupWiseList != null)
+            {
+                var srno = 1;
+                foreach (System.Data.DataRow dr in ViewBag.SalesDetailProductGroupWiseList.Rows)
+                {
+            <tr>
+                <td>@srno</td>
+                <td id="item_group_name" class="ItmNameBreak itmStick tditemfrz">@dr["item_group_name"].ToString()</td>
+                <td hidden="hidden" id="hdnGrpId">@dr["item_grp_id"].ToString()</td>
+                <td id="_curr_symbol" class="center">@dr["curr_symbol"].ToString()</td>
+                <td hidden="hidden" id="txtCurr_id">@dr["curr_id"].ToString()</td>
+                @*<td hidden="hidden" id="txtbr_id">@dr["br_id"].ToString()</td>*@
+                <td class="num_right" id="txt_SaleAmtSpec">@dr["item_gr_val_spec"].ToString()</td>
+                <td class="num_right" id="txt_SaleAmt">@dr["item_gr_val_bs"].ToString()</td>
+                <td class="num_right" id="txt_TaxAmtSpec">@dr["item_tax_amt_spec"].ToString()</td>
+                <td class="num_right" id="txt_TaxAmt">@dr["item_tax_amt_bs"].ToString()</td>
+                <td class="num_right" id="txt_OcAmtSpec">@dr["item_oc_amt_spec"].ToString()</td>
+                <td class="num_right" id="txt_OcAmt">@dr["item_oc_amt_bs"].ToString()</td>
+                <td class="num_right" id="txt_InvoiceAmtSpec">
+                    <div class="col-sm-11" id="">@dr["item_net_val_spec"].ToString()</div>
+                    <div class="col-sm-1 i_Icon">
+                        <button type="button" id="" class="calculator" onclick="PGW_OnclickInvoiceAmt(event)" data-toggle="modal" data-target="#ProductGroupWiseProductDetail" data-backdrop="static" data-keyboard="false"> <img src="~/Content/Images/iIcon1.png" alt="" title="@Resource.ProductDetail" /> @*<i class="fa fa-info" aria-hidden="true" title="@Resource.ProductDetail"></i>*@ </button>
+                    </div>
+                </td>
+                <td class="num_right" id="txt_InvoiceAmt">
+                    <div class="col-sm-11" id="">@dr["item_net_val_bs"].ToString()</div>
+                    <div class="col-sm-1 i_Icon">
+                        <button type="button" id="" class="calculator" onclick="PGW_OnclickInvoiceAmt(event)" data-toggle="modal" data-target="#ProductGroupWiseProductDetail" data-backdrop="static" data-keyboard="false"> <img src="~/Content/Images/iIcon1.png" alt="" title="@Resource.ProductDetail" /> @*<i class="fa fa-info" aria-hidden="true" title="@Resource.ProductDetail"></i>*@ </button>
+                    </div>
+                </td>
+                <td hidden="hidden" id="txt_uomid">@dr["uom_id"].ToString()</td>
+            </tr>
+                    srno = srno + 1;
+                }
+            }
+        </tbody>
+        <tfoot>
+            @if (ViewBag.SalesDetailProductGroupWiseListFooter != null)
+            {
+                foreach (System.Data.DataRow dr in ViewBag.SalesDetailProductGroupWiseListFooter.Rows)
+                {
+                    <tr class="total">
+                        <td colspan="3" align="right"><strong>Total</strong></td>
+                        <td class="num_right"><strong>@dr["item_gr_val_spec"].ToString()</strong></td>
+                        <td class="num_right"><strong>@dr["item_gr_val_bs"].ToString()</strong></td>
+                        <td class="num_right"><strong>@dr["item_tax_amt_spec"].ToString()</strong></td>
+                        <td class="num_right"><strong>@dr["item_tax_amt_bs"].ToString()</strong></td>
+                        <td class="num_right"><strong>@dr["item_oc_amt_spec"].ToString()</strong></td>
+                        <td class="num_right"><strong>@dr["item_oc_amt_bs"].ToString()</strong></td>
+                        <td class="num_right"><div class="col-sm-11"><strong>@dr["item_net_val_spec"].ToString()</strong></div></td>
+                        <td class="num_right"><div class="col-sm-11"><strong>@dr["item_net_val_bs"].ToString()</strong></div></td>
+                    </tr>
+                }
+            }
+        </tfoot>
+    </table>
+}
+else
+{
+    <table id="ProductGroupWiseDetail" class="table table-striped width2200 rowhighlighttbl itmfrz" cellspacing="0" width="100%">
+        <thead>
+            <tr class="sticky-header">
+                <th width="3%">@Resource.SrNo</th>
+                <th width="15%" class="itmStick">@Resource.Group @Resource.Name</th>
+                <th hidden="hidden"></th>
+                <th width="5%">@Resource.Currency</th>
+                <th hidden="hidden"></th>
+                @*<th hidden="hidden"></th>
+        <th hidden="hidden"></th>*@
+                <th width="10%">@Resource.Product @Resource.Name</th>
+                <th width="5%">@Resource.UOM</th>
+                <th width="5%">@Resource.Quantity</th>
+                <th width="5%" class="width-110">@Resource.Average @Resource.Price <br /> @Resource.InSpecific</th>
+                <th width="5%" class="width-110">@Resource.Average @Resource.Price <br /> @Resource.InBase</th>
+                <th width="5%" class="width-110">@Resource.SaleAmount <br /> @Resource.InSpecific</th>
+                <th width="6%" class="width-110">@Resource.SaleAmount <br /> @Resource.InBase</th>
+                <th width="6%" class="width-110">@Resource.TaxAmount <br /> @Resource.InSpecific</th>
+                <th width="6%" class="width-110">@Resource.TaxAmount <br /> @Resource.InBase</th>
+                <th width="6%" class="width-110">@Resource.OtherCharges <br /> @Resource.InSpecific</th>
+                <th width="6%" class="width-110">@Resource.OtherCharges <br /> @Resource.InBase</th>
+                <th width="6%" class="width-110">@Resource.InvoiceAmount <br /> @Resource.InSpecific</th>
+                <th width="6%" class="width-110">@Resource.InvoiceAmount <br /> @Resource.InBase</th>
+                <th hidden="hidden"></th>
+            </tr>
+        </thead>
+        <tbody id="">
+            @if (ViewBag.SalesDetailProductGroupWiseList != null)
+            {
+                var srno = 1;
+                foreach (System.Data.DataRow dr in ViewBag.SalesDetailProductGroupWiseList.Rows)
+                {
+            <tr>
+                <td>@srno</td>
+                <td id="item_group_name" class="ItmNameBreak itmStick tditemfrz">@dr["item_group_name"].ToString()</td>
+                <td hidden="hidden" id="hdnGrpId">@dr["item_grp_id"].ToString()</td>
+                <td id="_curr_symbol" class="center">@dr["curr_symbol"].ToString()</td>
+                <td hidden="hidden" id="txtCurr_id">@dr["curr_id"].ToString()</td>
+                @*<td hidden="hidden" id="txtbr_id">@dr["br_id"].ToString()</td>*@
+                @*<td hidden="hidden" id="txtpage">ProductGroupWisedetail</td>*@
+                <td>
+                    <div id="item_nam" class="col-sm-11 i_Icon">@dr["item_name"].ToString()</div>
+                    <div class="col-sm-1 i_Icon">
+                        <input hidden="hidden" id="Hdn_item_id" value="@dr["item_id"].ToString()" />
+                        <button type="button" id="" class="calculator" onclick="OnClickIconBtn(event)" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false"> <img src="~/Content/Images/iIcon1.png" alt="" title="@Resource.ItemInformation" /> @*<i class="fa fa-info" aria-hidden="true" title="@Resource.ItemInformation"></i>*@ </button>
+                    </div>
+                </td>
+                <td id="uom_alia">@dr["uom_alias"].ToString()</td>
+                <td id="item_qt" class="num_right">@dr["item_qty"].ToString()</td>
+                <td id="item_rat" class="num_right">@dr["item_rate_spec"].ToString()</td>
+                <td id="item_rat" class="num_right">@dr["item_rate_bs"].ToString()</td>
+                <td class="num_right">@dr["item_gr_val_spec"].ToString()</td>
+                <td class="num_right">@dr["item_gr_val_bs"].ToString()</td>
+                <td class="num_right">@dr["item_tax_amt_spec"].ToString()</td>
+                <td class="num_right">@dr["item_tax_amt_bs"].ToString()</td>
+                <td class="num_right">@dr["item_oc_amt_spec"].ToString()</td>
+                <td class="num_right">@dr["item_oc_amt_bs"].ToString()</td>
+                <td class="num_right">
+                    <div class="col-sm-11" i_Icon">@dr["item_net_val_spec"].ToString()</div>
+                    <div class="col-sm-1 i_Icon">
+                        <button type="button" id="" class="calculator" onclick="PGW_OnclickPopUpInvoiceAmt(event)" data-toggle="modal" data-target="#ProductGroupWiseInvoiceDetail" data-backdrop="static" data-keyboard="false"> <img src="~/Content/Images/iIcon1.png" alt="" title="@Resource.InvoiceDetail" /> @*<i class="fa fa-info" aria-hidden="true" title="@Resource.InvoiceDetail"></i>*@ </button>
+                    </div>
+                </td>
+                <td class="num_right">
+                    <div class="col-sm-11">@dr["item_net_val_bs"].ToString()</div>
+                    <div class="col-sm-1 i_Icon">
+                        <button type="button" id="" class="calculator" onclick="PGW_OnclickPopUpInvoiceAmt(event)" data-toggle="modal" data-target="#ProductGroupWiseInvoiceDetail" data-backdrop="static" data-keyboard="false"> <img src="~/Content/Images/iIcon1.png" alt="" title="@Resource.InvoiceDetail" /> @*<i class="fa fa-info" aria-hidden="true" title="@Resource.InvoiceDetail"></i>*@ </button>
+                    </div>
+                </td>
+                <td hidden="hidden" id="txt_uomid">@dr["uom_id"].ToString()</td>
+            </tr>
+                    srno = srno + 1;
+                }
+            }
+        </tbody>
+        <tfoot>
+            @if (ViewBag.SalesDetailProductGroupWiseListFooter != null)
+            {
+                foreach (System.Data.DataRow dr in ViewBag.SalesDetailProductGroupWiseListFooter.Rows)
+                {
+                    <tr class="total">
+                        <td colspan="5" align="right"><strong>Total</strong></td>
+                        <td class="num_right"><strong>@dr["item_qty"].ToString()</strong></td>
+                        <td class="num_right"><strong>@dr["item_rate_spec"].ToString()</strong></td>
+                        <td class="num_right"><strong>@dr["item_rate_bs"].ToString()</strong></td>
+                        <td class="num_right"><strong>@dr["item_gr_val_spec"].ToString()</strong></td>
+                        <td class="num_right"><strong>@dr["item_gr_val_bs"].ToString()</strong></td>
+                        <td class="num_right"><strong>@dr["item_tax_amt_spec"].ToString()</strong></td>
+                        <td class="num_right"><strong>@dr["item_tax_amt_bs"].ToString()</strong></td>
+                        <td class="num_right"><strong>@dr["item_oc_amt_spec"].ToString()</strong></td>
+                        <td class="num_right"><strong>@dr["item_oc_amt_bs"].ToString()</strong></td>
+                        <td class="num_right"><div class="col-sm-11"><strong>@dr["item_net_val_spec"].ToString()</strong></div></td>
+                        <td class="num_right"><div class="col-sm-11"><strong>@dr["item_net_val_bs"].ToString()</strong></div></td>
+                    </tr>
+                }
+            }
+        </tfoot>
+    </table>
+}
+@{
+    //if (TempData["SDFilter"] != null)
+    if (Model.SDFilter != null)
+    {
+        //if (TempData["SDFilter"].ToString() == "SDFilter")
+        if (Model.SDFilter == "SDFilter")
+        {
+            @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+            @Scripts.Render("~/Content/Scripts/DatatablesJs")
+            Model.SDFilter = null;
+            <script>
+                $(document).ready(function () {
+                    $(".dataTables_filter input").attr('onkeyup', 'CalculateAmtOnSearchInput("datatable-buttons3",3)');
+                    $(".dataTables_filter input").attr('onmouseout', 'CalculateAmtOnSearchInput("datatable-buttons3",3)');
+                    //CalculateAmtOnSearchInput("datatable-buttons3", 3);
+                });
+            </script>
+        }
+    }
+}

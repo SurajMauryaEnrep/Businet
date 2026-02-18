@@ -1,0 +1,65 @@
+﻿@using EnRepMobileWeb.Resources;
+@using System.Data;
+@*<script src="~/Content/Scripts/BusinessLayer/CustomerSetup/CustomerList.js"></script>*@
+<div class="modal-content">
+    <div class="modal-header">
+        <h2>@Resource.BranchMapping</h2>
+        <button type="button" class="close" data-dismiss="modal" onclick="popClose_Brmodal()">&times;</button>
+    </div>
+    <div class="modal-body ">
+
+        <div class="table-responsive width99">
+            <div class="col-md-12 col-sm-12">
+                <table class="table table-striped jambo_table bulk_action margin5" id="CustBrDetail">
+                    <thead>
+                        <tr class="headings">
+                            @if (ViewBag.PageName == "Supplier")
+                            {
+                                <th class="" align="left" style="text-align:left;">@Resource.SupplierName </th>
+                            }
+                            else if (ViewBag.PageName == "Item")
+                            {
+                                <th class="" align="left" style="text-align:left;">@Resource.ItemName </th>
+                            }
+                            else if (ViewBag.PageName == "GL")
+                            {
+                                <th class="" align="left" style="text-align:left;">@Resource.AccountName</th>
+                            }
+                            else
+                            {
+                                <th class="" align="left" style="text-align:left;">@Resource.CustomerName </th>
+                            }
+
+                            <th class="" align="left" style="text-align:left;">@Resource.BranchName </th>
+                            <th class="no-link last" align="left" style="text-align:left;"><span class="nobr">@Resource.Action</span> </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (ViewBag.BranchDetail != null)
+                        {
+                            foreach (DataRow rw in ViewBag.BranchDetail.Rows)
+                            {
+                                <tr>
+                                    <td>@rw.ItemArray[0]</td>
+                                    <td>@rw.ItemArray[1]</td>
+                                    <td>
+                                        <div class="custom-control custom-switch col-md-2 col-sm-12">
+                                            <input type="checkbox" class="custom-control-input col-md-4 col-sm-12 margin-switch" id="chkCustomerBillingAddress" @(rw.ItemArray[2].ToString() == "Yes" ? "checked" : "") disabled="disabled">
+                                            <label class="custom-control-label" for="i_sls"></label>
+                                        </div>
+                                    </td>
+
+                                </tr>
+                            }
+
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+    <div class="modal-footer">
+        <button type="button"class="btn btn-primary btn-sm" data-dismiss="modal" onclick="popClose_Brmodal()">@Resource.Close</button>
+    </div>
+</div>

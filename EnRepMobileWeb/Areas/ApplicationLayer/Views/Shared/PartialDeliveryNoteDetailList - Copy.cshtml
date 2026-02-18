@@ -1,0 +1,67 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.Inventory_Management.DeliveryNoteList_MODELS
+@using EnRepMobileWeb.Resources;
+@{
+    var rowId = 0;
+}
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/InventoryManagement/DeliveryNote/DeliverNoteList.js"></script>
+<table id="datatable-buttons" class="table table-striped width2200 rowhighlighttbl" cellspacing="0" width="100%" >
+    <thead>
+        <tr class="sticky-header">
+            <th width="2%"> @Resource.SrNo</th>
+            <th width="10%">@Resource.DeliveryNote <br /> @Resource.Number</th>
+            <th width="8%">@Resource.DeliveryNote  <br />  @Resource.Date</th>
+            <th width="8%" hidden>@Resource.DeliveryNoteDate</th>
+            <th width="6%">@Resource.Source</th>
+            @*<th width="10%">@Resource.Source @Resource.Document <br />  @Resource.Number</th>*@
+            @*<th width="9%">@Resource.Source @Resource.Document <br />  @Resource.Date</th>*@
+            <th width="10%">@Resource.Supplier</th>
+            <th width="4%">@Resource.Currency</th>
+            <th width="4%">@Resource.BillNumber</th>
+            <th width="4%">@Resource.BillDate</th>
+            <th width="6%">@Resource.Status</th>
+            <th width="7%">@Resource.CreatedBy</th>
+            <th width="7%">@Resource.Createdon</th>
+            <th width="6%">@Resource.ApprovedBy</th>
+            <th width="6%">@Resource.ApprovedOn</th>
+            <th width="6%">@Resource.AmendedBy</th>
+            <th width="6%">@Resource.AmendedOn</th>
+        </tr>
+    </thead>
+    <tbody id="">
+        @if (Model.DeliveryNoteList != null)
+        {
+            foreach (var row in Model.DeliveryNoteList)
+            {
+                rowId++;
+                <tr>
+                    <td>@rowId</td>
+                    <td id="DeliverNoteNumber">@row.DeliverNoteNumber</td>
+                    <td>@row.DeliveryNoteDate</td>
+                    <td hidden="hidden" id="Dn_date">@row.Dn_date</td>
+                    <td>@row.SourceType</td>
+                    <td>@row.SupplierName</td>
+                    <td class="center">@row.curr_name</td>
+                    <td>@row.BillNumber</td>
+                    <td>@row.BillDate</td>
+                    <td id="Doc_Status">@row.DeliveryNoteStatus</td>
+                    <td>@row.create_by</td>
+                    <td>@row.CreatedON</td>
+                    <td>@row.app_by</td>
+                    <td>@row.ApprovedOn</td>
+                    <td>@row.mod_by</td>
+                    <td>@row.ModifiedOn</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+@if (Model.DNSearch != null)
+{
+    if (Model.DNSearch == "DN_Search")
+    {
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+        @Scripts.Render("~/Content/Scripts/DatatablesJs")
+        //Session["DNSearch"] = null;
+    }
+}

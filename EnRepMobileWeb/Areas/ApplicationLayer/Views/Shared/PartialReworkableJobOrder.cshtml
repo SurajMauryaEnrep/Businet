@@ -1,0 +1,67 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.ProductionAndPlanning.ReworkableJobOrder.RJOListModel
+@using EnRepMobileWeb.Resources;
+@{
+    var rowId = 0;
+}
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/ProductionAndPlanning/ReworkableJobOrder/ReworkableJobOrderList.js"></script>
+
+<table id="datatable-buttons" class="table table-striped width1500 rowhighlighttbl itmfrz">
+    <thead>
+        <tr class="sticky-header">
+            <th style="width:35px;"> @Resource.SrNo</th>
+            <th class="itmStick">@Resource.Job @Resource.Card <br />  @Resource.Number</th>
+            <th>@Resource.Job <br />  @Resource.Date</th>
+            <th style="display:none;">@Resource.Job  <br /> @Resource.Date</th>
+            <th width="20%">@Resource.Item  <br />  @Resource.Name</th>
+            <th style="display:none;">@Resource.ItemID </th>
+            <th>@Resource.UOM</th>
+            <th>@Resource.Reworkable <br />  @Resource.Quantity</th>
+            <th>@Resource.Status</th>
+            <th>@Resource.CreatedBy</th>
+            <th>@Resource.Createdon</th>
+            <th>@Resource.ApprovedBy</th>
+            <th>@Resource.ApprovedOn</th>
+            <th>@Resource.AmendedBy</th>
+            <th>@Resource.AmendedOn</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.ReworkJobOrdrList != null)
+        {
+            foreach (var row in Model.ReworkJobOrdrList)
+            {
+                rowId++;
+        <tr>
+            <td>@rowId</td>
+            <td id="RJONo" class="ItmNameBreak itmStick tditemfrz">@row.RJONumber</td>
+            <td id="RJODate">@row.RJODate</td>
+            <td style="display:none;" id="RJODt">@row.RJO_Dt</td>
+            <td id="itmname">@row.ItemName</td>
+            <td style="display:none;" id="hdnListItem_ID">@row.ItemID</td>
+            <td>@row.Uom</td>
+            <td>@row.RewrkQty</td>
+            <td id="RJODoc_Status">@row.RJO_Status</td>
+            <td>@row.CreatedBy</td>
+            <td>@row.CreatedON</td>
+            <td>@row.ApprovedBy</td>
+            <td>@row.ApprovedOn</td>
+            <td>@row.AmendedBy</td>
+            <td>@row.AmendedOn</td>
+
+
+        </tr>
+            }
+        }
+    </tbody>
+</table>
+@if (Model.RJOSearch != null)
+{
+    if (Model.RJOSearch == "RJO_Search")
+    {
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+        @Scripts.Render("~/Content/Scripts/DatatablesJs")
+        Model.RJOSearch = null;
+    }
+}

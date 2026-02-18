@@ -1,0 +1,135 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.SubContracting.JobInvoice.JI_ListModel
+@using EnRepMobileWeb.Resources;
+@using System.Data
+@if (Session["UserId"] == null)
+{
+    Response.Redirect("~/Login");
+}
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+<script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+<script src="~/Content/Css/build/js/sweetalert.js"></script>
+@*/*start Add by Hina on 15-02-2024 to chk Financial year exist or not*/*@
+@{
+    if (TempData["Message"] != null)
+    {
+        if (TempData["Message"] == "Financial Year not Exist")
+        {
+            <script type="text/javascript">
+                swal("", $("#FinancialYearDoesNotExistTransactionCanNotBeDone").text(), "warning");
+            </script>
+        }
+
+    }
+}
+@*/*End to chk Financial year exist or not*/*@
+<script src="~/Content/Scripts/ApplicationLayer/SubContracting/JobInvoice/JobInvoiceList.js"></script>
+<title>@Model.Title</title>
+<div class="row">
+    <div class="col-md-12 col-sm-12">
+        <div class="x_panel mar_pad1">
+            <div class="x_content mar_pad1">
+                <!-- Workflow Information -->
+                <div id="WorkflowInformation" class="modal fade" role="dialog">
+                    <div class="modal-dialog" style="max-width:700px;">
+                        <!-- Modal content-->
+                        @Html.Partial("~/Areas/Common/Views/_WorkFlow.cshtml")
+
+                    </div>
+                </div>
+                <h2 class="col-md-5 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                @Html.HiddenFor(m => m.ListFilterData, new { @id = "ListFilterData" })
+                @Html.HiddenFor(model => model.WF_Status, new { @id = "WF_Status" })
+                <div id="wizard" class="form_wizard wizard_horizontal col-md-3 col-sm-12 work_flow">
+                    @if (ViewBag.AppLevel.Rows.Count > 0)
+                    {
+                        @Html.Partial("~/Areas/Common/Views/_PartialWorkflowBar.cshtml")
+                    }
+                </div>
+                <input type="hidden" id="DocumentMenuId" value="@ViewBag.DocumentMenuId" />
+                @if (ViewBag.VBRoleList != null)
+                {
+                    foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                    {
+                        if (Row["feature_id"].ToString() == "105108123001")
+                        {
+                            <div id="" class="col-md-4 col-sm-12 work_flow heading_right_padding">
+                                <ul>
+                                    <li>
+                                        <a class="tooltip-test" href="@Url.Action("AddJobInvoiceSCDetail","JobInvoiceSC")" title="@Resource.AddNew">
+                                            <img src="~/Content/Images/addgreen.png" width="28" id="Btn_AddNewPO" height="28" alt="Add">
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        }
+                    }
+                }
+                @*<div id="" class="col-md-4 col-sm-12 work_flow heading_right_padding">
+                        <ul>
+                            <li>
+                                <a class="tooltip-test" href="@Url.Action("AddJobInvoiceSCDetail","JobInvoiceSC")" title="@Resource.AddNew">
+                                    <img src="~/Content/Images/addgreen.png" width="28" id="Btn_AddNewPO" height="28" alt="Add">
+                                </a>
+                            </li>
+                        </ul>
+                    </div>*@
+                <div class="x_title pad_mar ">
+                    <div class="col-md-12 col-sm-12 icon_tool padding_zero">
+                        <form class="available_stock pad_mar" action="" method="post" novalidate>
+                            <div class="col-md-12 col-sm-12 padding_zero">
+                                <div class="col-md-3 col-sm-12">
+                                    <label class="col-form-label label-align">@Resource.ContractorName</label>
+                                    @Html.DropDownListFor(model => model.SuppID, new SelectList(Model.SupplierNameList, "supp_id", "supp_name"), new { @class = "form-control", id = "JIListSupplier" })
+                                    <input type="hidden" id="SuppNameList" value='@Url.Action("GetAutoCompleteSearchSuppList", "JobInvoiceSC")' />
+
+                                </div>
+                                <div class="col-md-2 col-sm-12 pl-0">
+                                    <label class="col-form-label label-align">@Resource.FromDate</label>
+                                    @Html.TextBoxFor(model => model.FromDate, new { @class = "form-control", @id = "txtFromdate", @onchange = "FromToDateValidation()", @type = "date", @max = DateTime.Now.ToString("yyyy-MM-dd") })
+                                    @Html.HiddenFor(model => model.FromDate, new { id = "hdFromdate" })
+
+                                </div>
+                                <div class="col-md-2 col-sm-12 pl-0">
+                                    <label class="col-form-label label-align">@Resource.ToDate</label>
+                                    @if (Model.ToDate != null)
+                                    {
+                                        @Html.TextBoxFor(model => model.ToDate, new { @class = "form-control", @id = "txtTodate", @placeholder = "dd-MM-yyyy", @onchange = "FromToDateValidation()", @type = "date", @max = DateTime.Now.ToString("yyyy-MM-dd"), @Value = Model.ToDate })
+                                    }
+                                    else
+                                    {
+                                        @Html.TextBoxFor(model => model.ToDate, new { @class = "form-control", @id = "txtTodate", @placeholder = "dd-MM-yyyy", @onchange = "FromToDateValidation()", @type = "date", @max = DateTime.Now.ToString("yyyy-MM-dd"), @Value = @DateTime.Now.ToString("yyyy-MM-dd") })
+                                    }
+                                </div>
+                                <div class="col-md-2 col-sm-12 no-padding">
+                                    <div class="col-md-9 col-sm-12 pl-0">
+                                        <label class="col-form-label label-align">@Resource.Status</label>
+                                        @Html.DropDownListFor(model => model.Status, new SelectList(Model.StatusList, "status_id", "status_name"), new { @class = "form-control", id = "ddlStatus" })
+
+                                    </div>
+                                    <div class="col-md-3 col-sm-12 pl-0">
+                                        <button type="button" class="btn btn-primary btn-sm margintop20" id="Btn_Search" onclick="BtnSearch()"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12">
+        <div id="Itm_Details_List" class="x_panel margin_top_zero">
+            <div class="x_content">
+                <div class="card-box table-responsive dy_table">
+                    <div id="tbodyJobINVSCList" class="sticky-table sticky-ltr-cells sb-container container-example1">
+                        @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialJobInvoiceSCList.cshtml")
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- page content end -->

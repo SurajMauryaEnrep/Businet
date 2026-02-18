@@ -1,0 +1,429 @@
+﻿@model EnRepMobileWeb.MODELS.Common.CommonTDS_Model
+@using System.Data;
+@using EnRepMobileWeb.Resources;
+
+<!-- Save As Template -->
+@{
+    decimal TotalTDS_Amount = 0;
+    int QtyDecDigit = Convert.ToInt32(Session["ValDigit"]);
+
+    string ToFixDecimal(int number)
+    {
+        string str = "0.";
+        for (int i = 0; i < number; i++)
+        {
+            str += "0";
+        }
+        return str;
+    }
+    ViewBag.ForTDSTemplate = "TDS";
+    var disabled = Model.Disable == "Y" ? "disabled" : "";
+
+    string tax_type = ViewBag.tax_type == "TCS" ? "TCS" : "TDS";
+    string WithCustAssVal = "N";
+    if (ViewBag.tax_type != "OcTds" && (ViewBag.doc_id == "105101145" || ViewBag.doc_id == "105101154" || ViewBag.doc_id == "105101150"))
+    {
+        WithCustAssVal = "Y";
+    }
+}
+<style>
+    .modal1 {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1060; /* Sit on top */
+        padding-top: 100px; /* Location of the box */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+
+    .modal-content1 {
+        background-color: #fefefe;
+        margin: auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+    }
+
+    .close1 {
+        color: #aaaaaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+        .close1:hover,
+        .close1:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+    table.ExcludeTax td {
+        border: 0px;
+    }
+</style>
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+
+<div id="TDS_SaveAsTemplate" class="modal1 modal fade" role="dialog">
+    <input id="hdn_tmplt_type" value="TDS" hidden />
+    <div class="modal-dialog" style="max-width: 400px;">
+        <div class="TaxCalculatorPop">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/Common/Views/_SaveAsTemplate.cshtml")
+        </div>
+    </div>
+</div>
+<div class="modal-content">
+    <div class="modal-header">
+        @if (tax_type == "TCS")
+        {
+            <h2>@Resource.TCS @Resource.Calculator</h2>
+        }
+        else
+        {
+            <h2>@Resource.TDS @Resource.Calculator</h2>
+        }
+
+        <button type="button" class="close" @*onclick="OnClickTDSDiscardAndExitBtn();"*@ data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body pop_top">
+        <div class="col-md-12 no-padding ">
+            <table class="table mt-2 ExcludeTax" width="100%" border="0" cellpadding="0" cellspacing="0">
+                @if (WithCustAssVal == "Y")
+                {
+                    <tr>
+                        <td colspan="9" class="font-weight-bold">@Resource.ApplyOn</td>
+                    </tr>
+                    <tr>
+
+                        <td width="2%" class="pl-0 pr-0 pt-2">
+                            <input checked="checked" class="" @disabled id="TdsAssVal_ExcludeTax" onclick="Cmn_ApplyOnTdsAssValue()"
+                                   name="ApplyOnTdsAssessableVal" type="radio" value="ET">
+                        </td>
+                        <td width="22%" class="col-form-label label-align pr-0 pt-0" id="TDS_AssesbleAmtLabl" title="@Resource.AssessableValue">
+                            @Resource.AssessableValue<br /> ( @Resource.ExcludeTax @Resource.And @Resource.OtherCharges )
+                        </td>
+                        <td width="11%">
+                            <input id="TDS_AssessableValue" value="@ViewBag.AssValue" class="form-control num_right" autocomplete="off" type="text"
+                                   name="TDS_AssessableValue" placeholder="0000.00" disabled>
+                        </td>
+                        <td width="2%" class="pl-0 pr-0 pt-2">
+                            <input class="" @disabled id="TdsAssVal_IncluedTax" onclick="Cmn_ApplyOnTdsAssValue()"
+                                   name="ApplyOnTdsAssessableVal" type="radio" value="IT">
+                        </td>
+                        <td width="22%" class="col-form-label label-align pr-0 pt-0" title="@Resource.AssessableValue">
+                            @Resource.AssessableValue<br />  ( @Resource.IncludeTax @Resource.And @Resource.OtherCharges )
+                        </td>
+                        <td width="11%">
+                            <input id="TDS_AssessableValueWithTax" value="@ViewBag.AssValueWithTax" class="form-control num_right"
+                                   autocomplete="off" type="text" name="" placeholder="0000.00" disabled>
+                        </td>
+                        @*Added by Suraj Maurya on 14-05-2025*@
+                        <td width="2%" class="pl-0 pr-0 pt-2">
+                            <input class="" @disabled id="TdsAssVal_Custom" onclick="Cmn_ApplyOnTdsAssValue()"
+                                   name="ApplyOnTdsAssessableVal" type="radio" value="CA">
+                        </td>
+                        <td width="13%" class="col-form-label label-align pr-0 pt-0" title="@(Resource.Custom + " " + Resource.AssessableValue)">
+                            @Resource.Custom <br /> @Resource.AssessableValue
+                        </td>
+                        <td width="11%" class="pr-0">
+                            <input id="TDS_AssessableValueCustom" onchange="TdsOnChangeCustomAssValue()" @disabled
+                                   value="@ViewBag.CustomAssValue" class="form-control num_right" autocomplete="off"
+                                   onkeypress="return Cmn_FloatValueonly(this, event, '#ValDigit')" type="text" name="" placeholder="0000.00">
+                            <span id="SpanTDS_AssessableValueCustomErrorMsg" class="error_message"></span>
+                            @*Added by Surbhi on 08/09/2025 for Mandatory Filed validation*@
+                        </td>
+                        @*Added by Suraj Maurya on 14-05-2025 End*@
+
+                    </tr>
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="font-weight-bold">@Resource.ApplyOn</td>
+                    </tr>
+                    <tr>
+
+                        <td width="2%" class="pl-0 pr-0 pt-2">
+                            <input checked="checked" class="" @disabled id="TdsAssVal_ExcludeTax" onclick="Cmn_ApplyOnTdsAssValue()"
+                                   name="ApplyOnTdsAssessableVal" type="radio" value="ET">
+                        </td>
+                        <td width="26%" class="col-form-label label-align pr-0 pt-0" id="TDS_AssesbleAmtLabl" title="@Resource.AssessableValue">
+                            @Resource.AssessableValue<br /> ( @Resource.ExcludeTax @Resource.And @Resource.OtherCharges )
+                        </td>
+                        <td width="20%">
+                            <input id="TDS_AssessableValue" value="@ViewBag.AssValue" class="form-control num_right" autocomplete="off" type="text"
+                                   name="TDS_AssessableValue" placeholder="0000.00" disabled>
+                        </td>
+                        <td width="2%" class="pl-0 pr-0 pt-2">
+                            <input class="" @disabled id="TdsAssVal_IncluedTax" onclick="Cmn_ApplyOnTdsAssValue()"
+                                   name="ApplyOnTdsAssessableVal" type="radio" value="IT">
+                        </td>
+                        <td width="26%" class="col-form-label label-align pr-0 pt-0" title="@Resource.AssessableValue">
+                            @Resource.AssessableValue<br />  ( @Resource.IncludeTax @Resource.And @Resource.OtherCharges )
+                        </td>
+                        <td width="20%"><input id="TDS_AssessableValueWithTax" value="@ViewBag.AssValueWithTax" class="form-control num_right" autocomplete="off" type="text" name="" placeholder="0000.00" disabled></td>
+
+                    </tr>
+                }
+
+
+            </table>
+
+
+
+            @*<div class="col-md-1 col-sm-12 pop_right ">@Resource.ApplyOn</div>
+                <div class="col-md-11 col-sm-12">
+
+                    <input checked="checked" class="col-md-1 col-sm-12" id="SalesMISSalesSummary" onclick="onchangeShowAs()" name="MISSalesType" type="radio" value="S">
+                    <label class="col-form-label label-align col-md-2 col-sm-12" id="TDS_AssesbleAmtLabl" title="@Resource.AssessableValue">
+                        @Resource.AssessableValue<br /> ( @Resource.ExcludeTax @Resource.And @Resource.OtherCharges )
+                    </label>
+                    <input id="TDS_AssessableValue" value="@ViewBag.AssValue" class="form-control num_right col-md-2 col-sm-12" autocomplete="off" type="text"
+                           name="TDS_AssessableValue" placeholder="0000.00" disabled>
+                    <input class="col-md-4 col-sm-12" id="SalesMISSalesDetail" onclick="onchangeShowAs()" name="MISSalesType" type="radio" value="D">
+                    <label class="col-form-label label-align col-md-4 col-sm-12" id="" title="@Resource.AssessableValue">
+                        @Resource.AssessableValue<br />  ( @Resource.IncludeTax @Resource.And @Resource.OtherCharges )
+                    </label>
+                    <input id="" value="" class="form-control num_right col-md-4 col-sm-12" autocomplete="off" type="text" name="" placeholder="0000.00" disabled>
+                </div>*@
+            @*<div class="col-md-4 col-sm-12 pop_right ">
+                    <label class="col-form-label label-align" id="TDS_AssesbleAmtLabl" title="@Resource.AssessableValue">
+                        @Resource.AssessableValue
+                    </label>
+                    <input id="TDS_AssessableValue" value="@ViewBag.AssValue" class="form-control num_right" autocomplete="off" type="text"
+                           name="TDS_AssessableValue" placeholder="0000.00" disabled>
+                </div>*@
+            <div class="col-md-4 col-sm-12 pop_right pop_left" style="display:none;">
+                <label class="col-form-label label-align" title="@Resource.Template" id="">@Resource.Template</label>
+                @if (Model.Disable == "Y")
+                {
+                    @Html.DropDownListFor(m => m.tmplt_id, new SelectList(Model.tds_tmplt_list, "tmplt_id", "tmplt_name")
+               , new { @id = "TDS_Template", @class = "form-control", @disabled = "disabled", @onchange = "OnChangeTDSTemplate()" })
+                }
+                else
+                {
+                    @Html.DropDownListFor(m => m.tmplt_id, new SelectList(Model.tds_tmplt_list, "tmplt_id", "tmplt_name")
+               , new { @id = "TDS_Template", @class = "form-control", @onchange = "OnChangeTDSTemplate()" })
+                }
+
+                <span id="SpanTDS_Template" class="error_message"></span>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-sm-12 pop_left">
+            @if (tax_type == "TCS")
+            {
+                <label class="table_label col-form-label label-align"> @Resource.TCS @Resource.Name <span class="required">*</span></label>
+            }
+            else
+            {
+                <label class="table_label col-form-label label-align"> @Resource.TDS @Resource.Name <span class="required">*</span></label>
+            }
+            @if (Model.Disable == "Y")
+            {
+                @Html.DropDownListFor(m => m.tds_id, new SelectList(Model.tds_name_list, "tds_id", "tds_name", "tds_acc_id"), "---Select---", new { @class = "form-control", @id = "TDS_Type", @disabled = "disabled", @onchange = "OnChangeTDS_Type();" })
+            }
+            else
+            {
+                <select id="TDS_Type" class="form-control" onchange="OnChangeTDS_Type();">
+                    @foreach (var item in Model.tds_name_list)
+                    {
+                        <option value="@item.tds_id" data-acc_id="@item.tds_acc_id">@item.tds_name</option>
+                    }
+                </select>
+                @*@Html.DropDownListFor(m => m.tds_id, new SelectList(Model.tds_name_list, "tds_id", "tds_name","tds_acc_id"),"---Select---", new { @class = "form-control", @id = "TDS_Type", @onchange = "OnChangeTDS_Type();" })*@
+            }
+            <input hidden id="hdnTdsAccId" />
+            <span id="SpanTDS_Name" class="error_message"></span>
+        </div>
+
+        <div class="col-md-8 col-sm-12 pop_left">
+            <div class="col-md-2 col-sm-12 pop_left">
+                @if (tax_type == "TCS")
+                {
+                    <label class="table_label col-form-label label-align">@Resource.TCS @Resource.InPercentage <span class="required">*</span></label>
+                }
+                else
+                {
+                    <label class="table_label col-form-label label-align">@Resource.TDS @Resource.InPercentage <span class="required">*</span></label>
+                }
+                @if (Model.Disable == "Y")
+                {
+                    <input id="TDS_Percentage" class="form-control num_right" onchange="OnChangeTDS_Percentage();" maxlength="5" onkeypress="return Cmn_TaxFloatValuePerOnly(this,event);" autocomplete="off" type="text" name="TDS_Percentage" disabled placeholder="0000.00" style="margin-bottom: 0px;">
+                }
+                else
+                {
+                    <input id="TDS_Percentage" class="form-control num_right" onchange="OnChangeTDS_Percentage();" maxlength="5" onkeypress="return Cmn_TaxFloatValuePerOnly(this,event);" autocomplete="off" type="text" name="TDS_Percentage" placeholder="0000.00" style="margin-bottom: 0px;">
+                }
+
+                <span id="SpanTDS_Percent" class="error_message"></span>
+            </div>
+            <div class="col-md-3 col-sm-12 pop_left">
+                <label class="table_label col-form-label label-align">@Resource.Level <span class="required">*</span></label>
+                <select class="form-control table_label" id="TDS_Level" @*@disabled*@ disabled onchange="OnChangeTDS_Percentage();">
+                    <option value="0">---Select---</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                </select>
+                <span id="SpanTDS_Level" class="error_message"></span>
+            </div>
+            <div class="col-md-3 col-sm-12 pop_left">
+                <label class="table_label col-form-label label-align">@Resource.ApplyOn <span class="required">*</span></label>
+                <select class="form-control table_label" id="TDS_ApplyOn" @*@disabled*@ disabled onchange="OnChangeTDS_Percentage();">
+                    <option value="I">Immediate Level</option>
+                    <option value="C">Cummulative</option>
+                </select>
+            </div>
+            <div class="col-md-3 col-sm-12 pop_left">
+                @if (tax_type == "TCS")
+                {
+                    <label class="table_label col-form-label label-align">@Resource.TCS @Resource.Amount <span class="required">*</span></label>
+                }
+                else
+                {
+                    <label class="table_label col-form-label label-align">@Resource.TDS @Resource.Amount <span class="required">*</span></label>
+                }
+                <input id="TDS_Amount" class="form-control num_right" @disabled readonly="readonly" autocomplete="off" type="text" name="Tax_Amount" placeholder="0000.00" style="margin-bottom: 0px;">
+                <span id="SpanTDS_Amounterr" class="error_message"></span>
+            </div>
+            <div class="col-md-1 col-sm-12 pop_left pop_right">
+                @if (Model.Disable == "Y")
+                {
+                }
+                else
+                {
+                    <a href="#" style="float:right;">
+                        <div class="plus_icon1" style="margin-top:30px;" id="TDS_Icon_AddNewRecord"> <i class="fa fa-plus" onclick="OnClickAddTDS_Amt();" id="Btn_TDS_AddNew" title="Add New"></i> </div>
+                    </a>
+                }
+
+            </div>
+        </div>
+
+        <div class="col-md-12 col-sm-12 pop_left pop_right ">
+            <div class="tableFixHead height30VH">
+                <table class="table table-bordered margin15 rowhighlighttbl" style="width:94%;" id="TDS_CalculatorTbl">
+                    <tbody>
+                        @if (ViewBag.TDS_Data != null)
+                        {
+                            var row_id = 1;
+                            foreach (System.Data.DataRow dr in ViewBag.TDS_Data.Rows)
+                            {
+                                <tr id="R@(row_id)">
+                                    <td id="TDS_name" width="35%">@dr["tds_name"]</td>
+                                    <td hidden="hidden" id="TDS_id">@dr["tds_id"]</td>
+                                    <td class="num_right" width="13%" id="TDS_rate">@dr["tds_rate"]</td>
+                                    <td width="17%" class='center' id="TDS_level">@dr["tds_level"]</td>
+                                    <td width="17%" id="TDS_applyonname">@dr["tds_apply_on"]</td>
+                                    <td align="right" width="21%" id="TDS_val">@Convert.ToDecimal(@dr["tds_amt"].ToString() == "NaN" ? "0" : @dr["tds_amt"]).ToString(ToFixDecimal(QtyDecDigit))</td>
+                                    <td hidden="hidden" id="TDS_applyon">@dr["tds_apply_on_id"]</td>
+                                    <td hidden="hidden" id="TDS_acc_id">@dr["tds_acc_id"]</td>
+                                    <td hidden="hidden" id="TDS_base_amt">@dr["tds_base_amt"]</td>
+                                </tr>
+                                row_id++;
+                                TotalTDS_Amount = TotalTDS_Amount + Convert.ToDecimal(@dr["tds_amt"]);
+
+
+                            }
+
+                        }
+
+                    </tbody>
+                    <tfoot>
+                        <tr class="total">
+                            @if (tax_type == "TCS")
+                            {
+                                <td colspan="4" width="80%" class="num_right"><strong> @Resource.Total @Resource.TCS</strong></td>
+                            }
+                            else
+                            {
+                                <td colspan="4" width="80%" class="num_right"><strong> @Resource.Total @Resource.TDS</strong></td>
+                            }
+                            <td class="num_right"><strong><span id="TotalTDS_Amount">@Convert.ToDecimal(TotalTDS_Amount).ToString(ToFixDecimal(QtyDecDigit))</span></strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer" id="TDS_CalcButtons">
+        @if (Model.Disable == "Y")
+        {
+            <button type="button" class="btn btn-primary btn-sm" id="TDS_ExitAndDiscard" data-dismiss="modal">@Resource.Close</button>
+        }
+        else
+        {
+            <button type="button" class="btn btn-primary btn-sm" id="TDS_ResetBtn" onclick="ResetTDS_CalculationDetails();">@Resource.Reset</button>
+            @*<button type="button" id="TDS_SaveTemplate" onclick="OnClickSaveAsTemplate()" class="btn btn-primary btn-sm small_btn ">@Resource.SaveAsTemplate</button> *@ @* Commented by Suraj Maurya on 05-02-2025 due to template is already hidden *@
+            <button type="button" class="btn btn-primary btn-sm" id="TDS_SaveAndExitBtn" onclick="OnClickTDS_SaveAndExit();">@Resource.SaveAndExit</button>
+            <button type="button" class="btn btn-primary btn-sm" id="TDS_ExitAndDiscard" data-dismiss="modal" @*onclick="OnClickTDS_DiscardAndExitBtn();"*@>@Resource.DiscardAndExit</button>
+        }
+
+    </div>
+</div>
+
+
+
+<script>
+    $(document).ready(function () {
+
+        $("#TDS_Template").select2();
+
+    });
+    // Get the modal
+    var modal = document.getElementById("TDS_SaveAsTemplate");
+    var modal1 = document.getElementById("TDSCalculate");
+    var btn = document.getElementById("TDS_SaveTemplate");
+    var btnExit = document.getElementById("TaxExitAndDiscard1");
+    var span = document.getElementsByClassName("Closebtn")[0];
+    if (btn != null) {
+        btn.onclick = function () {
+            modal.style.display = "block";
+            OnClickSaveAsTemplate();
+            //$(".modal-backdrop").css("z-index", "1061");
+            //$(".TaxCalculatorPop").css("z-index", "10654584");
+            $("#TDS_SaveAsTemplate").css("padding-right", "9px");
+            $("#TDS_SaveAsTemplate").attr("aria-modal", true);
+            $("#TDS_SaveAsTemplate").addClass("show");
+        }
+    }
+    if (span != null) {
+        span.onclick = function () {
+            modal.style.display = "none";
+        }
+    }
+    if (btnExit != null) {
+        btnExit.onclick = function () {
+            modal.style.display = "none";
+        }
+    }
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function (event) {
+
+        if (event.target == modal1) {
+            modal.style.display = "none";
+            $(".modal-backdrop").remove();
+        }
+    }
+    function TdsOnChangeCustomAssValue() {
+        let cstm_ass_val = $("#TDS_AssessableValueCustom").val();
+        $("#TDS_AssessableValueCustom").val(parseFloat(CheckNullNumber(cstm_ass_val)).toFixed($("#ValDigit").text()));
+        Cmn_ApplyOnTdsAssValue();
+    }
+</script>

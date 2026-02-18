@@ -1,0 +1,102 @@
+﻿@using EnRepMobileWeb.Resources;
+<style>
+    .itmStickCB {
+        background-color: #617892;
+    }
+    
+</style>
+<div class="modal-content">
+    <div class="modal-header">
+        <h2>@Resource.VoucherDetail</h2>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+
+    <div class="modal-body pop_top">
+        <div class="col-md-3 col-sm-12 pl-0">
+            <label class="col-form-label label-align">@Resource.GLVoucher @Resource.Number</label>
+            <input autocomplete="off" class="form-control" id="GLVoucherNo" maxlength="25" name="GLVoucherNo" placeholder="@Resource.GLVoucher @Resource.Number" readonly="readonly" type="text" value="">
+        </div>
+        <div class="col-md-3 col-sm-12">
+            <label class="col-form-label label-align">@Resource.GLVoucher @Resource.Date</label>
+            <input autocomplete="off" class="form-control" id="GLVoucherDt" maxlength="25" name="GLVoucherDt" placeholder="@Resource.GLVoucher @Resource.Date" readonly="readonly" type="text" value="">
+       <input type="hidden" id="mwhdn_voudt" />
+        </div>
+        <div class="card-box table-responsive dy_table">
+            <div id="" class="sticky-table sticky-ltr-cells sb-container container-example1">
+                <div class="col-md-12 col-sm-12 pl-0">
+                    <table class="table table-striped jambo_table bulk_action margin5 rowhighlighttbl width1000 itmfrz" id="gl_voucherdetails">
+                        <thead>
+                            <tr class="headings">
+                                <th width="2%">@Resource.SrNo</th>
+                                <th width="22%" class="itmStick itmStickCB">@Resource.GLAccount</th>
+                                <th width="15%">@Resource.DrAmount</th>
+                                <th width="15%">@Resource.CrAmount</th>
+                                <th width="32%">@Resource.Narration</th>
+                                <th width="14%">@Resource.CostCenter</th>                                
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (ViewBag.mwvoudetailsdetail != null)
+                            {
+                                if (ViewBag.mwvoudetailsdetail.Rows.Count > 0)
+                                {
+                                    foreach (System.Data.DataRow dr in ViewBag.mwvoudetailsdetail.Rows)
+                                    {
+                            <tr>
+                                <td class="sr_padding">@dr["row_no"]</td>
+                                <td class="ItmNameBreak itmStick tditemfrz"><span id="spn_glname">@dr["acc_name"]</span> <input type="hidden" id="hdn_accid" value="@dr["acc_id"]"></td>
+                                <td id="" class="num_right"><span id="spn_dramt">@dr["dr_amt"]</span></td>
+                                <td id="" class="num_right"><span id="spn_cramt">@dr["cr_amt"]</span></td>
+                                <td class="narration">@dr["narr"]</td>
+                                @if (@dr["ccflag"].ToString() == "Y")
+                                {
+                                    <td class="center">
+                                        <button type="button" id="MonthlyAllocation" class="calculator" onclick="OnclickCCIconBtn(event)" data-toggle="modal" data-target="#CostCenterDetail" data-backdrop="static" data-keyboard="false"> <i class="fa fa-eye" aria-hidden="true" data-toggle="" title="@Resource.CostCenterDetail"></i> </button>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td class="center">
+                                        <button type="button" id="MonthlyAllocation" disabled style="filter: grayscale(100%)" class="calculator" data-toggle="modal" data-target="" data-backdrop="static" data-keyboard="false"> <i class="fa fa-eye" aria-hidden="true" data-toggle="" title="@Resource.CostCenterDetail"></i> </button>
+                                    </td>
+                                }
+
+                            </tr>
+                                    }
+                                }
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr class="total">
+                                <td> &nbsp;</td>
+                                <td class="num_right"><strong>@Resource.Total</strong></td>
+                                @if (ViewBag.mwvoudrcr != null)
+                                {
+                                    if (ViewBag.mwvoudrcr.Rows.Count > 0)
+                                    {
+                                        foreach (System.Data.DataRow drcr in ViewBag.mwvoudrcr.Rows)
+                                        {
+                                        <td class="num_right"><strong>@drcr["total_dr"]</strong></td>
+                                        <td class="num_right"><strong>@drcr["total_cr"]</strong></td>
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    <td class="num_right"><strong>0.00</strong></td>
+                                    <td class="num_right"><strong>0.00</strong></td>
+                                }
+                                <td> &nbsp;</td>
+                                <td> &nbsp;</td>
+
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">@Resource.Close</button>
+    </div>
+</div>

@@ -1,0 +1,270 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.Procurement.ImportPurchase.ImportTracking.ImportTracking_Model
+@using System.Data;
+@using EnRepMobileWeb.Resources;
+@{
+    var rowId = 0;
+}
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+@*<script src="~/Content/Scripts/ApplicationLayer/Procurement/ImportPurchase/ImportTracking/ImportTracking.js"></script>*@
+@*@{
+        var DisableD = true;
+        var DisableH = true;
+        var ForDisableOCDlt = "Enable";
+        var transtype = "";
+        var display = "none";
+        var disablePrintbtn = "";
+        var FCloseAccess = "N";
+        decimal AssVal = 0;
+        if (Model.TransType == "Update")
+        {
+            var v = Model.OrdStatus;
+            if (Model.Command == "Edit")
+            {
+                if (Model.OrdStatus == "D")
+                {
+                    DisableD = false;
+                }
+                else
+                {
+                    DisableD = true;
+                }
+
+                //DisableH = false;
+            }
+            else
+            {
+                DisableD = true;
+                DisableH = true;
+            }
+        }
+        else
+        {
+            if (Model.Command == "Refresh")
+            {
+                DisableD = true;
+                DisableH = true;
+            }
+            else
+            {
+                DisableD = false;
+                DisableH = false;
+            }
+        }
+    }*@
+<table id="datatable-buttons" class="table table-striped table-bordered rowhighlighttbl" style="width:100%;">
+    <thead>
+        <tr class="sticky-header">
+            @*<table id="datatable-buttons1" class="table table-bordered  mt-3">
+                <thead>
+                    <tr class="headings">*@
+            <th width="2%"></th>
+            <th width="2%"></th>
+            @*<th width="5%">@Resource.SrNo</th>*@
+            @*<th width="17%">@Resource.Date <span class="required">*</span></th>*@
+            @*<th width="17%">
+                    <div class="col-md-3 col-sm-12"></div>
+                    <div class="col-md-6 col-sm-12">
+                        <span class="item_add">
+                            @Resource.Date <span class="required">*</span>
+                        </span> <a href="#">
+
+                            <div>   <i id="BtnAddItem"></i> </div>
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-sm-12"></div>
+                </th>*@
+            <th width="12%">
+                @Resource.Date
+                @*<div class="col-md-3 col-sm-12"></div>
+                    <div class="col-md-6 col-sm-12">
+                        <span class="item_add">
+                            @Resource.Date <span class="required">*</span>
+                        </span> <a href="#">
+
+                            <div class="plus_icon1 Plus_IconToDisable" id="listitemdelbtn">  <i class="fa fa-plus" id="BtnAddItem" onclick="AddNewRow()" title="Add New"></i>  </div>
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-sm-12"></div>*@
+            </th>
+            <th width="20%"> @Resource.DocumentNumber </th>
+            <th width="15%">@Resource.DocumentDate</th>
+            <th width="42%">@Resource.Status </th>
+            <th width="4%"></th>
+            @*<th width="2%"></th>*@
+        </tr>
+    </thead>
+    <tbody>
+        @if (ViewBag.DocumentDetails != null)
+        {
+            var rowIdx = 0;
+            foreach (System.Data.DataRow Row in ViewBag.DocumentDetails.Rows)
+            {
+                var command = Model.Command;
+                var entryflag = "";
+                var flag = Row["entry_flag"].ToString().Trim();
+                var Doccode = "";
+                var TblDocNo = Row["doc_no"].ToString().Trim();
+                if(flag=="A")
+                {
+                    var DocNo = TblDocNo.Split('/');
+                    var INo = DocNo[3];
+                    var code = INo.Split('0');
+                    Doccode = code[0];
+                }
+
+                if (flag == "N")
+                {
+                    entryflag = "N";
+                }
+                if (flag == "A")
+                {
+                    entryflag = "A";
+                }
+                rowIdx++;
+        <tr>
+            @if (entryflag == "N")
+            {
+                if (command == null || command == "Update")
+                {
+                    <td class="red center" style="filter: grayscale(100%)"> <i class="fa fa-trash" aria-hidden="true" id="delBtnIcon" onclick=""></i></td>
+                    <td>
+                        <div class="center edit_icon" style="filter: grayscale(100%)"><i class="fa fa-edit" aria-hidden="true" id="editBtnIcon" onclick="" title="@Resource.Edit"></i></div>
+                    </td>
+                }
+                else
+                {
+                    <td><div class="red center"><i class="fa fa-trash" aria-hidden="true" id="delBtnIcon" onclick="deleteRow(this, event)" title="@Resource.Delete"></i></div></td>
+                    <td><div class="center edit_icon"><i class="fa fa-edit" aria-hidden="true" id="editBtnIcon" onclick="editItem(this, event)" title="@Resource.Edit"></i></div></td>
+                }
+
+            }
+            @if (entryflag == "A")
+            {
+                <td class="red center" style="filter: grayscale(100%)"> <i class="fa fa-trash" aria-hidden="true" id="" onclick=""></i></td>
+                <td>
+                    <div class="center edit_icon" style="filter: grayscale(100%)"><i class="fa fa-edit" aria-hidden="true" id="" onclick="" title="@Resource.Edit"></i></div>
+                </td>
+            }
+
+            @*<td><span id="spanrowid">@rowIdx</span></td>*@
+            <td id=""><span id="tbl_Date">@Row["date"]</span></td>
+            <td id="">
+                <span id="tbl_DocNo">@Row["doc_no"]</span>
+                <input type="hidden" id="spanrowid" value="@Row["sno"]" style="display:none;">
+                <input type="hidden" id="tbl_SrcDocPONo" value="@Row["ord_no"]" style="display:none;">
+                <input type="hidden" id="tbl_Flag" value="@Row["entry_flag"]" style="display:none;">
+            </td>
+            <td id=""><span id="tbl_DocDate">@Row["doc_dt"]</span></td>
+            <td class="truncate-text" style="width: 500px; padding-right: 30px;"><span id="tbl_Status">@Row["status"]</span></td>
+            
+            @*@if (Row["entry_flag"].ToString() == "N")*@
+            @if (entryflag == "N")
+            {
+                <td id="tbl_Attach" disabled class="center sorting_1 pt-1"><div><i type="submit" disabled class="fa fa-paperclip                          tracking-attach" onclick="" aria-hidden="true" title="@Resource.Attachment"></i></div></td>
+                @*<td><div class=""></div></td>*@
+            }
+            else
+            {
+                @*<td><div class=""></div></td>*@
+        <td class="center sorting_1 ">
+            @*<button class="tracking-pdf" title="Edit" type="submit" id="btn_pdf" name="Command" value="" onclick="IT_GetAllDocumentDetailPDF(event)"></button>*@
+            @if (Doccode == "IPO")
+            {
+            <a href="~/Content/Common/B1_12_25_IPO0000002.pdf" target="_blank">
+                @*View PDF*@
+               
+                <i class="fa fa-file-pdf-o red" aria-hidden="true"></i>
+            </a>
+            }
+            else if (Doccode == "GE")
+            {
+                <a href="~/Content/Common/DeliveryNote.pdf" target="_blank">
+                    @*View PDF*@
+                    <i class="fa fa-file-pdf-o red" aria-hidden="true"></i>
+                </a>
+            }
+            else if (Doccode == "QC")
+            {
+                <a href="~/Content/Common/QualityInspection.pdf" target="_blank">
+                    @*View PDF*@
+                    <i class="fa fa-file-pdf-o red" aria-hidden="true"></i>
+                </a>
+            }
+            else if (Doccode == "GRN")
+            {
+                <a href="~/Content/Common/GoodsRecieptNote.pdf" target="_blank">
+                    @*View PDF*@
+                    <i class="fa fa-file-pdf-o red" aria-hidden="true"></i>
+                </a>
+            }
+            else if (Doccode == "IPI")
+            {
+                <a href="~/Content/Common/PurchaseInvoice.pdf" target="_blank">
+                    @*View PDF*@
+                    <i class="fa fa-file-pdf-o red" aria-hidden="true"></i>
+                </a>
+            }
+        </td>
+            }
+            @*@if (entryflag == "A")
+        {
+            <td><div class=""></div></td>
+            <td class="center sorting_1 ">
+                <button class="tracking-pdf" title="Edit" disabled="" type="submit" id="btn_pdf" name="Command" value="" onclick=""></button>
+            </td>
+            <button class="print"
+        title="@Resource.Print" @disablePrintbtn type="submit" id="btn_print" name="Command" value="Print"></button>
+        }*@
+        </tr>
+            }
+        }
+        @*<tr>
+                <td class="center sorting_1 pt-1">
+                    <i type="submit" class="fa fa-edit" onclick="" aria-hidden="true" title="@Resource.Edit"></i>
+                </td>
+                <td class=" red center">
+                    <i class="deleteIcon fa fa-trash" aria-hidden="true" title="Delete"></i>
+                </td>
+
+                <td>
+                    29-01-2025
+
+                </td>
+                <td>
+                    B1/08/24/FGR0000006
+
+                </td>
+                <td>
+                    29-01-2025
+
+                </td>
+                <td>
+                    This is the area for Status!
+
+                </td>
+                <td class="center sorting_1 pt-1">
+
+                    <i type="submit" class="fa fa-paperclip tracking-attach" onclick="" aria-hidden="true" title="@Resource.Attachment"></i>
+
+                </td>
+                <td class="center sorting_1 ">
+                     <button class="tracking-pdf" title="Edit" disabled="" type="submit" id="btn_edit" name="Command" value="" onclick="EnableEditkBtn()"></button>
+                </td>
+
+            </tr>*@
+    </tbody>
+</table>
+@if (Model.ImpTrckSearch != null)
+{
+    if (Model.ImpTrckSearch == "ImpTrck_Search")
+    {
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+        @Scripts.Render("~/Content/Scripts/DatatablesJs")
+        //Session["LPISearch"] = null;
+        Model.ImpTrckSearch = null;
+    }
+}
+
+
+
+

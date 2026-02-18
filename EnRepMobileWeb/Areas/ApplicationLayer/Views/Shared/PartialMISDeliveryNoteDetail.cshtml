@@ -1,0 +1,109 @@
+﻿@using EnRepMobileWeb.Resources;
+@{
+    string ValDigit = "0.";
+    var VD = Convert.ToInt32(Session["ValDigit"].ToString());
+    for (var i = 0; i < VD; i++)
+    {
+        ValDigit += "0";
+    }
+}
+@*<style>
+        #datatable-buttons1_wrapper .btn-group a:nth-child(3) {
+            display: inline-block;
+            position: absolute;
+        }
+    </style>*@
+<style>
+
+    div.dataTables_wrapper div.dataTables_filter label {
+        margin-left: -3.0em;
+    }
+
+    #datatable-buttons3_wrapper .btn-group a:nth-child(3) {
+        display: inline-block;
+        position: absolute;
+    }
+</style>
+<script src="~/Content/Scripts/ApplicationLayer/InventoryManagement/MIS/MISDeliveryNoteDetail/MISDeliveryNoteDetail.js"></script>
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<script src="~/Content/Scripts/Common/CommonJS.js"></script>
+
+<table id="datatable-buttons3" class="table table-striped rowhighlighttbl mb-3 width2500" cellspacing="0" width="100%">
+    <thead>
+        <tr class="sticky-header">
+            <th width="2%"> @Resource.SrNo</th>
+            <th width="17%">@Resource.Item @Resource.Name</th>
+            <th hidden="hidden"> @Resource.ItemID</th>
+            <th width="4%" title="Unit Of Measure"> @Resource.UOM</th>
+            <th hidden="hidden"> @Resource.UOM</th>
+            <th width="13%">@Resource.Supplier <br /> @Resource.Name</th>
+            <th width="10%">@Resource.Order <br /> @Resource.Number</th>
+            <th width="5%">@Resource.Order <br /> @Resource.Date</th>
+            <th hidden="hidden" id="Ord_Dt"> @Resource.OrderDate</th>
+            <th width="5%">@Resource.Order <br /> @Resource.Quantity</th>
+            <th width="5%">@Resource.Pending <br /> @Resource.Quantity</th>
+            <th width="10%">@Resource.DeliveryNote <br /> @Resource.Number</th>
+            <th width="6%" style="min-width:100px;">@Resource.DeliveryNote <br /> @Resource.Date</th>
+            <th hidden="hidden" id="Ord_Dt"> @Resource.DeliveryNoteDate</th>
+            <th width="5%">@Resource.BillNumber</th>
+            <th width="5%">@Resource.Billed @Resource.Date</th>
+            <th hidden="hidden" id="Ord_Dt"> @Resource.BillDate</th>
+            <th width="5%">@Resource.Billed <br /> @Resource.Quantity</th>
+            <th width="5%">@Resource.Received <br /> @Resource.Quantity</th>
+            <th width="3%">@Resource.QC <br /> @Resource.Required</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @if (ViewBag.DNDataByDetails != null)
+        {
+            var srno = 1;
+            foreach (System.Data.DataRow dr in ViewBag.DNDataByDetails.Rows)
+            {
+                <tr>
+                    <td>@srno</td>
+                    <td>@dr["item_name"].ToString()</td>
+                    <td hidden="hidden" id="ItemId">@dr["item_id"].ToString()</td>
+                    <td>@dr["uom_name"].ToString()</td>
+                    <td hidden="hidden">@dr["uom_id"].ToString()</td>
+                    <td>@dr["supp_name"].ToString()</td>
+                    <td>@dr["OrderNo"].ToString()</td>
+                    <td>@dr["OrderDt"].ToString()</td>
+                    <td hidden="hidden">@dr["OrderDate"].ToString()</td>
+                    <td class="num_right">@Convert.ToDecimal(dr["OrderQty"]).ToString(ValDigit)</td>
+                    <td class="num_right">@Convert.ToDecimal(dr["PendingQty"]).ToString(ValDigit)</td>
+                    <td>@dr["DNNo"].ToString()</td>
+                    <td>@dr["DNDt"].ToString()</td>
+                    <td hidden="hidden">@dr["DNDate"].ToString()</td>
+                    <td>@dr["BillNo"].ToString()</td>
+                    <td>@dr["BillDt"].ToString()</td>
+                    <td hidden="hidden">@dr["BillDate"].ToString()</td>
+                    <td class="num_right">@Convert.ToDecimal(dr["bill_qty"]).ToString(ValDigit)</td>
+                    <td class="num_right">@Convert.ToDecimal(dr["recd_qty"]).ToString(ValDigit)</td>
+                    @if (dr["qc_check"].ToString() == "Y")
+                    {
+                        <td class="center"><i class="fa fa-check text-success" aria-hidden="true"></i></td>
+                    }
+                    else if (dr["qc_check"].ToString() == "N")
+                    {
+                        <td class="center"><i class="fa fa-times-circle text-danger" aria-hidden="true"></i></td>
+                    }
+                    @*<td class="center">@dr["qc_check"].ToString()</td>*@
+                </tr>
+                srno = srno + 1;
+            }
+        }
+
+    </tbody>
+</table>
+@{
+    if (Model.SearchStatus != null)
+    {
+        if (Model.SearchStatus == "SEARCH")
+        {
+            @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+            @Scripts.Render("~/Content/Scripts/DatatablesJs")
+            Model.SearchStatus = null;
+        }
+    }
+}

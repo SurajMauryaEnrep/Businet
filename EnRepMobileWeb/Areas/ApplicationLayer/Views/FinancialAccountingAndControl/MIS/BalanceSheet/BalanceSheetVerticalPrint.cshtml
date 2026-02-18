@@ -1,0 +1,688 @@
+﻿@using EnRepMobileWeb.Resources;
+@using System.Data;
+@using System.Globalization;
+@{
+    var grpstr = string.Empty;
+    var grpstr_id = string.Empty;
+    var start = 0;
+    string tot_asset_amt = string.Empty;
+    string tot_liba_amt = string.Empty;
+    string tot_finliba_amt = string.Empty;
+    string tot_passet_amt = string.Empty;
+    string tot_pliba_amt = string.Empty;
+    string tot_pl_amt = string.Empty;
+
+    string tot_assetcap_amt = string.Empty;
+    string tot_assetcurr_amt = string.Empty;
+    string tot_assetncurr_amt = string.Empty;
+    string tot_passetcap_amt = string.Empty;
+    string tot_passetcurr_amt = string.Empty;
+    string tot_passetncurr_amt = string.Empty;
+    string tot_libcap_amt = string.Empty;
+    string tot_libcurr_amt = string.Empty;
+    string tot_libncurr_amt = string.Empty;
+    string tot_plibcap_amt = string.Empty;
+    string tot_plibcurr_amt = string.Empty;
+    string tot_plibncurr_amt = string.Empty;
+    var cultureInfo = new CultureInfo("hi-IN");
+
+    if (ViewBag.ass_capflag != null)
+    {
+        if (ViewBag.ass_capflag == "ca")
+        {
+            start = 0;
+            foreach (System.Data.DataRow Row in ViewBag.capi_assetdata.Rows)
+            {
+
+                tot_asset_amt = Row["ctot_amt"].ToString();
+                tot_passet_amt = Row["ptot_amt"].ToString();
+                tot_assetcap_amt = Row["cgrptot_amt"].ToString();
+                tot_passetcap_amt = Row["pgrptot_amt"].ToString();
+
+                start = 1;
+                if (start == 1)
+                {
+                    break;
+                }
+            }
+        }
+    }
+    else
+    {
+        tot_assetcap_amt = "0.00";
+        tot_passetcap_amt = "0.00";
+    }
+    if (ViewBag.ass_currflag != null)
+    {
+        if (ViewBag.ass_currflag == "cu")
+        {
+            start = 0;
+            foreach (System.Data.DataRow Row in ViewBag.curr_assetdata.Rows)
+            {
+                tot_asset_amt = Row["ctot_amt"].ToString();
+                tot_passet_amt = Row["ptot_amt"].ToString();
+                tot_assetcurr_amt = Row["cgrptot_amt"].ToString();
+                tot_passetcurr_amt = Row["pgrptot_amt"].ToString();
+                start = 1;
+                if (start == 1)
+                {
+                    break;
+                }
+            }
+        }
+    }
+    else
+    {
+        tot_assetcurr_amt = "0.00";
+        tot_passetcurr_amt = "0.00";
+    }
+    if (ViewBag.ass_ncurrflag != null)
+    {
+        if (ViewBag.ass_ncurrflag == "nc")
+        {
+            start = 0;
+            foreach (System.Data.DataRow Row in ViewBag.ncurr_assetdata.Rows)
+            {
+                tot_asset_amt = Row["ctot_amt"].ToString();
+                tot_passet_amt = Row["ptot_amt"].ToString();
+                tot_assetncurr_amt = Row["cgrptot_amt"].ToString();
+                tot_passetncurr_amt = Row["pgrptot_amt"].ToString();
+                start = 1;
+                if (start == 1)
+                {
+                    break;
+                }
+            }
+        }
+    }
+    else
+    {
+        tot_assetncurr_amt = "0.00";
+        tot_passetncurr_amt = "0.00";
+    }
+
+    if (ViewBag.lib_capflag != null)
+    {
+        if (ViewBag.lib_capflag == "ca")
+        {
+            start = 0;
+            foreach (System.Data.DataRow Row in ViewBag.capi_libadata.Rows)
+            {
+                tot_liba_amt = Row["ctot_amt"].ToString();
+                tot_pliba_amt = Row["ptot_amt"].ToString();
+                tot_libcap_amt = Row["cgrptot_amt"].ToString();
+                tot_plibcap_amt = Row["pgrptot_amt"].ToString();
+                start = 1;
+                if (start == 1)
+                {
+                    break;
+                }
+            }
+        }
+    }
+    else
+    {
+        tot_libcap_amt = "0.00";
+        tot_plibcap_amt = "0.00";
+    }
+    if (ViewBag.lib_currflag != null)
+    {
+        if (ViewBag.lib_currflag == "cu")
+        {
+            start = 0;
+            foreach (System.Data.DataRow Row in ViewBag.curr_libadata.Rows)
+            {
+                tot_liba_amt = Row["ctot_amt"].ToString();
+                tot_pliba_amt = Row["ptot_amt"].ToString();
+                tot_libcurr_amt = Row["cgrptot_amt"].ToString();
+                tot_plibcurr_amt = Row["pgrptot_amt"].ToString();
+                start = 1;
+                if (start == 1)
+                {
+                    break;
+                }
+            }
+        }
+    }
+    else
+    {
+        tot_libcurr_amt = "0.00";
+        tot_plibcurr_amt = "0.00";
+    }
+    if (ViewBag.lib_ncurrflag != null)
+    {
+        if (ViewBag.lib_ncurrflag == "nc")
+        {
+            start = 0;
+            foreach (System.Data.DataRow Row in ViewBag.ncurr_libadata.Rows)
+            {
+                tot_liba_amt = Row["ctot_amt"].ToString();
+                tot_pliba_amt = Row["ptot_amt"].ToString();
+                tot_libncurr_amt = Row["cgrptot_amt"].ToString();
+                tot_plibncurr_amt = Row["pgrptot_amt"].ToString();
+                start = 1;
+                if (start == 1)
+                {
+                    break;
+                }
+            }
+        }
+    }
+    else
+    {
+        tot_libncurr_amt = "0.00";
+        tot_plibncurr_amt = "0.00";
+    }
+
+    if (ViewBag.PL_amt != null)
+    {
+        foreach (System.Data.DataRow Row in ViewBag.PL_amt.Rows)
+        {
+            tot_pl_amt = Row["netprofit_tot_amt"].ToString();
+        }
+    }
+
+    if (tot_liba_amt != null && tot_liba_amt != "")
+    {
+        if (tot_pl_amt != null && tot_pl_amt != "")
+        {
+            tot_finliba_amt = (Convert.ToDouble(tot_liba_amt) + Convert.ToDouble(tot_pl_amt)).ToString();
+        }
+        else
+        {
+            tot_finliba_amt = Convert.ToDouble(tot_liba_amt).ToString();
+        }
+        //tot_liba_amt = tot_finliba_amt;
+        tot_liba_amt = string.Format(cultureInfo, "{0:N}", Convert.ToDouble(tot_finliba_amt));
+    }
+}
+<style>
+    .main_div {
+        width: 100%;
+        margin: 0px;
+        padding: 0px;
+        border: 1px;
+        font-family: "Helvetica Neue",Roboto,Arial,"Droid Sans",sans-serif;
+    }
+
+    .left {
+        width: 100%;
+        margin: 0px;
+        float: left;
+    }
+
+    .left_div {
+        width: 100%;
+        margin: 0px;
+        float: left;
+    }
+
+    .table_border {
+        border: 1px solid #dddddd;
+    }
+
+    .amount {
+        text-align: center !important;
+        font-size: 14px;
+        font-weight: bold;
+        paddingtop: 10px;
+        background-color: #e7f1fa;
+    }
+
+    .amount_s {
+        text-align: center !important;
+        font-size: 12px;
+        font-weight: bold;
+        paddingtop: 10px;
+        paddingbottom: 10px;
+        background-color: #e7f1fa;
+    }
+
+    .td_border_top {
+        border-top: 1px solid #dddddd;
+    }
+
+    .td_border_bottom {
+        border-top: 1px solid #dddddd;
+    }
+
+    .td_border_left {
+        border-left: 1px solid #dddddd;
+    }
+
+    .td_border_right {
+        border-right: 1px solid #dddddd;
+    }
+
+    .reserve_bg {
+        background-color: #badafa;
+    }
+
+    .reserve_txt {
+        font-size: 12px;
+        font-weight: bold;
+        paddingleft: 10px;
+        paddingright: 10px;
+        paddingtop: 10px;
+        paddingbottom: 10px;
+    }
+
+    .reserve_txt_nor {
+        font-size: 11px;
+        font-weight: normal;
+        paddingleft: 25px;
+        paddingright: 10px;
+        paddingtop: 10px;
+        paddingbottom: 10px;
+        background-color: #ffffff;
+    }
+
+    .reserve_txt_nor_v1 {
+        font-size: 11px;
+        font-weight: bold;
+        paddingleft: 25px;
+        paddingright: 10px;
+        paddingtop: 5px;
+        paddingbottom: 5px;
+        background-color: #ffffff;
+    }
+
+    .reserve_txt_nor_v2 {
+        font-size: 11px;
+        font-weight: bold;
+        paddingleft: 35px;
+        paddingright: 10px;
+        paddingtop: 5px;
+        paddingbottom: 5px;
+        background-color: #ffffff;
+    }
+
+    .reserve_txt_nor_v2_nor {
+        font-size: 11px;
+        font-weight: normal;
+        paddingleft: 35px;
+        paddingright: 10px;
+        paddingtop: 5px;
+        paddingbottom: 5px;
+        background-color: #ffffff;
+    }
+
+    .reserve_txt_nor_v3 {
+        font-size: 11px;
+        font-weight: normal;
+        paddingleft: 45px;
+        paddingright: 10px;
+        paddingtop: 10px;
+        paddingbottom: 10px;
+        background-color: #ffffff;
+    }
+
+    .num_right {
+        text-align: right;
+    }
+</style>
+<div class="main_div">
+    <table class="table_border" width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+            <td>
+                <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td width="10">&nbsp;</td>
+                        <td>
+                            @Html.Partial("~/Areas/ApplicationLayer/Views/FinancialAccountingAndControl/MIS/GeneralLedger/GLHeaderPrint.cshtml")
+                        </td>
+                        <td width="15">&nbsp;</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td width="15">&nbsp;</td>
+                        <td style="padding: 10px 0px 0px 0px; line-height:18px;">
+                            <table cellpadding="0" cellspacing="0" width="100%" style="font-size: 12px;">
+                                <tr>
+                                    <td>
+                                        <table cellpadding="0" cellspacing="0" width="100%" style="font-size: 12px;">
+                                            <tr>
+                                                <td width="7%" style="font-weight:bold;">Branch :</td>
+                                                <td width="93%" style="text-align:left;"> @ViewBag.Branches</td>
+
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <table cellpadding="0" cellspacing="0" width="100%" style="font-size: 12px;">
+                                            <tr>
+                                                <td width="7%" style="font-weight: bold; paddingtop: 10px; paddingbottom: 10px;"> Period :</td>
+                                                <td width="10%"> @ViewBag.FromDate</td>
+                                                <td width="3%" style="font-weight:bold; text-align:left;">To</td>
+                                                <td width="10%" style="text-align:left;">@ViewBag.ToDate</td>
+                                                <td width="70%">&nbsp;</td>
+
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td width="15">&nbsp;</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td class="left td_border_right" valign="top">
+                <div class="left_div td_border_bottom">  </div>
+                <table width="100%" cellpadding="0" cellspacing="0" border="0" height="100%">
+                    <tr>
+                        <td width="36%" class="amount">Particulars</td>
+                        <td width="32%" class="amount">Amount in INR</td>
+                        <td width="32%" class="amount">Amount in INR</td>
+                    </tr>
+                    <tr>
+                        <td width="36%" class="amount_s">&nbsp;</td>
+                        <td width="32%" class="amount_s">@ViewBag.curr_fdt_todt</td>
+                        <td width="32%" class="amount_s">@ViewBag.prev_fdt_todt</td>
+                    </tr>
+                    <tr class="reserve_bg">
+                        <td width="36%" class="reserve_txt">Liabilities</td>
+                        <td width="32%" class="reserve_txt num_right">@tot_liba_amt</td>
+                        <td width="32%" class="reserve_txt num_right">@tot_pliba_amt</td>
+                    </tr>
+                    <tr>
+                        <td width="36%" class="reserve_txt_nor_v1">Reserve & Surplus</td>
+                        <td width="32%" class="reserve_txt_nor_v1 num_right">@tot_pl_amt</td>
+                        <td width="32%" class="reserve_txt_nor_v1 num_right">0.00</td>
+                    </tr>
+                    <tr>
+                        <td width="36%" class="reserve_txt_nor_v2_nor">Profit/Loss Transferred from Profit & Loss statement</td>
+                        <td width="32%" class="reserve_txt_nor_v2_nor num_right">@tot_pl_amt</td>
+                        <td width="32%" class="reserve_txt_nor_v2_nor num_right">0.00</td>
+                    </tr>
+                    <tr>
+                        <td width="36%" class="reserve_txt_nor_v1">Capital & Equities</td>
+                        <td width="32%" class="reserve_txt_nor_v1 num_right">@tot_libcap_amt</td>
+                        <td width="32%" class="reserve_txt_nor_v1 num_right">@tot_plibcap_amt</td>
+                    </tr>
+                    @if (ViewBag.capi_libadata != null)
+                    {
+                        grpstr = string.Empty;
+                        grpstr_id = string.Empty;
+                        start = 0;
+                        foreach (System.Data.DataRow Row in ViewBag.capi_libadata.Rows)
+                        {
+                            if (start == 0)
+                            {
+                                grpstr = Row["grp_str_name"].ToString();
+                                grpstr_id = Row["grp_str_id"].ToString();
+                            }
+
+                            if (start == 0 && grpstr == @Row["grp_str_name"].ToString())
+                            {
+                                start = 1;
+                                <tr>
+                                    <td width="36%" class="reserve_txt_nor_v2">@Row["grp_str_name"].ToString()</td>
+                                    <td width="32%" class="reserve_txt_nor_v2 num_right">@Row["csubgrp_tot_amt"].ToString()</td>
+                                    <td width="32%" class="reserve_txt_nor_v2 num_right">@Row["psubgrp_tot_amt"].ToString()</td>
+                                </tr>
+                            }
+
+                            if (start == 1 && grpstr == @Row["grp_str_name"].ToString())
+                            {
+                                <tr>
+                                    <td width="36%" class="reserve_txt_nor_v3">@Row["acc_name"].ToString()</td>
+                                    <td width="32%" class="reserve_txt_nor_v3 num_right">@Row["cacc_amt"].ToString()</td>
+                                    <td width="32%" class="reserve_txt_nor_v3 num_right">@Row["pacc_amt"].ToString()</td>
+                                </tr>
+                            }
+                            else
+                            {
+                                grpstr = @Row["grp_str_name"].ToString();
+                                grpstr_id = @Row["grp_str_id"].ToString();
+                                <tr>
+                                    <td width="36%" class="reserve_txt_nor_v2">@Row["grp_str_name"].ToString()</td>
+                                    <td width="32%" class="reserve_txt_nor_v2 num_right">@Row["csubgrp_tot_amt"].ToString()</td>
+                                    <td width="32%" class="reserve_txt_nor_v2 num_right">@Row["psubgrp_tot_amt"].ToString()</td>
+                                </tr>
+
+                                <tr>
+                                    <td width="36%" class="reserve_txt_nor_v3">@Row["acc_name"].ToString()</td>
+                                    <td width="32%" class="reserve_txt_nor_v3 num_right">@Row["cacc_amt"].ToString()</td>
+                                    <td width="32%" class="reserve_txt_nor_v3 num_right">@Row["pacc_amt"].ToString()</td>
+                                </tr>
+                            }
+                        }
+                    }
+                    <tr>
+                        <td width="36%" class="reserve_txt_nor_v1">Current Liabilities</td>
+                        <td width="32%" class="reserve_txt_nor_v1 num_right">@tot_libcurr_amt</td>
+                        <td width="32%" class="reserve_txt_nor_v1 num_right">@tot_plibcurr_amt</td>
+                    </tr>
+                    @if (ViewBag.curr_libadata != null)
+                    {
+                        grpstr = string.Empty;
+                        grpstr_id = string.Empty;
+                        start = 0;
+                        foreach (System.Data.DataRow Row in ViewBag.curr_libadata.Rows)
+                        {
+                            if (start == 0)
+                            {
+                                grpstr = Row["grp_str_name"].ToString();
+                                grpstr_id = Row["grp_str_id"].ToString();
+                            }
+
+                            if (start == 0 && grpstr == @Row["grp_str_name"].ToString())
+                            {
+                                start = 1;
+
+                                <tr>
+                                    <td width="36%" class="reserve_txt_nor_v2">@Row["grp_str_name"].ToString()</td>
+                                    <td width="32%" class="reserve_txt_nor_v2 num_right">@Row["csubgrp_tot_amt"].ToString()</td>
+                                    <td width="32%" class="reserve_txt_nor_v2 num_right">@Row["psubgrp_tot_amt"].ToString()</td>
+                                </tr>
+                            }
+
+                            if (start == 1 && grpstr == @Row["grp_str_name"].ToString())
+                            {
+                                <tr>
+                                    <td width="36%" class="reserve_txt_nor_v3">@Row["acc_name"].ToString()</td>
+                                    <td width="32%" class="reserve_txt_nor_v3 num_right">@Row["cacc_amt"].ToString()</td>
+                                    <td width="32%" class="reserve_txt_nor_v3 num_right">@Row["pacc_amt"].ToString()</td>
+                                </tr>
+
+
+                            }
+                            else
+                            {
+                                grpstr = @Row["grp_str_name"].ToString();
+                                grpstr_id = @Row["grp_str_id"].ToString();
+                                <tr>
+                                    <td width="36%" class="reserve_txt_nor_v2">@Row["grp_str_name"].ToString()</td>
+                                    <td width="32%" class="reserve_txt_nor_v2 num_right">@Row["csubgrp_tot_amt"].ToString()</td>
+                                    <td width="32%" class="reserve_txt_nor_v2 num_right">@Row["psubgrp_tot_amt"].ToString()</td>
+                                </tr>
+
+                                <tr>
+                                    <td width="36%" class="reserve_txt_nor_v3">@Row["acc_name"].ToString()</td>
+                                    <td width="32%" class="reserve_txt_nor_v3 num_right">@Row["cacc_amt"].ToString()</td>
+                                    <td width="32%" class="reserve_txt_nor_v3 num_right">@Row["pacc_amt"].ToString()</td>
+                                </tr>
+                            }
+                        }
+                    }
+                    <tr>
+                        <td width="36%" class="reserve_txt_nor_v1">Non Current Liabilities</td>
+                        <td width="32%" class="reserve_txt_nor_v1 num_right">@tot_libncurr_amt</td>
+                        <td width="32%" class="reserve_txt_nor_v1 num_right">@tot_plibncurr_amt</td>
+                    </tr>
+                    @if (ViewBag.ncurr_libadata != null)
+                    {
+                        grpstr = string.Empty;
+                        grpstr_id = string.Empty;
+                        start = 0;
+                        foreach (System.Data.DataRow Row in ViewBag.ncurr_libadata.Rows)
+                        {
+                            if (start == 0)
+                            {
+                                grpstr = Row["grp_str_name"].ToString();
+                                grpstr_id = Row["grp_str_id"].ToString();
+                            }
+
+                            if (start == 0 && grpstr == @Row["grp_str_name"].ToString())
+                            {
+                                start = 1;
+                                <tr>
+                                    <td width="36%" class="reserve_txt_nor_v2">@Row["grp_str_name"].ToString()</td>
+                                    <td width="32%" class="reserve_txt_nor_v2 num_right">@Row["csubgrp_tot_amt"].ToString()</td>
+                                    <td width="32%" class="reserve_txt_nor_v2 num_right">@Row["psubgrp_tot_amt"].ToString()</td>
+                                </tr>
+                            }
+
+                            if (start == 1 && grpstr == @Row["grp_str_name"].ToString())
+                            {
+                                <tr>
+                                    <td width="36%" class="reserve_txt_nor_v3">@Row["acc_name"].ToString()</td>
+                                    <td width="32%" class="reserve_txt_nor_v3 num_right">@Row["cacc_amt"].ToString()</td>
+                                    <td width="32%" class="reserve_txt_nor_v3 num_right">@Row["pacc_amt"].ToString()</td>
+                                </tr>
+                            }
+                            else
+                            {
+                                grpstr = @Row["grp_str_name"].ToString();
+                                grpstr_id = @Row["grp_str_id"].ToString();
+                                <tr>
+                                    <td width="36%" class="reserve_txt_nor_v2">@Row["grp_str_name"].ToString()</td>
+                                    <td width="32%" class="reserve_txt_nor_v2 num_right">@Row["csubgrp_tot_amt"].ToString()</td>
+                                    <td width="32%" class="reserve_txt_nor_v2 num_right">@Row["psubgrp_tot_amt"].ToString()</td>
+                                </tr>
+
+                                <tr>
+                                    <td width="36%" class="reserve_txt_nor_v3">@Row["acc_name"].ToString()</td>
+                                    <td width="32%" class="reserve_txt_nor_v3 num_right">@Row["cacc_amt"].ToString()</td>
+                                    <td width="32%" class="reserve_txt_nor_v3 num_right">@Row["pacc_amt"].ToString()</td>
+                                </tr>
+                            }
+                        }
+                    }
+
+                    <tr class="reserve_bg">
+                        <td width="36%" class="reserve_txt">Assets</td>
+                        <td width="32%" class="reserve_txt num_right">@tot_asset_amt</td>
+                        <td width="32%" class="reserve_txt num_right">@tot_passet_amt</td>
+                    </tr>
+                    <tr>
+                        <td width="36%" class="reserve_txt_nor_v1">Current Assets</td>
+                        <td width="32%" class="reserve_txt_nor_v1 num_right">@tot_assetcurr_amt</td>
+                        <td width="32%" class="reserve_txt_nor_v1 num_right">@tot_passetcurr_amt</td>
+                    </tr>
+
+                    @if (ViewBag.curr_assetdata != null)
+                    {
+                        grpstr = string.Empty;
+                        grpstr_id = string.Empty;
+                        start = 0;
+                        foreach (System.Data.DataRow Row in ViewBag.curr_assetdata.Rows)
+                        {
+                            if (start == 0)
+                            {
+                                grpstr = Row["grp_str_name"].ToString();
+                                grpstr_id = Row["grp_str_id"].ToString();
+                            }
+                            if (start == 0 && grpstr == @Row["grp_str_name"].ToString())
+                            {
+                                start = 1;
+                                <tr>
+                                    <td width="36%" class="reserve_txt_nor_v2">@Row["grp_str_name"].ToString()</td>
+                                    <td width="32%" class="reserve_txt_nor_v2 num_right">@Row["csubgrp_tot_amt"].ToString()</td>
+                                    <td width="32%" class="reserve_txt_nor_v2 num_right">@Row["psubgrp_tot_amt"].ToString()</td>
+                                </tr>
+                            }
+                            if (start == 1 && grpstr == @Row["grp_str_name"].ToString())
+                            {
+                                <tr>
+                                    <td width="36%" class="reserve_txt_nor_v3">@Row["acc_name"].ToString()</td>
+                                    <td width="32%" class="reserve_txt_nor_v3 num_right">@Row["cacc_amt"].ToString()</td>
+                                    <td width="32%" class="reserve_txt_nor_v3 num_right">@Row["pacc_amt"].ToString()</td>
+                                </tr>
+                            }
+                            else
+                            {
+                                grpstr = @Row["grp_str_name"].ToString();
+                                grpstr_id = @Row["grp_str_id"].ToString();
+                                <tr>
+                                    <td width="36%" class="reserve_txt_nor_v2">@Row["grp_str_name"].ToString()</td>
+                                    <td width="32%" class="reserve_txt_nor_v2 num_right">@Row["csubgrp_tot_amt"].ToString()</td>
+                                    <td width="32%" class="reserve_txt_nor_v2 num_right">@Row["psubgrp_tot_amt"].ToString()</td>
+                                </tr>
+                                <tr>
+                                    <td width="36%" class="reserve_txt_nor_v3">@Row["acc_name"].ToString()</td>
+                                    <td width="32%" class="reserve_txt_nor_v3 num_right">@Row["cacc_amt"].ToString()</td>
+                                    <td width="32%" class="reserve_txt_nor_v3 num_right">@Row["pacc_amt"].ToString()</td>
+                                </tr>
+                            }
+                        }
+                    }
+                    <tr>
+                        <td width="36%" class="reserve_txt_nor_v1">Non Current Assets</td>
+                        <td width="32%" class="reserve_txt_nor_v1 num_right">@tot_assetncurr_amt</td>
+                        <td width="32%" class="reserve_txt_nor_v1 num_right">@tot_passetncurr_amt</td>
+                    </tr>
+
+                    @if (ViewBag.ncurr_assetdata != null)
+                    {
+                        grpstr = string.Empty;
+                        grpstr_id = string.Empty;
+                        start = 0;
+                        foreach (System.Data.DataRow Row in ViewBag.ncurr_assetdata.Rows)
+                        {
+                            if (start == 0)
+                            {
+                                grpstr = Row["grp_str_name"].ToString();
+                                grpstr_id = Row["grp_str_id"].ToString();
+                            }
+
+                            if (start == 0 && grpstr == @Row["grp_str_name"].ToString())
+                            {
+                                start = 1;
+                                <tr>
+                                    <td width="36%" class="reserve_txt_nor_v2">@Row["grp_str_name"].ToString()</td>
+                                    <td width="32%" class="reserve_txt_nor_v2 num_right">@Row["csubgrp_tot_amt"].ToString()</td>
+                                    <td width="32%" class="reserve_txt_nor_v2 num_right">@Row["psubgrp_tot_amt"].ToString()</td>
+                                </tr>
+                            }
+
+                            if (start == 1 && grpstr == @Row["grp_str_name"].ToString())
+                            {
+                                <tr>
+                                    <td width="36%" class="reserve_txt_nor_v3">@Row["acc_name"].ToString()</td>
+                                    <td width="32%" class="reserve_txt_nor_v3 num_right">@Row["cacc_amt"].ToString()</td>
+                                    <td width="32%" class="reserve_txt_nor_v3 num_right">@Row["pacc_amt"].ToString()</td>
+                                </tr>
+                            }
+                            else
+                            {
+                                grpstr = @Row["grp_str_name"].ToString();
+                                grpstr_id = @Row["grp_str_id"].ToString();
+                                <tr>
+                                    <td width="36%" class="reserve_txt_nor_v2">@Row["grp_str_name"].ToString()</td>
+                                    <td width="32%" class="reserve_txt_nor_v2 num_right">@Row["csubgrp_tot_amt"].ToString()</td>
+                                    <td width="32%" class="reserve_txt_nor_v2 num_right">@Row["psubgrp_tot_amt"].ToString()</td>
+                                </tr>
+                                <tr>
+                                    <td width="36%" class="reserve_txt_nor_v3">@Row["acc_name"].ToString()</td>
+                                    <td width="32%" class="reserve_txt_nor_v3 num_right">@Row["cacc_amt"].ToString()</td>
+                                    <td width="32%" class="reserve_txt_nor_v3 num_right">@Row["pacc_amt"].ToString()</td>
+                                </tr>
+                            }
+                        }
+                    }
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>

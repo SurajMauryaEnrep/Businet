@@ -1,0 +1,228 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.FinancialAccountingAndControl.MIS.CashBook.CashBookModel
+@using EnRepMobileWeb.Resources;
+
+@if (Session["UserId"] == null)
+{
+    Response.Redirect("~/Login");
+}
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+<script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/FinancialAccountingAndControl/MIS/CashBook/CashBookJS.js"></script>
+<title>@Model.Title</title>
+@using (Html.BeginForm("CashBookdetail", "CashBook", FormMethod.Post))
+{
+<div class="row">
+    <!-- Partial General Ledger Voucher Detail Month Wise -->
+    <div id="VoucherDetailMW" class="modal fade" role="dialog">
+        <div class="modal-dialog" style=" max-width:800px;">
+            <div id="gl_mwvoucherdetails">
+                @Html.Partial("~/Areas/Common/Views/Comn_PartialGeneralLedgerVoucherDetailMW.cshtml")
+            </div>
+        </div>
+    </div>
+    <!-- Cost Center Detail -->
+    <div id="CostCenterDetail" class="modal fade" role="dialog">
+        <div class="modal-dialog" style=" max-width:800px;">
+            <div class=" height30VH" id="CostCenterDetailPopup">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Cost Center Detail</h2>
+                        <button type="button" class="close" data-dismiss="modal">×</button>
+                    </div>
+                    <div class="modal-body" style="padding-top:0px;">
+                        <div class="row">
+                            <div class="col-md-12 col-sm-12 no-padding">
+                                <div class="col-md-5 col-sm-12">
+                                    <label class="col-form-label label-align">GL Account</label>
+                                    <input id="CC_GLAccount" class="form-control" autocomplete="off" type="text" name="GLAccount" placeholder="GL Account" disabled="">
+                                    <input id="hdnGLAccount_Id" type="hidden" value="300001">
+                                    <input id="hdnTable_Id" type="hidden">
+                                </div>
+                                <div class="col-md-3 col-sm-12">
+                                    <label class="col-form-label label-align">
+                                        Amount
+                                    </label>
+                                    <input id="GLAmount" class="form-control num_right" autocomplete="off" type="text" name="Amount" placeholder="0000.00" disabled="">
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-12">
+                                <label class="col-form-label label-align">Cost Center Type <span class="required">*</span></label>
+                                <select class="form-control" name="EntityType" disabled="">
+                                    <option value="0">---Select---</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 col-sm-12">
+                                <label class="col-form-label label-align">Cost Center <span class="required">*</span></label>
+
+                                <select class="form-control" name="EntityType" disabled="">
+                                    <option value="0">---Select---</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 col-sm-12">
+                                <label class="col-form-label label-align">Amount <span class="required">*</span></label>
+                                <input id="CCAmount" class="form-control num_right" autocomplete="off" type="text" name="Amount" placeholder="00.00" disabled="">
+                            </div>
+                            <div class="col-md-1 col-sm-12 margin28" id="divAdd">
+                            </div>
+                            <div class="col-md-1 col-sm-12 margin28" id="divUpdate" style="display: none;">
+                                <a href="#" style="color:#ffffff;">
+                                    <div class="plus_icon1"> <i class="fa fa-refresh ref" id="ParaItemUpdateBtn" onclick="Cmn_CC_onclkUpdateBtn(event)" data-toggle="tooltip" title="" data-original-title="Update"></i> </div>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="card-box table-responsive dy_table margin10">
+                            <div class="tableFixHead height55VH ">
+                                <table class="table table-striped margin5" id="tbladd">
+                                    <thead>
+                                        <tr class="sticky-header">
+                                            <th width="3%">&nbsp; </th>
+                                            <th>Cost Center Type</th>
+                                            <th>Cost Center</th>
+                                            <th>Amount</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbladd_body">
+                                    </tbody>
+                                    <tfoot>
+                                    </tfoot>
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                </div>
+            </div>
+            <input id="hdn_CC_DetailList" name="CC_DetailList" type="hidden" value="">
+        </div>
+        @*<div class="modal-dialog">
+                <div class=" height30VH" id="CostCenterDetailPopup">
+                </div>
+                @Html.HiddenFor(model => model.CC_DetailList, new { @id = "hdn_CC_DetailList" })
+            </div>
+            <div>
+                <table class="table table-striped margin5" hidden="hidden" id="tbladdhdn">
+                    <tbody id="tbody_tblhdn">
+                        @if (ViewBag.CostCenterData != null)
+                        {
+                            foreach (System.Data.DataRow Row in ViewBag.CostCenterData.Rows)
+                            {
+                                <tr>
+                                    <td id="hdntbl_GlAccountId">@Row["acc_id"].ToString()</td>
+                                    <td id="hdntbl_CCtype">@Row["cc_name"].ToString()</td>
+                                    <td id="hdntbl_CCtype_Id">@Row["cc_id"].ToString()</td>
+                                    <td id="hdntbl_CC_Name">@Row["cc_val_name"].ToString()</td>
+                                    <td id="hdntbl_CCName_Id">@Row["cc_val_id"].ToString()</td>
+                                    <td id="hdntbl_CstAmt">@Row["cc_amt"].ToString()</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>*@
+    </div>
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <h2 class="col-md-5 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                <input type="hidden" id="DocumentMenuId" value="@ViewBag.DocumentMenuId" />
+                <div class="x_title pad_mar ">
+                    <div class="col-md-12 col-sm-12 icon_tool padding_zero">
+                        <div class="col-md-9 col-sm-12 padding_zero" style="margin-top:3px;margin-bottom:12px;">
+                            <div class="col-md-3 col-sm-12">
+                                <label class="col-form-label label-align">@Resource.CashAccount <span class="required">*</span></label>
+                                <select class="form-control" id="acc_name" name="acc_name" onchange="OnChnage_AccName();">
+                                    <option selected="selected" value="0">---Select---</option>
+                                </select>
+                                <input type="hidden" id="cashbookaccn_ame" value='@Url.Action("GetAutoCompleteAccList", "CashBook")' />
+                                @Html.HiddenFor(model => model.AccName, new { @id = "hdn_Accname" })
+                                @Html.HiddenFor(model => model.AccId, new { @id = "hdn_AccId" })
+                                @Html.ValidationMessageFor(model => model.AccName, String.Empty, new { @style = "color:red;!important", @id = "vmacc_name" })
+                            </div>
+                            <div class="col-md-3 col-sm-12">
+                                <label class="col-form-label label-align">@Resource.Currency</label>
+                                <div id="CurrencyDiv">
+                                    @Html.DropDownListFor(model => model.curr, new SelectList(Model.currList, "curr_id", "curr_name"), new { @class = "form-control", @id = "curr" })
+                                </div>
+                            </div>
+                            <div class="col-md-5 col-sm-12 no-padding">
+                                <div class="col-md-5 col-sm-12">
+                                    <label class="col-form-label label-align">@Resource.FromDate</label>
+                                    @Html.TextBoxFor(model => model.FromDate, new { @class = "form-control", @id = "txtFromdate", @onchange = "FromToDateValidation()", @type = "date", @min = @ViewBag.FromFyMindate.ToString(), @max = @ViewBag.ToFyMaxdate.ToString() })
+                                </div>
+                                <div class="col-md-5 col-sm-12">
+                                    <label class="col-form-label label-align">@Resource.ToDate</label>
+                                    @Html.TextBoxFor(model => model.ToDate, new { @class = "form-control", @id = "txtTodate", @placeholder = "dd-MM-yyyy", @onchange = "FromToDateValidation()", @type = "date", @min = @ViewBag.ToFyMindate.ToString(), @max = @ViewBag.ToFyMaxdate.ToString(), @Value = @DateTime.Now.ToString("yyyy-MM-dd") })
+                                </div>
+                                <div class="col-md-2 col-sm-12">
+                                    <button type="button" class="btn btn-primary btn-sm margintop20" id="BtnSearch" onclick="FilterCashBookDetails()"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-12 padding_zero" style="margin-top:3px;">
+                            <div class="col-md-11 col-sm-12">
+                                <label class="col-form-label label-align col-md-6 col-sm-12 no-padding font-weight-bolder">@Resource.OpeningBalance</label>
+                                @Html.TextBoxFor(model => model.Opening_Bal, new { @class = "form-control num_right col-md-6 col-sm-12 font-weight-bolder", @id = "CB_OpeningBalance", @maxlength = "50", @name = "OpeningBalance", @placeholder = "0000.00", @type = "text", @readonly = "readonly" })
+                                @*<input class="form-control num_right col-md-7 col-sm-12 font-weight-bolder" id="CB_OpeningBalance" maxlength="50" name="OpeningBalance" placeholder="0000.00" type="text" disabled>*@
+                            </div>
+                            <div class="col-md-1 col-sm-12 no-padding">
+                                @Html.HiddenFor(m => m.lbl_cb_opbaltype, new { @id = "Hdnlbl_cb_opbaltype" })
+                                <label class="col-form-label label-align" id="lbl_cb_opbaltype"></label>
+                            </div>
+                            <div class="col-md-11 col-sm-12" style="margin-top:3px;">
+                                <label class="col-form-label label-align col-md-6 col-sm-12 no-padding font-weight-bolder">@Resource.Closing @Resource.Balance</label>
+                                @Html.TextBoxFor(model => model.Closing_Bal, new { @class = "form-control num_right col-md-6 col-sm-12 font-weight-bolder", @id = "CB_ClosingBalance", @maxlength = "50", @name = "ClosingBalance", @placeholder = "0000.00", @type = "text", @readonly = "readonly" })
+                                @*<input class="form-control num_right col-md-7 col-sm-12 font-weight-bolder" id="CB_ClosingBalance" maxlength="50" name="ClosingBalance" placeholder="0000.00" type="text" value="" disabled>*@
+                            </div>
+                            <div class="col-md-1 col-sm-12 no-padding">
+                                @Html.HiddenFor(m => m.lbl_cb_clbaltype, new { @id = "Hdnlbl_cb_clbaltype" })
+                                <label class="col-form-label label-align" id="lbl_cb_clbaltype"></label>
+                            </div>
+                            @Html.HiddenFor(model => model.searchValue, new { @id = "searchValue" })
+                            @Html.HiddenFor(model => model.hdnPDFPrint, new { @id = "hdnPDFPrint" })
+                            @Html.HiddenFor(model => model.hdnCSVPrint, new { @id = "hdnCSVPrint" })
+                            @Html.HiddenFor(m => m.sortColumn, new { @id = "HdnsortColumn" })
+                            @Html.HiddenFor(m => m.sortColumnDir, new { @id = "HdnsortColumnDir" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <div class="card-box table-responsive dy_table">
+                    <div id="div_cashbooklist" class="sticky-table sticky-ltr-cells sb-container container-example1">
+                        @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialCashBook.cshtml")
+                    </div>
+                    @Html.HiddenFor(model => model.PrintData, new { @id = "CashBookPrintData" })
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <table id="tbl_hdnfylist" style="display:none;">
+            <tbody>
+                @if (ViewBag.fylist != null)
+                {
+                    foreach (System.Data.DataRow row in ViewBag.fylist.Rows)
+                    {
+                        <tr>
+                            <td>@row["comp_id"].ToString()</td>
+                            <td>@row["br_Id"].ToString()</td>
+                            <td id="fystdt">@row["fin_st_date"].ToString()</td>
+                            <td id="fyenddt">@row["fin_end_date"].ToString()</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+}
+<!-- page content end -->

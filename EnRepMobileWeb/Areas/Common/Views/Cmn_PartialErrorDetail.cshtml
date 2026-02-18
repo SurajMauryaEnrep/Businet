@@ -1,0 +1,52 @@
+﻿@using EnRepMobileWeb.Resources;
+@using System.Data;
+
+<div class="modal-content" style="min-width:700px;">
+    <div class="modal-header">
+        <h2>@Resource.Error @Resource.Detail</h2>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body" style="padding-top:0px;">
+        <div class="row">
+            <div class="col-md-12 col-sm-12 no-padding">
+                <div class="col-md-5 col-sm-12">
+                    <label class="col-form-label label-align">@Resource.InvoiceNumber</label>
+                    <input id="txtInvNumber" class="form-control" autocomplete="off" type="text" name="InvoiceNumber" placeholder="@Resource.InvoiceNumber" disabled>
+                </div>
+                <div class="col-md-3 col-sm-12">
+                    <label class="col-form-label label-align">@Resource.InvoiceDate</label>
+                    <input id="txtInvDate" class="form-control " autocomplete="off" type="text" name="InvoiceDate" placeholder="@Resource.InvoiceDate" disabled="">
+                </div>
+            </div>
+        </div>
+        <div class="card-box table-responsive dy_table margin10">
+            <div class="tableFixHead height55VH ">
+                <table class="table table-striped margin5" id="tbl_costcenterdis">
+                    <thead>
+                        <tr class="sticky-header">
+                            @*<th>@Resource.RequestBody</th>*@
+                            <th>@Resource.APIResponse</th>
+                            @*<th>@Resource.RequestTime</th>
+                            <th> @Resource.ResponceTime</th>*@
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (ViewBag.ApiErrorDetails != null)
+                        {
+                            foreach (var dtr in ViewBag.ApiErrorDetails.Rows)
+                            {
+                                <tr>
+                                    <td>@dtr["error"].ToString()</td>
+                                    
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">@Resource.Close</button>
+    </div>
+</div>

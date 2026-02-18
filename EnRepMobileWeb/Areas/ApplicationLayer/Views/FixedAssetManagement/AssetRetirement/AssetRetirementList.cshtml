@@ -1,0 +1,78 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.FixedAssetManagement.AssetRetirement.AssetRetirementList_Model
+@using EnRepMobileWeb.Resources;
+@using System.Data
+@*@if (Session["UserId"] == null)
+    {
+        Response.Redirect("~/Login");
+    }*@
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+<title>@Model.title</title>
+<script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+<script src="~/Content/Css/build/js/sweetalert.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/FixedAssetManagement/AssetRetirement/AssetRetirement.js"></script>
+<div class="row">
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <h2 class="col-md-5 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                <div id="wizard" class="form_wizard wizard_horizontal col-md-3 col-sm-12 work_flow">
+                   
+                </div>
+                @Html.HiddenFor(m => m.ListFilterData, new { @id = "ListFilterData" })
+                @Html.HiddenFor(m => m.DocumentMenuId, new { @id = "DocumentMenuId" })
+                @Html.HiddenFor(m => m.WF_status, new { @id = "WF_Status" })
+                @if (ViewBag.VBRoleList != null)
+                {
+                    foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                    {
+                        if (Row["feature_id"].ToString() == "105106120001")
+                        {
+                            <div id="" class="col-md-4 col-sm-12 heading_right_padding">
+                                <ul>
+                                    <li>
+                                        <a class="tooltip-test"
+                                           title=" @Resource.AddNew" href="@Url.Action("AddAssetRetirementDetail","AssetRetirement")"><img src="~/Content/Images/addgreen.png" width="32" height="32" id="Btn_AddNewGRN" alt="Add"></a>
+                                    </li>
+                                </ul>
+                            </div>
+                        }
+                    }
+                }
+                <div class="x_title pad_mar ">
+                    <div class="col-md-12 col-sm-12 icon_tool padding_zero">
+                        <div class="col-md-12 col-sm-12 pl-0 pb-2 pt-2">
+                            <div class="col-md-3 col-sm-12">
+                                <label class="col-form-label label-align">@Resource.Asset @Resource.Group</label>
+
+                                @Html.DropDownListFor(model => model.AssetsGroupId,
+                                    new SelectList(Model.AssetsGroupList, "assetgrp_id", "assetgrp_name", Model.AssetsGroupId),
+                                    new { @class = "form-control", id = "ddlAssetGroup" })
+                            </div>
+                            <div class="col-md-2 col-sm-12 pl-0">
+                                <label class="col-form-label label-align">@Resource.Status</label>
+                                @Html.DropDownListFor(model => model.AR_status, new SelectList(Model.statusLists, "status_id", "status_name"), new { @class = "form-control", id = "ddlStatus" })
+                            </div>
+                            <div class="col-md-1 col-sm-12 pl-0">
+                                <button type="button" class="btn btn-primary btn-sm margintop20" id="Btn_Search" onclick="FilterARList()"><i class="fa fa-search" aria-hidden="true"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12">
+        <div id="" class="x_panel margin_top_zero">
+            <div class="x_content">
+                <div class="card-box table-responsive dy_table">
+                    <div id="Tbl_list_FA_ART" class="sticky-table sticky-ltr-cells sb-container container-example1 height70VH">
+                        @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialRetirementList.cshtml")
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

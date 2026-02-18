@@ -1,0 +1,365 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.SalesAndDistribution.MIS.SalesTracking.SalestrackingModel
+
+@using EnRepMobileWeb.Resources;
+@using System.Data
+@if (Session["UserId"] == null)
+{
+    Response.Redirect("~/Login");
+}
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+<style>
+    .SourceType {
+        height: 28px;
+    }
+    button.multiselect {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+</style>
+<script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/SalesAndDistribution/MIS/SalesTracking/SalesTrackingJS.js"></script>
+<title>@Model.Title</title>
+@using (Html.BeginForm("SalesTrackingActionCommands", "SalesTracking", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <div class="row">
+        <div id="OrderInfo" class="modal fade show" role="dialog" aria-modal="true">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>{Order Number Details will be here}</h2>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+
+                    </div>
+                    <div class="modal-body">
+                        <table class="table table-bordered" id="ItemDetailsTbl">
+                            <thead>
+                                <tr>
+                                </tr>
+                                <tr>
+                                </tr>
+                                <tr>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="ItemInfo" class="modal fade show" role="dialog" aria-modal="true">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                @Html.Partial("~/Areas/Common/Views/_ItemInfomation.cshtml")
+
+            </div>
+        </div>
+        <div id="PackListInfo" class="modal fade show" role="dialog" aria-modal="true">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>{Packing Details will be here}</h2>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+
+                    </div>
+                    <div class="modal-body">
+                        <table class="table table-bordered" id="ItemDetailsTbl">
+                            <thead>
+                                <tr>
+                                </tr>
+                                <tr>
+                                </tr>
+                                <tr>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="ShipmentInfo" class="modal fade show" role="dialog" aria-modal="true">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>{ShipmentDetails will be here}</h2>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+
+                    </div>
+                    <div class="modal-body">
+                        <table class="table table-bordered" id="ItemDetailsTbl">
+                            <thead>
+                                <tr>
+                                </tr>
+                                <tr>
+                                </tr>
+                                <tr>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="InvoiceInfo" class="modal fade show" role="dialog" aria-modal="true">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>{Invoice Number Details will be here}</h2>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+
+                    </div>
+                    <div class="modal-body">
+                        <table class="table table-bordered" id="">
+                            <thead>
+                                <tr>
+                                </tr>
+                                <tr>
+                                </tr>
+                                <tr>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="SaleReturnInfo" class="modal fade show" role="dialog" aria-modal="true">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>{Sale Return Details will be here}</h2>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+
+                    </div>
+                    <div class="modal-body">
+                        <table class="table table-bordered" id="ItemDetailsTbl">
+                            <thead>
+                                <tr>
+                                </tr>
+                                <tr>
+                                </tr>
+                                <tr>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Delivery Schedule -->
+        <div id="PTDeliverySchedule" class="modal fade" role="dialog">
+            <div class="modal-dialog" style=" max-width:700px;">
+                <!-- Modal content-->
+                <div id="ddldeliverysch">
+                    @Html.Partial("~/Areas/Common/Views/Comn_PartialMISOrderDeliverySchedule.cshtml")
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 col-sm-12 ">
+            <div class="x_panel mar_pad1 ">
+                <div class="x_content mar_pad1">
+                    <h2 class="col-md-7 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                    <div class="col-md-5 col-sm-12 heading_left_padding ">
+                        <div class="col-md-2 col-sm-12 text-right">
+                            <label class="col-form-label label-align">@Resource.Branch</label>
+                        </div>
+                        <div class="col-md-5 col-sm-12 pl-0 multiselectBranch">
+                            <div id="div_ddl_brlist">
+                                @Html.Partial("~/Areas/Common/Views/Comn_PartialBranchList.cshtml")
+                            </div>
+                            <span class="error_message" id="span_br" style="display: none;"></span>
+                            @Html.HiddenFor(model => model.hdnbr_ids, new { @id = "Hdn_brlist" })
+                        </div>
+                        @*<div id="" class="col-md-4 col-sm-12 no-margin">
+                            <div class="col-md-5 col-sm-12 no-margin" style="text-align:right;">
+                                <label class="col-form-label label-align">@Resource.ReportType</label>
+                            </div>
+                            <div class="col-md-7 col-sm-12 no-margin no-padding ">
+                                <select class="form-control" id="rpt_type" name="ReportType" onchange="OnChangeReportTypeddl()">
+                                    <option value="SU">Summary</option>
+                                    <option value="DE">Detailed</option>
+                                </select>
+                            </div>
+                        </div>*@
+                        <div id="" class="col-md-5 col-sm-12 no-margin no-padding ">
+                            <div class="col-md-5 col-sm-12 no-margin no-padding ">
+                                <label class="col-form-label label-align">@Resource.Order @Resource.Type</label>
+                            </div>
+                            <div class="col-md-7 col-sm-12 no-margin no-padding ">
+                                <select class="form-control" id="OrderType" name="TrackingOrderType" onchange="OnChangeStockByddl();">
+                                    <option value="A" selected="selected">All Orders</option>
+                                    <option value="P">Pending Orders</option>
+                                    <option value="O">Overdue Orders</option>
+                                </select>
+                                @Html.HiddenFor(m => m.OrderType1, new { @id = "hdnOrdertype1" })
+                                @Html.HiddenFor(m => m.OldOrderType1, new { @id = "hdnOrdertype1_old" })
+                                @Html.HiddenFor(m => m.sortColumn, new { @id = "HdnsortColumn" })
+                                @Html.HiddenFor(m => m.sortColumnDir, new { @id = "HdnsortColumnDir" })
+                                @Html.HiddenFor(m => m.SearchValue, new { @id = "HdnSearchValue" })
+                            </div>
+                        </div>
+                    </div>
+                       
+                        @*<div id="" class="col-md-3 col-sm-12 no-margin no-padding ">
+                <div class="col-md-3 col-sm-12 no-margin no-padding ">
+                    <label class="col-form-label label-align">@Resource.ReportType</label>
+                </div>
+                <div class="col-md-9 col-sm-12 no-margin no-padding ">
+                    <select class="form-control" id="ReportType" name="ReportType" onchange="OnChangeStockByddl();">
+                        <option value="" selected="selected">All Orders</option>
+                        <option value="">Pending Orders</option>
+                        <option value="">Overdue Orders</option>
+                    </select>
+                </div>
+            </div>*@
+                        <div class="x_title pad_mar ">
+                            <div class="col-md-12 col-sm-12 icon_tool padding_zero">
+                                <form class="available_stock pad_mar" action="" method="post" novalidate="">
+                                    <div class="col-md-12 col-sm-12 no-padding">
+                                        <div class="col-md-3 col-sm-12">
+                                            <label class="col-form-label label-align">@Resource.Order @Resource.Type </label>
+                                            <select id="ddlOrderType" class="form-control" name="OrderType" onchange="BindOrderNumberList();" multiple>
+                                                @*<option selected="selected" value="0">---All---</option>*@
+                                                <option value="D">Domestic</option>
+                                                <option value="E">Export</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3 col-sm-12 pl-0">
+                                            <label class="col-form-label label-align">@Resource.CustomerName </label>
+                                            @*@Html.DropDownListFor(model => model.CustId, new SelectList(Model.CustomersList, "CustId", "CustName"),/*commented by Hina on 04-12-2024*/
+                                new { @class = "form-control", @id = "ddlCustomersList", @name = "CustomersList", onchange = "BindOrderNumberList();" })*@
+                                            @Html.DropDownListFor(model => model.CustId, new SelectList(new List<SelectListItem>
+                                            {new SelectListItem {Text="---All---",Value="0" },}, "Value", "Text"),
+                                            new { @class = "form-control", @id = "ddlCustomersList", @name = "CustomerName", onchange = "BindOrderNumberList();", @multiple = "multiple" })
+                                        </div>
+                                        <div class="col-md-3 col-sm-12 pl-0">
+                                            <label class="col-form-label label-align">@Resource.OrderNumber </label>
+                                            @Html.DropDownListFor(model => model.OrderNo, new SelectList(Model.PoNumberList, "po_Value", "OrderNumber"),
+                                                    new { @class = "form-control", @id = "ddlOrderNumberlist", @name = "OrderNo", @multiple = "multiple" })
+                                        </div>
+                                        <div class="col-md-3 col-sm-12 pl-0">
+                                            <label class="col-form-label label-align">@Resource.Sales @Resource.Representative </label>
+                                            @Html.DropDownListFor(model => model.SlsPersId, new SelectList(Model.SalesPersons, "sls_pers_id", "sls_pers_name"),
+                                                   new { @class = "form-control", @id = "ddlSalesPerson", @name = "SalesPersonList", @multiple = "multiple" })
+                                        </div>
+                                        <div class="clearfix"></div>
+                                        <div class="col-md-3 col-sm-12">
+                                            <label class="col-form-label label-align">@Resource.ItemName </label>
+                                            @Html.DropDownListFor(model => model.ItemId, new SelectList(Model.ItemsList, "ItemId", "ItemName"),
+                                                   new { @class = "form-control", @id = "ddlItemsList", @name = "ItemsList"/*, @multiple = "multiple" */})
+                                        </div>
+                                        <div class="col-md-2 col-sm-12 pl-0">
+                                            <label class="col-form-label label-align">@Resource.Currency </label>
+                                            @Html.DropDownListFor(model => model.CurrId, new SelectList(Model.Currencylist, "curr_id", "curr_name"),
+                                                  new { @class = "form-control", @id = "ddlCurrencylist", @name = "Currencylist", onchange = "BindOrderNumberList();", @multiple = "multiple" })
+                                        </div>
+                                        <div class="col-md-2 col-sm-12" id="div_CustomerCategory">
+                                            <label class="col-form-label label-align">@Resource.CustomerCategory </label>
+                                            @Html.DropDownListFor(model => model.category, new SelectList(Model.categoryLists, "Cat_id", "Cat_val"),
+                                           new { @class = "form-control", @id = "CustomerCategory", @name = "CustomerCategory", @multiple = "multiple" })
+                                        </div>
+                                        <div class="col-md-2 col-sm-12" id="div_CustomerPortfolio">
+                                            <label class="col-form-label label-align">@Resource.CustomerPortfolio </label>
+                                            @Html.DropDownListFor(model => model.portFolio, new SelectList(Model.portFolioLists, "CatPort_id", "CatPort_val"),
+                                           new { @class = "form-control", @id = "CustomerPortfolio", @name = "CustomerPortfolio", @multiple = "multiple" })
+                                        </div>
+                                        <div class="col-md-2 col-sm-12" id="div_CustomerZone">
+                                            <label class="col-form-label label-align">@Resource.Customer @Resource.Zone</label>
+                                            @Html.DropDownListFor(model => model.custzone, new SelectList(Model.custzoneList, "custzone_id", "custzone_val"),
+                                           new { @class = "form-control", @id = "ddlcustzone", @name = "ddlcustzone", @multiple = "multiple" })
+                                        </div>
+                                        <div class="col-md-2 col-sm-12" id="div_CustomerGroup">
+                                            <label class="col-form-label label-align">@Resource.Customer @Resource.Group</label>
+                                            @Html.DropDownListFor(model => model.custgroup, new SelectList(Model.custgroupList, "CustGrp_id", "CustGrp_val"),
+                                           new { @class = "form-control", @id = "ddlcustgroup", @name = "ddlcustgroup", @multiple = "multiple" })
+                                        </div>
+
+                                        <div class="col-md-2 col-sm-12" id="div_ddl_state">
+                                            <label class="col-form-label label-align">@Resource.State</label>
+                                            @Html.DropDownListFor(model => model.state, new SelectList(Model.StateLists, "state_id", "state_name"), new { @class = "form-control", @id = "ddl_state", @onchange = "onchangeState()", @name = "state" })
+                                            @Html.HiddenFor(model => model.Hidstate, new { @id = "Hdstate" })
+                                        </div>
+                                        <div class="col-md-2 col-sm-12" id="div_ddl_city">
+                                            <label class="col-form-label label-align">@Resource.City</label>
+                                            @Html.DropDownListFor(model => model.city, new SelectList(Model.CityLists, "city_id", "city_name"), new { @class = "form-control", @id = "ddl_city", @name = "city" })
+                                            @Html.HiddenFor(model => model.Hidcity, new { @id = "Hdcity" })
+                                        </div>
+                                        <div class="col-md-2 col-sm-12 pl-0">
+                                            <label class="col-form-label label-align">
+                                                @Resource.FromDate
+                                            </label>
+                                            @Html.TextBoxFor(model => model.FromDate, new { @class = "form-control", @id = "txtFromdate", @type = "date", @max = DateTime.Now.ToString("yyyy-MM-dd") })
+                                            <input id="hdFromdate" name="FromDate" type="hidden" value="2021-04-01">
+                                            <span id="PaymentDate" class="sr-only">(success)</span>
+                                        </div>
+                                        <div class="col-md-2 col-sm-12 pl-0">
+                                            <label class="col-form-label label-align">
+                                                @Resource.ToDate
+                                            </label>
+                                            @Html.TextBoxFor(model => model.ToDate, new { @class = "form-control", @id = "txtTodate", @placeholder = "dd-MM-yyyy", @type = "date", @max = DateTime.Now.ToString("yyyy-MM-dd") })
+                                            <span id="PaymentDate" class="sr-only">(success)</span>
+                                        </div>
+                                        <div class="col-md-1 col-sm-12">
+                                            <button type="button" class="btn btn-primary btn-sm margintop20" id="BtnSearch" onclick="GetPOTrackingMisDetails();"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 col-sm-12 ">
+            <div class="x_panel mar_pad1 ">
+                <div class="x_content mar_pad1">
+                    <div class="card-box table-responsive dy_table twice_scro_Sales_Tracking">
+                        <div class="sticky-table sticky-ltr-cells sb-container container-example1">
+                            <div id="MISsoTrackingDetails">
+                                @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialMisSOTrackingDetails.cshtml")
+                            </div>
+                            <div id="MISsoTrackingDetails_Pending" style="display:none;">
+                                @*@Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialMisSOTrackingDetailsPending.cshtml")*@
+                            </div>
+                            <div id="MISsoTrackingOverdues" style="display:none;">
+                                @*@Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialMisSOTrackingOverdues.cshtml")*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- page content end -->

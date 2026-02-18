@@ -1,0 +1,373 @@
+﻿@using EnRepMobileWeb.Resources;
+@{
+//string ValDigit = "0.";
+
+//var VD = Convert.ToInt32(Session["ValDigit"].ToString());
+//for (var i = 0; i < VD; i++)
+//{
+//    ValDigit += "0";
+//}
+//string QtyDigit = "0.";
+//var QD = Convert.ToInt32(Session["QtyDigit"].ToString());
+//for (var i = 0; i < QD; i++)
+//{
+//    QtyDigit += "0";
+//}
+//decimal total = 0;
+}
+<style>
+    #datatable-buttons6_wrapper .btn-group a:nth-child(3) {
+        display: inline-block;
+        position: absolute;
+    }
+</style>
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+
+@*<script src="~/Content/Scripts/ApplicationLayer/SalesAndDistribution/MIS/OrderDetail/OrderDetailJS.js"></script>*@
+@if (ViewBag.flag == "PendingOrders")
+{
+<table id="DataTable6" class="table table-striped width1400 rowhighlighttbl itmfrz" cellspacing="0" width="100%">
+    <thead>
+        <tr class="sticky-header">
+            <th width="3%">@Resource.SrNo</th>
+            <th width="10%" class="itmStick">@Resource.Order <br /> @Resource.Number</th>
+            <th hidden="hidden"></th>
+            <th width="9%">@Resource.Order <br /> @Resource.Date</th>
+            <th width="5%">@Resource.Customer @Resource.ReferenceNumber</th>
+            <th width="9%">@Resource.OrderType</th>
+            <th width="9%">@Resource.Currency</th>
+            <th width="15%">@Resource.Customer <br /> @Resource.Name</th>
+            <th>@Resource.Category</th>
+            <th>@Resource.Portfolio</th>
+            <th>@Resource.Customer @Resource.Zone</th>
+            <th>@Resource.Customer @Resource.Group</th>
+            <th>@Resource.State</th>
+            <th>@Resource.City</th>
+            <th width="8%">@Resource.Order <br /> @Resource.Quantity </th>
+            <th width="8%">@Resource.Order <br /> @Resource.Value </th>
+            <th width="8%">@Resource.Shipped  <br /> @Resource.Quantity </th>
+            <th width="8%">@Resource.Pending  <br /> @Resource.Quantity </th>
+            <th width="8%">@Resource.Pending  <br /> @Resource.Value </th>
+        </tr>
+    </thead>
+    <tbody id="">
+        @if (ViewBag.PendingOrderDetails != null)
+        {
+            var srno = 1;
+            foreach (System.Data.DataRow dr in ViewBag.PendingOrderDetails.Rows)
+            {
+
+        <tr>
+            <td>@srno</td>
+            <td id="txtsono" class="ItmNameBreak itmStick tditemfrz">@dr["app_so_no"].ToString()</td>
+            <td id="txtsodt" hidden="hidden">@dr["so_dt"].ToString()</td>
+            <td>@dr["so_dt1"].ToString()</td>
+            <td>@dr["ref_doc_no"].ToString()</td>
+            <td id="" class="center">@dr["sale_type"].ToString()</td>
+            <td id="curr_symbol" class="center">@dr["curr_symbol"].ToString()</td>
+            <td id="cust_name">@dr["cust_name"].ToString()</td>
+            <td>@dr["cust_catg"].ToString()</td>
+            <td>@dr["cust_port"].ToString()</td>
+            <td>@dr["cust_zone"].ToString()</td>
+            <td>@dr["cust_group"].ToString()</td>
+        <td>@dr["cust_state"].ToString()</td>
+        <td>@dr["cust_city"].ToString()</td>
+            <td class="num_right" id="txt_OcAmtSpec">
+                <div class=" col-sm-11 no-padding">
+                    @dr["ord_qty_base"].ToString()
+                </div>
+                <div class="col-sm-1 i_Icon">
+                    <button type="button" class="calculator" onclick="PendingOrderItemWise(event)" data-toggle="modal" data-target="#PendingOrderDetail" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.OrderDetail">   </button>
+                </div>
+            </td>
+            <td class="num_right" id="">
+                <div class=" col-sm-11 no-padding">
+                    @dr["OrderValue"].ToString()
+                </div>
+                <div class="col-sm-1 i_Icon">
+                    <button type="button" class="calculator" onclick="PendingOrderItemWise(event)" data-toggle="modal" data-target="#PendingOrderDetail" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.OrderDetail">   </button>
+                </div>
+            </td>
+            <td class="num_right" id="txt_OcAmt">
+                <div class=" col-sm-11 no-padding">
+                    @dr["ship_qty"].ToString()
+                </div>
+                <div class="col-sm-1 i_Icon">
+                    <button type="button" class="calculator" onclick="PendingOrderItemWise(event)" data-toggle="modal" data-target="#PendingOrderDetail" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.OrderDetail">   </button>
+                </div>
+            </td>
+            <td class="num_right" id="txt_OcAmt">
+                <div class=" col-sm-11 no-padding">
+                    @dr["PendingQty"].ToString()
+                </div>
+                <div class="col-sm-1 i_Icon">
+                    <button type="button" class="calculator" onclick="PendingOrderItemWise(event)" data-toggle="modal" data-target="#PendingOrderDetail" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.OrderDetail">   </button>
+                </div>
+            </td>
+
+            <td class="num_right" id="">
+                <div class=" col-sm-11 no-padding">
+                    @dr["PendingValue"].ToString()
+                </div>
+                <div class="col-sm-1 i_Icon">
+                    <button type="button" class="calculator" onclick="PendingOrderItemWise(event)" data-toggle="modal" data-target="#PendingOrderDetail" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.OrderDetail">   </button>
+                </div>
+            </td>
+        </tr>
+                srno = srno + 1;
+            }
+        }
+    </tbody>
+    <tfoot>
+        @if (ViewBag.PendingOrdersTotal != null)
+        {
+            foreach (System.Data.DataRow dr in ViewBag.PendingOrdersTotal.Rows)
+            {
+        <tr class="total">
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td hidden="hidden">&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td align="right"><strong>Total</strong></td>
+            <td class="num_right"><strong>@dr["ord_qty_base"].ToString()</strong></td>
+            <td class="num_right"><strong>@dr["OrderValue"].ToString()</strong></td>
+            <td class="num_right"><strong>@dr["ship_qty"].ToString()</strong></td>
+            <td class="num_right"><strong>@dr["PendingQty"].ToString()</strong></td>
+            <td class="num_right"><strong>@dr["PendingValue"].ToString()</strong></td>
+        </tr>
+            }
+        }
+    </tfoot>
+</table>
+}
+else
+{
+<table id="DataTable6" class="table table-striped width1800 rowhighlighttbl itmfrz" cellspacing="0" width="100%">
+    <thead>
+        <tr class="sticky-header">
+            <th width="7%" class="itmStick">@Resource.Order @Resource.Number</th>
+            <th width="7%">@Resource.Order @Resource.Date </th>
+            <th width="5%">@Resource.Customer @Resource.ReferenceNumber</th>
+            <th width="7%">@Resource.Currency</th>
+            <th width="8%">@Resource.Customer @Resource.Name</th>
+            <th>@Resource.Category</th>
+            <th>@Resource.Portfolio</th>
+            <th>@Resource.Customer @Resource.Zone</th>
+            <th>@Resource.Customer @Resource.Group</th>
+            <th>@Resource.State</th>
+            <th>@Resource.City</th>
+            <th width="3%">@Resource.SrNo</th>
+            <th width="15%">@Resource.ItemName</th>
+            <th width="4%">@Resource.UOM</th>
+            <th width="7%">@Resource.Order <br /> @Resource.Quantity</th>
+            <th width="7%">@Resource.Order <br /> @Resource.Price</th>
+            <th width="7%">@Resource.Order <br /> @Resource.Value</th>
+            <th width="7%">@Resource.Shipped  <br /> @Resource.Quantity </th>
+            <th width="7%">@Resource.Shipped  <br /> @Resource.Value </th>
+            <th width="7%">@Resource.Pending <br /> @Resource.Quantity </th>
+            <th width="7%">@Resource.Pending <br /> @Resource.Value </th>
+
+        </tr>
+    </thead>
+    <tbody id="">
+        @if (ViewBag.PendingOrderDetails != null)
+        {
+            foreach (System.Data.DataRow dr in ViewBag.PendingOrderDetails.Rows)
+            {
+        <tr>
+            <td id="ordNumber" class="ItmNameBreak itmStick tditemfrz">
+                @dr["app_so_no"].ToString()
+                <input hidden="hidden" id="hdnappsono" value="@dr["app_so_no"].ToString()" />
+            </td>
+            <td id="ordDate">@dr["so_dt"].ToString()</td>
+            <td>@dr["ref_doc_no"].ToString()</td>
+            <td>@dr["curr_name"].ToString()</td>
+            <td>@dr["cust_name"].ToString()</td>
+            <td>@dr["cust_catg"].ToString()</td>
+            <td>@dr["cust_port"].ToString()</td>
+            <td>@dr["cust_zone"].ToString()</td>
+            <td>@dr["cust_group"].ToString()</td>
+            <td>@dr["cust_state"].ToString()</td>
+            <td>@dr["cust_city"].ToString()</td>
+            <td>@dr["srNo"].ToString()</td>
+            <td>
+                <div class="col-sm-11 no-padding">
+                    @dr["item_name"].ToString()
+                </div>
+                <div class="col-sm-1 i_Icon">
+                    <input hidden="hidden" id="Hdn_item_id" value="@dr["item_id"].ToString()" />
+                    <button type="button" class="calculator" onclick="OnClickIconBtn(event)" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="Item Information">   </button>
+                </div>
+            </td>
+            <td>@dr["uom_name"].ToString()</td>
+            <td class="num_right">
+                <div class="col-md-10 col-sm-12 no-padding num_right ">
+                    @dr["OrderQuantity"].ToString()
+                </div>
+                <div class="col-sm-2  i_Icon no-padding">
+                    <button type="button" id="OrderDeliverySchedule" class="calculator" onclick="OnclickDeliverySchedule(event);" data-toggle="modal" data-target="#MISOrderDeliverySchedule " data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.DeliveryDetail">  </button>
+                </div>
+            </td>
+            <td class="num_right">@dr["OrderPrice"].ToString()</td>
+            <td class="num_right">@dr["OrderValue"].ToString()</td>
+            <td class="num_right">@dr["ship_qty"].ToString()</td>
+            <td class="num_right">@dr["ShipValue"].ToString()</td>
+            <td class="num_right">@dr["PendingQty"].ToString()</td>
+            <td class="num_right">@dr["PendingVal"].ToString()</td>
+        </tr>
+            }
+        }
+    </tbody>
+    <tfoot>
+        @if (ViewBag.PendingOrdDtlTotal != null)
+        {
+            foreach (System.Data.DataRow dr in ViewBag.PendingOrdDtlTotal.Rows)
+            {
+        <tr class="total">
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td align="right"><strong>Total</strong></td>
+            <td class="num_right"><strong>@dr["OrderQuantity"].ToString()</strong></td>
+            <td class="num_right"><strong>@dr["OrderPrice"].ToString()</strong></td>
+            <td class="num_right"><strong>@dr["OrderValue"].ToString()</strong></td>
+            <td class="num_right"><strong>@dr["ship_qty"].ToString()</strong></td>
+            <td class="num_right"><strong>@dr["ShipValue"].ToString()</strong></td>
+            <td class="num_right"><strong>@dr["PendingQty"].ToString()</strong></td>
+            <td class="num_right"><strong>@dr["PendingVal"].ToString()</strong></td>
+        </tr>
+            }
+        }
+    </tfoot>
+</table>
+    @*<table id="DataTable6" class="table table-striped width2600 rowhighlighttbl" cellspacing="0" width="100%">
+            <thead>
+                <tr class="sticky-header">
+                    <th width="2%">@Resource.SrNo</th>
+                    <th width="5%">@Resource.Customer <br /> @Resource.Name</th>
+                    <th width="5%">@Resource.RegionName</th>
+                    <th width="5%">@Resource.Order  @Resource.Type</th>
+                    <th width="4%">@Resource.Currency</th>
+                    <th hidden="hidden"></th>
+                    <th width="5%">@Resource.Sales <br /> @Resource.Representative</th>
+                    <th width="5%">@Resource.Order <br /> @Resource.Number </th>
+                    <th width="5%">@Resource.Order <br /> @Resource.Date</th>
+                    <th hidden="hidden"></th>
+                    <th width="5%">@Resource.ItemName</th>
+                    <th width="4%">@Resource.UOM</th>
+                    <th width="5%">@Resource.Order <br /> @Resource.Quantity</th>
+                    <th width="5%">@Resource.Price <br /> @Resource.InSpecific </th>
+                    <th width="5%">@Resource.Price <br /> @Resource.InBase </th>
+                    <th width="5%">@Resource.GrossValue <br /> @Resource.InSpecific</th>
+                    <th width="5%">@Resource.GrossValue <br /> @Resource.InBase</th>
+                    <th width="5%">@Resource.TaxAmount <br /> @Resource.InSpecific</th>
+                    <th width="5%">@Resource.TaxAmount <br /> @Resource.InBase</th>
+                    <th width="5%">@Resource.OtherCharges <br /> @Resource.InSpecific </th>
+                    <th width="5%">@Resource.OtherCharges <br /> @Resource.InBase </th>
+                    <th width="5%">@Resource.Order @Resource.Amount  <br /> @Resource.InSpecific </th>
+                    <th width="5%">@Resource.Order @Resource.Amount  <br /> @Resource.InBase </th>
+                </tr>
+            </thead>
+            <tbody id="">
+                <tr>
+                    <td>01</td>
+                    <td>32AMBPG7773M015</td>
+                    <td>MEA</td>
+                    <td>Domestic</td>
+                    <td>INR</td>
+                    <td hidden="hidden">&nbsp;</td>
+                    <td>Dilip</td>
+                    <td>B1/01/24/DSO0000186</td>
+                    <td>20-01-2024</td>
+                    <td hidden="hidden">&nbsp;</td>
+                    <td>
+                        <div class="col-sm-11 i_Icon"><span id="">1014</span></div>
+                        <input hidden="hidden" id="Hdn_item_id" value="ITM0002314">
+                        <div class="col-sm-1 i_Icon">
+                            <button type="button" id="" class="calculator" onclick="OnClickIconBtn(event)" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false">
+                                <img src="/Content/Images/iIcon1.png" alt="" title="Item Information">
+                            </button>
+                        </div>
+                    </td>
+                    <td>Pcs</td>
+                    <td class="num_right">
+                        <div class="col-md-10 col-sm-12 no-padding num_right ">
+                            15.000
+                        </div>
+                        <div class="col-sm-2  i_Icon no-padding">
+                            <button type="button" id="OrderDeliverySchedule" class="calculator" onclick="OnclickDeliverySchedule(event);" data-toggle="modal" data-target="#MISOrderDeliverySchedule " data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="Delivery Schedule">  </button>
+                        </div>
+                    </td>
+                    <td class="num_right">1199.0000</td>
+                    <td class="num_right">1199.0000</td>
+                    <td class="num_right">15826.8000</td>
+                    <td class="num_right">15826.8000</td>
+                    <td class="num_right">2848.8200</td>
+                    <td class="num_right">2848.8200</td>
+                    <td class="num_right">0.0000</td>
+                    <td class="num_right">0.0000</td>
+                    <td class="num_right">18675.6200</td>
+                    <td class="num_right">18675.6200</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr class="total">
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td hidden="hidden">&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td hidden="hidden">&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td align="right"><strong>Total</strong></td>
+                    <td class="num_right"><strong>15826.8000</strong></td>
+                    <td class="num_right"><strong>15826.8000</strong></td>
+                    <td class="num_right"><strong>2848.8200</strong></td>
+                    <td class="num_right"><strong>2848.8200</strong></td>
+                    <td class="num_right"><strong>0.0000</strong></td>
+                    <td class="num_right"><strong>0.0000</strong></td>
+                    <td class="num_right"><strong>18675.6200</strong></td>
+                    <td class="num_right"><strong>18675.6200</strong></td>
+                </tr>
+            </tfoot>
+        </table>*@
+}
+@{
+    if (Model.ODFilter != null)
+    {
+        if (Model.ODFilter == "ODFilter")
+        {
+            @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+            @Scripts.Render("~/Content/Scripts/DatatablesJs")
+            Model.ODFilter = null;
+        }
+    }
+}
+
+

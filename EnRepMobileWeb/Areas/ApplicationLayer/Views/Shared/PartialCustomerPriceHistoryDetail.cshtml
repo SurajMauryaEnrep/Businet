@@ -1,0 +1,81 @@
+﻿@using EnRepMobileWeb.Resources;
+<style>
+    #TblCPLPriceHistoryDetail th {
+        background-color: #e7f1fa;
+    }
+</style>
+<!-- Modal content-->
+<div class="modal-content">
+    <div class="modal-header">
+        <h2>@Resource.PriceHistory</h2>
+        <button type="button" class="close" data-dismiss="modal">×</button>
+    </div>
+    <div class="modal-body pop_top">
+        <div class="col-md-6 col-sm-12 pl-0">
+            <label class="col-form-label label-align">@Resource.ItemName</label>
+            <input id="CPLPopupItemName" class="form-control" autocomplete="off" type="text" name="ItemName" required="required" placeholder="@Resource.ItemName" onblur="this.placeholder='Item Name'" disabled="">
+            <input id="CPLPopupItemId" hidden>
+        </div>
+        <div class="col-md-2 col-sm-12 pl-0">
+            <label class="col-form-label label-align">@Resource.UOM</label>
+            <input id="CPLPopupUOM" class="form-control" autocomplete="off" type="text" name="UOM" required="required" placeholder="@Resource.UOM" onblur="this.placeholder='UOM'" disabled="">
+        </div>
+        <div class="clearfix"></div>
+        @*<div class="BatchDetail">*@
+        @*<div id="ItemStockBatchWise">*@
+       
+            <div id="CPLPriceHistoryDetail">
+                <div class="tableFixHead">
+                    <table id="TblCPLPriceHistoryDetail" class="table table-bordered margin10">
+                        <thead>
+                            <tr class="headings">
+                                <th style="border-bottom: 1px solid #ccc !important; "> &nbsp;</th>
+                                <th style="border-bottom: 1px solid #ccc !important; "> &nbsp;</th>
+                                <th colspan="5" style="text-align:center; border-bottom: 1px solid #ccc !important; "> @Resource.BeforeRevision</th>
+                                @*<th colspan="4" style="text-align:center; border-bottom: 1px solid #ccc !important;"> @Resource.AfterRevision</th>*@
+                            </tr>
+                            <tr class="headings">
+                                <th> @Resource.SrNo</th>
+                                <th width="15%"> @Resource.RevisionDate</th>
+                                <th width="15%"> @Resource.MRP <br /> @Resource.IncludeTax</th>
+                                <th width="15%"> @Resource.MRP <br /> @Resource.ExcludeTax</th>
+                                <th width="15%">  @Resource.MRPDiscount <br /> @Resource.InPercentage</th>
+                                <th width="15%">  @Resource.Discount <br /> @Resource.InPercentage</th>
+                                <th> @Resource.EffectivePrice</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                           @if (ViewBag.PrcHistryItemDetails != null)
+                           {
+                               var rowIdx = 0;
+                               foreach (System.Data.DataRow Row in ViewBag.PrcHistryItemDetails.Rows)
+                               {
+                                   rowIdx++;
+                            <tr>
+                                <td>@rowIdx</td>
+                                <td class="center">@Row["mod_date"].ToString()</td>
+                                <td class="num_right">@Row["sale_price_inc_tax"].ToString()</td>
+                                <td class="num_right">@Row["sale_price"].ToString()</td>
+                                <td class="num_right">@Row["disc_mrp"].ToString()</td>
+                                <td class="num_right">@Row["disc_perc"].ToString()</td>
+                                <td class="num_right">@Row["effect_price"].ToString()</td>
+                            </tr>
+                                     }
+                                 }
+                         </tbody>
+                    </table>
+                </div>
+            </div>
+       
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" id="CPLPrcHistryDtlDiscardAndExitBtn" onclick="OnClickDiscardAndExit()">Discard &amp; Exit</button>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+

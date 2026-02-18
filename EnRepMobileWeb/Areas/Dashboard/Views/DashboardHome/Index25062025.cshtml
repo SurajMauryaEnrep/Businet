@@ -1,0 +1,1245 @@
+﻿@using EnRepMobileWeb.Resources;
+@{
+    ViewBag.Title = "Dashboard";
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+<script src="~/Content/Css/build/js/sweetalert.js"></script>
+<link href="~/Content/Css/build/css/sweetalert.css" rel="stylesheet" />
+<script src="~/Content/Css/morris.js/morris.min.js"></script>
+<script src="~/Content/Scripts/GraphJs/graph.js"></script>
+<title>@ViewBag.Title</title>
+@if (Session["UserId"] == null)
+{
+    Response.Redirect("~/Login");
+}
+<style>
+.flex-container {
+    display: flex;
+    justify-content: center;
+}
+.flex-container > div {
+    /*  background-color: #f1f1f1;*/
+    width: auto;
+}
+.nav-md .container.body .right_col {
+    padding: 10px 10px 0;
+    margin-left: 20%;
+    width: 80%;
+    height: 70vh;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+</style>
+<script>
+    function increaseHeight() {
+        debugger
+        let div = document.getElementById("dashboardTicker");
+        let divTicker = document.getElementById("TickerScrollerMain");
+        let incrementHight = 180;
+        let baseHight = 85;
+        divTicker.classList.remove("flex-nowrap");
+        if (div.offsetHeight == (baseHight + incrementHight)) {
+            baseHight = baseHight - incrementHight;
+            divTicker.classList.add("flex-nowrap");
+        }
+        div.style.height = (baseHight + incrementHight) + "px"; // Increase height by 50px
+    }
+    function tickersScroll() {
+        const collection = wwLib.getFrontDocument().querySelector('#dashboardTicker').parentElement;
+        collection.scrollLeft += 100;
+    }
+</script>
+<div role="main" id="rightPageContent">
+    <div>
+        <div class="row">
+            <div class="col-md-12 no-padding">
+                <div class="col-md-12 col-sm-12 no-padding">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="#">Login</a></li>
+                            <li class="breadcrumb-item " aria-current="page"><a href="#" class="active">Dashboard</a></li>                            
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-md-12 col-sm-12">
+                    @if (Session["DBFilterType"] != null)
+                    {
+                        var YChecked = "";
+                        var MChecked = "";
+                        var CChecked = "";
+                        if (Session["DBFilterType"].ToString() == "Y") { YChecked = "checked='checked'"; }
+                        if (Session["DBFilterType"].ToString() == "M") { MChecked = "checked='checked'"; }
+                        if (Session["DBFilterType"].ToString() == "C") { CChecked = "checked='checked'"; }
+                        <div class="ytd col-md-2 col-sm-12 margin5 float-left pl-1">
+                            YTD
+                            <input type="radio" class="" name="filter" id="filterY" value="Y" @YChecked onchange="OnChange_yearMnth();" />
+                            MTD
+                            <input type="radio" class="" name="filter" id="filterM" value="M" @MChecked onchange="OnChange_yearMnth();" />
+                            @Resource.Custom
+                            <input type="radio" class="" name="filter" id="Custom" value="C" @CChecked onchange="OnChange_yearMnth();" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="ytd col-md-2 col-sm-12 margin5 float-left pl-1">
+                            YTD
+                            <input type="radio" class="" name="filter" id="filterY" value="Y" checked="checked" onchange="OnChange_yearMnth();" />
+                            MTD
+                            <input type="radio" class="" name="filter" id="filterM" value="M" onchange="OnChange_yearMnth();" />
+                            @Resource.Custom
+                            <input type="radio" class="" name="filter" id="Custom" value="C" onchange="OnChange_yearMnth();" />
+                        </div>
+                    }
+                    <div class="col-md-2 col-sm-12">
+                        <label class="col-form-label label-align col-md-4 col-sm-12" style="text-align:right;"> @Resource.From</label>
+                        <input class="form-control col-md-8 col-sm-12" min="@ViewBag.FromFyMindate.ToString()" max="@ViewBag.ToFyMaxdate.ToString()" value="@ViewBag.CFYStartDate.ToString()" id="txtFromdate" onchange="FromToDateValidation()" name="FromDate" type="date" disabled>
+                    </div>
+                    <div class="col-md-2 col-sm-12 pl-0 pr-0">
+                        <label class="col-form-label label-align col-md-5 col-sm-12" style="text-align:right;">@Resource.ToDate</label>
+                        @if (Session["DBToDt"] != null)
+                        {
+                            <input class="form-control col-md-7 col-sm-12" data-val="true" id="txtTodate" onchange="FromToDateValidation()" name="ToDate" min="@ViewBag.FromFyMindate.ToString()" max="@ViewBag.ToFyMaxdate.ToString()" value='@Convert.ToDateTime(Session["DBToDt"]).ToString("yyyy-MM-dd")' type="date" disabled>
+                        }
+                        else
+                        {
+                            <input class="form-control col-md-7 col-sm-12" data-val="true" id="txtTodate" onchange="FromToDateValidation()" name="ToDate" min="@ViewBag.FromFyMindate.ToString()" max="@ViewBag.ToFyMaxdate.ToString()" value="@DateTime.Now.ToString("yyyy-MM-dd")" type="date" disabled>
+                        }
+                    </div>
+                    <div class="col-md-1 col-sm-12 no-padding no-margin" style="text-align: right;">
+                        <label class="col-form-label label-align">@Resource.Branch</label>
+                    </div>
+                    <div class="col-md-4 col-sm-12 pr-0">
+                        <div class="col-md-10 col-sm-12 multiselectBranch">
+                            <select id="ddl_branch" multiple="multiple" name="ddl_branch">
+                                @if (ViewBag.br_list != null)
+                                {
+                                    foreach (System.Data.DataRow row in ViewBag.br_list.Rows)
+                                    {
+                                        if (ViewBag.vb_br_id == @row["Comp_Id"].ToString())
+                                        {
+                                            <option selected="selected" value="@row["Comp_Id"].ToString()">@row["comp_nm"].ToString()</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@row["Comp_Id"].ToString()">@row["comp_nm"].ToString()</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-2 col-sm-12 pr-0 float-right ali">
+                            <button type="button" class="btn btn-primary btn-sm" id="BtnSearch" onclick="OnClickSearchBtn();" disabled><i class="fa fa-search" aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div style="width:100%; float:left">
+                <div class="tick_con">
+                    <div id="dashboardTicker" class="top_tiles">
+                        <div class="scroller-container">
+                            <div class="scroller" id="TickerScroller">
+                                <div class="row flex-nowrap " id="TickerScrollerMain">
+                                    @if (ViewBag.UserPermision != null)
+                                    {
+                                        foreach (System.Data.DataRow Row in ViewBag.UserPermision.Rows)
+                                        {
+                                            if (Row["feature_id"].ToString() == "101005")
+                                            {
+                                                <div class="animated flipInY col-md-55 pr-0 dash_tick_width">
+                                                    <div class="tile-stats tile-color-white col-md-12 col-md-6 col-sm-12 pl-0 pr-0">
+                                                        <div class="Dash_Img Dash_Img_Revenue"><img src="~/Content/Images/TotalRevenue.png" class="img-fluid" /></div>
+                                                        <div class="Dash_Con pl-0 pr-0">
+                                                            <div class="count">@Resource.Total @Resource.Revenue</div>
+                                                            <h3><span id="span_revenue"></span></h3>
+                                                            <div class="difference_positive">+0.00 L (0%)</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                            if (Row["feature_id"].ToString() == "101010")
+                                            {
+                                                <div class="animated flipInY col-md-55 pr-0 dash_tick_width">
+                                                    <div class="tile-stats tile-color-white col-md-12 col-md-6 col-sm-12 pl-0 pr-0">
+                                                        <div class="Dash_Img Dash_Img_Expenses"><img src="~/Content/Images/TotalExpense.png" class="img-fluid" /></div>
+                                                        <div class="Dash_Con pl-0 pr-0">
+                                                            <div class="count">@Resource.Total  @Resource.Expenses</div>
+                                                            <h3><span id="span_Expenses"></span></h3>
+                                                            <div class="difference_positive">+0.00 L (0%)</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                            if (Row["feature_id"].ToString() == "101015")
+                                            {
+                                                <div class="animated flipInY col-md-55 pr-0 dash_tick_width">
+                                                    <div class="tile-stats tile-color-white col-md-12 col-md-6 col-sm-12 pl-0 pr-0">
+                                                        <div class="Dash_Img Dash_Img_GrossProfit"><img src="~/Content/Images/GrossProfit.png" class="img-fluid" /></div>
+                                                        <div class="Dash_Con pl-0 pr-0">
+                                                            <div class="count">@Resource.GrossProfit</div>
+                                                            <h3><span id="span_GrossProfit"></span></h3>
+                                                            <div class="difference_positive">+0.00 L (0%)</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                            if (Row["feature_id"].ToString() == "101020")
+                                            {
+                                                <div class="animated flipInY col-md-55 pr-0 dash_tick_width">
+                                                    <div class="tile-stats tile-color-white col-md-12 col-md-6 col-sm-12 pl-0 pr-0">
+                                                        <div class="Dash_Img Dash_Img_Production"><img src="~/Content/Images/Production.png" class="img-fluid" /></div>
+                                                        <div class="Dash_Con pl-0 pr-0">
+                                                            <div class="count">@Resource.Production</div>
+                                                            <h3><span id="span_Production"></span></h3>
+                                                            <div class="difference_positive">+0.00 L (0%)</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                            if (Row["feature_id"].ToString() == "101025")
+                                            {
+                                                <div class="animated flipInY col-md-55 dash_tick_width">
+                                                    <div class="tile-stats tile-color-white col-md-12 col-md-6 col-sm-12 pl-0 pr-0">
+                                                        <div class="Dash_Img Dash_Img_Receivable"><img src="~/Content/Images/Receivable.png" class="img-fluid" /></div>
+                                                        <div class="Dash_Con pl-0 pr-0">
+                                                            <div class="count">@Resource.Receivable</div>
+                                                            <h3><span id="span_Receivable"></span></h3>
+                                                            <div class="difference_positive">+0.00 L (0%)</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                            if (Row["feature_id"].ToString() == "101030")
+                                            {
+                                                <div class="animated flipInY col-md-55 pr-0 dash_tick_width">
+                                                    <div class="tile-stats tile-color-white col-md-12 col-md-6 col-sm-12 pl-0 pr-0">
+                                                        <div class="Dash_Img Dash_Img_Payable"><img src="~/Content/Images/Payable.png" class="img-fluid" /></div>
+                                                        <div class="Dash_Con pl-0 pr-0">
+                                                            <div class="count">@Resource.Payable</div>
+                                                            <h3> <span id="span_Payable"></span> </h3>
+                                                            <div class="difference_positive">+0.00 L (0%)</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                            if (Row["feature_id"].ToString() == "101225")
+                                            {
+                                                <div class="animated flipInY col-md-55 pr-0 dash_tick_width">
+                                                    <div class="tile-stats tile-color-white col-md-12 col-md-6 col-sm-12 pl-0 pr-0">
+                                                        <div class="Dash_Img Dash_Img_DomesticPurchase"><img src="~/Content/Images/DomesticPurchase.png" class="img-fluid" /></div>
+                                                        <div class="Dash_Con pl-0 pr-0">
+                                                            <div class="count">@Resource.DomesticPurchase</div>
+                                                            <h3> <span id="span_DomesticPurchase"></span> </h3>
+                                                            <div class="difference_positive">+0.00 L (0%)</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                            if (Row["feature_id"].ToString() == "101230")
+                                            {
+                                                <div class="animated flipInY col-md-55 pr-0 dash_tick_width">
+                                                    <div class="tile-stats tile-color-white col-md-12 col-md-6 col-sm-12 pl-0 pr-0">
+                                                        <div class="Dash_Img Dash_Img_DomesticSales"><img src="~/Content/Images/DomesticSales.png" class="img-fluid" /></div>
+                                                        <div class="Dash_Con pl-0 pr-0">
+                                                            <div class="count">@Resource.DomesticSales</div>
+                                                            <h3> <span id="span_DomesticSales"></span></h3>
+                                                            <div class="difference_positive">+0.00 L (0%)</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                            if (Row["feature_id"].ToString() == "101245")
+                                            {
+                                                <div class="animated flipInY col-md-55 pr-0 dash_tick_width">
+                                                    <div class="tile-stats tile-color-white col-md-12 col-md-6 col-sm-12 pl-0 pr-0">
+                                                        <div class="Dash_Img Dash_Img_SaleReturn"><img src="~/Content/Images/SaleReturn.png" class="img-fluid" /></div>
+                                                        <div class="Dash_Con pl-0 pr-0">
+                                                            <div class="count">@Resource.SaleReturn</div>
+                                                            <h3> <span id="span_SaleReturn"></span></h3>
+                                                            <div class="difference_positive">+0.00 L (0%)</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                            if (Row["feature_id"].ToString() == "101250")
+                                            {
+                                                <div class="animated flipInY col-md-55 pr-0 dash_tick_width">
+                                                    <div class="tile-stats tile-color-white col-md-12 col-md-6 col-sm-12 pl-0 pr-0">
+                                                        <div class="Dash_Img Dash_Img_PurchaseReturn"><img src="~/Content/Images/PurchaseReturn.png" class="img-fluid" /></div>
+                                                        <div class="Dash_Con pl-0 pr-0">
+                                                            <div class="count">@Resource.PurchaseReturn</div>
+                                                            <h3> <span id="span_PurchaseReturn"></span></h3>
+                                                            <div class="difference_positive">+0.00 L (0%)</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                            if (Row["feature_id"].ToString() == "101235")
+                                            {
+                                                <div class="animated flipInY col-md-55 pr-0 dash_tick_width">
+                                                    <div class="tile-stats tile-color-white col-md-12 col-md-6 col-sm-12 pl-0 pr-0">
+                                                        <div class="Dash_Img Dash_Img_ExportSales"><img src="~/Content/Images/ExportSales.png" class="img-fluid" /></div>
+                                                        <div class="Dash_Con pl-0 pr-0">
+                                                            <div class="count">@Resource.ExportSales</div>
+                                                            <h3><span id="span_ExportSales"></span> </h3>
+                                                            <div class="difference_positive">+0.00 L (0%)</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                            if (Row["feature_id"].ToString() == "101240")
+                                            {
+                                                <div class="animated flipInY col-md-55 dash_tick_width">
+                                                    <div class="tile-stats tile-color-white col-md-12 col-md-6 col-sm-12 pl-0 pr-0">
+                                                        <div class="Dash_Img Dash_Img_ImportPurchase"><img src="~/Content/Images/ExportPurchase.png" class="img-fluid" /></div>
+                                                        <div class="Dash_Con pl-0 pr-0">
+                                                            <div class="count">@Resource.ImportPurchase</div>
+                                                            <h3><span id="span_ImportPurchase"></span> </h3>
+                                                            <div class="difference_positive">+0.00 L (0%)</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="width:4%; float:left; text-align:right;">
+                    <div class="col-md-12 col-sm-12 Dash_Ticker no-padding">
+                        <button onclick="increaseHeight()"> <img src="~/Content/Images/DropTicker.png" class="img-fluid" /></button>
+                    </div>
+                    <div class="col-md-12 col-sm-12 Dash_Ticker no-padding">
+                        <button onclick="scrollLogos(1)"> <img src="~/Content/Images/RightScroll.png" class="img-fluid" /></button>
+                    </div>
+                    <div class="col-md-12 col-sm-12 Dash_Ticker no-padding  ">
+                        <button onclick="scrollLogos(-1)"> <img src="~/Content/Images/LeftScroll.png" class="img-fluid" /></button>
+                    </div>
+                    @*<button class="arrow" onclick="scrollLogos(-1)">←</button>
+                        <button class="arrow" onclick="scrollLogos(1)">→</button>*@
+                </div>
+            </div>
+            @*<div class="col-md-11 col-sm-12 pl-0 pr-0">
+                </div>*@
+            @*<div class="col-md-1 col-sm-12 ">
+                    <div class="col-md-12 col-sm-12 Dash_Ticker">
+                        <button onclick="increaseHeight()"> <img src="~/Content/Images/DropTicker.png" class="img-fluid" /></button>
+                    </div>
+                    <div class="col-md-12 col-sm-12 Dash_Ticker">
+                        <button> <img src="~/Content/Images/RightScroll.png" class="img-fluid" /></button>
+                    </div>
+                    <div class="col-md-12 col-sm-12 Dash_Ticker">
+                        <button> <img src="~/Content/Images/LeftScroll.png" class="img-fluid" /></button>
+                    </div>
+                </div>*@
+            @*<div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img class="d-block w-100" src="..." alt="First slide">
+                        </div>
+                        <div class="carousel-item">
+                            <img class="d-block w-100" src="..." alt="Second slide">
+                        </div>
+                        <div class="carousel-item">
+                            <img class="d-block w-100" src="..." alt="Third slide">
+                        </div>
+                    </div>
+                    <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Previous</span>
+                    </a>
+                    <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Next</span>
+                    </a>
+                </div>*@
+        </div>
+        @*<div class="row margin10" style="display: inline-block; width:100%; overflow-x:scroll;">
+                <div class="top_tiles" style="width:2400px;">
+                    @if (ViewBag.UserPermision != null)
+                    {
+                        foreach (System.Data.DataRow Row in ViewBag.UserPermision.Rows)
+                        {
+                            if (Row["feature_id"].ToString() == "101005")
+                            {
+                                <div class="animated flipInY col-lg-1 col-md-6 col-sm-12 ">
+                                    <div class="tile-stats tile-color-blue">
+                                        <div class="count">@Resource.Revenue</div>
+                                        <h3><span id="span_revenue"></span></h3>
+                                    </div>
+                                </div>
+                            }
+                            if (Row["feature_id"].ToString() == "101010")
+                            {
+                                <div class="animated flipInY col-lg-1 col-md-6 col-sm-12 ">
+                                    <div class="tile-stats tile-color-maroon">
+                                        <div class="count">@Resource.Expenses</div>
+                                        <h3><span id="span_Expenses"></span></h3>
+                                    </div>
+                                </div>
+                            }
+                            if (Row["feature_id"].ToString() == "101015")
+                            {
+                                <div class="animated flipInY col-lg-1 col-md-6 col-sm-12 ">
+                                    <div class="tile-stats tile-color-green">
+                                        <div class="count">@Resource.GrossProfit</div>
+                                        <h3><span id="span_GrossProfit"></span></h3>
+                                    </div>
+                                </div>
+                            }
+                            if (Row["feature_id"].ToString() == "101020")
+                            {
+                                <div class="animated flipInY col-lg-1 col-md-6 col-sm-12 ">
+                                    <div class="tile-stats tile-color-orange">
+                                        <div class="count">@Resource.Production</div>
+                                        <h3><span id="span_Production"></span></h3>
+                                    </div>
+                                </div>
+                            }
+                            if (Row["feature_id"].ToString() == "101025")
+                            {
+                                <div class="animated flipInY col-lg-1 col-md-6 col-sm-12 ">
+                                    <div class="tile-stats tile-color-pitch">
+                                        <div class="count">@Resource.Receivable</div>
+                                        <h3><span id="span_Receivable"></span></h3>
+                                    </div>
+                                </div>
+                            }
+                            if (Row["feature_id"].ToString() == "101030")
+                            {
+                                <div class="animated flipInY col-lg-1 col-md-6 col-sm-12 ">
+                                    <div class="tile-stats tile-color-mehandi">
+                                        <div class="count">@Resource.Payable</div>
+                                        <h3> <span id="span_Payable"></span> </h3>
+                                    </div>
+                                </div>
+                            }
+                            if (Row["feature_id"].ToString() == "101225")
+                            {
+                                <div class="animated flipInY col-lg-1 col-md-6 col-sm-6 ">
+                                    <div class="tile-stats tile-color-purple">
+                                        <div class="count">@Resource.DomesticPurchase</div>
+                                        <h3><span id="span_DomesticPurchase"></span> </h3>
+                                    </div>
+                                </div>
+                            }
+                            if (Row["feature_id"].ToString() == "101230")
+                            {
+                                <div class="animated flipInY col-lg-1 col-md-6 col-sm-6 ">
+                                    <div class="tile-stats tile-color-light_mehandi">
+                                        <div class="count">@Resource.DomesticSales</div>
+                                        <h3><span id="span_DomesticSales"></span></h3>
+                                    </div>
+                                </div>
+                            }
+
+                            if (Row["feature_id"].ToString() == "101245")
+                            {
+                                <div class="animated flipInY col-lg-1 col-md-6 col-sm-6 ">
+                                    <div class="tile-stats tile-color-darkblue">
+                                        <div class="count">@Resource.SaleReturn</div>
+                                        <h3><span id="span_SaleReturn"></span></h3>
+                                    </div>
+                                </div>
+                            }
+                            if (Row["feature_id"].ToString() == "101250")
+                            {
+                                <div class="animated flipInY col-lg-1 col-md-6 col-sm-6 ">
+                                    <div class="tile-stats tile-color-darkorange">
+                                        <div class="count">@Resource.PurchaseReturn</div>
+                                        <h3><span id="span_PurchaseReturn"></span></h3>
+                                    </div>
+                                </div>
+                            }
+
+                            if (Row["feature_id"].ToString() == "101235")
+                            {
+                                <div class="animated flipInY col-lg-1 col-md-6 col-sm-6 ">
+                                    <div class="tile-stats tile-color-red">
+                                        <div class="count">@Resource.ExportSales</div>
+                                        <h3><span id="span_ExportSales"></span> </h3>
+                                    </div>
+                                </div>
+                            }
+                            if (Row["feature_id"].ToString() == "101240")
+                            {
+                                <div class="animated flipInY col-lg-1 col-md-6 col-sm-6 ">
+                                    <div class="tile-stats tile-color-dark_blue">
+                                        <div class="count">@Resource.ImportPurchase</div>
+                                        <h3><span id="span_ImportPurchase"></span> </h3>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    }
+                </div>
+            </div>*@
+        <div class="row">
+            <div class="col-md-6 col-sm-12 pr-0">
+                <div class="col-md-12 col-sm-12 no-padding  ">
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <div style="width:5%; float:left;" class="mt-3 no-padding">
+                                <div class="col-md-12 col-sm-12 Dash_Ticker no-padding dash_tab_aro">
+                                    <button onclick="scrollTabs(-1)"> <img src="~/Content/Images/LeftScroll.png" class="img-fluid" /></button>
+                                </div>
+                            </div>
+                            <div class="card-box table-responsive dy_table" style="width:90%; float:left">
+                                <div id="ChartTab" class="x_content Chart_Tab no-scrollbar">
+                                    <div class="width2000" role="tabpanel" data-example-id="togglable-tabs">
+                                        <div class="scroller-wrapper ">
+                                            <div class="row flex-nowrap">
+                                                <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
+                                                    @if (ViewBag.UserPermision != null)
+                                                    {
+                                                        foreach (System.Data.DataRow Row in ViewBag.UserPermision.Rows)
+                                                        {
+                                                            if (Row["feature_id"].ToString() == "101040")
+                                                            {
+                                                                <li role="presentation" class="active" id="li_Top_Customers">
+                                                                    <a href="#tab_content1" id="Top_Customers" class="chart_icon" role="tab" data-toggle="tab" aria-expanded="true">@Resource.TopCustomers</a>
+                                                                </li>
+                                                            }
+                                                            if (Row["feature_id"].ToString() == "101045")
+                                                            {
+                                                                <li role="presentation" class="" id="li_Top_Supplier">
+                                                                    <a href="#tab_content2" id="Top_Supplier" class="chart_icon" role="tab" data-toggle="tab" aria-expanded="false">@Resource.TopSupplier</a>
+                                                                </li>
+                                                            }
+                                                            if (Row["feature_id"].ToString() == "101050")
+                                                            {
+                                                                <li role="presentation" class="" id="li_Top_Products">
+                                                                    <a href="#tab_content3" id="Top_Products" class="chart_icon" role="tab" data-toggle="tab" aria-expanded="false">@Resource.TopProducts</a>
+                                                                </li>
+                                                            }
+                                                            if (Row["feature_id"].ToString() == "101051")
+                                                            {
+                                                                <li role="presentation" class="" id="li_Top_Sales_Executive">
+                                                                    <a href="#tab_content13" id="Top_Sales_Executive" class="chart_icon" role="tab" data-toggle="tab" aria-expanded="false">@Resource.Top @Resource.Sales @Resource.Executive</a>
+                                                                </li>
+                                                            }
+                                                            if (Row["feature_id"].ToString() == "101055")
+                                                            {
+                                                                <li role="presentation" class="" id="li_Top_Materials">
+                                                                    <a href="#tab_content4" id="Top_Materials" class="chart_icon" role="tab" data-toggle="tab" aria-expanded="false">@Resource.TopMaterials</a>
+                                                                </li>
+                                                            }
+                                                            if (Row["feature_id"].ToString() == "101060")
+                                                            {
+                                                                <li role="presentation" class="" id="li_Top_Production">
+                                                                    <a href="#tab_content5" id="Top_Production" class="chart_icon" role="tab" data-toggle="tab" aria-expanded="false">@Resource.TopProduction</a>
+                                                                </li>
+                                                            }
+                                                            if (Row["feature_id"].ToString() == "101065")
+                                                            {
+                                                                <li role="presentation" class="" id="li_Top_Maintenance">
+                                                                    <a href="#tab_content6" id="Top_Maintenance" class="chart_icon" role="tab" data-toggle="tab" aria-expanded="false">@Resource.TopMaintenance</a>
+                                                                </li>
+                                                            }
+                                                            if (Row["feature_id"].ToString() == "101070")
+                                                            {
+                                                                <li role="presentation" class="" id="li_Top_Payables">
+                                                                    <a href="#tab_content7" id="Top_Payables" class="chart_icon" role="tab" data-toggle="tab" aria-expanded="false">@Resource.TopPayables</a>
+                                                                </li>
+                                                            }
+                                                            if (Row["feature_id"].ToString() == "101075")
+                                                            {
+                                                                <li role="presentation" class="" id="li_Top_Receivables">
+                                                                    <a href="#tab_content8" id="Top_Receivables" class="chart_icon" role="tab" data-toggle="tab" aria-expanded="false">@Resource.TopReceivables</a>
+                                                                </li>
+                                                            }
+                                                            if (Row["feature_id"].ToString() == "101080")
+                                                            {
+                                                                <li role="presentation" class="" id="Top_Regions">
+                                                                    <a href="#tab_content9" id="Top_Regions" class="chart_icon" role="tab" data-toggle="tab" aria-expanded="false">@Resource.TopRegions</a>
+                                                                </li>
+                                                            }
+                                                            if (Row["feature_id"].ToString() == "101085")
+                                                            {
+                                                                <li role="presentation" class="" id="li_Top_Receipts">
+                                                                    <a href="#tab_content10" id="Top_Receipts" class="chart_icon" role="tab" data-toggle="tab" aria-expanded="false">@Resource.TopReceipts</a>
+                                                                </li>
+                                                            }
+                                                            if (Row["feature_id"].ToString() == "101090")
+                                                            {
+                                                                <li role="presentation" class="" id="li_Top_Payments">
+                                                                    <a href="#tab_content11" id="Top_Payments" class="chart_icon" role="tab" data-toggle="tab" aria-expanded="false">@Resource.TopPayments</a>
+                                                                </li>
+                                                            }
+                                                            if (Row["feature_id"].ToString() == "101095")
+                                                            {
+                                                                <li role="presentation" class="" id="li_Top_Stocks">
+                                                                    <a href="#tab_content12" id="Top_Stocks" class="chart_icon" role="tab" data-toggle="tab" aria-expanded="false">@Resource.TopStocks</a>
+                                                                </li>
+                                                            }
+                                                        }
+                                                    }
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="width:5%; float:left;" class="mt-3 no-padding">
+                                <div class="col-md-12 col-sm-12 Dash_Ticker no-padding dash_tab_aro">
+                                    <button onclick="scrollTabs(1)"> <img src="~/Content/Images/RightScroll.png" class="img-fluid" /></button>
+                                </div>
+                                @*<div class="col-md-12 col-sm-12 Dash_Ticker no-padding  ">
+                                        <button onclick="scrollLogos(-1)"> <img src="~/Content/Images/LeftScroll.png" class="img-fluid" /></button>
+                                    </div>*@
+                            </div>
+                            @*<div class="card-box table-responsive dy_table">
+                                    <div class="width2000" role="tabpanel" data-example-id="togglable-tabs">
+                                        <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
+                                            @if (ViewBag.UserPermision != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.UserPermision.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "101040")
+                                                    {
+                                                        <li role="presentation" class="active" id="li_Top_Customers">
+                                                            <a href="#tab_content1" id="Top_Customers" class="chart_icon" role="tab" data-toggle="tab" aria-expanded="true">@Resource.TopCustomers</a>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "101045")
+                                                    {
+                                                        <li role="presentation" class="" id="li_Top_Supplier">
+                                                            <a href="#tab_content2" id="Top_Supplier" class="chart_icon" role="tab" data-toggle="tab" aria-expanded="false">@Resource.TopSupplier</a>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "101050")
+                                                    {
+                                                        <li role="presentation" class="" id="li_Top_Products">
+                                                            <a href="#tab_content3" id="Top_Products" class="chart_icon" role="tab" data-toggle="tab" aria-expanded="false">@Resource.TopProducts</a>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "101051")
+                                                    {
+                                                        <li role="presentation" class="" id="li_Top_Sales_Executive">
+                                                            <a href="#tab_content13" id="Top_Sales_Executive" class="chart_icon" role="tab" data-toggle="tab" aria-expanded="false">@Resource.Top @Resource.Sales @Resource.Executive</a>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "101055")
+                                                    {
+                                                        <li role="presentation" class="" id="li_Top_Materials">
+                                                            <a href="#tab_content4" id="Top_Materials" class="chart_icon" role="tab" data-toggle="tab" aria-expanded="false">@Resource.TopMaterials</a>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "101060")
+                                                    {
+                                                        <li role="presentation" class="" id="li_Top_Production">
+                                                            <a href="#tab_content5" id="Top_Production" class="chart_icon" role="tab" data-toggle="tab" aria-expanded="false">@Resource.TopProduction</a>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "101065")
+                                                    {
+                                                        <li role="presentation" class="" id="li_Top_Maintenance">
+                                                            <a href="#tab_content6" id="Top_Maintenance" class="chart_icon" role="tab" data-toggle="tab" aria-expanded="false">@Resource.TopMaintenance</a>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "101070")
+                                                    {
+                                                        <li role="presentation" class="" id="li_Top_Payables">
+                                                            <a href="#tab_content7" id="Top_Payables" class="chart_icon" role="tab" data-toggle="tab" aria-expanded="false">@Resource.TopPayables</a>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "101075")
+                                                    {
+                                                        <li role="presentation" class="" id="li_Top_Receivables">
+                                                            <a href="#tab_content8" id="Top_Receivables" class="chart_icon" role="tab" data-toggle="tab" aria-expanded="false">@Resource.TopReceivables</a>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "101080")
+                                                    {
+                                                        <li role="presentation" class="" id="Top_Regions">
+                                                            <a href="#tab_content9" id="Top_Regions" class="chart_icon" role="tab" data-toggle="tab" aria-expanded="false">@Resource.TopRegions</a>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "101085")
+                                                    {
+                                                        <li role="presentation" class="" id="li_Top_Receipts">
+                                                            <a href="#tab_content10" id="Top_Receipts" class="chart_icon" role="tab" data-toggle="tab" aria-expanded="false">@Resource.TopReceipts</a>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "101090")
+                                                    {
+                                                        <li role="presentation" class="" id="li_Top_Payments">
+                                                            <a href="#tab_content11" id="Top_Payments" class="chart_icon" role="tab" data-toggle="tab" aria-expanded="false">@Resource.TopPayments</a>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "101095")
+                                                    {
+                                                        <li role="presentation" class="" id="li_Top_Stocks">
+                                                            <a href="#tab_content12" id="Top_Stocks" class="chart_icon" role="tab" data-toggle="tab" aria-expanded="false">@Resource.TopStocks</a>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "101097")
+                                                    {
+                                                        <li role="presentation" class="" id="li_Top_Sales_Return">
+                                                            <a href="#tab_content12" id="Top_Sales_Return" class="chart_icon" role="tab" data-toggle="tab" aria-expanded="false">@Resource.Top @Resource.SaleReturn </a>
+                                                        </li>
+                                                    }
+                                                }
+                                            }
+                                        </ul>
+                                    </div>
+                                </div>*@
+                            <div role="tabpanel" class="tab-pane fade active in show" id="tab_content1" aria-labelledby="home-tab">
+                                <h2 id="PervierChart" class="col-lg-6 col-md-6 col-sm-6 no-padding"></h2>
+                                <div class="col-lg-4 col-md-6 col-sm-6 pl-0 pr-0 pt-2">
+                                    <div class="col-lg-5 col-md-6 col-sm-6 no-padding"><label class="col-form-label label-align">Chart Type </label></div>
+                                    <div class="col-lg-7 col-md-6 col-sm-6 pl-0">
+                                        <select class="form-control" id="ddl_chart" onchange="OnChangecharttype();">
+                                            <option value="BC">Bar Chart</option>
+                                            @*<option value="PC">Pie Chart</option>
+                                                <option value="DC">Donut Chart</option>*@
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 col-md-6 col-sm-6 pl-0 pr-0 pt-2">
+                                    <div class="col-lg-4 col-md-6 col-sm-6 no-padding"><label class="col-form-label label-align"> @Resource.Top </label></div>
+                                    <div class="col-lg-8 col-md-6 col-sm-6 no-padding">
+                                        <select class="form-control" id="ddl_top" onchange="OnChangeTop();">
+                                            <option value="1">5</option>
+                                            <option value="2">10</option>
+                                            <option value="3">15</option>
+                                            <option value="4">20</option>
+                                            <option value="5">25</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div id="graph_bar" style="width:100%; height:202px;"></div>
+                                    @*<div id="graph_bar" style="width:100%; height:auto;position:relative;"></div>*@
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12 col-sm-12 no-padding" style="margin-top:-5px;">
+                    <div class="x_panel">
+                        <div class="x_title float-left" style="width:100%">
+                            <h2 class="font-weight-bold ml-2 mt-2">@Resource.CriticalAlerts</h2>
+                            <div class="col-md-9 col-sm-12 no-padding float-right">
+                                <div class="flex-container" style="justify-content:right;">
+                                    <div class="Dash_Ticker  ">
+                                        <button onclick="scrollCriticalAlerts(-1)"> <img src="/Content/Images/LeftScroll.png" class="img-fluid"></button>
+                                    </div>
+                                    <div class="Dash_Ticker ">
+                                        <button onclick="scrollCriticalAlerts(1)"> <img src="/Content/Images/RightScroll.png" class="img-fluid"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="CriticalAlerts" class="x_content top_alert no-scrollbar">
+                            <div class="scroller-wrapper ">
+                                <div class="row flex-nowrap pl-2">
+                                    @if (ViewBag.UserPermision != null)
+                                    {
+                                        foreach (System.Data.DataRow Row in ViewBag.UserPermision.Rows)
+                                        {
+                                            if (Row["feature_id"].ToString() == "101100")
+                                            {
+                                                <a class="btn btn-app" id="od_dso" onclick="OnClickAlerts(this)">@Resource.Overdue <br /> @Resource.DomesticSales <span id="span_overdue_dso" class="badge bg-red"></span></a>
+                                            }
+                                            if (Row["feature_id"].ToString() == "101101")
+                                            {
+                                                <a class="btn btn-app" id="od_eso" onclick="OnClickAlerts(this)">@Resource.Overdue <br /> @Resource.ExportSales <span id="span_overdue_eso" class="badge bg-red"></span></a>
+                                            }
+                                            if (Row["feature_id"].ToString() == "101105")
+                                            {
+                                                <a class="btn btn-app" id="od_dpo" onclick="OnClickAlerts(this)">@Resource.Overdue <br /> @Resource.DomesticPurchase<span id="span_overdue_dpo" class="badge bg-green"></span></a>
+                                            }
+                                            if (Row["feature_id"].ToString() == "101106")
+                                            {
+                                                <a class="btn btn-app" id="od_ipo" onclick="OnClickAlerts(this)">@Resource.Overdue <br /> @Resource.ImportPurchase<span id="span_overdue_ipo" class="badge bg-green"></span></a>
+                                            }
+                                            if (Row["feature_id"].ToString() == "101110")
+                                            {
+                                                <a class="btn btn-app" id="od_product" onclick="OnClickAlerts(this)">@Resource.Overdue <br>@Resource.Production <span id="span_overdue_production" class="badge bg-green"></span></a>
+                                            }
+                                            if (Row["feature_id"].ToString() == "101115")
+                                            {
+                                                <a class="btn btn-app" id="od_recpt" onclick="OnClickAlerts(this)">@Resource.Overdue <br>@Resource.Receipts<span id="span_overdue_receipts" class="badge bg-green"></span></a>
+                                            }
+                                            if (Row["feature_id"].ToString() == "101120")
+                                            {
+                                                <a class="btn btn-app" id="od_payment" onclick="OnClickAlerts(this)">@Resource.Overdue <br>@Resource.Payments<span id="span_overdue_payments" class="badge bg-green"></span></a>
+                                            }
+                                            @*if (Row["feature_id"].ToString() == "101122")
+                                                {
+                                                    <a class="btn btn-app" id="up_payment" onclick="OnClickAlerts(this)">@Resource.Upcoming <br>@Resource.Payments<span id="span_upcoming_payments" class="badge bg-green"></span></a>
+                                                }
+                                                if (Row["feature_id"].ToString() == "101124")
+                                                {
+                                                    <a class="btn btn-app" id="up_receipt" onclick="OnClickAlerts(this)">@Resource.Upcoming <br>@Resource.Receipts<span id="span_upcoming_receipt" class="badge bg-green"></span></a>
+                                                }
+                                                if (Row["feature_id"].ToString() == "101125")
+                                                {
+                                                    <a class="btn btn-app">@Resource.Overdue <br>@Resource.Maintenance<span id="span_overdue_maintenance" class="badge bg-green"></span></a>
+                                                }
+                                                if (Row["feature_id"].ToString() == "101128")
+                                                {
+                                                    <a class="btn btn-app" id="near_expired_items" onclick="OnClickAlerts(this)">@Resource.Near @Resource.Expiry <br>@Resource.Items<span id="span_near_expiry_items" class="badge bg-green"></span></a>
+                                                }
+                                                if (Row["feature_id"].ToString() == "101130")
+                                                {
+                                                    <a class="btn btn-app" id="expired_items" onclick="OnClickAlerts(this)">@Resource.Expired <br>@Resource.Items<span id="span_expired_items" class="badge bg-green"></span></a>
+                                                }
+                                                if (Row["feature_id"].ToString() == "101135")
+                                                {
+                                                    <a class="btn btn-app" id="stockout_items" onclick="OnClickAlerts(this)">@Resource.Stockout <br>@Resource.Items<span id="span_stockout_items" class="badge bg-green"></span></a>
+                                                }*@
+                                        }
+                                    }
+                                </div>
+                                <div class="row flex-nowrap pl-2">
+                                    @if (ViewBag.UserPermision != null)
+                                    {
+                                        foreach (System.Data.DataRow Row in ViewBag.UserPermision.Rows)
+                                        {
+                                            @*if (Row["feature_id"].ToString() == "101100")
+                                                {
+                                                    <a class="btn btn-app" id="od_dso" onclick="OnClickAlerts(this)">@Resource.Overdue <br /> @Resource.DomesticSales <span id="span_overdue_dso" class="badge bg-red"></span></a>
+                                                }
+                                                if (Row["feature_id"].ToString() == "101101")
+                                                {
+                                                    <a class="btn btn-app" id="od_eso" onclick="OnClickAlerts(this)">@Resource.Overdue <br /> @Resource.ExportSales <span id="span_overdue_eso" class="badge bg-red"></span></a>
+                                                }
+                                                if (Row["feature_id"].ToString() == "101105")
+                                                {
+                                                    <a class="btn btn-app" id="od_dpo" onclick="OnClickAlerts(this)" style="padding-top:3px;">@Resource.Overdue <br /> @Resource.DomesticPurchase<span id="span_overdue_dpo" class="badge bg-green"></span></a>
+                                                }
+                                                if (Row["feature_id"].ToString() == "101106")
+                                                {
+                                                    <a class="btn btn-app" id="od_ipo" onclick="OnClickAlerts(this)">@Resource.Overdue <br /> @Resource.ImportPurchase<span id="span_overdue_ipo" class="badge bg-green"></span></a>
+                                                }
+                                                if (Row["feature_id"].ToString() == "101110")
+                                                {
+                                                    <a class="btn btn-app" id="od_product" onclick="OnClickAlerts(this)">@Resource.Overdue <br>@Resource.Production <span id="span_overdue_production" class="badge bg-green"></span></a>
+                                                }
+                                                if (Row["feature_id"].ToString() == "101115")
+                                                {
+                                                    <a class="btn btn-app" id="od_recpt" onclick="OnClickAlerts(this)">@Resource.Overdue <br>@Resource.Receipts<span id="span_overdue_receipts" class="badge bg-green"></span></a>
+                                                }
+                                                if (Row["feature_id"].ToString() == "101120")
+                                                {
+                                                    <a class="btn btn-app" id="od_payment" onclick="OnClickAlerts(this)">@Resource.Overdue <br>@Resource.Payments<span id="span_overdue_payments" class="badge bg-green"></span></a>
+                                                }*@
+                                            if (Row["feature_id"].ToString() == "101122")
+                                            {
+                                                <a class="btn btn-app" id="up_payment" onclick="OnClickAlerts(this)">@Resource.Upcoming <br>@Resource.Payments<span id="span_upcoming_payments" class="badge bg-green"></span></a>
+                                            }
+                                            if (Row["feature_id"].ToString() == "101124")
+                                            {
+                                                <a class="btn btn-app" id="up_receipt" onclick="OnClickAlerts(this)">@Resource.Upcoming <br>@Resource.Receipts<span id="span_upcoming_receipt" class="badge bg-green"></span></a>
+                                            }
+                                            if (Row["feature_id"].ToString() == "101125")
+                                            {
+                                                <a class="btn btn-app">@Resource.Overdue <br>@Resource.Maintenance<span id="span_overdue_maintenance" class="badge bg-green"></span></a>
+                                            }
+                                            if (Row["feature_id"].ToString() == "101128")
+                                            {
+                                                <a class="btn btn-app" id="near_expired_items" onclick="OnClickAlerts(this)">@Resource.Near @Resource.Expiry <br>@Resource.Items<span id="span_near_expiry_items" class="badge bg-green"></span></a>
+                                            }
+                                            if (Row["feature_id"].ToString() == "101130")
+                                            {
+                                                <a class="btn btn-app" id="expired_items" onclick="OnClickAlerts(this)">@Resource.Expired <br>@Resource.Items<span id="span_expired_items" class="badge bg-green"></span></a>
+                                            }
+                                            if (Row["feature_id"].ToString() == "101135")
+                                            {
+                                                <a class="btn btn-app" id="stockout_items" onclick="OnClickAlerts(this)">@Resource.Stockout <br>@Resource.Items<span id="span_stockout_items" class="badge bg-green"></span></a>
+                                            }
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        @*<div class="col-md-12 col-sm-12 no-padding">
+                                <div class="flex-container">
+                                    <div class="Dash_Ticker  ">
+                                        <button onclick="scrollCriticalAlerts(-1)"> <img src="/Content/Images/LeftScroll.png" class="img-fluid"></button>
+                                    </div>
+                                    <div class="Dash_Ticker ">
+                                        <button onclick="scrollCriticalAlerts(1)"> <img src="/Content/Images/RightScroll.png" class="img-fluid"></button>
+                                    </div>
+                                </div>
+                            </div>*@
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="col-md-6 ">
+                <div class="col-md-12 leftpadding0 pr-0">
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2 class="font-weight-bold pt-2 col-md-6 col-sm-12">@Resource.PendingDocuments</h2>
+                            @*<div class="col-md-12 col-sm-12 no-padding mt-1">*@
+
+                            <table hidden id="HdnTblPending_Document"><tbody></tbody></table>
+                            <div class="form-group has-search  col-md-4 col-sm-12 pl-0 pr-0 mb-0">
+                                <span class="fa fa-search form-control-feedback pd_search"></span>
+                                <input type="text" class="form-control" placeholder="Find" onkeyup="FilterPendingDocuments(event)">
+                            </div>
+                            <div class="col-md-2 col-sm-12 no-padding float-right">
+                                @*<div class="flex-container">*@
+                                <div class="flex-container" style="justify-content:right;">
+                                    <div class="Dash_Ticker  ">
+                                        <button id="btnPrev" onclick="changePage(-1)"> <img src="/Content/Images/LeftScroll.png" class="img-fluid"></button>
+                                    </div>
+                                    @*<span id="pageInfo"></span>*@
+                                    <div class="Dash_Ticker  ">
+                                        <button id="btnNext" onclick="changePage(1)"> <img src="/Content/Images/RightScroll.png" class="img-fluid"></button>
+                                    </div>
+
+                                </div>
+                            </div>
+                            @*<input class="form-control float-right" onkeyup="FilterPendingDocuments(event)" style="width:200px;" />*@
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <div class="sticky-table sticky-ltr-cells dashboardtable280 no-scrollbar" id="DivIdpendingDocument">
+                                <table id="TblPending_Document" class="table table-striped table-bordered " cellspacing="0" width="100%">
+                                    <thead id="pendingDocumentBody">
+                                        <tr class="sticky-header">
+                                            <th>@Resource.DocumentName</th>
+                                            <th style="display:none;">@Resource.DocumentNumber</th>
+                                            <th>@Resource.ForReview</th>
+                                            <th>@Resource.UnPosted</th>
+                                            <th>@Resource.Forwarded </th>
+                                            <th>@Resource.Rejected</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!--<div class="col-md-12 col-sm-12 no-padding mt-1">
+                                <div class="flex-container">
+                                    <div class="Dash_Ticker  ">
+                                        <button id="btnPrev" onclick="changePage(-1)"> <img src="/Content/Images/LeftScroll.png" class="img-fluid"></button>
+                                    </div>-->
+                            @*<span id="pageInfo"></span>*@
+                            <!--<div class="Dash_Ticker  ">
+                                        <button id="btnNext" onclick="changePage(1)"> <img src="/Content/Images/RightScroll.png" class="img-fluid"></button>
+                                    </div>
+
+                                </div>
+                            </div>-->
+                            @*<div class="text-center mt-2">
+                                    <button id="btnPrev" onclick="changePage(-1)">⬆ Previous</button>
+                                    <span id="pageInfo" style="margin: 0 10px;"></span>
+                                    <button id="btnNext" onclick="changePage(1)">⬇ Next</button>
+                                </div>*@
+                        </div>
+                        @*<div class="x_content">
+                                <div class="sticky-table sticky-ltr-cells dashboardtable170 ">
+                                    <table id="TblPending_Document" class="table table-striped table-bordered " cellspacing="0" width="100%">
+                                        <thead>
+                                            <tr class="sticky-header">
+                                                <th>@Resource.DocumentName</th>
+                                                <th style="display:none;">@Resource.DocumentNumber</th>
+                                                <th>@Resource.ForReview</th>
+                                                <th>@Resource.UnPosted</th>
+                                                <th>@Resource.Forwarded </th>
+                                                <th>@Resource.Rejected</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div class="col-md-12 col-sm-12 no-padding mt-1">
+                                    <div class="flex-container">
+                                        <div class="Dash_Ticker  pt-1">
+                                            <button onclick=""> <img src="/Content/Images/LeftScroll.png" class="img-fluid"></button>
+                                        </div>
+                                        <div class="Dash_Ticker pt-1">
+                                            <button onclick=""> <img src="/Content/Images/RightScroll.png" class="img-fluid"></button>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>*@
+                    </div>
+                </div>
+                @*<div class="col-md-12 leftpadding0">
+                    <div class="col-md-12 col-sm-12 no-padding">
+                        <div class="x_panel">*@
+                @*<div class="x_title">
+                        <h2>@Resource.ImportantMIS</h2>
+                        <div class="clearfix"></div>
+                    </div>*@
+                <div class="col-md-12 col-sm-12 no-padding">
+                    <div class="x_panel">
+
+                        <div class="x_title pb-0">
+                            <h2 class="col-md-3 col-sm-12 pl-0 pt-2 font-weight-bold">@Resource.ImportantMIS</h2>
+                            <div class="col-md-4 col-sm-12">
+                                <select class="form-control" id="Module" name="ModuleId" onchange="handleModuleChange()" style="width:100%;">
+                                    <option value="0">---Select---</option>
+                                    <option value="procurement">Procurement</option>
+                                    <option value="inventory">Inventory Management</option>
+                                    <option value="sales">Sales & Distribution</option>
+                                    <option value="finance">Financial Accounting</option>
+                                    <option value="production">Production & Planning</option>
+                                    <option value="asset">Fixed Asset Management</option>
+                                    <option value="maintenance">Plant Maintenance</option>
+                                    <option value="subcontracting">Sub-Contracting</option>
+                                </select>
+                            </div>
+                            <div class="form-group has-search col-md-3 col-sm-12 pl-0 pr-0 mb-0">
+                                <span class="fa fa-search form-control-feedback mt-0"></span>
+                                @*<input type="text" class="form-control" placeholder="Find" onkeyup="">*@
+                                <input type="text" class="form-control" placeholder="@Resource.Search" onkeyup="FilterImportantMIS(event)" />
+                            </div>
+                            <div class="col-md-2 col-sm-12 no-padding">
+                                <div class="flex-container">
+                                    <div class="Dash_Ticker  ">
+                                        <button onclick="ImportantMIS(-1)"> <img src="/Content/Images/LeftScroll.png" class="img-fluid"></button>
+                                    </div>
+                                    <div class="Dash_Ticker ">
+                                        <button onclick="ImportantMIS(1)"> <img src="/Content/Images/RightScroll.png" class="img-fluid"></button>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div id="imp_mis" class="x_content top_mis no-scrollbar pt-0 ">
+                            <div class="scroller-wrapper ">
+                                <div class="row flex-nowrap">
+                                    @if (ViewBag.UserPermision != null)
+                                    {
+                                        foreach (System.Data.DataRow Row in ViewBag.UserPermision.Rows)
+                                        {
+                                            if (Row["feature_id"].ToString() == "101140")
+                                            {
+                                                <a class="imp_mis mis-item ml-2" href="#" data-module="sales" onclick="ShowMISReports(101140)">@Resource.CustomerWiseSalesSummary</a>
+                                            }
+                                            if (Row["feature_id"].ToString() == "101145")
+                                            {
+                                                <a class="imp_mis mis-item" href="#" data-module="sales" onclick="ShowMISReports(101145)">@Resource.ProductWiseSalesSummary</a>
+                                            }
+                                            if (Row["feature_id"].ToString() == "101150")
+                                            {
+                                                <a class="imp_mis mis-item" href="#" data-module="sales" onclick="ShowMISReports(101150)">@Resource.ProductGroupWiseSalesSummary</a>
+                                            }
+                                            if (Row["feature_id"].ToString() == "101151")
+                                            {
+                                                <a class="imp_mis mis-item" href="#" data-module="sales" onclick="ShowMISReports(101051)">@Resource.RegionWiseSalesSummary</a>
+                                            }
+                                            if (Row["feature_id"].ToString() == "101153")
+                                            {
+                                                <a class="imp_mis mis-item" href="#" data-module="sales" onclick="ShowMISReports(101260)">@Resource.Sales @Resource.Tracking</a>
+                                            }
+                                            if (Row["feature_id"].ToString() == "101155")
+                                            {
+                                                <a class="imp_mis mis-item" href="#" data-module="procurement" onclick="ShowMISReports(101155)"> @Resource.SupplierWisePurchaseSummary</a>
+                                            }
+
+                                        }
+                                    }
+                                </div>
+                                <div class="row flex-nowrap">
+                                    @if (ViewBag.UserPermision != null)
+                                    {
+                                        foreach (System.Data.DataRow Row in ViewBag.UserPermision.Rows)
+                                        {
+
+                                            if (Row["feature_id"].ToString() == "101160")
+                                            {
+                                                <a class="imp_mis mis-item ml-2" data-module="procurement" href="#" onclick="ShowMISReports(101160)">@Resource.ImportPurchaseSummary</a>
+                                            }
+                                            if (Row["feature_id"].ToString() == "101165")
+                                            {
+                                                <a class="imp_mis mis-item" href="#" data-module="procurement" onclick="ShowMISReports(101165)">@Resource.MaterialWisePurchaseSummary</a>
+                                            }
+                                            if (Row["feature_id"].ToString() == "101170")
+                                            {
+                                                <a class="imp_mis mis-item" href="#" data-module="procurement" onclick="ShowMISReports(101170)">@Resource.MaterialGroupWisePurchaseSummary</a>
+                                            }
+                                            if (Row["feature_id"].ToString() == "101172")
+                                            {
+                                                <a class="imp_mis mis-item" href="#" data-module="procurement" onclick="ShowMISReports(101255)">@Resource.Purchase @Resource.Tracking</a>
+                                            }
+                                            if (Row["feature_id"].ToString() == "101175")
+                                            {
+                                                <a class="imp_mis mis-item" data-module="finance" href="#" onclick="ShowMISReports(101175)">@Resource.AccountReceivables</a>
+                                            }
+                                            if (Row["feature_id"].ToString() == "101180")
+                                            {
+                                                <a class="imp_mis mis-item" href="#" data-module="finance" onclick="ShowMISReports(101180)">@Resource.AccountPayables</a>
+                                            }
+
+                                        }
+                                    }
+                                </div>
+                                <div class="row flex-nowrap">
+                                    @if (ViewBag.UserPermision != null)
+                                    {
+                                        foreach (System.Data.DataRow Row in ViewBag.UserPermision.Rows)
+                                        {
+
+                                            if (Row["feature_id"].ToString() == "101185")
+                                            {
+                                                <a class="imp_mis mis-item ml-2" href="#" data-module="production" onclick="ShowMISReports(101185)">@Resource.ProductionSummary</a>
+                                            }
+                                            if (Row["feature_id"].ToString() == "101190")
+                                            {
+                                                <a class="imp_mis mis-item" href="#" data-module="maintenance" onclick=""> @Resource.EquipementWiseMaintenamnceSummary</a>
+
+                                            }
+                                            if (Row["feature_id"].ToString() == "101195")
+                                            {
+                                                <a class="imp_mis mis-item" href="#" data-module="finance" onclick=""> @Resource.DirectExpenses</a>
+
+                                            }
+                                            if (Row["feature_id"].ToString() == "101200")
+                                            {
+                                                <a class="imp_mis mis-item" href="#" data-module="finance" onclick="">  @Resource.IndirectExpenses</a>
+
+                                            }
+                                            if (Row["feature_id"].ToString() == "101205")
+                                            {
+                                                <a class="imp_mis mis-item" href="#" data-module="finance" onclick=""> @Resource.RevenueVsExpenses</a>
+
+                                            }
+                                            if (Row["feature_id"].ToString() == "101210")
+                                            {
+                                                <a class="imp_mis mis-item" href="#" data-module="finance" onclick=""> @Resource.BankReceiptsVsPayments</a>
+
+                                            }
+
+                                        }
+                                    }
+                                </div>
+                                <div class="row flex-nowrap">
+                                    @if (ViewBag.UserPermision != null)
+                                    {
+                                        foreach (System.Data.DataRow Row in ViewBag.UserPermision.Rows)
+                                        {
+
+                                            if (Row["feature_id"].ToString() == "101215")
+                                            {
+                                                <a class="imp_mis mis-item ml-2" href="#" data-module="inventory" onclick="ShowMISReports(101215)"> @*@Resource.ItemWiseStockSummary*@ @Resource.WarehouseStockSummary </a>
+                                            }
+                                            if (Row["feature_id"].ToString() == "101220")
+                                            {
+                                                //   @Resource.ItemGroupWiseStockSummary
+                                                <a class="imp_mis mis-item" href="#" data-module="inventory" onclick="ShowMISReports(101220)"> @*@Resource.ItemGroupWiseStockSummary*@ @Resource.ShopfloorStockSummary </a>
+                                            }
+                                            if (Row["feature_id"].ToString() == "101221")
+                                            {
+                                                //   @Resource.ItemGroupWiseStockSummary
+                                                <a class="imp_mis mis-item" href="#" data-module="inventory" onclick="ShowMISReports(101221)"> @*@Resource.ItemGroupWiseStockSummary*@ @Resource.ConsolidatedStockSummary </a>
+                                            }
+                                            if (Row["feature_id"].ToString() == "101222")
+                                            {
+                                                @* @Resource.Budget @Resource.Analysis  *@
+                                                <a class="imp_mis mis-item" href="#" data-module="finance" onclick="ShowMISReports(101222)">@Resource.Budget @Resource.Analysis </a>
+                                            }
+                                        }
+                                    }
+                                </div>
+                                @*<div class="flex-container mt-2">
+                                        <div class="Dash_Ticker pt-1">
+                                            <button onclick="scrollLogos(1)"> <img src="~/Content/Images/RightScroll.png" class="img-fluid" /></button>
+                                        </div>
+                                        <div class="Dash_Ticker  pt-1">
+                                            <button onclick="scrollLogos(-1)"> <img src="~/Content/Images/LeftScroll.png" class="img-fluid" /></button>
+                                        </div>
+
+                                    </div>*@
+                            </div>
+                        </div>
+                        @*<div class="col-md-12 col-sm-12 no-padding">
+                                <div class="flex-container">
+                                    <div class="Dash_Ticker  ">
+                                        <button onclick="ImportantMIS(-1)"> <img src="/Content/Images/LeftScroll.png" class="img-fluid"></button>
+                                    </div>
+                                    <div class="Dash_Ticker ">
+                                        <button onclick="ImportantMIS(1)"> <img src="/Content/Images/RightScroll.png" class="img-fluid"></button>
+                                    </div>
+
+                                </div>
+                            </div>*@
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <table id="tbl_hdnfylist" style="display:none;">
+        <tbody>
+            @if (ViewBag.fylist != null)
+            {
+                foreach (System.Data.DataRow row in ViewBag.fylist.Rows)
+                {
+                    <tr>
+                        <td>@row["comp_id"].ToString()</td>
+                        <td>@row["br_Id"].ToString()</td>
+                        <td id="fystdt">@row["fin_st_date"].ToString()</td>
+                        <td id="fyenddt">@row["fin_end_date"].ToString()</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+<script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+<script src="~/Content/Scripts/Dashboard/DashboardJs.js"></script>
+<script>
+    $(function () {
+
+    });
+    function scrollLogos(direction) {
+        const scroller = document.getElementById("TickerScroller");
+        const scrollAmount = 600;
+        scroller.scrollBy({
+            left: direction * scrollAmount,
+            behavior: "smooth"
+        });
+    }
+    function scrollCriticalAlerts(direction) {
+        debugger;
+        const scroller1 = document.getElementById("CriticalAlerts");
+        const scrollAmount1 = 600;
+        scroller1.scrollBy({
+            left: direction * scrollAmount1,
+            behavior: "smooth"
+        });
+    }
+    function ImportantMIS(direction) {
+        debugger;
+        const scroller2 = document.getElementById("imp_mis");
+        const scrollAmount2 = 600;
+        scroller2.scrollBy({
+            left: direction * scrollAmount2,
+            behavior: "smooth"
+        });
+    }
+    function ImportantMIS(direction) {
+        debugger;
+        const scroller2 = document.getElementById("imp_mis");
+        const scrollAmount2 = 600;
+        scroller2.scrollBy({
+            left: direction * scrollAmount2,
+            behavior: "smooth"
+        });
+    }
+    function scrollTabs(direction) {
+        debugger;
+        const scroller3 = document.getElementById("ChartTab");
+        const scrollAmount3 = 600;
+        scroller3.scrollBy({
+            left: direction * scrollAmount3,
+            behavior: "smooth"
+        });
+    }
+</script>

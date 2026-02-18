@@ -1,0 +1,77 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.InventoryManagement.PurchaseReturn.PurchaseReturnList_Model
+@using EnRepMobileWeb.Resources;
+@{
+    var rowId = 0;
+}
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/InventoryManagement/PurchaseReturn/PurchaseReturnList.js"></script>
+
+<table id="datatable-buttons" class="table table-striped width1700 itmfrz" cellspacing="0">
+    <thead>
+        <tr class="sticky-header">
+            <th style="width:35px;"> @Resource.SrNo</th>
+            <th class="itmStick">@Resource.Return <br /> @Resource.Number</th>
+            <th>@Resource.Return <br /> @Resource.Date</th>
+            <th style="display:none;">@Resource.ReturnDate</th>
+            <th>@Resource.SourceType</th>
+            <th>@Resource.Invoice <br /> @Resource.Number</th>
+            <th>@Resource.Invoice <br /> @Resource.Date</th>
+            <th width="18%">@Resource.Supplier <br /> @Resource.Name</th>
+            <th>@Resource.Return <br /> @Resource.Value</th>
+            <th>@Resource.Status</th>
+            <th width="8%">@Resource.CreatedBy</th>
+            <th width="9%">@Resource.Createdon</th>
+            <th width="8%">@Resource.ApprovedBy</th>
+            <th width="9%">@Resource.ApprovedOn</th>
+            <th width="8%">@Resource.AmendedBy</th>>
+            <th width="9%">@Resource.AmendedOn</th>
+        </tr>
+    </thead>
+    <tbody id="">
+        @if (Model.PurchaseReturnList != null)
+        {
+            foreach (var row in Model.PurchaseReturnList)
+            {
+                rowId++;
+        <tr>
+            <td>@rowId</td>
+            <td id="PRTNumber" class="ItmNameBreak itmStick tditemfrz">@row.PRTNumber</td>
+            <td>@row.PRTDate</td>
+            <td style="display:none;" id="hdPRTDate">@row.hdPRTDate</td>
+            <td>@row.SrcType</td>
+            <td>@row.inv_no</td>
+            <td>@row.inv_date</td>
+            <td>@row.SupplierName</td>
+            <td class="num_right">@row.PRT_value</td>
+            <td id="Doc_Status">@row.PRTStatus</td>
+            <td>@row.create_by</td>
+            <td>@row.CreatedON</td>
+            <td>@row.app_by</td>
+            <td>@row.ApprovedOn</td>
+            <td>@row.mod_by</td>
+            <td>@row.ModifiedOn</td>
+        </tr>
+            }
+        }
+
+    </tbody>
+</table>
+@*@if (Session["LSISearch"] != null)*@
+@if (Model.LSISearch != null)
+{
+    //if (Session["LSISearch"].ToString() == "LSI_Search")
+    if (Model.LSISearch == "LSI_Search")
+    {
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+        @Scripts.Render("~/Content/Scripts/DatatablesJs")
+        //Session["LSISearch"] = null;
+        Model.LSISearch = null;
+    }
+}
+
+
+
+
+
+
+

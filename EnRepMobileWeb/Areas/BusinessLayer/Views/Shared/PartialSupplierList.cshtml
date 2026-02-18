@@ -1,0 +1,108 @@
+﻿@using EnRepMobileWeb.Resources;
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<script src="~/Content/Scripts/BusinessLayer/SupplierSetup/SupplierList.js"></script>
+
+<table id="datatable-buttons" class="table table-striped width5000 rowhighlighttbl" cellspacing="0" width="100%">
+    <thead>
+        <tr class="sticky-header">
+            <th width="1%">@Resource.SrNo</th>
+            <th width="3%">@Resource.SupplierID</th>
+            <th width="8%">@Resource.SupplierName</th>
+            <th width="4%">@Resource.SupplierType</th>
+            <th width="4%">@Resource.GLReportingGroup</th>
+            <th width="4%">@Resource.Category</th>
+            <th width="7%">@Resource.Portfolio</th>
+            <th width="4%">@Resource.GST @Resource.Category</th>
+            <th width="4%">@Resource.GSTNumber</th>
+            <th width="7%">@Resource.Address</th>
+            <th width="4%">@Resource.City</th>
+            <th width="3%">@Resource.Pin</th>
+            <th width="4%">@Resource.State</th>
+            <th width="5%">@Resource.Country</th>
+            <th width="4%">@Resource.ContactNumber</th>
+            <th width="5%">@Resource.EmailID</th>
+            <th width="3%">@Resource.Currency</th>
+            <th width="3%">@Resource.BankName</th>
+            <th width="3%">@Resource.BranchName</th>
+            <th width="2%">@Resource.Active</th>
+            <th width="2%">@Resource.Hold</th>
+            <th hidden="hidden"></th>
+            <th hidden="hidden"></th>
+            <th width="3%">@Resource.Status</th>
+            <th width="4%">@Resource.CreatedBy</th>
+            <th width="3%">@Resource.Createdon</th>
+            <th width="4%">@Resource.ApprovedBy</th>
+            <th width="3%">@Resource.ApprovedOn</th>
+            <th width="4%">@Resource.AmendedBy</th>
+            <th width="3%">@Resource.AmendedOn</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (ViewBag.VBSupplierList != null)
+        {
+            var RowId = 0;
+            foreach (System.Data.DataRow item in ViewBag.VBSupplierList.Rows)
+            {
+                RowId++;
+        <tr>
+            <td>@RowId</td>
+            <td id="suppid">@item["supp_id"].ToString()<span hidden id="hdn_suppaccid">@item["supp_coa"].ToString()</span> </td>
+            <td>@item["supp_name"].ToString() </td>
+            <td>@item["supp_type"].ToString()</td>
+            <td>@item["gl_rpt_des"].ToString()</td>
+            <td>@item["setup_val"].ToString()</td>
+            <td>@item["sportf"].ToString()</td>
+            <td>@item["gst_cat"].ToString()</td>
+            <td>@item["supp_gst_no"].ToString()</td>
+            @*<td class="">@item["Supp_address"].ToString()</td>*@
+            <td class="truncate-text" style="width: 350px; padding-right: 30px;"> <span>@item["Supp_address"].ToString()</span> </td>
+
+            <td>@item["city_name"].ToString()</td>
+            <td>@item["supp_pin"].ToString()</td>
+            <td>@item["state_name"].ToString()</td>
+            <td>@item["country_name"].ToString()</td>
+            <td>@item["cont_num1"].ToString()</td>
+            <td>@item["cont_email"].ToString()</td>
+            <td>@item["curr_name"].ToString()<span hidden id="hdnsupp_currid">@item["def_curr_id"].ToString()</span></td>
+            <td>@item["bank_name"].ToString()</td>
+            <td>@item["bank_branch"].ToString()</td>
+
+            @if (@item["act_status"].ToString() == "N")
+            {
+                <td class="center"><i class="fa fa-times-circle text-danger" aria-hidden="true"></i></td>
+            }
+            else
+            {
+                <td class="center"><i class="fa fa-check text-success " aria-hidden="true"></i></td>
+            }
+            @if (@item["on_hold"].ToString() == "N")
+            {
+                <td class="center"><i class="fa fa-times-circle text-danger" aria-hidden="true"></i></td>
+            }
+            else
+            {
+                <td class="center"><i class="fa fa-check text-success " aria-hidden="true"></i></td>
+            }
+            <td hidden="hidden" id="act_status">@item["act_status"].ToString()</td>
+            <td hidden="hidden" id="on_hold">@item["on_hold"].ToString()</td>
+            <td id="supp_status">@item["app_status"].ToString()</td>
+            <td>@item["create_by"].ToString()</td>
+            <td>@item["create_dt"].ToString()</td>
+            <td>@item["app_by"].ToString()</td>
+            <td>@item["app_dt"].ToString()</td>
+            <td>@item["mod_by"].ToString()</td>
+            <td>@item["mod_dt"].ToString()</td>
+        </tr>
+            }
+        }
+    </tbody>
+</table>
+@if (Model.SSearch != null)
+{
+    @*@if (Session["SSearch"].ToString() == "S_Search")*@
+    if (Model.SSearch == "S_Search")
+    {
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+        @Scripts.Render("~/Content/Scripts/DatatablesJs")
+    }
+}

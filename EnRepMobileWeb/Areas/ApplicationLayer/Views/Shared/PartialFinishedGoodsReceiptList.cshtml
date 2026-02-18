@@ -1,0 +1,73 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.InventoryManagement.MaterialReceipt.FinishedGoodsReceipt.FinishedGoodsReceiptModel
+@using EnRepMobileWeb.Resources;
+@using System.Data
+@if (Session["UserId"] == null)
+{
+    Response.Redirect("~/Login");
+}
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/InventoryManagement/MaterialReceipt/FinishedGoodsReceipt/FinishedGoodsReceiptList.js"></script>
+<table id="datatable-buttons" class="table table-striped table-bordered width2200 rowhighlighttbl itmfrz">
+    <thead>
+        <tr class="sticky-header">
+            <th width="2%">@Resource.SrNo</th>
+            <th width="7%" class="itmStick">@Resource.Receipt @Resource.Number</th>
+            <th width="6%">@Resource.Receipt @Resource.Date</th>
+            <th style="display:none;"></th>
+            <th width="8%">@Resource.Source<br /> @Resource.Type</th>
+            <th width="13%">@Resource.Product @Resource.Name</th>
+            <th style="display:none;"></th>
+            <th width="13%">@Resource.Shopfloor @Resource.Name</th>
+            <th style="display:none;"></th>
+            <th width="9%">@Resource.Operation @Resource.Name </th>
+            <th style="display:none;"> </th>
+            <th width="8%">@Resource.Supervisor @Resource.Name</th>
+            <th width="6%">@Resource.Status</th>
+            <th width="7%">@Resource.CreatedBy</th>
+            <th width="7%">@Resource.Createdon</th>
+            <th width="7%">@Resource.ApprovedBy</th>
+            <th width="7%">@Resource.ApprovedOn</th>
+        </tr>
+    </thead>
+    <tbody id="">
+        @if (ViewBag.FinishGoodReciptList != null)
+        {
+            var rowIdx = 0;
+            foreach (System.Data.DataRow Row in ViewBag.FinishGoodReciptList.Rows)
+            {
+                rowIdx++;
+
+        <tr role="row" class="odd">
+            <td width="3%">@rowIdx</td>
+            <td id="rcpt_no" class="ItmNameBreak itmStick tditemfrz">@Row["rcpt_no"].ToString()</td>
+            <td>@Row["rcptdt"].ToString()</td>
+            <td style="display:none;" id="rcpt_dt">@Row["rcpt_dt"].ToString()</td>
+            <td>@Row["src_type"].ToString()</td>
+            <td>@Row["item_name"].ToString()</td>
+            <td style="display:none;" id="prod_id">@Row["prod_id"].ToString()</td>
+            <td>@Row["shfl_name"].ToString()</td>
+            <td style="display:none;" id="shfl_id">@Row["shfl_id"].ToString()</td>
+            <td>@Row["op_name"].ToString()</td>
+            <td style="display:none;" id="op_id">@Row["op_id"].ToString()</td>
+            <td>@Row["supervisor_name"].ToString()</td>
+            <td id="Doc_Status">@Row["status_name"].ToString()</td>
+            <td>@Row["createname"].ToString()</td>
+            <td>@Row["create_dt"].ToString()</td>
+            <td>@Row["appname"].ToString()</td>
+            <td>@Row["app_dt"].ToString()</td>
+        </tr>
+            }
+        }
+
+    </tbody>
+</table>
+@if (Model.FGRSearch != null)
+{
+    if (Model.FGRSearch == "FRG_Search")
+    {
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+        @Scripts.Render("~/Content/Scripts/DatatablesJs")
+
+    }
+    Model.FGRSearch = null;
+}

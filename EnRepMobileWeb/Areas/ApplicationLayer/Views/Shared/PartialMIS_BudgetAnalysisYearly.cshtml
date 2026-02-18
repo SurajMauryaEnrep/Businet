@@ -1,0 +1,86 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.FinancialAccountingAndControl.MIS.BudgetAnalysis.BudgetAnalysisModel
+@using EnRepMobileWeb.Resources;
+@{
+    string ValDigit = "0.";
+    var VD = Convert.ToInt32(Session["ValDigit"].ToString());
+    for (var i = 0; i < VD; i++)
+    {
+        ValDigit += "0";
+    }
+    //decimal total = 0;
+}
+<style>
+    #datatable-buttons_wrapper .btn-group a:nth-child(3) {
+        display: inline-block;
+        position: absolute;
+    }
+</style>
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<table id="datatable-buttons" class="table table-striped width1400 itmfrz" cellspacing="0">
+    <thead>
+        <tr class="sticky-header">
+            <th width="4%">@Resource.SrNo</th>
+            <th width="18%" class="itmStick">@Resource.GLAccount</th>
+            <th hidden="hidden">@Resource.From</th>
+            <th hidden="hidden">@Resource.to</th>
+            <th hidden="hidden">@Resource.AccountID</th>
+            <th hidden="hidden">@Resource.RevisionNumber</th>@*/*Add Rev_no by Hina sharma  on 08-10-2024 to show single data instead of duplicate data*/*@
+            <th hidden="hidden">@Resource.Quarter</th>
+            <th hidden="hidden">@Resource.Month</th>
+            <th hidden="hidden">@Resource.Amount</th>
+            <th width="24%">@Resource.GLGroup</th>
+            <th width="11%">@Resource.Budget   <br /> @Resource.Amount</th>
+            <th width="11%">@Resource.Actual <br /> @Resource.Amount </th>
+            <th width="8%">@Resource.Variance  <br /> @Resource.InPercentage</th>
+            <th width="8%">@Resource.Monthly   <br /> @Resource.Allocation</th>
+            <th width="8%">@Resource.Quarterly  <br />@Resource.Allocation </th>
+            <th width="8%">@Resource.CostCenter   <br />@Resource.Allocation</th>
+        </tr>
+    </thead>
+    <tbody id="">
+        @if (ViewBag.YearlyBAReport != null)
+        {
+            var srno = 1;
+            foreach (System.Data.DataRow dtr in ViewBag.YearlyBAReport.Rows)
+            {
+        <tr>
+            <td>@srno</td>
+            <td id="tdAccName" class="ItmNameBreak itmStick tditemfrz">@dtr["acc_name"].ToString()</td>
+            <td>@dtr["AccGroupName"].ToString()</td>
+            <td id="tdFromDate" hidden="hidden">@dtr["StartDate"].ToString()</td>
+            <td id="tdToDate" hidden="hidden">@dtr["EndDate"].ToString()</td>
+            <td id="tdAccId" hidden="hidden">@dtr["acc_id"].ToString()</td>
+            <td id="tdRevNo" hidden="hidden">@dtr["Rev_no"].ToString()</td>@*/*Add Rev_no by Hina sharma  on 08-10-2024 to show single data instead of duplicate data*/*@
+            <td id="tdQtr" hidden="hidden">@dtr["Qtr"].ToString()</td>
+            <td id="tdMnth" hidden="hidden">@dtr["Mnth"].ToString()</td>
+            <td id="tdActAmt" hidden="hidden">@dtr["ActualAmount"].ToString()</td>
+
+            <td class="num_right" id="tdBgtAmt">@dtr["BudgetAmount"]</td>
+            <td class="num_right">
+                <div class=" col-sm-11 no-padding">
+                    @dtr["ActualAmount"]
+                </div>
+                <div class="col-sm-1 i_Icon">
+                    <button type="button" class="calculator" onclick="GetLedgerDetails(event);" data-toggle="modal" data-target="#ExpenseDetail" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Expense @Resource.Detail">   </button>
+                </div>
+            </td>
+            <td class="num_right">@dtr["Variance"]</td>
+            <td class="center"><button type="button" id="MonthlyAllocation" class="calculator" data-toggle="modal" data-target="#MonthlyAllocation" data-backdrop="static" data-keyboard="false" onclick="GetMonthlyAllocation(event)"> <i class="fa fa-eye" aria-hidden="true" data-toggle="" title="@Resource.Monthly @Resource.Allocation"></i> </button> </td>
+            <td class="center"><button type="button" id="QuarterlyAllocation" class="calculator" data-toggle="modal" data-target="#QuarterlyAllocation" data-backdrop="static" data-keyboard="false" onclick="GetQuarterlyAllocation(event)"> <i class="fa fa-eye" aria-hidden="true" data-toggle="" title="@Resource.Quarterly @Resource.Allocation"></i> </button> </td>
+            <td class="center"><button type="button" id="CostCenterAllocation" class="calculator" data-toggle="modal" data-target="#CostCenterAllocation" data-backdrop="static" data-keyboard="false" onclick="GetCostCenterAllocation(event)"> <i class="fa fa-eye" aria-hidden="true" data-toggle="" title="@Resource.CostCenter @Resource.Allocation"></i> </button></td>
+        </tr>
+                srno = srno + 1;
+            }
+        }
+
+    </tbody>
+</table>
+<input type="hidden" id="hdnValDigit" value="@ValDigit" />
+@if (Model.Search != null)
+{
+    if (Model.Search == "SEARCH")
+    {
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+        @Scripts.Render("~/Content/Scripts/DatatablesJs")
+    }
+}

@@ -1,0 +1,160 @@
+﻿@using EnRepMobileWeb.Resources;
+@using System.Data;
+@{
+    //string ValDigit = "0.";
+    //var VD = Convert.ToInt32(Session["ValDigit"].ToString());
+    //for (var i = 0; i < VD; i++)
+    //{
+    //    ValDigit += "0";
+    //}
+    //string QtyDigit = "0.";
+    //var QD = Convert.ToInt32(Session["QtyDigit"].ToString());
+    //for (var i = 0; i < QD; i++)
+    //{
+    //    QtyDigit += "0";
+    //}
+    //string RateDigit = "0.";
+    //var RD = Convert.ToInt32(Session["ValDigit"].ToString());
+    //for (var i = 0; i < RD; i++)
+    //{
+    //    RateDigit += "0";
+    //}
+    //decimal totalsale_amt_spec = 0;
+    //decimal totalsale_amt = 0;
+    //decimal totaltax_amt_spec = 0;
+    //decimal totaltax_amt = 0;
+    //decimal totalOC_amt_spec = 0;
+    //decimal totalOC_amt = 0;
+    //decimal totalInvoice_amt = 0;
+    //decimal totalInvoice_amt_spec = 0;
+
+}
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<div class="modal-content">
+    <div class="modal-header">
+        <h2>@Resource.CustomerDetails</h2>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body" style="padding-top:0px;">
+        <div class="col-md-2 col-sm-12" style="padding-left:0px;">
+            <label class="col-form-label label-align">@Resource.RegionName</label>
+            <input id="RW_RegionName" class="form-control" autocomplete="off" type="text" name="RegionName" placeholder="@Resource.RegionName" disabled="">
+            <input id="HdnRegionId" hidden="hidden" />
+        </div>
+
+        <div class="col-md-2 col-sm-12" style="padding-left:0px;">
+            <label class="col-form-label label-align">@Resource.Currency</label>
+            <input id="RW_Currency" class="form-control" autocomplete="off" type="text" name="Currency" placeholder="@Resource.Currency" disabled="">
+            <input hidden="hidden" id="RWCurrency_id" />
+        </div>
+
+
+        <div class="col-md-2 col-sm-12" style="padding-left:0px;">
+            <label class="col-form-label label-align">@Resource.FromDate</label>
+            <input id="RW_FromDate" class="form-control" value="" autocomplete="off" type="date" name="FromDate" placeholder="" disabled="">
+        </div>
+
+        <div class="col-md-2 col-sm-12" style="padding-left:0px;">
+            <label class="col-form-label label-align">@Resource.ToDate</label>
+            <input id="RW_ToDate" class="form-control" value="" autocomplete="off" type="date" name="ToDate" placeholder="" disabled="">
+        </div>
+
+        <div class="clearfix"></div>
+
+        <div class="card-box table-responsive dy_table margin15">
+            <div id="" class="sticky-table sticky-ltr-cells sb-container container-example1 height40VH pop_csv">
+                <table id="tbl_RegionWiseCustomerDetail" data-order="" class="table table-striped width1700 table-bordered rowhighlighttbl itmfrz" style="width:100%">
+                    <thead>
+                        <tr class="sticky-header">
+                            <th width="3%">@Resource.SrNo</th>
+                            <th width="23%" class="itmStick">@Resource.CustomerName</th>
+                            <th hidden="hidden"></th>
+                            @*<th hidden="hidden"></th>*@
+                            <th width="8%">@Resource.Currency</th>
+                            <th width="8%">@Resource.SaleAmount <br /> @Resource.InSpecific</th>
+                            <th width="8%">@Resource.SaleAmount <br /> @Resource.InBase</th>
+                            <th width="8%">@Resource.Taxes <br /> @Resource.InSpecific</th>
+                            <th width="8%">@Resource.Taxes <br /> @Resource.InBase</th>
+                            <th width="8%">@Resource.OtherCharges <br /> @Resource.InSpecific</th>
+                            <th width="8%">@Resource.OtherCharges <br /> @Resource.InBase</th>
+                            <th width="9%">@Resource.RoundOff <br /> @Resource.Amount</th>
+                            <th width="9%">@Resource.InvoiceAmount <br /> @Resource.InSpecific</th>
+                            <th width="9%">@Resource.InvoiceAmount <br /> @Resource.InBase</th>
+
+                        </tr>
+                    </thead>
+                    <tbody id="">
+                        @if (ViewBag.SalesDetailRegionWiseCustomerList != null)
+                        {
+                            var srno = 1;
+                            foreach (System.Data.DataRow dr in ViewBag.SalesDetailRegionWiseCustomerList.Rows)
+                            {
+                        <tr>
+                            <td>@srno</td>
+                            <td id="custmar_name" class="ItmNameBreak itmStick tditemfrz">@dr["cust_name"].ToString()</td>
+                            <td hidden="hidden" id="hdnCustomerId">@dr["cust_id"].ToString()</td>
+                            @*<td hidden="hidden" id="txtbr_id">@dr["br_id"].ToString()</td>*@
+                            <td id="currancy_symbol" class="center">@dr["curr_symbol"].ToString()</td>
+                            <td class="num_right">@dr["sale_amount_spec"].ToString()</td>
+                            <td class="num_right">@dr["sale_amount_bs"].ToString()</td>
+                            <td class="num_right">@dr["tax_amt_spec"].ToString()</td>
+                            <td class="num_right">@dr["tax_amt_bs"].ToString()</td>
+                            <td class="num_right">@dr["oc_amt_spec"].ToString()</td>
+                            <td class="num_right">@dr["oc_amt_bs"].ToString()</td>
+                            <td class="num_right">@dr["roundoff_diff"].ToString()</td>
+                            <td class="num_right">
+                                <div class="col-sm-11 no-padding">@dr["invoice_amt_spec"].ToString()</div>
+                                <div class="col-sm-1 i_Icon">
+                                    <button type="button" id="" class="calculator" onclick="R_OnclickPopUpInvoiceAmt(event)" data-toggle="modal" data-target="#RegionWiseInvoiceSummary" data-backdrop="static" data-keyboard="false"> <img src="~/Content/Images/iIcon1.png" alt="" title="@Resource.Invoice @Resource.Summary" /> @*<i class="fa fa-info" aria-hidden="true" title="@Resource.Invoice @Resource.Summary"></i>*@ </button>
+                                </div>
+                            </td>
+                            <td class="num_right">
+                                <div class="col-sm-11 no-padding">@dr["invoice_amt_bs"].ToString()</div>
+                                <div class="col-sm-1 i_Icon">
+                                    <button type="button" id="" class="calculator" onclick="R_OnclickPopUpInvoiceAmt(event)" data-toggle="modal" data-target="#RegionWiseInvoiceSummary" data-backdrop="static" data-keyboard="false"> <img src="~/Content/Images/iIcon1.png" alt="" title="@Resource.Invoice @Resource.Summary" /> @*<i class="fa fa-info" aria-hidden="true" title="@Resource.Invoice @Resource.Summary"></i>*@ </button>
+                                </div>
+                            </td>
+                        </tr>
+                                srno = srno + 1;
+                                //totalsale_amt_spec = totalsale_amt_spec + dr["sale_amount_spec"]);
+                                //totalsale_amt = totalsale_amt + dr["sale_amount_bs"]);
+                                //totaltax_amt_spec = totaltax_amt_spec + dr["tax_amt_spec"]);
+                                //totaltax_amt = totaltax_amt + dr["tax_amt_bs"]);
+                                //totalOC_amt_spec = totalOC_amt_spec + dr["oc_amt_spec"]);
+                                //totalOC_amt = totalOC_amt + dr["oc_amt_bs"]);
+                                //totalInvoice_amt = totalInvoice_amt + dr["invoice_amt_bs"]);
+                                //totalInvoice_amt_spec = totalInvoice_amt_spec + dr["invoice_amt_spec"]);
+                            }
+                        }
+                    </tbody>
+                    <tfoot>
+                        @if (ViewBag.TotalSDCostomerWise != null)
+                        {
+                            foreach (DataRow dr in ViewBag.TotalSDCostomerWise.Rows)
+                            {
+                        <tr class="total">
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td hidden="hidden">&nbsp;</td>
+                            <td align="right"><strong>@Resource.Total</strong></td>
+                            <td class="num_right"><strong>@dr["sale_amount_spec"].ToString()</strong></td>
+                            <td class="num_right"><strong>@dr["sale_amount_bs"].ToString()</strong></td>
+                            <td class="num_right"><strong>@dr["tax_amt_spec"].ToString()</strong></td>
+                            <td class="num_right"><strong>@dr["tax_amt_bs"].ToString()</strong></td>
+                            <td class="num_right"><strong>@dr["oc_amt_spec"].ToString()</strong></td>
+                            <td class="num_right"><strong>@dr["oc_amt_bs"].ToString()</strong></td>
+                            <td class="num_right"><strong>@dr["roundoff_diff"].ToString()</strong></td>
+                            <td class="num_right"><strong>@dr["invoice_amt_spec"].ToString()</strong></td>
+                            <td class="num_right"><strong>@dr["invoice_amt_bs"].ToString()</strong></td>
+                        </tr>
+                            }
+                        }
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" id="" onclick="OnClickSerialDiscardAndExit()">@Resource.Close</button>
+    </div>
+</div>

@@ -1,0 +1,90 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.SalesAndDistribution.DomesticSaleInvoice.SI_ListModel
+@using EnRepMobileWeb.Resources;
+@{
+    var rowId = 0;
+}
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/SalesAndDistribution/DomesticSaleInvoice/DomesticSaleInvoiceList.js"></script>
+
+<table id="datatable-buttons" class="table table-striped width1800 rowhighlighttbl itmfrz" cellspacing="0" width="100%">
+    <thead>
+        <tr class="sticky-header">
+            <th style="width:35px;"> @Resource.SrNo</th>
+            <th class="itmStick">@Resource.Invoice <br /> @Resource.Number</th>
+            <th>@Resource.Invoice <br /> @Resource.Date</th>
+            <th>@Resource.SalesPerson </th>
+            <th style="display:none;">@Resource.InvoiceDate</th>
+            <th>@Resource.Invoice <br /> @Resource.Type</th>
+            <th>@Resource.ShipmentNumber</th>
+            <th>@Resource.ShipmentDate</th>
+            @if (Model.DocumentMenuId != "105103140")
+            {
+                <th>@Resource.Custom @Resource.InvoiceNumber</th>
+                <th>@Resource.Custom @Resource.InvoiceDate</th>
+            }
+
+            @*<th>@Resource.ShipmentNumber</th>
+        <th>@Resource.ShipmentDate</th>*@
+            <th width="22%">@Resource.CustomerName</th>
+            <th>@Resource.Currency</th>
+            <th>@Resource.Invoice <br /> @Resource.Value</th>
+            <th>@Resource.Status</th>
+            <th width="10%">@Resource.CreatedBy</th>
+            <th width="9%">@Resource.Createdon</th>
+            <th width="10%">@Resource.ApprovedBy</th>
+            <th width="9%">@Resource.ApprovedOn</th>
+            <th width="10%">@Resource.AmendedBy</th>
+            <th width="9%">@Resource.AmendedOn</th>
+        </tr>
+    </thead>
+    <tbody id="tbodySIList">
+        @if (Model.SIList != null)
+        {
+            foreach (var row in Model.SIList)
+            {
+                rowId++;
+        <tr>
+            <td>@rowId</td>
+            <td id="InvoiceNo" class="ItmNameBreak itmStick tditemfrz">@row.InvoiceNo</td>
+            <td id="InvoiceDate">@row.InvoiceDate</td>
+            <td id="">@row.SalesPerson</td>
+            <td style="display: none;" id="InvDate">@row.InvDate</td>
+            <td id="InvoiceType">@row.InvoiceType</td>
+            <td>@row.ship_no</td>
+            <td>@row.ship_dt</td>
+            @if (Model.DocumentMenuId != "105103140")
+            {
+                <td>@row.custom_inv_no</td>
+                <td>@row.custom_inv_dt</td>
+            }
+                <td>@row.CustName</td>
+                <td class="center">@row.Currency</td>
+                <td class="num_right">@row.InvoiceValue</td>
+                <td id="Doc_Status">@row.Stauts</td>
+                <td>@row.create_by</td>
+                <td>@row.CreateDate</td>
+                <td>@row.app_by</td>
+                <td>@row.ApproveDate</td>
+                <td>@row.mod_by</td>
+                <td>@row.ModifyDate</td>
+
+            </tr>
+            }
+        }
+    </tbody>
+</table>
+@*@if (Session["LSISearch"] != null)*@
+@if (Model.LSISearch != null)
+{
+    if (Model.LSISearch == "LSI_Search")
+    {
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+        @Scripts.Render("~/Content/Scripts/DatatablesJs")
+        //Session["LSISearch"] = null;
+        Model.LSISearch = null;
+    }
+}
+
+
+
+

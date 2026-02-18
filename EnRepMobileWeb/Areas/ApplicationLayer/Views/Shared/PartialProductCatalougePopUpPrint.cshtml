@@ -1,0 +1,152 @@
+﻿@* Used this Partial
+    ProductCatalouge
+
+*@
+<style>
+    span#SpanNoOfCopies {
+        position: relative;
+    }
+</style>
+
+@using EnRepMobileWeb.Resources;
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/InventoryManagement/QualityInspection/QualityInspectionList.js"></script>
+<div class="modal-content">
+    <div class="modal-header">
+        <h2>@Resource.Print @Resource.Options</h2>
+        <button type="button" class="close" data-dismiss="modal" onclick="onclickmailCmnOptionPrint();">&times;</button> @*Added by Nidhi on 14-08-2025*@
+    </div>
+    <div class="modal-body pop_top">
+        <div class="col-md-12 col-sm-12">
+            @*<div class="po col-md-4 col-sm-12 no-padding mt-3">
+                <label class="col-form-label label-align font-weight-bold" style="padding-right:10px;">
+                        Lavel Name
+                    </label>
+             </div>*@
+          
+            <div class="clear"></div>
+            
+                <div class="po col-md-12 col-sm-12 no-padding mt-1">
+                    <div class="col-md-12 col-sm-9 col-xs-12 no-padding">
+                        <div class="col-md-5 col-sm-12 pl-0">&nbsp;</div>
+                            <h2 class="col-md-7 col-sm-12">@Resource.Label @Resource.Name</h2>
+
+                            <div class="checkbox col-md-12 col-sm-12 pl-0">
+                                <label class="col-md-5 col-sm-12 pl-0">
+                                    <input id="chkproddesc" type="checkbox" onchange="OnCheckedChangeProdDesc();"> @Resource.ShowProductDescription
+                                </label>
+                                <label class="col-md-7 col-sm-12">
+                                    <input id="txtproddesc" name="LblProdDesc" disabled type="text" maxlength="13" autocomplete="off" onchange="OnTextChangeProdDesc();">
+                                </label>
+                            </div>
+
+                            <div class="checkbox col-md-12 col-sm-12 pl-0">
+                                <label class="col-md-5 col-sm-12 pl-0">
+                                    <input id="chkprodtechdesc" type="checkbox" onchange="OnCheckedChangeProdTechDesc();">@Resource.ShowProductTechnicalDescription
+                                </label>
+                                <label class="col-md-7 col-sm-12">
+                                    <input id="txtprodtechdesc" name="LblProdTechDesc" disabled type="text" maxlength="13" autocomplete="off" onchange="OnTextChangeProdTechDesc();">
+                                </label>
+                            </div>
+
+                            <div class="checkbox col-md-12 col-sm-12 pl-0">
+                                <label class="col-md-5 col-sm-12 pl-0">
+                                    <input id="chkshowUOM" type="checkbox" onchange="OnCheckedChangeUOM();"> @Resource.Show @Resource.UOM
+                                </label>
+                                <label class="col-md-7 col-sm-12">
+                                    <input id="txtuom" name="LblUOM" disabled type="text" maxlength="13" autocomplete="off" onchange="OnTextChangeUOM();">
+                                </label>
+                            </div>
+
+                            <div class="checkbox col-md-12 col-sm-12 pl-0">
+                                <label class="col-md-5 col-sm-12 pl-0">
+                                    <input id="chkshowItemAliasName" type="checkbox" onchange="OnCheckedChangeItmAliasName();"> @Resource.ShowItemAlias
+                                </label>
+                                <label class="col-md-7 col-sm-12">
+                                    <input id="txtitemalias" name="LblItemAlias" disabled type="text" maxlength="13" autocomplete="off" onchange="OnTextChangeItemAlias();">
+                                </label>
+
+                            </div>
+
+                            <div class="checkbox col-md-12 col-sm-12 pl-0">
+                                <label class="col-md-5 col-sm-12 pl-0">
+                                    <input id="chkshowItmTechSpecific" type="checkbox" onchange="OnCheckedChangeItmTechSpecific();">  @Resource.Show
+                                    @Resource.Product @Resource.TechnicalSpecification
+                                </label>
+                                <label class="col-md-7 col-sm-12">
+                                    <input id="txtprodtechspec" name="LblProdTechSpec" disabled type="text" maxlength="13" autocomplete="off" onchange="OnTextChangeProdTechSpec();">
+                                </label>
+
+                            </div>
+
+                            <div class="checkbox col-md-12 col-sm-12 pl-0">
+                                <label class="col-md-5 col-sm-12 pl-0">
+                                    <input id="chkshowOEM" type="checkbox" onchange="OnCheckedChangeOEM();"> @Resource.Show @Resource.OEMNo
+                                </label>
+                                <label class="col-md-7 col-sm-12">
+                                    <input id="txtoemnum" name="LblOEMNumber" disabled type="text" maxlength="13" autocomplete="off" onchange="OnTextChangeOEM();">
+                                </label>
+                            </div>
+
+                            <div class="checkbox col-md-12 col-sm-12 pl-0">
+                                <label class="col-md-5 col-sm-12 pl-0">
+                                    <input id="chkshowCatalogueNum" type="checkbox" onchange="OnCheckedChangeCatalogueNum();"> @Resource.Show  @Resource.CatalogueNumber
+                                </label>
+                                <label class="col-md-7 col-sm-12">
+                                    <input id="txtcatnum" name="LblCatalougeNum" disabled type="text" maxlength="13" autocomplete="off" onchange="OnTextChangeCatNum();">
+                                </label>
+                            </div>
+
+                            <div class="checkbox col-md-12 col-sm-12 pl-0">
+                                <label class="col-md-5 col-sm-12 pl-0">
+                                    <input id="chkshowRefNum" type="checkbox" onchange="OnCheckedChangeRefNum();"> @Resource.Show  @Resource.ReferenceNumber
+                                </label>
+                                <label class="col-md-7 col-sm-12">
+                                    <input id="txtrefnum" name="LblRefNumber" disabled type="text" maxlength="13" autocomplete="off" onchange="OnTextChangeRefNum();">
+                                </label>
+                            </div>
+
+                            <div class="checkbox col-md-12 col-sm-12 pl-0">
+                                <label class="col-md-5 col-sm-12 pl-0">
+                                    <input id="chkshowVehicleName" type="checkbox" onchange="OnCheckedChangeVehicleName();"> @Resource.Show  @Resource.VehicleName
+                                </label>
+                                <label class="col-md-7 col-sm-12">
+                                    <input id="txtvehiclname" name="LblVehicleName" disabled type="text" maxlength="13" autocomplete="off" onchange="OnTextChangeVehicleName();">
+                                </label>
+                            </div>
+
+                            <div class="checkbox col-md-12 col-sm-12 pl-0">
+                                <label class="col-md-5 col-sm-12 pl-0">
+                                    <input id="chkshowModelNum" type="checkbox" onchange="OnCheckedChangeModelNum();"> @Resource.Show  @Resource.ModelNumber
+                                </label>
+                                <label class="col-md-7 col-sm-12">
+                                    <input id="txtmodelnum" name="LblModelNumber" disabled type="text" maxlength="13" autocomplete="off" onchange="OnTextChangeModelNum();">
+                                </label>
+                            </div>
+                    </div>
+                </div>
+           
+
+        </div>
+    </div>
+    <div class="modal-footer">
+        <input type="hidden" id="MailPrintOption" />
+        @*<button type="button" class="btn btn-primary btn-sm" id="Print" onclick="ResetQCDetail();">@Resource.Print</button>*@
+        @*Added by Nidhi on 14-08-2025*@
+        <button class="btn btn-primary btn-sm" style="display:none"
+                title="@Resource.Save" type="button" id="btn_mail_print" onclick="PrintFormate();"
+                data-toggle="modal" data-target="#SalesInvoicePrint" data-bs-backdrop data-keyboard="false">
+            @Resource.Save
+        </button>
+        <button class="btn btn-primary btn-sm"
+                title="@Resource.Print" type="submit" id="btn_print" onclick="return PrintInvoice()" name="Command" value="Print"
+                data-toggle="modal" data-target="#SalesInvoicePrint" data-bs-backdrop data-keyboard="false">
+            @Resource.Print
+        </button>
+        <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" id="Back" onclick="onclickmailCmnOptionPrint();">@Resource.Back</button> @*Added by Nidhi on 14-08-2025*@
+
+    </div>
+
+</div>
+
+

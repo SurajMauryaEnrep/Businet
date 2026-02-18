@@ -1,0 +1,64 @@
+﻿@using EnRepMobileWeb.Resources;
+<style>
+    table#alert_in th {
+        text-align:left !important;
+    }
+</style>
+<div class="modal-content">
+    <div class="modal-header">
+        <h2>@Resource.Alert </h2> <button type="button" class="close" data-dismiss="modal" onclick="ClosePopup();">&times;</button>
+    </div>
+    <div class="modal-body pl-0">
+        <div class="card-box table-responsive dy_table margin10">
+            <div class="sticky-table sticky-ltr-cells sb-container container-example1 height30VH">
+                <table id="alert_in" class="table table-striped table-bordered" style="width:100%;">
+                    <thead>
+                        <tr>
+                            <th width="20%" style="text-align:left;">
+                                <label style="margin-bottom:0px;"> <input type="checkbox" id="checkboxID" value="" onchange="Check();"> @Resource.Email  </label>
+                            </th>
+                            <td width="60%" class="no-padding"> <input id="Email" class="form-control" autocomplete="off" type="text" name="Email" placeholder="@Resource.Email" disabled=""></td>
+                            <td width="5%" class="blue"><button type="button" id="" class="calculator" onclick="BindEmail()" data-toggle="modal" data-target="#MultipleMailInfo" data-backdrop="static" data-keyboard="false"> <i class="fa fa-ellipsis-v" aria-hidden="true" title="@Resource.AddMore"></i></button> </td>
+                            <td width="5%" class="MailView"> <button type="button" id="" class="" onclick="ViewEmailAlert()" data-toggle="modal" data-target="#MailView" data-backdrop="static" data-keyboard="false"> <i class="fa fa-search" aria-hidden="true" title="@Resource.Preview"></i> </button> </td>
+                            <td width="5%" class=""><button type="button" id="" class="calculator blue" onclick="EmailAlertLogDetails();" data-toggle="modal" data-target="#LogView" data-backdrop="static" data-keyboard="false"> <i class="fa fa-files-o" aria-hidden="true" title="@Resource.Log"></i></button></td>
+                            <td width="5%" class="tdPrintButton"><button class="print1" title="@Resource.Print @Resource.Options" type="button" id="btn_print_mail" name="Command" value="Print" data-toggle="modal" @*data-target="#CmnOptionPrint"*@ onclick="onclickmailCmnOptionPrint('mail')" data-backdrop="static" data-keyboard="false"></button></td>
+                            <td width="5%" id="idmailstatus" class="green" style="display:none;"><i class="fa fa-check" aria-hidden="true"></i></td>
+                        </tr>
+                        <tr>
+                            <th width="20%" style="text-align:left;">
+                                <label style="margin-bottom:0px;"> <input type="checkbox" value="" disabled> @Resource.SMS  </label>
+                            </th>
+                            <td width="60%" class="no-padding"><input id="SMS" class="form-control" autocomplete="off" type="text" name="SMS" placeholder="@Resource.SMS" disabled="disabled"></td>
+                            <td width="5%" class="blue"><button type="button" id="" class="calculator" onclick="" data-toggle="modal" disabled data-target="#MultipleMailInfo" data-backdrop="static" data-keyboard="false"> <i class="fa fa-ellipsis-v" aria-hidden="true" title="@Resource.AddMore"></i></button> </td>
+
+                            <td width="5%" class="blue"><button type="button" id="" class="calculator" onclick="" data-toggle="modal" disabled data-target="#MailView" data-backdrop="static" data-keyboard="false"> <i class="fa fa-search" aria-hidden="true" title="@Resource.Preview"></i></button> </td>
+
+                            <td width="5%" class="blue"><button type="button" id="" class="calculator" onclick="" data-toggle="modal" disabled data-target="#LogView" data-backdrop="static" data-keyboard="false"> <i class="fa fa-files-o" aria-hidden="true" title="Log"></i></button> </td>
+                            <td width="5%" class="tdPrintButton"><button class="print1" title="@Resource.Print @Resource.Options" type="button" id="btn_print_mail" name="Command" value="Print" data-toggle="modal" data-backdrop="static" data-keyboard="false" disabled="disabled"></button></td>
+                            <td width="5%" class="red"><i class="fa fa-exclamation-triangle" aria-hidden="true" style="display:none;"></i></td>
+                        </tr>
+                        <tr>
+                            <th width="20%" style="text-align:left;">
+                                <label style="margin-bottom:0px;"> <input type="checkbox" value="" disabled> @Resource.WhatsApp </label>
+                            </th>
+                            <td width="60%" class="no-padding"> <input id="WhatsApp" class="form-control" autocomplete="off" type="text" name="WhatsApp" placeholder="@Resource.WhatsApp" disabled=""></td>
+                            <td width="5%" class="blue"><button type="button" id="" class="calculator" onclick="" data-toggle="modal" disabled data-target="#MultipleMailInfo" data-backdrop="static" data-keyboard="false"> <i class="fa fa-ellipsis-v" aria-hidden="true" title="@Resource.AddMore"></i></button> </td>
+                            <td width="5%" class="blue"><button type="button" id="" class="calculator" onclick="" data-toggle="modal" disabled data-target="#MailView" data-backdrop="static" data-keyboard="false"> <i class="fa fa-search" aria-hidden="true" title="@Resource.Preview"></i></button> </td>
+                            <td width="5%" class="blue"><button type="button" id="" class="calculator" onclick="" data-toggle="modal" disabled data-target="#LogView" data-backdrop="static" data-keyboard="false"> <i class="fa fa-files-o" aria-hidden="true" title="Log"></i></button> </td>
+                            <td width="5%" class="tdPrintButton"><button class="print1" title="@Resource.Print @Resource.Options" type="button" id="btn_print_mail" name="Command" value="Print" data-toggle="modal"  data-backdrop="static" data-keyboard="false" disabled="disabled"></button></td>
+                            <td width="5%" class="green" style="display:none;"><i class="fa fa-check" aria-hidden="true"></i></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <input type="hidden" id="hdfilepathpdf" />
+        </div>
+    </div>
+    <div class="modal-footer">
+        <span id="showMsg" class="mail_error_message"></span>
+        <button type="button" id="btnsend" class="btn btn-primary btn-sm" @*data-dismiss="modal"*@ onclick="SendEmailAlert()">@Resource.Send</button>
+        <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" onclick="ClosePopup();">@Resource.Cancel</button>
+    </div>
+</div>

@@ -1,0 +1,63 @@
+﻿@using EnRepMobileWeb.Resources;
+@{
+    var rowId = 0;
+}
+
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/Procurement/SupplierPriceList/SupplierPriceListJs.js"></script>
+
+<table id="datatable-buttons" class="table table-striped table-bordered width1700 rowhighlighttbl">
+    <thead>
+        <tr class="sticky-header">
+            <th width="3%">@Resource.SrNo</th>
+            <th width="10%">@Resource.Supplier  @Resource.Name</th>
+            <th width="10%" hidden="hidden"></th>
+            <th width="10%">@Resource.Category</th>
+            <th width="9%">@Resource.Portfolio</th>
+            <th width="7%">@Resource.ValidUpto</th>
+            <th width="7%">@Resource.ActiveStatus</th>
+            <th width="7%">@Resource.Status</th>
+            <th width="9%">@Resource.CreatedBy</th>
+            <th width="9%">@Resource.Createdon</th>
+            <th width="9%">@Resource.ApprovedBy</th>
+            <th width="9%">@Resource.ApprovedOn</th>
+            <th width="9%">@Resource.AmendedBy</th>
+            <th width="9%">@Resource.AmendedOn</th>
+        </tr>
+    </thead>
+    <tbody id="">
+        @if (ViewBag.ListDetail != null)
+        {
+            foreach (System.Data.DataRow row in ViewBag.ListDetail.Rows)
+            {
+                rowId++;
+                <tr>
+                    <td>@rowId</td>
+                    <td>@row["supp_name"].ToString()</td>
+                    <td hidden="hidden" id="supp_id">@row["supp_id"].ToString()</td>
+                    <td>@row["supp_catg_name"].ToString()</td>
+                    <td>@row["supp_port_name"].ToString()</td>
+                    <td>@row["valid_upto"].ToString()</td>
+                    <td>@row["act_status"].ToString()</td>
+                    <td id="Doc_Status">@row["Stauts"].ToString()</td>
+                    <td>@row["create_by"].ToString()</td>
+                    <td id="createdt">@row["CreateDate"].ToString()</td>
+                    <td>@row["app_by"].ToString()</td>
+                    <td>@row["ApproveDate"].ToString()</td>
+                    <td>@row["mod_by"].ToString()</td>
+                    <td>@row["ModifyDate"].ToString()</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+@if (ViewBag.ListSearch != null)
+{
+    //if (Session["PRSearch"].ToString() == "PR_Search")
+    if (ViewBag.ListSearch == "SPLListSearch")
+    {
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+        @Scripts.Render("~/Content/Scripts/DatatablesJs")
+        ViewBag.ListSearch = null;
+    }
+}

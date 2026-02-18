@@ -1,0 +1,131 @@
+﻿@model  EnRepMobileWeb.MODELS.ApplicationLayer.InventoryManagement.MIS.MISStockReservation.MISStockReservation_Model
+@using EnRepMobileWeb.Resources;
+@using EnRepMobileWeb.MODELS.Common;
+
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+<title>@Model.title</title>
+<script src="~/Content/Scripts/ApplicationLayer/InventoryManagement/MIS/MISStockReservation/MISStockReservation.js"></script>
+<div class="row">
+    <div id="ItemInfo" class="modal fade show" role="dialog" aria-modal="true">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/Common/Views/_ItemInfomation.cshtml")
+
+        </div>
+    </div>
+    <!-- UnReserved Stock Detail -->
+    <div id="UnReservedStockDetail" class="modal fade" role="dialog">
+        <div class="modal-dialog" style="min-width:900px;">
+            <div id="ItemStockWareHouseWise">
+                @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/_UnReservedStockDetail.cshtml")
+            </div>
+        </div>
+    </div>
+    <!-- Sub Item Detail -->
+    <div id="SubItem" class="modal fade" role="dialog">
+        <div class="modal-dialog" id="SubItemPopUp" style=" max-width:600px;">
+            <!-- Modal content-->
+            @{
+                SubItemPopupDt mdl = new SubItemPopupDt();
+            }
+            @Html.Partial("~/Areas/Common/Views/Cmn_PartialSubItemDetail.cshtml", mdl)
+        </div>
+        <table id="hdn_Sub_ItemDetailTbl" hidden>
+            <tbody>
+                @if (ViewBag.SubItemDetails != null)
+                {
+                    foreach (System.Data.DataRow dr in ViewBag.SubItemDetails.Rows)
+                    {
+                        <tr>
+                            <td><input type="text" id="ItemId" value='@dr["item_id"]'></td>
+                            <td><input type="text" id="subItemId" value='@dr["sub_item_id"]'></td>
+                            <td><input type="text" id="subItemQty" value='@dr["Qty"]'></td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+        @Html.HiddenFor(model => model.SubItemDetailsDt, new { @id = "SubItemDetailsDt" })
+    </div>
+    <!-- Sub Item Stock Detail -->
+    <div id="SubItemStock" class="modal fade" role="dialog">
+        <div class="modal-dialog" id="SubItemStockPopUp" style=" max-width:600px;">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/Common/Views/Cmn_PartialSubItemStkDetail.cshtml")
+        </div>
+    </div>
+    <input type="hidden" id="sub_item" />
+    @Html.HiddenFor(model => model.DocumentMenuId, new { @id = "DocumentMenuId" })
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <h2 class="col-md-7 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12">
+        <div class="x_panel mar_pad1">
+            <div class="x_content mar_pad1">
+                <article class="panel-group bs-accordion" id="accordion" role="tablist" aria-multiselectable="true">
+                    <section class="panel panel-default">
+                        <div class="panel-heading" role="tab" id="headingOne">
+                            <h4 class="panel-title"><a class="" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne"> @Resource.StockReservationDetail<span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a></h4>
+                        </div>
+                        <div id="collapseOne" class="panel-collapse in collapse show" role="tabpanel" aria-labelledby="headingOne" style="">
+                            <div class="panel-body">
+                                <div class="col-md-4 col-sm-12 pr-0">
+                                    <div class="col-sm-11 no-padding">
+                                        <label class="col-form-label label-align">@Resource.ItemName</label>
+                                        @Html.DropDownListFor(model => model.ItemId, new SelectList(Model.ItemsList, "Item_Id", "Item_Name"),
+                          new { @class = "form-control", @id = "ddlItemsList", @name = "ItemsList" })
+                                    </div>
+                                    <div class="col-sm-1 i_Icon margin28">
+                                        <button type="button" id="ItmInfoBtnIcon" class="calculator" onclick="BindItemInfoBtnClick1(event);" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.ItemInformation"> @*<i class="fa fa-info" aria-hidden="true" title=" @Resource.ItemInformation"></i>*@ </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-12 pl-0">
+                                    <label class="col-form-label label-align">@Resource.ItemGroup</label>
+                                    @Html.DropDownListFor(model => model.ItemGroupId, new SelectList(Model.ItemsGroupList, "Group_Id", "Group_Name"),
+                         new { @class = "form-control", @id = "ddlItemsGroupList", @name = "ItemsGroupList",@multiple = "multiple" })
+                                </div>
+                                <div class="col-md-3 col-sm-12">
+                                    <label class="col-form-label label-align">@Resource.Warehouse</label>
+                                    @Html.DropDownListFor(model => model.WarehouseId, new SelectList(Model.WarehouseList, "Wh_Id", "Wh_Name"),
+                       new { @class = "form-control", @id = "ddlWarehouseList", @name = "WarehouseList", @multiple = "multiple" })
+                                </div>
+                                <div class="col-md-1 col-sm-12">
+                                    <button type="button" class="btn btn-primary btn-sm margintop20" id="BtnSearch" onclick="GetStockReservationReport()"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                </div>
+                                <div class="clear"></div>
+
+
+
+                                <div class="row">
+                                    <div class="col-md-12 col-sm-12">
+                                        <div class="col-md-12 col-sm-12 margin15">
+                                            <div id="Itm_Details_List" class="x_panel margin_top_zero">
+                                                <div class="x_content">
+                                                    <div class="card-box table-responsive dy_table">
+                                                        <div id="tbodySIList" class="sticky-table sticky-ltr-cells sb-container container-example1">
+                                                            @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/MISStockReservationList.cshtml")
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @*</form>*@
+                        </div>
+                    </section>
+                </article>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- page content end -->

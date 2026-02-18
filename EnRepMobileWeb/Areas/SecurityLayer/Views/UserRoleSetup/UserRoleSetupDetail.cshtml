@@ -1,0 +1,796 @@
+﻿@model EnRepMobileWeb.MODELS.SecurityLayer.UserRoleSetup.UserRoleSetup_Model
+@using EnRepMobileWeb.Resources;
+@using System.Data
+
+@if (Session["UserId"] == null)
+{
+    Response.Redirect("~/Login");
+}
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+
+}
+@*<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>*@
+<script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+<script src="~/Content/Css/build/js/sweetalert.js"></script>
+<script src="~/Content/Css/build/js/hierarchical-checkboxes.js"></script>
+<script src="~/Content/Scripts/SecurityLayer/UserRoleSetup/UserRoleSetup.js"></script>
+<link href="~/Content/Css/build/css/hierarchical-checkboxes.css" rel="stylesheet" />
+
+@{
+    var Disable = true;
+    if (Session["URS_TransType"] != null)
+    {
+        if (Session["URS_TransType"].ToString() == "Update")
+        {
+            if (Session["URS_Command"].ToString() == "Edit")
+            {
+                Disable = false;
+            }
+            else
+            {
+                Disable = true;
+            }
+        }
+        else
+        {
+            Disable = false;
+        }
+    }
+    else
+    {
+        Disable = false;
+    }
+    if (Session["URS_TransType"].ToString() == "Refresh")
+    {
+        Disable = true;
+    }
+    if (Session["URS_TransType"].ToString() == "Save")
+    {
+        if (Session["URS_Command"].ToString() == "AddNewUserRoleSetup")
+        {
+            Disable = false;
+        }
+        else if (Session["URS_Command"].ToString() == "Edit")
+        {
+            Disable = false;
+        }
+        else
+        {
+            Disable = true;
+        }
+    }
+    if (ViewBag.Message == "Duplicate")
+    {
+        Disable = false;
+    }
+}
+@{
+    if (Session["URS_Message"] != null)
+    {
+        var message = Session["URS_Message"].ToString();
+        if (message != null)
+        {
+            Model.hdnsaveApprovebtn = null;
+            <script>
+                $(document).ready(function () {
+                    $("#hdnsavebtn").val("");
+                })
+            </script>
+        }
+        if (ViewBag.URSMessage == "Duplicate")
+        {
+            Model.hdnsaveApprovebtn = null;
+            <script>
+                $(document).ready(function () {
+                    $("#hdnsavebtn").val("");
+                })
+            </script>
+        }
+
+        if (Session["URS_Message"].ToString() == "Save")
+        {
+            <script type="text/javascript">
+                swal("", $("#savemsg").text(), "success");
+            </script>
+        }
+        if (Session["URS_Message"].ToString() == "Deleted")
+        {
+            <script type="text/javascript">
+                swal("", $("#deletemsg").text(), "success");
+            </script>
+        }
+        if (Session["URS_Message"].ToString() == "Exists")
+        {
+            <script type="text/javascript">
+                swal("", $("#DependencyExist").text(), "warning");
+            </script>
+        }
+
+        Session["URS_Message"] = null;
+    }
+}
+
+<title>@Model.Title</title>
+@using (Html.BeginForm("UserRoleSetupSave", "UserRoleSetup", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    {
+        <div class="row">
+            <div class="col-md-12 col-sm-12  ">
+                <div class="x_panel">
+                    <div class="x_content">
+                        <h2 class="col-md-8 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                        <div class="col-md-4 col-sm-12 work_flow heading_right_padding">
+                            @{
+                                var btnName = Session["URS_BtnName"].ToString();
+                                switch (btnName)
+                                {
+                                    case "BtnAddNew":
+                                        <ul class="margin0 padding0">
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "104105001")
+                                                    {
+                                                        <li>
+                                                            <button class="add"
+                                                                    title="@Resource.AddNew" disabled style="filter: grayscale(100%)" type="submit" id="btn_add" name="Command" value="AddNewUserRoleSetup"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "104105002")
+                                                    {
+                                                        <li>
+                                                            <button class="edit"
+                                                                    title="@Resource.Edit" disabled style="filter: grayscale(100%)" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "104105004")
+                                                    {
+                                                        <li>
+                                                            <button class="delete"
+                                                                    title="@Resource.Delete" disabled style="filter: grayscale(100%)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                        </li>
+                                                    }
+                                                }
+                                            }
+                                            <li>
+                                                <button class="save"
+                                                        title="@Resource.Save" type="submit" id="btn_save" onclick="return CheckFormValidation();" name="Command" value="Save"></button>
+                                            </li>
+                                            <li>
+                                                <button class="refresh"
+                                                        title="@Resource.Refresh" type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                                            </li>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "104105005")
+                                                    {
+                                                        <li>
+                                                            <button class="print"
+                                                                    title="@Resource.Print" disabled style="filter: grayscale(100%)" type="submit" id="btn_print" name="Command" value="Print"></button>
+                                                        </li>
+                                                    }
+                                                }
+                                            }
+                                            <li>
+                                                <button class="back"
+                                                        title="@Resource.Back" disabled style="filter: grayscale(100%)" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                                            </li>
+                                        </ul>
+                                        break;
+                                    case "BtnSave":
+                                        <ul>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "104105001")
+                                                    {
+                                                        <li>
+                                                            <button class="add"
+                                                                    title="@Resource.AddNew" type="submit" id="btn_add" name="Command" value="AddNewUserRoleSetup"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "104105002")
+                                                    {
+                                                        <li>
+                                                            <button class="edit"
+                                                                    title="@Resource.Edit" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "104105004")
+                                                    {
+                                                        <li>
+                                                            <button class="delete"
+                                                                    onclick="return functionConfirm(this)" title="@Resource.Delete" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                        </li>
+                                                        @Html.HiddenFor(m => m.DeleteCommand, new { @id = "HdDeleteCommand" })
+                                                    }
+                                                }
+                                            }
+                                            <li>
+                                                <button class="save"
+                                                        title="@Resource.Save" disabled style="filter: grayscale(100%)" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                            </li>
+                                            <li>
+                                                <button class="refresh"
+                                                        title="@Resource.Refresh" disabled style="filter: grayscale(100%)" type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                                            </li>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "104105005")
+                                                    {
+                                                        <li>
+                                                            <button class="print"
+                                                                    title="@Resource.Print" disabled style="filter: grayscale(100%)" type="submit" id="btn_print" name="Command" value="Print"></button>
+                                                        </li>
+                                                    }
+                                                }
+                                            }
+                                            <li>
+                                                <button class="back"
+                                                        title="@Resource.Back" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                                            </li>
+                                        </ul>
+                                        break;
+                                    case "BtnEdit":
+                                        <ul>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "104105001")
+                                                    {
+                                                        <li>
+                                                            <button class="add"
+                                                                    title="@Resource.AddNew" disabled style="filter: grayscale(100%)" type="submit" id="btn_add" name="Command" value="AddNewUserRoleSetup"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "104105002")
+                                                    {
+                                                        <li>
+                                                            <button class="edit"
+                                                                    title="@Resource.Edit" disabled style="filter: grayscale(100%)" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "104105004")
+                                                    {
+                                                        <li>
+                                                            <button class="delete"
+                                                                    title="@Resource.Delete" disabled style="filter: grayscale(100%)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                        </li>
+                                                    }
+                                                }
+                                            }
+                                            <li>
+                                                <button class="save"
+                                                        title="@Resource.Save" type="submit" id="btn_save" onclick="return CheckFormValidation();" name="Command" value="Save"></button>
+                                            </li>
+                                            <li>
+                                                <button class="refresh"
+                                                        title="@Resource.Refresh" type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                                            </li>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "104105005")
+                                                    {
+                                                        <li>
+                                                            <button class="print"
+                                                                    title="@Resource.Print" disabled style="filter: grayscale(100%)" type="submit" id="btn_print" name="Command" value="Print"></button>
+                                                        </li>
+                                                    }
+                                                }
+                                            }
+                                            <li>
+                                                <button class="back"
+                                                        title="@Resource.Back" disabled style="filter: grayscale(100%)" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                                            </li>
+                                        </ul>
+                                        break;
+                                    case "BtnRefresh":
+                                        <ul>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "104105001")
+                                                    {
+                                                        <li>
+                                                            <button class="add"
+                                                                    title="@Resource.AddNew" type="submit" id="btn_add" name="Command" value="AddNewUserRoleSetup"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "104105002")
+                                                    {
+
+                                                        <li>
+                                                            <button class="edit"
+                                                                    title="@Resource.Edit" disabled style="filter: grayscale(100%)" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "104105004")
+                                                    {
+                                                        <li>
+                                                            <button class="delete"
+                                                                    title="@Resource.Delete" disabled style="filter: grayscale(100%)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                        </li>
+                                                    }
+                                                }
+                                            }
+                                            <li>
+                                                <button class="save"
+                                                        title="@Resource.Save" disabled style="filter: grayscale(100%)" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                            </li>
+                                            <li>
+                                                <button class="refresh"
+                                                        title="@Resource.Refresh" disabled style="filter: grayscale(100%)" type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                                            </li>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "104105005")
+                                                    {
+                                                        <li>
+                                                            <button class="print"
+                                                                    title="@Resource.Print" disabled style="filter: grayscale(100%)" type="submit" id="btn_print" name="Command" value="Print"></button>
+                                                        </li>
+                                                    }
+                                                }
+                                            }
+                                            <li>
+                                                <button class="back"
+                                                        title="@Resource.Back" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                                            </li>
+                                        </ul>
+                                        break;
+                                    case "BtnToDetailPage":
+                                        <ul>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "104105001")
+                                                    {
+                                                        <li>
+                                                            <button class="add"
+                                                                    title="@Resource.AddNew" type="submit" id="btn_add" name="Command" value="AddNewUserRoleSetup"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "104105002")
+                                                    {
+                                                        <li>
+                                                            <button class="edit"
+                                                                    title="@Resource.Edit" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "104105004")
+                                                    {
+                                                        <li>
+                                                            <button class="delete"
+                                                                    onclick="return functionConfirm(this)" title="@Resource.Delete" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                        </li>
+                                                        @Html.HiddenFor(m => m.DeleteCommand, new { @id = "HdDeleteCommand" })
+                                                    }
+                                                }
+                                            }
+                                            <li>
+                                                <button class="save"
+                                                        title="@Resource.Save" disabled style="filter: grayscale(100%)" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                            </li>
+                                            <li>
+                                                <button class="refresh"
+                                                        title="@Resource.Refresh" disabled style="filter: grayscale(100%)" type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                                            </li>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "104105005")
+                                                    {
+                                                        <li>
+                                                            <button class="print"
+                                                                    title="@Resource.Print" disabled style="filter: grayscale(100%)" type="submit" id="btn_print" name="Command" value="Print"></button>
+                                                        </li>
+                                                    }
+                                                }
+                                            }
+                                            <li>
+                                                <button class="back"
+                                                        title="@Resource.Back" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                                            </li>
+                                        </ul>
+                                        break;
+                                    case "BtnDelete":
+                                        <ul>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "104105001")
+                                                    {
+                                                        <li>
+                                                            <button class="add"
+                                                                    title="@Resource.AddNew" type="submit" id="btn_add" name="Command" value="AddNewUserRoleSetup"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "104105002")
+                                                    {
+
+                                                        <li>
+                                                            <button class="edit"
+                                                                    title="@Resource.Edit" disabled style="filter: grayscale(100%)" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "104105004")
+                                                    {
+                                                        <li>
+                                                            <button class="delete"
+                                                                    title="@Resource.Delete" disabled style="filter: grayscale(100%)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                        </li>
+                                                    }
+                                                }
+                                            }
+                                            <li>
+                                                <button class="save"
+                                                        title="@Resource.Save" disabled style="filter: grayscale(100%)" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                            </li>
+                                            <li>
+                                                <button class="refresh"
+                                                        title="@Resource.Refresh" disabled style="filter: grayscale(100%)" type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                                            </li>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "104105005")
+                                                    {
+                                                        <li>
+                                                            <button class="print"
+                                                                    title="@Resource.Print" disabled style="filter: grayscale(100%)" type="submit" id="btn_print" name="Command" value="Print"></button>
+                                                        </li>
+                                                    }
+                                                }
+                                            }
+                                            <li>
+                                                <button class="back"
+                                                        title="@Resource.Back" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                                            </li>
+                                        </ul>
+                                        break;
+                                }
+                                @*switch (btnName)
+                                    {
+                                        case "BtnAddNew":
+                                            <ul>
+                                                <li>
+                                                    <button class="add" title="@Resource.AddNew" disabled style="filter: grayscale(100%)" type="submit" id="btn_add" name="Command" value="AddNewUserRoleSetup"></button>
+                                                </li>
+                                                <li>
+                                                    <button class="edit" title="@Resource.Edit" disabled style="filter: grayscale(100%)" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                </li>
+                                                <li>
+                                                    <button class="delete" title="@Resource.Delete" disabled style="filter: grayscale(100%)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                </li>
+                                                @Html.HiddenFor(m => m.DeleteCommand, new { @id = "HdDeleteCommand" })
+                                                <li>
+                                                    <button class="save" title="@Resource.Save" type="submit" onclick="return  CheckFormValidation();" id="btn_save" name="Command" value="Save"></button>
+                                                </li>
+                                                <li>
+                                                    <button class="refresh" title="@Resource.Refresh" type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                                                </li>
+                                                <li>
+                                                    <button class="print" title="@Resource.Print" disabled style="filter: grayscale(100%)" type="submit" id="btn_print" name="Command" value="Print"></button>
+                                                </li>
+                                                <li>
+                                                    <button class="back" title="@Resource.Back" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                                                </li>
+                                            </ul>
+                                            break;
+                                        case "BtnEdit":
+                                            <ul>
+                                                <li>
+                                                    <button class="add"
+                                                            title="@Resource.AddNew" disabled style="filter: grayscale(100%)" type="submit" id="btn_add" name="Command" value="AddNewUserRoleSetup"></button>
+                                                </li>
+                                                <li>
+                                                    @if (Session["URS_Command"].ToString() == "Edit")
+                                                    {
+                                                        <button class="edit" title="@Resource.Edit" disabled style="filter: grayscale(100%)" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                    }
+                                                    else
+                                                    {
+                                                        <button class="edit" title="@Resource.Edit" style="filter: grayscale(0%)" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                    }
+
+                                                </li>
+                                                <li>
+                                                    @if (Session["URS_Command"].ToString() == "Edit")
+                                                    {
+                                                        <button class="delete" title="@Resource.Delete" disabled style="filter: grayscale(100%)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                    }
+                                                    else
+                                                    {
+                                                        <button class="delete" title="@Resource.Delete" onclick="return functionConfirm(this)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                    }
+                                                    @Html.HiddenFor(m => m.DeleteCommand, new { @id = "HdDeleteCommand" })
+                                                </li>
+                                                <li>
+                                                    @if (Session["URS_Command"].ToString() == "Edit")
+                                                    {
+                                                        <button class="save" onclick="return CheckFormValidation();" title="@Resource.Save" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                                    }
+                                                    else
+                                                    {
+                                                        <button class="save" title="@Resource.Save" disabled style="filter: grayscale(100%)" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                                    }
+                                                </li>
+                                                <li>
+                                                    <button class="refresh" title="@Resource.Refresh" type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                                                </li>
+                                                <li>
+                                                    <button class="print" title="@Resource.Print" disabled style="filter: grayscale(100%)" type="submit" id="btn_print" name="Command" value="Print"></button>
+                                                </li>
+                                                <li>
+                                                    <button class="back" title="@Resource.Back" disabled style="filter: grayscale(100%)" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                                                </li>
+                                            </ul>
+                                            break;
+                                        case "BtnDelete":
+                                            <ul>
+                                                <li>
+                                                    <button class="add" title="@Resource.AddNew" type="submit" id="btn_add" name="Command" value="AddNewUserRoleSetup"></button>
+                                                </li>
+                                                <li>
+                                                    <button class="edit" title="@Resource.Edit" disabled style="filter: grayscale(100%)" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                </li>
+                                                <li>
+                                                    <button class="delete" title="@Resource.Delete" disabled style="filter: grayscale(100%)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                </li>
+                                                @Html.HiddenFor(m => m.DeleteCommand, new { @id = "HdDeleteCommand" })
+                                                <li>
+                                                    <button class="save" title="@Resource.Save" disabled style="filter: grayscale(100%)" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                                </li>
+                                                <li>
+                                                    <button class="refresh" title="@Resource.Refresh" disabled style="filter: grayscale(100%)" type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                                                </li>
+                                                <li>
+                                                    <button class="print" title="@Resource.Print" disabled style="filter: grayscale(100%)" type="submit" id="btn_print" name="Command" value="Print"></button>
+                                                </li>
+                                                <li>
+                                                    <button class="back" title="@Resource.Back" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                                                </li>
+                                            </ul>
+                                            break;
+                                        case "BtnRefresh":
+                                            <ul>
+                                                <li>
+                                                    <button class="add" title="@Resource.AddNew" type="submit" id="btn_add" name="Command" value="AddNewUserRoleSetup"></button>
+                                                </li>
+                                                <li>
+                                                    <button class="edit" title="@Resource.Edit" disabled style="filter: grayscale(100%)" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                </li>
+                                                <li>
+                                                    <button class="delete" title="@Resource.Delete" disabled style="filter: grayscale(100%)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                </li>
+                                                @Html.HiddenFor(m => m.DeleteCommand, new { @id = "HdDeleteCommand" })
+                                                <li>
+                                                    <button class="save" title="@Resource.Save" disabled style="filter: grayscale(100%)" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                                </li>
+                                                <li>
+                                                    <button class="refresh" title="@Resource.Refresh" disabled style="filter: grayscale(100%)" type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                                                </li>
+                                                <li>
+                                                    <button class="print" title="@Resource.Print" disabled style="filter: grayscale(100%)" type="submit" id="btn_print" name="Command" value="Print"></button>
+                                                </li>
+                                                <li>
+                                                    <button class="back" title="@Resource.Back" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                                                </li>
+                                            </ul>
+                                            break;
+                                    }*@
+                            }
+                        </div>
+                        <div class="x_title pad_mar ">
+                            <div class="col-md-12 col-sm-12 icon_tool ">
+                                <div class="approved_by">
+                                    <ul>
+                                        <li><span>@Resource.CreatedBy<br><b>@Html.DisplayFor(model => model.CreatedBy)</b></span></li>
+                                        <li><span>@Resource.Createdon<br><b>@Html.DisplayFor(model => model.CreatedOn)</b></span></li>
+                                        <li><span>@Resource.AmendedBy<br><b>@Html.DisplayFor(model => model.AmmendedBy)</b></span></li>
+                                        <li><span>@Resource.AmendedOn<br> <b>@Html.DisplayFor(model => model.AmmendedOn)</b></span></li>
+                                    </ul>
+                                </div>
+
+
+                            </div>
+                            <div class="clearfix"></div>
+                            @Html.HiddenFor(model => model.hdnsaveApprovebtn, new { @id = "hdnsavebtn" })
+                        </div>
+                        <div class="col-md-12 col-sm-12 padding_left">
+                            <article class="panel-group bs-accordion" id="accordion" role="tablist" aria-multiselectable="true">
+                                <section class="panel panel-default">
+                                    <div class="panel-heading" role="tab" id="headingOne">
+                                        <h4 class="panel-title"> <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne"> @Resource.RoleDetail <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a></h4>
+                                    </div>
+                                    <div id="collapseOne" class="panel-collapse in collapse show" role="tabpanel" aria-labelledby="headingOne" style="">
+                                        <div class="panel-body">
+                                            <div class="col-md-3 col-sm-12">
+                                                <label class="col-form-label label-align">@Resource.HO <span class="required">*</span></label>
+                                                @Html.DropDownListFor(model => model.HOName, new SelectList(Model.HoList, "Comp_id", "Comp_name"), new { @class = "form-control", @id = "dll_HO", @disabled = "disabled" })
+                                                <span class="field-validation-valid" id="spanCompany"></span>
+                                            </div>
+                                            <div class="col-md-3 col-sm-12">
+                                                <label class="col-form-label label-align">@Resource.RoleName <span class="required">*</span></label>
+                                                @if (Disable)
+                                                {
+                                                    @Html.TextBoxFor(model => model.RoleName, "", new { @id = "TxtRoleName", @maxlength = "50", @class = "form-control", @placeholder = "Role Name", @disabled = "disabled" })
+                                                }
+                                                else
+                                                {
+                                                    @Html.TextBoxFor(model => model.RoleName, "", new { @id = "TxtRoleName", @maxlength = "50", @class = "form-control", @placeholder = "Role Name", @onkeypress = "OnTextRoleName()", @onchange = "OnTextRoleName()" })
+                                                }
+
+                                                @Html.HiddenFor(model => model.RoleID, new { @id = "hdroll_id" })
+                                                @Html.ValidationMessageFor(model => model.RoleName, String.Empty, new { @id = "vmrole_name" })
+                                            </div>
+                                            @Html.HiddenFor(model => model.UserRoleSetupList, new { @id = "hdUserRoleDetailListDetailList" })
+                                            <div class="clear"></div>
+                                            <hr class="hr_role">
+                                            @Html.Partial("~/Areas/SecurityLayer/Views/Shared/_PartialUserRoleSetupTree.cshtml")
+                                        </div>
+                                    </div>
+                                </section>
+                                <section class="panel panel-default">
+                                    <div class="panel-heading" role="tab" id="headingTwo">
+                                        <h4 class="panel-title"> <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo"> @Resource.UserDetail <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a></h4>
+                                    </div>
+                                    <div id="collapseTwo" class="panel-collapse in collapse show" role="tabpanel" aria-labelledby="headingTwo" style="">
+                                        <div class="panel-body">
+                                            <div class="row">
+                                                <div class="col-md-12 col-sm-12">
+                                                    <div class="table-responsive width99">
+                                                        <div class="col-md-12 col-sm-12">
+                                                            <table class="table table-striped jambo_table bulk_action margin10" id="">
+                                                                <thead>
+                                                                    <tr class="headings">
+                                                                        @* <th width="2%"> &nbsp;</th>*@
+                                                                        <th width="5%">@Resource.SrNo</th>
+                                                                        <th width="30%">@Resource.UserName</th>
+                                                                        <th width="65%">&nbsp;</th>
+                                                                        @*  <th>@Resource.UserDetail</th>*@
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @if (ViewBag.UserList != null)
+                                                                    {
+                                                                        var i = 1;
+                                                                        foreach (System.Data.DataRow dr in ViewBag.UserList.Rows)
+                                                                        {
+                                                                            <tr>
+                                                                                @* <td class=" red center"><i class="deleteIcon fa fa-trash" aria-hidden="true" title="@Resource.Delete"></i></td>*@
+                                                                                <td class="sr_padding">@i</td>
+                                                                                <td>@dr["user_nm"].ToString()</td>
+                                                                                <td>&nbsp;</td>
+                                                                                @* <td>Admin</td>*@
+                                                                            </tr>
+                                                                            i = i + 1;
+                                                                        }
+                                                                    }
+                                                                    @*<tr>
+                                                                            <td class=" red center"><i class="deleteIcon fa fa-trash" aria-hidden="true" title="@Resource.Delete"></i></td>
+                                                                            <td>01</td>
+                                                                            <td>Prakash</td>
+                                                                            <td>Admin</td>
+                                                                        </tr>*@
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+                            </article>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+@{
+    if (ViewBag.URSMessage == "Duplicate")
+    {
+        <script type="text/javascript">
+            document.getElementById("vmrole_name").innerHTML = $("#valueduplicate").text();
+            $("#TxtRoleName").css("border-color", "red");
+        </script>
+    }
+}
+@{
+    if (Session["URS_Command"] != null)
+    {
+        if (Session["URS_Command"].ToString() == "Update" || Session["URS_Command"].ToString() == "Refresh")
+        {
+            <script>
+                $(document).ready(function () {
+                    var UserRole_DetailList = new Array();
+                    $('input[type=checkbox]:checked').each(function () {
+                        debugger
+                        var ID = (this.checked ? $(this).attr("id") : "");
+                        var featureid = $("#hf_FID" + ID).val();
+                        var Docid = $("#hf_DocID" + ID).val();
+                        $("#" + ID).trigger('click');
+                        var UserRoleList = {};
+
+                        UserRoleList.feature_id = featureid;
+                        UserRoleList.ChkboxID = ID;
+                        UserRoleList.doc_id = Docid;
+                        UserRoleList.grant_access = "Y";
+                        UserRole_DetailList.push(UserRoleList);
+                    });
+                    if (UserRole_DetailList.length > 0) {
+                        for (i = 0; i < UserRole_DetailList.length; i++) {
+                            $("#" + UserRole_DetailList[i].ChkboxID).trigger('click');
+                        }
+                        $('#div_chkboxtree input[type=checkbox]').attr('disabled', 'true');
+                        UserRole_DetailList = null;
+                    }
+                    else {
+                        $('#div_chkboxtree input[type=checkbox]').attr('disabled', 'true');
+                    }
+                });
+
+            </script>
+        }
+        else
+        {
+            <script>
+                $(document).ready(function () {
+                    var UserRole_DetailList = new Array();
+                    $('input[type=checkbox]:checked').each(function () {
+                        debugger
+                        var ID = (this.checked ? $(this).attr("id") : "");
+                        var featureid = $("#hf_FID" + ID).val();
+                        var Docid = $("#hf_DocID" + ID).val();
+                        $("#" + ID).trigger('click');
+                        var UserRoleList = {};
+
+                        UserRoleList.feature_id = featureid;
+                        UserRoleList.ChkboxID = ID;
+                        UserRoleList.doc_id = Docid;
+                        UserRoleList.grant_access = "Y";
+                        UserRole_DetailList.push(UserRoleList);
+                    });
+                    if (UserRole_DetailList.length > 0) {
+                        for (i = 0; i < UserRole_DetailList.length; i++) {
+                            $("#" + UserRole_DetailList[i].ChkboxID).trigger('click');
+                        }
+                        $('#div_chkboxtree input[type=checkbox]').removeAttr("disabled");
+                        UserRole_DetailList = null;
+                    }
+                    else {
+                        $('#div_chkboxtree input[type=checkbox]').removeAttr("disabled");
+                    }
+                });
+            </script>
+        }
+    }
+    else
+    {
+        <script type="text/javascript">
+            $('#div_chkboxtree input[type=checkbox]').removeAttr("disabled");
+        </script>
+    }
+}

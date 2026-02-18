@@ -1,0 +1,135 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.ProductionAndPlanning.MIS.ProductionAnalysis.ProductionAnalysis_Model
+
+@using EnRepMobileWeb.Resources;
+@using System.Data
+@if (Session["UserId"] == null)
+{
+    Response.Redirect("~/Login");
+}
+
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+<title>@Model.Title</title>
+<script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/ProductionAndPlanning/MIS/ProductionAnalysis/ProductionAnalysisJS.js"></script>
+<div class="row">
+
+    <!-- Item Infomation Start -->
+    <div id="ItemInfo" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/Common/Views/_ItemInfomation.cshtml")
+        </div>
+    </div>
+
+    <!-- Item Infomation End -->
+    <!-- Production Analysis Detail -->
+    <div id="ProductionAnalysisDetail" class="modal fade" role="dialog">
+        <div class="modal-dialog" id="ProductionAnalysisDetailsPopUp" style="max-width:1200px;">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/Common/Views/PartialProductionAnalysisDetail.cshtml")
+        </div>
+    </div>
+    <!-- ActualCost Detail -->
+    <div id="ActualCost" class="modal fade" role="dialog">
+        <div class="modal-dialog" id="ActualCostPopUp" style="max-width:1000px; max-height:900px;">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialActualCostList.cshtml")
+        </div>
+    </div>
+    <!-- Estimated Cost Detail -->
+    <div id="EstimatedCost" class="modal fade" role="dialog">
+        <div class="modal-dialog" id="EstimatedCostPopUp" style="max-width:800px;">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialEstimatedCostList.cshtml")
+        </div>
+    </div>
+    <!-- QC Parameter Evalution Detail -->
+    <div id="RecQuant" class="modal fade" role="dialog">
+        <div class="modal-dialog" id="RecQuantPopUp" style="min-width:1000px;">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/_OnlyShowQCParameterEvalutionDetail.cshtml")
+        </div>
+    </div>
+    <!-- Reason Remarksl -->
+    <div id="ReasonRemarks" class="modal fade" role="dialog">
+        <div class="modal-dialog" id="" style=" max-width:600px;">
+            <!-- Modal content-->
+            @*@Html.Partial("~/Areas/Common/Views/Cmn_ReasonRemarks.cshtml")*@
+            @Html.Partial("~/Areas/Common/Views/Cmn_QCReasonRemarks.cshtml")
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <h2 class="col-md-6 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                <div class="x_title pad_mar ">
+                    <div class="col-md-12 col-sm-12 icon_tool padding_zero">
+                        <form class="available_stock pad_mar" action="" method="post" novalidate="">
+                            <div class="col-md-12 col-sm-12 no-padding">
+                                <div class="col-md-2 col-sm-12">
+                                    <label class="col-form-label label-align"> @Resource.ProductName </label>
+                                    @Html.DropDownListFor(model => model.ItemID, new SelectList(new List<SelectListItem>
+                               {new SelectListItem {Text="--ALL--",Value="0" },}, "Value", "Text"),
+                               new { @class = "form-control", @id = "Ddl_ItemName", @name = "ProductName" })
+                                </div>
+                                <div class="col-md-2 col-sm-12">
+                                    <label class="col-form-label label-align"> @Resource.ShopfloorName </label>
+                                    @Html.DropDownListFor(model => model.shflId, new SelectList(Model.ShopFloorList, "shfl_id", "shfl_name"),
+                              new { @class = "form-control", @id = "ddlShopfloor", @name = "ddlShopfloor" })
+
+                                </div>
+                                <div class="col-md-2 col-sm-12">
+                                    <label class="col-form-label label-align"> @Resource.OperationName </label>
+                                    @Html.DropDownListFor(model => model.opId, new SelectList(Model.OperationList, "op_id", "op_name"),
+                              new { @class = "form-control", @id = "ddloperation", @name = "ddloperation" })
+
+                                </div>
+                                <div class="col-md-6 col-sm-12 no-padding">
+                                    <div class="col-md-7 col-sm-12">
+                                        <label class="col-form-label label-align col-md-12 col-sm-12 no-padding">@Resource.DateRange </label>
+                                        <div class="col-md-6 col-sm-12 no-padding">
+                                            @Html.TextBoxFor(model => model.From_dt, new { @class = "form-control", @id = "txtFromdate", @type = "date", @onchange = "validateToDate();", @max = DateTime.Now.ToString("yyyy-MM-dd") })
+                                        </div>
+                                        <div class="col-md-1 col-sm-12 no-padding" style="text-align:center;"> -</div>
+                                        <div class="col-md-5 col-sm-12 no-padding">
+                                            @Html.TextBoxFor(model => model.To_dt, new { @class = "form-control", @id = "txtTodate", @placeholder = "dd-MM-yyyy", @type = "date", @max = DateTime.Now.ToString("yyyy-MM-dd") })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 col-sm-12" style="display:none">
+                                        <label class="col-form-label label-align">@Resource.ShowAs</label>
+                                        @Html.DropDownListFor(model => model.ShowAs, new SelectList(new List<SelectListItem>
+                                 {new SelectListItem {Text="--Select--",Value="0" },
+                                   new SelectListItem {Text="Detailed",Value="D" },
+                                   new SelectListItem {Text="Summary",Value="S" }}, "Value", "Text"),
+                                 new { @class = "form-control", @id = "txtShowAs", @name = "ShowAs" })
+                                    </div>
+                                    <div class="col-md-1 col-sm-12">
+                                        <button type="button" class="btn btn-primary btn-sm margintop20" id="Btn_Search" onclick="BtnSearch();">
+                                            <i class="fa fa-search" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <div class="card-box table-responsive dy_table">
+                    <div class="sticky-table sticky-ltr-cells sb-container container-example1" id="TblProductionAnalysisList">
+                        @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialProductionAnalysisList.cshtml")
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- page content end -->

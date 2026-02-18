@@ -1,0 +1,89 @@
+﻿@using EnRepMobileWeb.Resources;
+@*//Modifed by Shubham Maurya on 16-12-2022 add id in country Detail//*@
+
+@{
+    var EditFlag = "N";
+    var DeleteFlag = "N";
+    if (ViewBag.VBRoleList != null)
+    {
+        foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+        {
+            if (Row["feature_id"].ToString() == "103190002")
+            {
+                EditFlag = "Y";
+            }
+            if (Row["feature_id"].ToString() == "103190004")
+            {
+                DeleteFlag = "Y";
+            }
+        }
+    }
+}
+<table id="datatable-buttons1" class="table table-bordered rowhighlighttbl" style="width:100%">
+    <thead>
+        <tr class="sticky-header">
+            <th width="2%">@Resource.SrNo</th>
+            <th style="display:none;"></th>
+            <th> @Resource.DistrictAndZone</th>
+            <th style="display:none;"></th>
+            <th> @Resource.StateAndProvince</th>
+            <th style="display:none;"></th>
+            <th> @Resource.Country</th>
+            <th width="4%">&nbsp;</th>
+            <th width="4%">&nbsp;</th>
+            <th style="display:none;"></th>
+        </tr>
+    </thead>
+    <tbody id="District_tbody">
+        @{
+            if (ViewBag.DistrictList != null)
+            {
+                var i = 0;
+                foreach (System.Data.DataRow dr in ViewBag.DistrictList.Rows)
+                {
+                    i = i + 1;
+                <tr>
+                    <td class="sr_padding">@i</td>
+                    <td id="districtid" style="display:none;">@dr["district_id"].ToString()</td>
+                    <td id="distname">@dr["district_name"].ToString()</td>
+                    <td id="state_id" style="display:none;">@dr["state_id"].ToString()</td>
+                    <td id="state_nm">@dr["state_name"].ToString()</td>
+                    <td id="country_id" style="display:none;">@dr["country_id"].ToString()</td>
+                    <td id="country_nm">@dr["country_name"].ToString()</td>
+                    <td class="center">
+                        @if (EditFlag == "Y")
+                        {
+                            //if (@dr["dependcy"].ToString() == "NotExit")
+                            //{
+                            <i class="fa fa-edit editrecorddistrict" aria-hidden="true" title="@Resource.Edit"></i>
+                            @*}
+                else
+                {
+                    <i class="fa fa-edit " disabled  style="filter: grayscale(100%)" aria-hidden="true" title="@Resource.Edit"></i>
+                }*@
+
+                        }
+                    </td>
+                    <td class="center">
+                        @if (DeleteFlag == "Y")
+                        {
+                            if (@dr["dependcy"].ToString() == "NotExit")
+                            {
+                                <i class="fa fa-trash red" aria-hidden="true" title="@Resource.Delete" onclick="return functionConfirm_District(this)"></i>
+                            }
+                            else
+                            {
+                                <i class="fa fa-trash red" aria-hidden="true" disabled style="filter: grayscale(100%)" title="@Resource.Delete" onclick=""></i>
+                            }
+
+                        }
+                    </td>
+                    <td id="hdndependcy" style="display:none;">@dr["dependcy"].ToString()</td>
+                </tr>
+                }
+            }
+        }
+    </tbody>
+</table>
+
+

@@ -1,0 +1,68 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.InventoryManagement.QualityInspection.QCInspectionList_Model
+
+@using EnRepMobileWeb.Resources;
+@{
+    var rowId = 0;
+}
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/InventoryManagement/QualityInspection/QualityInspectionList.js"></script>
+<table id="datatable-buttons" class="table table-striped width2000 rowhighlighttbl itmfrz" cellspacing="0">
+    <thead>
+        <tr class="sticky-header">
+            <th width="3%">@Resource.SrNo</th>
+            <th width="9%" class="itmStick">@Resource.Inspection  <br /> @Resource.Nunber</th>
+            <th width="7%">@Resource.Inspection <br /> @Resource.Date</th>
+            <th hidden="hidden"></th>
+            <th width="7%">@Resource.Source <br /> @Resource.Type</th>
+            <th hidden="hidden"></th>
+            <th width="7%">@Resource.Location </th>
+            <th width="10%">@Resource.Source <br /> @Resource.DocumentNumber</th>
+            <th width="8%">@Resource.Source <br /> @Resource.DocumentDate</th>
+            <th width="7%">@Resource.Status</th>
+            <th width="7%">@Resource.CreatedBy</th>
+            <th width="7%">@Resource.Createdon</th>
+            <th width="7%">@Resource.ApprovedBy</th>
+            <th width="7%">@Resource.ApprovedOn</th>
+            <th width="7%">@Resource.AmendedBy</th>
+            <th width="7%">@Resource.AmendedOn</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.QCList != null)
+        {
+            foreach (var row in Model.QCList)
+            {
+                rowId++;
+                <tr>
+                    <td>@rowId</td>
+                    <td id="tbl_Qc_no" class="ItmNameBreak itmStick tditemfrz">@row.QCNo</td>
+                    <td>@row.QCDate</td>
+                    <td hidden="hidden" id="tbl_Qc_dt">@row.QC_date</td>
+                    <td>@row.SourceType</td>
+                    <td hidden="hidden" id="tbl_Qc_Type">@row.QCType</td>
+                    <td>@row.Location</td>
+                    <td>@row.SourceDocNo</td>
+                    <td>@row.SourceDocDate</td>
+                    <td id="Doc_Status">@row.Stauts</td>
+                    <td>@row.create_by</td>
+                    <td>@row.CreateDate</td>
+                    <td>@row.app_by</td>
+                    <td>@row.ApproveDate</td>
+                    <td>@row.mod_by</td>
+                    <td>@row.ModifyDate</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+@if (Model.QISearch != null)
+{
+    if (Model.QISearch == "QI_Search")
+    {
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+        @Scripts.Render("~/Content/Scripts/DatatablesJs")
+        //Session["QISearch"] = null;
+    }
+
+}
+

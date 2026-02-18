@@ -1,0 +1,436 @@
+﻿@using System.Data;
+@*
+USing  This Partial //// Added this Comment By Nitesh 23-02-2024
+    1. Journal Voucher
+    2. Cash Recipt
+    3. Bank Recipt
+    4. 
+*@
+<style>
+    .tbl_border {
+        border: 0.5px solid #000000;
+    }
+
+        .tbl_border > thead > tr > th {
+            border: 0.5px solid #000000;
+        }
+
+        .tbl_border > tbody > tr > td {
+            border: 0.5px solid #000000;
+        }
+</style>
+<div style="width:100%;">
+    <div style="width:100%; margin:0 auto; ">
+        <table style="width:100%;">
+            <tr>
+                <td>
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td width="10">&nbsp;</td>
+                            <td>
+                                @Html.Partial("~/Areas/ApplicationLayer/Views/FinancialAccountingAndControl/MIS/GeneralLedger/GLHeaderPrint.cshtml")
+                            </td>
+                            <td width="15">&nbsp;</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td width="15">&nbsp;</td>
+                            <td style="font-size: 11px; font-weight:normal;padding: 10px 0px 0px 0px; line-height:18px;">
+                                <table width="100%" border="0" style="font-size: 12px; font-weight: normal; padding: 10px 0px 0px 0px; line-height: 18px;">
+                                    <tr>
+                                        @if (ViewBag.DocumentMenuId == "105104115140")
+                                        {
+                                            <td width="17%"><strong>GL Voucher Number</strong> :<br /> @ViewBag.Details.Tables[0].Rows[0]["vou_no"]</td>
+                                            <td width="17%" style="text-align:left; "><strong>GL Voucher Date</strong> :<br /> @ViewBag.Details.Tables[0].Rows[0]["vou_dt"]</td>
+                                            <td width="17%" style="text-align:left; "><strong>Bill Number</strong> :<br /> @ViewBag.Details.Tables[0].Rows[0]["bill_no"]</td>
+                                            <td width="17%" style="text-align:left; "><strong>Bill Date</strong> :<br /> @ViewBag.Details.Tables[0].Rows[0]["bill_dt"]</td>
+                                            <td width="17%" style="text-align:left; "><strong>Created On</strong> :<br /> @ViewBag.Details.Tables[0].Rows[0]["create_dt"]</td>
+                                            <td width="15%" style="text-align:left; "><strong>Approved On</strong> :<br /> @ViewBag.Details.Tables[0].Rows[0]["app_dt"]</td>
+                                        }
+                                        else
+                                        {
+                                            <td width="25%"><strong>GL Voucher Number</strong> :<br /> @ViewBag.Details.Tables[0].Rows[0]["vou_no"]</td>
+                                            <td width="30%" style="text-align:left; "><strong>GL Voucher Date</strong> :<br /> @ViewBag.Details.Tables[0].Rows[0]["vou_dt"]</td>
+                                            if (ViewBag.DocumentMenuId != "105104115115")/*Add by Hina Sharma on 09-04-2025 hide for Cash payment Print Only*/
+                                            {
+                                                <td width="31%" style="text-align:left; "><strong>Created On</strong> :<br /> @ViewBag.Details.Tables[0].Rows[0]["create_dt"]</td>
+                                            }
+                                                <td width="14%" style="text-align:left; "><strong>Approved On</strong> :<br /> @ViewBag.Details.Tables[0].Rows[0]["app_dt"]</td>
+                                            }
+                                        </tr>
+                                </table>
+                            </td>
+                            <td width="15">&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td width="15">&nbsp;</td>
+                            <td style="font-size: 11px; font-weight:normal;padding: 10px 0px 0px 0px; line-height:18px;">
+                                <table class="tbl_border" cellspacing="0" cellpadding="0" style=" width:100%; font-size: 12px; font-weight:normal;padding: 0px 0px; line-height:18px; font-weight:normal; vertical-align:top;">
+                                    <thead>
+                                        <tr>
+                                            <th width="5%" style="paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center; ">S.NO.</th>
+                                            @if (ViewBag.DocumentMenuId == "105104115110" || ViewBag.DocumentMenuId == "105104115120")
+                                            {
+                                                if (ViewBag.Details.Tables[0].Rows[0]["int_br"] == "Y")/*Add by Hina Sharma on 09-04-2025 only show when int_br=Y*/
+                                                {
+                                                    <th width="16%" style="paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center;">Branch</th>
+                                                }
+
+                                            }
+                                            <th width="19%" style="paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center;">GL Account</th>
+                                            <th width="8%" style="paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center;">Currency</th>
+                                            @if (ViewBag.DocumentMenuId == "105104115115" || ViewBag.DocumentMenuId == "105104115105" || ViewBag.DocumentMenuId == "105104115120" || ViewBag.DocumentMenuId == "105104115110" || ViewBag.DocumentMenuId == "105104115101")
+                                            {
+                                                @* <th width="8%" style="paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center;">Exchange <br /> Rate</th>*@
+                                                <th width="15%" style="paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center;">Debit Amount <br /> @*(In Specific)*@ </th>
+                                                @*<th width="10%" style="paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center;">Debit Amount <br /> (In Base) </th>*@
+                                                <th width="15%" style="paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center; ">Credit Amount <br />  @*(In Specific)*@</th>
+                                                @* <th width="10%" style="paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center; ">Credit Amount <br /> (In Base) </th>*@
+                                                <th width="35%" style=" paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center; ">Narration</th>
+                                            }
+                                            else
+                                            {
+                                                <th width="8%" style="paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center;">Exchange <br /> Rate</th>
+                                                <th width="10%" style="paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center;">Debit Amount <br /> (In Specific) </th>
+                                                <th width="10%" style="paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center;">Debit Amount <br /> (In Base) </th>
+                                                <th width="10%" style="paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center; ">Credit Amount <br /> (In Specific)</th>
+                                                <th width="10%" style="paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center; ">Credit Amount <br /> (In Base) </th>
+                                                <th width="20%" style=" paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center; ">Narration</th>
+                                            }
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (ViewBag.Details != null)
+                                        {
+                                            decimal dr_amt = 0;
+                                            decimal dr_amt_sp = 0;
+                                            decimal cr_amt = 0;
+                                            decimal cr_amt_sp = 0;
+
+                                            DataView data = new DataView();
+                                            data = ViewBag.Details.Tables[0].DefaultView;
+                                            DataTable VouDT = new DataTable();
+                                            VouDT = ViewBag.Details.Tables[0];
+                                            DataTable dt = new DataTable();
+                                            string[] filters = { "int_br_id", "acc_id" };
+                                            dt = data.ToTable(true, filters);
+                                            var rowno = 1;
+                                            foreach (System.Data.DataRow dr in dt.Rows)
+                                            {
+                                                data = VouDT.DefaultView;
+                                                DataTable NewDT = new DataTable();
+                                                data.RowFilter = "int_br_id='" + dr["int_br_id"].ToString() + "' and acc_id='" + dr["acc_id"].ToString() + "'";
+                                                NewDT = data.ToTable();
+                                                string[] filters1 = { "int_br_id", "acc_id", "cc_id" };
+                                                DataTable CCDtl = data.ToTable(true, filters1);
+                                                <tr>
+                                                    <td style="text-align:center;vertical-align:top;">@rowno</td>
+                                                    @if (ViewBag.DocumentMenuId == "105104115110" || ViewBag.DocumentMenuId == "105104115120")
+                                                    {
+                                                        if (ViewBag.Details.Tables[0].Rows[0]["int_br"] == "Y")//**Add by Hina Sharma on 09-04-2025 only show when int_br=Y*/*/
+                                                        {
+                                                        <td style="paddingleft:5px;vertical-align:top;">
+                                                            @NewDT.Rows[0]["int_br_name"]
+                                                        </td>
+                                                        }
+                                                    }
+                                                    <td style="paddingleft:5px;vertical-align:top;">
+                                                        @NewDT.Rows[0]["acc_name"]
+                                                        @foreach (System.Data.DataRow dr1 in CCDtl.Rows)
+                                                        {
+                                                            data = NewDT.DefaultView;
+                                                            DataTable NewDT1 = new DataTable();
+                                                            data.RowFilter = "cc_id='" + dr1["cc_id"].ToString() + "'";
+                                                            NewDT1 = data.ToTable();
+
+                                                            if (NewDT1.Rows.Count > 0)
+                                                            {
+                                                                <table width="100%" style="font-size: 12px;">
+                                                                    <tr>
+                                                                        <td colspan="3" style="font-size: 11px;">@NewDT1.Rows[0]["cc_name"]</td>
+                                                                    </tr>
+                                                                    @foreach (System.Data.DataRow drcctype in NewDT1.Rows)
+                                                                    {
+                                                                        <tr>
+                                                                            <td width="10%"></td>
+                                                                            <td width="45%" style="font-size: 10px;">@drcctype["cc_val_name"] </td>
+                                                                            <td width="45%" style="text-align: right; font-size: 10px; padding-right: 5px;"> @drcctype["cc_amt"]</td>
+                                                                        </tr>
+                                                                    }
+                                                                </table>
+                                                            }
+                                                        }
+                                                    </td>
+                                                    <td style="paddingleft: 5px; paddingright: 5px; vertical-align: central; text-align: center; ">@NewDT.Rows[0]["curr_name"]</td>
+                                                    @if (ViewBag.DocumentMenuId == "105104115115" || ViewBag.DocumentMenuId == "105104115105" || ViewBag.DocumentMenuId == "105104115120" || ViewBag.DocumentMenuId == "105104115110" || ViewBag.DocumentMenuId == "105104115101")
+                                                    {
+                                                        @* <td style="paddingleft: 5px; paddingright: 5px; vertical-align: central; text-align: right; ">@NewDT.Rows[0]["conv_rate"]</td>*@
+                                                        <td style="paddingleft: 5px; paddingright: 5px; vertical-align: central; text-align: right; ">@NewDT.Rows[0]["dr_amt_sp"]</td>
+                                                        @*<td style="paddingleft: 5px; paddingright: 5px; vertical-align: central; text-align: right; ">@NewDT.Rows[0]["dr_amt_bs"]</td>*@
+                                                        <td style="paddingleft: 5px; paddingright: 5px; vertical-align: central; text-align: right; ">@NewDT.Rows[0]["cr_amt_sp"]</td>
+                                                        @* <td style="paddingleft: 5px; paddingright: 5px; text-align: right; vertical-align: central; ">@NewDT.Rows[0]["cr_amt_bs"]</td>*@
+                                                    }
+                                                    else
+                                                    {
+                                                        <td style="paddingleft: 5px; paddingright: 5px; vertical-align: central; text-align: right; ">@NewDT.Rows[0]["conv_rate"]</td>
+                                                        <td style="paddingleft: 5px; paddingright: 5px; vertical-align: central; text-align: right; ">@NewDT.Rows[0]["dr_amt_sp"]</td>
+                                                        <td style="paddingleft: 5px; paddingright: 5px; vertical-align: central; text-align: right; ">@NewDT.Rows[0]["dr_amt_bs"]</td>
+                                                        <td style="paddingleft: 5px; paddingright: 5px; vertical-align: central; text-align: right; ">@NewDT.Rows[0]["cr_amt_sp"]</td>
+                                                        <td style="paddingleft: 5px; paddingright: 5px; text-align: right; vertical-align: central; ">@NewDT.Rows[0]["cr_amt_bs"]</td>
+                                                    }
+
+                                                    <td style="text-align: left; paddingleft: 5px; paddingright: 5px; vertical-align: top;">@NewDT.Rows[0]["narr"]</td>
+                                                </tr>
+                                                dr_amt = dr_amt + Convert.ToDecimal(NewDT.Rows[0]["dr_amt_bs"]);
+                                                cr_amt = cr_amt + Convert.ToDecimal(NewDT.Rows[0]["cr_amt_bs"]);
+                                                dr_amt_sp = dr_amt_sp + Convert.ToDecimal(NewDT.Rows[0]["dr_amt_sp"]);
+                                                cr_amt_sp = cr_amt_sp + Convert.ToDecimal(NewDT.Rows[0]["cr_amt_sp"]);
+                                                rowno = rowno + 1;
+                                            }
+                                            <tr>
+                                                <td> &nbsp;</td>
+                                                @if (ViewBag.DocumentMenuId == "105104115110" || ViewBag.DocumentMenuId == "105104115120")
+                                                {
+                                                    @*<td> &nbsp;</td>*@
+                                                }
+                                                <td> &nbsp;</td>
+                                                @if (ViewBag.DocumentMenuId == "105104115115" || ViewBag.DocumentMenuId == "105104115105" || ViewBag.DocumentMenuId == "105104115105" || ViewBag.DocumentMenuId == "105104115120" || ViewBag.DocumentMenuId == "105104115110" || ViewBag.DocumentMenuId == "105104115101")
+                                                {
+                                                    @*<td> &nbsp;</td>*@
+                                                    <td style="paddingleft: 5px; paddingright: 5px; vertical-align: top; text-align: right; "><strong>Total</strong></td>
+                                                    <td style="paddingleft: 5px; paddingright: 5px; vertical-align: top; text-align: right; "><strong> @dr_amt_sp</strong></td>
+                                                    @*<td style="paddingleft: 5px; paddingright: 5px; vertical-align: top; text-align: right; "><strong>@dr_amt</strong></td>*@
+                                                    <td style="paddingleft: 5px; paddingright: 5px; vertical-align: top; text-align: right; "><strong>@cr_amt_sp </strong></td>
+                                                    @* <td style="paddingleft: 5px; paddingright: 5px; vertical-align: top; text-align: right; "><strong>@cr_amt</strong></td>*@
+                                                    <td></td>
+                                                }
+                                                else
+                                                {
+                                                    <td> &nbsp;</td>
+                                                    <td style="paddingleft: 5px; paddingright: 5px; vertical-align: top; text-align: right; "><strong>Total</strong></td>
+                                                    <td style="paddingleft: 5px; paddingright: 5px; vertical-align: top; text-align: right; "><strong> @dr_amt_sp</strong></td>
+                                                    <td style="paddingleft: 5px; paddingright: 5px; vertical-align: top; text-align: right; "><strong>@dr_amt</strong></td>
+                                                    <td style="paddingleft: 5px; paddingright: 5px; vertical-align: top; text-align: right; "><strong>@cr_amt_sp </strong></td>
+                                                    <td style="paddingleft: 5px; paddingright: 5px; vertical-align: top; text-align: right; "><strong>@cr_amt</strong></td>
+                                                    <td></td>
+                                                }
+                                            </tr>
+                                        }
+
+                                    </tbody>
+                                </table>
+                            </td>
+                            <td width="15">&nbsp;</td>
+                        </tr>
+                        @*@if (ViewBag.DocumentMenuId == "105104115101") /**Added By Nitesh 23-02-2024 for Journal Voucher **/
+        {*@
+                        <!--As discussion with hina on dated 17-10-2024 to add this table Start-->
+                        @if (ViewBag.DocumentMenuId == "105104115110" || ViewBag.DocumentMenuId == "105104115105" || ViewBag.DocumentMenuId == "105104115120" || ViewBag.DocumentMenuId == "105104115115") /**Added By Hina Sharma on 17-10-2024 for BR,CR,BP,CP **/
+                        {
+                            <tr>
+                                <td width="15">&nbsp;</td>
+                                <td style="font-size: 11px; font-weight:normal;">
+                                    @*<div style="font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-weight: bold;">Invoice Adjusted Detail</div>*@
+                                    <table class="tbl_border" cellspacing="0" cellpadding="0" style=" width:100%; font-size: 12px; font-weight:normal;padding: 0px 0px; line-height:18px; font-weight:normal; vertical-align:top;">
+                                        <thead>
+                                            @*<tr>
+                                <th colspan="6" style="font-family: Arial, Helvetica, sans-serif; font-size14px; padding-top: 5px; paddingbottom: 5px; font-weight: bold; text-align: left; vertical-align: top;">Invoice Adjusted Detail</th>
+
+                            </tr>*@
+                                            <div style="font-family: Arial, Helvetica, sans-serif; font-size:12px; padding-top: 10px; paddingbottom: 5px; font-weight: bold; text-align: left; vertical-align: top;">Bill Adjustment Detail</div>
+
+                                            <tr>
+                                                <th width="5%" style="paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center; ">S.NO.</th>
+                                                <th style="paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center;">Invoice Number</th>
+                                                <th style="paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center;">Invoice date</th>
+                                                @*/**Added By Hina Sharma on 17-10-2024 only for BP,CP **/*@
+                                                @if (ViewBag.DocumentMenuId == "105104115120" || ViewBag.DocumentMenuId == "105104115115")
+                                                {
+                                                    <th style="paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center;">Bill  Number</th>
+                                                    <th style="paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center;">Bill Date</th>
+                                                }
+                                                <th style=" paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center; ">Adjusted Amount</th>
+                                                <th style="paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center; ">Pending Amount</th>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @*<tr>
+            <td>01</td>
+            <td>B1/08/24/BR0000007</td>
+            <td>12-08-2024</td>
+            <td>B1/08/24/BR0000007</td>
+            <td>12-08-2024</td>
+            <td>0000.00</td>
+            <td>0000.00</td>
+        </tr>*@
+                                            @if (ViewBag.Details.Tables[2].Rows != null)
+                                            {
+                                                var i = 1;
+                                                DataView data = new DataView();
+                                                foreach (DataRow dr in ViewBag.Details.Tables[2].Rows)
+                                                {
+                                                    <tr>
+                                                        <td style='text-align:center; width:5%;'>@i</td>
+                                                        <td style='paddingleft:5px;paddingtop:5px;paddingbottom:3px;'>
+                                                            @dr["inv_no"].ToString()
+                                                        </td>
+                                                        <td style='paddingleft:5px;paddingtop:5px;paddingbottom:3px;'>@dr["inv_dt"].ToString()</td>
+                                                        @*Added By Hina Sharma on 17 - 10 - 2024 only for BP, CP*@
+                                                        @if (ViewBag.DocumentMenuId == "105104115120" || ViewBag.DocumentMenuId == "105104115115")
+                                                        {
+                                                            <td style='text-align:center; paddingright:5px;paddingtop:5px;paddingbottom:3px;'>@dr["bill_no"].ToString()</td>
+                                                            <td style='text-align:center;paddingright:5px;paddingtop:5px;paddingbottom:3px;'>@dr["bill_dt"].ToString()</td>
+                                                        }
+                                                        <td style='text-align:right;paddingright:5px;paddingtop:5px;paddingbottom:3px;'>@dr["paid_amt"].ToString()</td>
+                                                        <td style='text-align: right; paddingright:5px; paddingtop: 5px; paddingbottom: 3px;'>@dr["pend_amt"].ToString()</td>
+
+
+                                                    </tr>
+                                                    i++;
+                                                }
+                                            }
+
+                                            <tr>
+                                                @*/**Added By Hina Sharma on 05-02-2025 only for BP,CP for show bill adjustment total of paid and pending amt **/*@
+
+                                                @if (ViewBag.DocumentMenuId == "105104115120" || ViewBag.DocumentMenuId == "105104115115")
+                                                {
+                                                    <td> &nbsp;</td>
+                                                    <td> &nbsp;</td>
+                                                    <td> &nbsp;</td>
+                                                    <td> &nbsp;</td>
+                                                    @*<td> &nbsp;</td>*@
+                                                    <td style="paddingleft: 5px; paddingright: 5px; vertical-align: top; text-align: right; "><strong>Total</strong></td>
+                                                    <td style="paddingleft: 5px; paddingright: 5px; vertical-align: top; text-align: right; "><strong> @ViewBag.Details.Tables[3].Rows[0]["TotalAdjustedAmt"]</strong></td>
+                                                    <td style="paddingleft: 5px; paddingright: 5px; vertical-align: top; text-align: right; "><strong>@ViewBag.Details.Tables[3].Rows[0]["TotalPendAmt"] </strong></td>
+
+                                                }
+                                                @*/**Added By Hina Sharma on 05-02-2025 only for BR,CR for show bill adjustment total of paid and pending amt**/*@
+                                                @if (ViewBag.DocumentMenuId == "105104115110" || ViewBag.DocumentMenuId == "105104115105")
+                                                {
+
+                                                    <td> &nbsp;</td>
+                                                    <td> &nbsp;</td>
+                                                    <td style="paddingleft: 5px; paddingright: 5px; vertical-align: top; text-align: right; "><strong>Total</strong></td>
+                                                    <td style="paddingleft: 5px; paddingright: 5px; vertical-align: top; text-align: right; "><strong> @ViewBag.Details.Tables[3].Rows[0]["TotalAdjustedAmt"]</strong></td>
+                                                    <td style="paddingleft: 5px; paddingright: 5px; vertical-align: top; text-align: right; "><strong>@ViewBag.Details.Tables[3].Rows[0]["TotalPendAmt"]</strong></td>
+
+
+                                                }
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                                <td width="15">&nbsp;</td>
+                            </tr>
+                        }
+                  
+                        @*/*Add by Hina sharma on 05-02-2025 for BP,BR,CP,CR for show Unadjusted Amount*/*@
+                        @if (ViewBag.DocumentMenuId == "105104115120" || ViewBag.DocumentMenuId == "105104115110" || ViewBag.DocumentMenuId == "105104115115" || ViewBag.DocumentMenuId == "105104115105")
+                        {
+                            <tr>&nbsp;</tr>
+                            <br />
+                            <tr>
+                                <td style='width:100px;'></td>
+                                <td>
+                                    <table style='width:100%;'>
+                                        <tr>
+                                            <td style='font-size:13px;font-weight:normal;padding:10px 0px 0px 0px;width:75%'><strong>Unadjusted Amount</strong> : @ViewBag.Details.Tables[4].Rows[0]["UnadjustAmt"]</td>
+                                            @*<td style='font-size:12px;font-weight:normal;padding:10px 0px 0px 0px;width:75%;font-weight:bold;'> Unadjusted Amount:</td>*@
+                                        </tr>
+                                    </table>
+                                </td>
+
+                                <td style='width:10px;'></td>
+                            </tr>
+
+                        }
+
+                        <!--As discussion with hina on dated 17-10-2024 to add this table End-->
+                        <tr>
+                            <td style='width:100px;'></td>
+                            <td>
+                                <table style='width:100%;'>
+                                    <tr><td style='font-size:12px;font-weight:normal;padding:10px 0px 0px 0px;width:75%;font-weight:bold;'>Amount in Words:</td></tr>
+                                    <tr><td style='font-size:12px;font-weight:normal;padding:0px 0px;width:60%;'> @ViewBag.Details.Tables[1].Rows[0]["value_inwords"]</td></tr>
+                                </table>
+                            </td>
+
+                            <td style='width:10px;'></td>
+                        </tr>
+                        // }
+                    </table>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>
+                    <table width="100%" style="paddingleft:8px; paddingright:9px; vertical-align:top;">
+                        @if (ViewBag.DocumentMenuId == "105104115115" || ViewBag.DocumentMenuId == "105104115105" || ViewBag.DocumentMenuId == "105104115120"|| ViewBag.DocumentMenuId == "105104115101" || ViewBag.DocumentMenuId == "105104115101")
+                        {
+                            //var ApproveBY =  (ViewBag.DocumentMenuId == "105104115120") || (ViewBag.DocumentMenuId !="105104115115" )? "": @ViewBag.Details.Tables[0].Rows[0]["approved_by"];/*Added By Nitesh 30-04-2024*/
+                            var ApproveBY = (ViewBag.DocumentMenuId == "105104115101") ||(ViewBag.DocumentMenuId == "105104115115") ||(ViewBag.DocumentMenuId == "105104115105") ||(ViewBag.DocumentMenuId == "105104115105") || (ViewBag.DocumentMenuId == "105104115101") || (ViewBag.DocumentMenuId == "105104115120") ? "" : @ViewBag.Details.Tables[0].Rows[0]["approved_by"];/*Changes By Hina on 04-05-2024*/
+
+                            <tr>
+                            <td width="35%" style="vertical-align:top;">
+                                <table style=" width:100%;">
+                                    <tr>
+                                        <td style="font-size: 12px; font-weight:normal;padding: 10px 0px 0px 0px; "><strong>Receiver's Signature</strong> : </td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td width="40%" style="vertical-align:top;">
+                                <table style=" width:100%;">
+                                    <tr>
+                                        <td style="font-size: 12px; font-weight:normal;padding: 10px 0px 0px 0px; "><strong>Created By</strong> : @ViewBag.Details.Tables[0].Rows[0]["created_by"]</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td width="25%" style="vertical-align:top;">
+                                <table style=" width:100%;">
+                                    <tr>
+                                        <td style="font-size: 12px; font-weight:normal;padding: 10px 0px 0px 0px; "><strong>Approved By</strong> : @ApproveBY</td>
+                                    </tr>
+                                </table>
+                            </td>
+
+                        </tr>
+                        }
+                        else
+                        {
+                        <tr>
+                            <td width="75%" style="vertical-align:top;">
+                                <table style=" width:100%;">
+                                    <tr>
+                                        <td style="font-size: 12px; font-weight:normal;padding: 10px 0px 0px 0px; "><strong>Created By</strong> : @ViewBag.Details.Tables[0].Rows[0]["created_by"]</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td width="25%" style="vertical-align:top;">
+                                <table style=" width:100%;">
+                                    <tr>
+                                        <td style="font-size: 12px; font-weight:normal;padding: 10px 0px 0px 0px; "><strong>Approved By</strong> : @ViewBag.Details.Tables[0].Rows[0]["approved_by"]</td>
+                                    </tr>
+                                </table>
+                            </td>
+
+                        </tr>
+                        }
+
+                    </table>
+                </td>
+
+            </tr>
+           
+        </table>
+    </div>
+</div>
+

@@ -1,0 +1,125 @@
+﻿@using EnRepMobileWeb.Resources;
+@{
+    string ValDigit = "0.";
+    var VD = Convert.ToInt32(Session["ValDigit"].ToString());
+    for (var i = 0; i < VD; i++)
+    {
+        ValDigit += "0";
+    }
+}
+<style>
+
+    div.dataTables_wrapper div.dataTables_filter label {
+        margin-left: -3.0em;
+    }
+
+    #datatable-buttons3_wrapper .btn-group a:nth-child(3) {
+        display: inline-block;
+        position:absolute;
+    }
+</style>
+<script src="~/Content/Scripts/ApplicationLayer/InventoryManagement/MIS/MISGoodReceiptDetail/MISGoodReceiptDetailJS.js"></script>
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+
+<table id="datatable-buttons4" class="table table-striped rowhighlighttbl width2200 itmfrz" cellspacing="0" width="100%">
+    <thead>
+
+        <tr class="sticky-header">
+            <th width="3%"> @Resource.SrNo</th>
+            <th width="10%" class="itmStick">@Resource.Item @Resource.Name</th>
+            <th width="4%">@Resource.UOM</th>
+            <th width="7%">@Resource.ReceiptNumber </th>
+            <th width="5%">@Resource.ReceiptDate</th>
+            <th hidden="hidden">@Resource.ReceiptDate</th>
+            <th width="5%">@Resource.EntityType</th>
+            <th width="9%">@Resource.EntityName</th>
+            <th hidden="hidden">@Resource.EntityName</th>
+            <th width="7%">@Resource.Received <br /> @Resource.Quantity</th>
+            <th width="7%">@Resource.Receipt <br /> @Resource.Warehouse</th>
+            <th hidden="hidden">@Resource.Receipt <br /> @Resource.Warehouse</th>
+            <th width="8%">@Resource.Lot</th>
+            <th width="7%">@Resource.BatchDetail</th>
+            <th width="9%">@Resource.SerialDetail</th>
+          
+        </tr>
+
+    </thead>
+    <tbody>
+        @if (ViewBag.ExternalReciptList != null)
+        {
+            string Batchdisabled = "";
+            string serialdisabled = "";
+            var rowIdx = 0;
+            foreach (System.Data.DataRow Row in ViewBag.ExternalReciptList.Rows)
+            {
+                rowIdx++;
+                if (@Row["i_batch"].ToString() == "N")
+                {
+                    Batchdisabled = "Disabled";
+                }
+                else
+                {
+                    Batchdisabled = "";
+                }
+                if (@Row["i_serial"].ToString() == "N")
+                {
+                    serialdisabled = "Disabled";
+                }
+                else
+                {
+                    serialdisabled = "";
+                }
+        <tr role="row" class="odd">
+            <td>@rowIdx</td>
+            <td id="itmName" class="ItmNameBreak itmStick tditemfrz">
+                <div class="col-sm-11 no-padding" id="multiWrapper"><span id="ItmNameSpan"> @Row["item_name"].ToString()</span></div>
+                <div class="col-sm-1 i_Icon">
+                    <button type="button" id="ItmInfoBtnIcon" class="calculator" onclick="OnClickIconBtn(event);" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.ItemInformation">  </button>
+                </div>
+                <input type="hidden" id="ItemName_id" value="@Row["item_id"].ToString()"/>
+            </td>
+            <td id="Uom_name">@Row["uom_alias"].ToString()</td>
+            <td id="recept_no" class="ItmNameBreak itmStick tditemfrz">@Row["recpt_no"].ToString()</td>
+            <td>@Row["recept_dt"].ToString()</td>
+            <td style="display:none;" id="hdn_ddlrecpt_dt">@Row["recptdt"].ToString()</td>
+            <td>@Row["Entitytype"].ToString()</td>
+            <td>@Row["Entityname"].ToString()</td>
+            <td style="display:none;" id="entity_id">@Row["entity_id"].ToString()</td>
+
+            <td id="recQty">@Row["rec_qty"].ToString()</td>
+
+            <td id="wh_name">@Row["wh_name"].ToString()</td>
+            <td hidden="hidden" id="whid">@Row["wh_id"].ToString()</td>
+            <td>@Row["lot_id"].ToString()</td>
+
+            <td class="center">
+                <button type="button"  id="btncbatchdeatil" onclick="return ItemStockBatchWise(this,event)" 
+                        class="calculator subItmImg" data-toggle="modal" data-target="#MISExternalReceiptBatchNumber" 
+                        data-backdrop="static"  data-keyboard="false" @Batchdisabled><i class="fa fa-eye" aria-hidden="true" data-toggle="" title="Batch Detail"></i></button>
+
+                <input type="hidden" id="hdi_cbatch" value="@Row["i_batch"].ToString()" style="display: none;">
+            </td>
+            <td class="center">
+                <button type="button"  id="btncserialdeatil" onclick=" return ItemStockSerialWise(this,event)" class="calculator subItmImg" 
+                        data-toggle="modal" data-target="#MISExternalReceiptSerialDetail" data-backdrop="static" data-keyboard="false"
+                        @serialdisabled><i class="fa fa-eye" aria-hidden="true" data-toggle="" title="Serial Detail"></i></button>
+
+                <input type="hidden" id="hdi_cserial" value="@Row["i_serial"].ToString()" style="display: none;">
+            </td>
+        </tr>
+            }
+        }
+    </tbody>
+</table>
+
+@{
+    if (Model.SearchStatus != null)
+    {
+        if (Model.SearchStatus == "SEARCH")
+        {
+            @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+            @Scripts.Render("~/Content/Scripts/DatatablesJs")
+            Model.SearchStatus = null;
+        }
+    }
+}

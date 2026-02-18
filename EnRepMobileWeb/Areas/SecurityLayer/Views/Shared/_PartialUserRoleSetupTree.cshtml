@@ -1,0 +1,346 @@
+﻿
+@if (Session["RoleMenu1"] != null && Session["RoleMenu2"] != null && Session["RoleMenu3"] != null && Session["RoleMenu4"] != null)
+{
+    ViewBag.Menu1 = Session["RoleMenu1"];
+    ViewBag.Menu2 = Session["RoleMenu2"];
+    ViewBag.Menu3 = Session["RoleMenu3"];
+    ViewBag.Menu4 = Session["RoleMenu4"];
+}
+else
+{
+    Response.Redirect("~/Login");
+}
+<link href="~/Content/Css/build/css/hummingbird-treeview.css" rel="stylesheet" />
+
+<div id="div_chkboxtree">
+    <div id="treeview_container" class="hummingbird-treeview group_tree2">
+        <ul id="treeview" class="hummingbird-base">
+            @{
+                for (int q = 0; q < (ViewBag.Menu1.Rows.Count); q++)
+                {
+                    var Flag = "N";
+                    <li>
+                        <i class="fa fa-plus"></i>
+
+                        @if (ViewBag.UserRoleList != null)
+                        {
+                            for (int zc = 0; zc < (ViewBag.UserRoleList.Rows.Count); zc++)
+                            {
+                                if (ViewBag.Menu1.Rows[q]["feature_id"] == ViewBag.UserRoleList.Rows[zc]["feature_id"])
+                                {
+                                    Flag = "Y";
+                                }
+                            }
+                        }
+                        @if (Flag == "Y")
+                        {
+                                <label><input id="1_@q" type="checkbox" checked="checked" /><span>@ViewBag.Menu1.Rows[q]["feature_name"].ToString()</span></label>
+                        }
+                        else
+                        {
+                                <label><input id="1_@q" type="checkbox" /><span>@ViewBag.Menu1.Rows[q]["feature_name"].ToString()</span></label>
+                        }
+                        <input type="hidden" id="hf_FID1_@q" value="@ViewBag.Menu1.Rows[q]["feature_id"].ToString()" />
+                        <input type="hidden" id="hf_DocID1_@q" value="@ViewBag.Menu1.Rows[q]["Doc_ID"].ToString()" />
+
+                        <ul>
+                            @for (int p = 0; p < (ViewBag.Menu2.Rows.Count); p++)
+                            {
+                                var Flag2 = "N";
+                                if (ViewBag.Menu1.Rows[q]["Doc_ID"] == ViewBag.Menu2.Rows[p]["par_doc_id"])
+                                {
+                                    if (@ViewBag.Menu2.Rows[p]["child_count"] == 0)
+                                    {
+                                        <li>
+                                            @if (ViewBag.UserRoleList != null)
+                                            {
+                                                for (int zc = 0; zc < (ViewBag.UserRoleList.Rows.Count); zc++)
+                                                {
+                                                    if (ViewBag.Menu2.Rows[p]["feature_id"] == ViewBag.UserRoleList.Rows[zc]["feature_id"])
+                                                    {
+                                                        Flag2 = "Y";
+                                                    }
+                                                }
+                                            }
+                                            @if (Flag2 == "Y")
+                                            {
+                                                <label><input class="hummingbird-end-node" id="2_@p" type="checkbox" checked="checked" /><span>@ViewBag.Menu2.Rows[p]["feature_name"].ToString()</span></label>
+                                            }
+                                            else
+                                            {
+                                        <label><input class="hummingbird-end-node" id="2_@p" type="checkbox" /><span>@ViewBag.Menu2.Rows[p]["feature_name"].ToString()</span></label>
+                                            }
+                                            <input type="hidden" id="hf_FID2_@p" value="@ViewBag.Menu2.Rows[p]["feature_id"].ToString()" />
+                                            <input type="hidden" id="hf_DocID2_@p" value="@ViewBag.Menu2.Rows[p]["Doc_ID"].ToString()" />
+                                        </li>
+                                    }
+                                    else
+                                    {
+                                        <li>
+                                            <i class="fa fa-plus"></i>
+                                            @if (ViewBag.UserRoleList != null)
+                                            {
+                                                for (int zc = 0; zc < (ViewBag.UserRoleList.Rows.Count); zc++)
+                                                {
+                                                    if (ViewBag.Menu2.Rows[p]["feature_id"] == ViewBag.UserRoleList.Rows[zc]["feature_id"])
+                                                    {
+                                                        Flag2 = "Y";
+                                                    }
+                                                }
+                                            }
+                                            @if (Flag2 == "Y")
+                                            {
+                                                <label><input id="2_@p" type="checkbox" checked="checked" /><span>@ViewBag.Menu2.Rows[p]["feature_name"].ToString()</span></label>
+                                            }
+                                            else
+                                            {
+                                                <label><input id="2_@p" type="checkbox" /><span>@ViewBag.Menu2.Rows[p]["feature_name"].ToString()</span></label>
+                                            }
+                                            <input type="hidden" id="hf_FID2_@p" value="@ViewBag.Menu2.Rows[p]["feature_id"].ToString()" />
+                                            <input type="hidden" id="hf_DocID2_@p" value="@ViewBag.Menu2.Rows[p]["Doc_ID"].ToString()" />
+                                            <ul>
+                                                @for (int x = 0; x < (ViewBag.Menu2.Rows.Count); x++)
+                                                {
+                                                    var Flag22 = "N";
+                                                    if (ViewBag.Menu2.Rows[x]["Doc_ID"] == ViewBag.Menu2.Rows[p]["Doc_ID"] && ViewBag.Menu2.Rows[x]["Doc_ID"] == ViewBag.Menu2.Rows[x]["par_doc_id"])
+                                                    {
+
+                                                        <li>
+                                                            @if (ViewBag.UserRoleList != null)
+                                                            {
+                                                                for (int zc = 0; zc < (ViewBag.UserRoleList.Rows.Count); zc++)
+                                                                {
+                                                                    if (ViewBag.Menu2.Rows[x]["feature_id"] == ViewBag.UserRoleList.Rows[zc]["feature_id"])
+                                                                    {
+                                                                        Flag22 = "Y";
+                                                                    }
+                                                                }
+                                                            }
+                                                            @if (Flag22 == "Y")
+                                                            {
+                                                                <label><input id="22_@x" class="hummingbird-end-node" type="checkbox" checked="checked" /><span>@ViewBag.Menu2.Rows[x]["feature_name"].ToString()</span></label>
+                                                            }
+                                                            else
+                                                            {
+                                                                <label><input class="hummingbird-end-node" id="22_@x" type="checkbox" /><span>@ViewBag.Menu2.Rows[x]["feature_name"].ToString()</span></label>
+                                                            }
+                                                            <input type="hidden" id="hf_FID22_@x" value="@ViewBag.Menu2.Rows[x]["feature_id"].ToString()" />
+                                                            <input type="hidden" id="hf_DocID22_@x" value="@ViewBag.Menu2.Rows[x]["Doc_ID"].ToString()" />
+                                                        </li>
+
+                                                    }
+                                                }
+                                            </ul>
+                                            <ul>
+                                                @for (int j = 0; j < (ViewBag.Menu3.Rows.Count); j++)
+                                                {
+                                                    var Flag3 = "N";
+                                                    if (ViewBag.Menu2.Rows[p]["Doc_ID"] == ViewBag.Menu3.Rows[j]["par_doc_id"])
+                                                    {
+                                                        if (@ViewBag.Menu3.Rows[j]["child_count"] == 0)
+                                                        {
+                                                            <li>
+                                                                @if (ViewBag.UserRoleList != null)
+                                                                {
+                                                                    for (int zc = 0; zc < (ViewBag.UserRoleList.Rows.Count); zc++)
+                                                                    {
+                                                                        if (ViewBag.Menu3.Rows[j]["feature_id"] == ViewBag.UserRoleList.Rows[zc]["feature_id"])
+                                                                        {
+                                                                            Flag3 = "Y";
+                                                                        }
+                                                                    }
+                                                                }
+                                                                @if (Flag3 == "Y")
+                                                                {
+                                                                    <label><input class="hummingbird-end-node" id="3_@j" type="checkbox" checked="checked" /><span>@ViewBag.Menu3.Rows[j]["feature_name"].ToString()</span></label>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <label><input class="hummingbird-end-node" id="3_@j" type="checkbox" /><span>@ViewBag.Menu3.Rows[j]["feature_name"].ToString()</span></label>
+                                                                }
+                                                                <input type="hidden" id="hf_FID3_@j" value="@ViewBag.Menu3.Rows[j]["feature_id"].ToString()" />
+                                                                <input type="hidden" id="hf_DocID3_@j" value="@ViewBag.Menu3.Rows[j]["Doc_ID"].ToString()" />
+                                                            </li>
+                                                        }
+                                                        else
+                                                        {
+                                                            <li>
+                                                                <i class="fa fa-plus"></i>
+                                                                @if (ViewBag.UserRoleList != null)
+                                                                {
+                                                                    for (int zc = 0; zc < (ViewBag.UserRoleList.Rows.Count); zc++)
+                                                                    {
+                                                                        if (ViewBag.Menu3.Rows[j]["feature_id"] == ViewBag.UserRoleList.Rows[zc]["feature_id"])
+                                                                        {
+                                                                            Flag3 = "Y";
+                                                                        }
+                                                                    }
+                                                                }
+                                                                @if (Flag3 == "Y")
+                                                                {
+                                                                    <label><input id="3_@j" type="checkbox" checked="checked" /><span>@ViewBag.Menu3.Rows[j]["feature_name"].ToString()</span></label>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <label><input id="3_@j" type="checkbox" /><span>@ViewBag.Menu3.Rows[j]["feature_name"].ToString()</span></label>
+                                                                }
+                                                                <input type="hidden" id="hf_FID3_@j" value="@ViewBag.Menu3.Rows[j]["feature_id"].ToString()" />
+                                                                <input type="hidden" id="hf_DocID3_@j" value="@ViewBag.Menu3.Rows[j]["Doc_ID"].ToString()" />
+                                                                <ul>
+                                                                    @for (int y = 0; y < (ViewBag.Menu3.Rows.Count); y++)
+                                                                    {
+                                                                        var Flag33 = "N";
+                                                                        if (ViewBag.Menu3.Rows[y]["Doc_ID"] == ViewBag.Menu3.Rows[j]["Doc_ID"] && ViewBag.Menu3.Rows[y]["Doc_ID"] == ViewBag.Menu3.Rows[y]["par_doc_id"])
+                                                                        {
+
+                                                                            <li>
+                                                                                @if (ViewBag.UserRoleList != null)
+                                                                                {
+                                                                                    for (int zc = 0; zc < (ViewBag.UserRoleList.Rows.Count); zc++)
+                                                                                    {
+                                                                                        if (ViewBag.Menu3.Rows[y]["feature_id"] == ViewBag.UserRoleList.Rows[zc]["feature_id"])
+                                                                                        {
+                                                                                            Flag33 = "Y";
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                                @if (Flag33 == "Y")
+                                                                                {
+                                                                                    <label><input class="hummingbird-end-node" id="33_@y" type="checkbox" checked="checked" /><span>@ViewBag.Menu3.Rows[y]["feature_name"].ToString()</span></label>
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <label><input class="hummingbird-end-node" id="33_@y" type="checkbox" /><span>@ViewBag.Menu3.Rows[y]["feature_name"].ToString()</span></label>
+                                                                                }
+                                                                                <input type="hidden" id="hf_FID33_@y" value="@ViewBag.Menu3.Rows[y]["feature_id"].ToString()" />
+                                                                                <input type="hidden" id="hf_DocID33_@y" value="@ViewBag.Menu3.Rows[y]["Doc_ID"].ToString()" />
+                                                                            </li>
+
+                                                                        }
+                                                                    }
+                                                                </ul>
+                                                                <ul>
+                                                                    @for (int i = 0; i < (ViewBag.Menu4.Rows.Count); i++)
+                                                                    {
+                                                                        var Flag4 = "N";
+                                                                        if (ViewBag.Menu3.Rows[j]["Doc_ID"] == ViewBag.Menu4.Rows[i]["par_doc_id"])
+                                                                        {
+                                                                            if (@ViewBag.Menu4.Rows[i]["child_count"] == 0)
+                                                                            {
+                                                                                <li>
+                                                                                    @if (ViewBag.UserRoleList != null)
+                                                                                    {
+                                                                                        for (int zc = 0; zc < (ViewBag.UserRoleList.Rows.Count); zc++)
+                                                                                        {
+                                                                                            if (ViewBag.Menu4.Rows[i]["feature_id"] == ViewBag.UserRoleList.Rows[zc]["feature_id"])
+                                                                                            {
+                                                                                                Flag4 = "Y";
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                    @if (Flag4 == "Y")
+                                                                                    {
+                                                                                    <label><input class="hummingbird-end-node" id="4_@i" type="checkbox" checked="checked" /><span>@ViewBag.Menu4.Rows[i]["feature_name"].ToString()</span></label>
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                <label><input class="hummingbird-end-node" id="4_@i" type="checkbox" /><span>@ViewBag.Menu4.Rows[i]["feature_name"].ToString()</span></label>
+                                                                                    }
+                                                                                    <input type="hidden" id="hf_FID4_@i" value="@ViewBag.Menu4.Rows[i]["feature_id"].ToString()" />
+                                                                                    <input type="hidden" id="hf_DocID4_@i" value="@ViewBag.Menu4.Rows[i]["Doc_ID"].ToString()" />
+                                                                                </li>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <li>
+                                                                                    <i class="fa fa-plus"></i>
+                                                                                    @if (ViewBag.UserRoleList != null)
+                                                                                    {
+                                                                                        for (int zc = 0; zc < (ViewBag.UserRoleList.Rows.Count); zc++)
+                                                                                        {
+                                                                                            if (ViewBag.Menu4.Rows[i]["feature_id"] == ViewBag.UserRoleList.Rows[zc]["feature_id"])
+                                                                                            {
+                                                                                                Flag4 = "Y";
+
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                    @if (Flag4 == "Y")
+                                                                                    {
+                                                                                <label><input id="4_@i" type="checkbox" checked="checked" /><span>@ViewBag.Menu4.Rows[i]["feature_name"].ToString()</span></label>
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                <label><input id="4_@i" type="checkbox" /><span>@ViewBag.Menu4.Rows[i]["feature_name"].ToString()</span></label>
+                                                                                    }
+                                                                                    <input type="hidden" id="hf_FID4_@i" value="@ViewBag.Menu4.Rows[i]["feature_id"].ToString()" />
+                                                                                    <input type="hidden" id="hf_DocID4_@i" value="@ViewBag.Menu4.Rows[i]["Doc_ID"].ToString()" />
+                                                                                    <ul>
+                                                                                        @for (int z = 0; z < (ViewBag.Menu4.Rows.Count); z++)
+                                                                                        {
+                                                                                            var Flag44 = "N";
+                                                                                            if (ViewBag.Menu4.Rows[z]["Doc_ID"] == ViewBag.Menu4.Rows[i]["Doc_ID"] && ViewBag.Menu4.Rows[z]["Doc_ID"] == ViewBag.Menu4.Rows[z]["par_doc_id"])
+                                                                                            {
+
+                                                                                                <li>
+                                                                                                    @if (ViewBag.UserRoleList != null)
+                                                                                                    {
+                                                                                                        for (int zc = 0; zc < (ViewBag.UserRoleList.Rows.Count); zc++)
+                                                                                                        {
+                                                                                                            if (ViewBag.Menu4.Rows[z]["feature_id"] == ViewBag.UserRoleList.Rows[zc]["feature_id"])
+                                                                                                            {
+                                                                                                                Flag44 = "Y";
+
+                                                                                                            }
+                                                                                                        }
+                                                                                                    }
+
+                                                                                                    @if (Flag44 == "Y")
+                                                                                                    {
+                                                                                                    <label><input class="hummingbird-end-node" id="44_@z" type="checkbox" checked="checked" /><span>@ViewBag.Menu4.Rows[z]["feature_name"].ToString()</span></label>
+                                                                                                    }
+                                                                                                    else
+                                                                                                    {
+                                                                                                <label><input class="hummingbird-end-node" id="44_@z" type="checkbox" /><span>@ViewBag.Menu4.Rows[z]["feature_name"].ToString()</span></label>
+                                                                                                    }
+                                                                                                    <input type="hidden" id="hf_FID44_@z" value="@ViewBag.Menu4.Rows[z]["feature_id"].ToString()" />
+                                                                                                    <input type="hidden" id="hf_DocID44_@z" value="@ViewBag.Menu4.Rows[z]["Doc_ID"].ToString()" />
+                                                                                                </li>
+                                                                                            }
+                                                                                        }
+                                                                                    </ul>
+                                                                                </li>
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                </ul>
+                                                            </li>
+                                                        }
+                                                    }
+                                                }
+                                            </ul>
+                                        </li>
+                                    }
+                                }
+                            }
+                        </ul>
+                    </li>
+                    }
+                }
+        </ul>
+    </div>
+</div>
+
+<script src="~/Content/Css/build/js/hummingbird-treeview.js"></script>
+<script>
+    $("#treeview").hummingbird();
+    $("#checkAll").click(function () {
+        $("#treeview").hummingbird("checkAll");
+    });
+    $("#uncheckAll").click(function () {
+        $("#treeview").hummingbird("uncheckAll");
+    });
+    $("#collapseAll").click(function () {
+        $("#treeview").hummingbird("collapseAll");
+    });
+</script>

@@ -1,0 +1,68 @@
+﻿@using EnRepMobileWeb.Resources;
+@{
+    string ValDigit = "0.";
+    var VD = Convert.ToInt32(Session["ValDigit"].ToString());
+    for (var i = 0; i < VD; i++)
+    {
+        ValDigit += "0";
+    }
+    //decimal total = 0;
+}
+<style>
+    #datatable-buttons3_wrapper .btn-group a:nth-child(3) {
+        display: inline-block;
+        position: absolute;
+    }
+</style>
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<script src="~/Content/Scripts/Common/CommonJS.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/SalesAndDistribution/MIS/ShipmentDetail/ShipmentDetailJS.js"></script>
+<table id="datatable-buttons3" class="table table-striped rowhighlighttbl mb-3" cellspacing="0" width="100%">
+    <thead>
+        <tr class="sticky-header">
+            <th width="4%"> @Resource.SrNo</th>
+            <th width="27%">@Resource.Item @Resource.Name</th>
+            <th hidden="hidden">@Resource.Item @Resource.Name</th>
+            <th width="14%" title="Unit Of Measure"> @Resource.UOM</th>
+            <th hidden="hidden">@Resource.Shipped @Resource.Quantity</th>
+            <th width="15%">@Resource.Shipped @Resource.Quantity</th>
+            <th width="50%">&nbsp;</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (ViewBag.ItemWiseSummary != null)
+        {
+            var srno = 1;
+            foreach (System.Data.DataRow dr in ViewBag.ItemWiseSummary.Rows)
+            {
+                <tr>
+                    <td>@srno</td>
+                    <td id="ItemName">@dr["item_name"].ToString()</td>
+                    <td id="ItemId" hidden="hidden">@dr["item_id"].ToString()</td>
+                    @*<td>@dr["item_name"].ToString()</td>*@
+                    <td id="UomName">@dr["uom_name"].ToString()</td>
+                    <td hidden="hidden" id="TotalQty">@dr["TotalShippedQty"].ToString()</td>
+                    <td>
+                        <div class="col-md-10 col-sm-12 no-padding num_right">@Convert.ToDecimal(dr["TotalShippedQty"]).ToString(ValDigit) </div>
+                        <div class="col-sm-2  i_Icon no-padding">
+                            <button type="button" id="" class="calculator" onclick="BindShipmentSummary(event);" data-toggle="modal" data-target="#ShippedQuantityDetail" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Shipped @Resource.Quantity @Resource.Detail">  </button>
+                        </div>
+                    </td>
+                    <td></td>
+                </tr>
+                srno = srno + 1;
+            }
+        }
+    </tbody>
+</table>
+@{
+    if (Model.SearchStatus != null)
+    {
+        if (Model.SearchStatus == "SEARCH")
+        {
+            @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+            @Scripts.Render("~/Content/Scripts/DatatablesJs")
+            Model.SearchStatus = null;
+        }
+    }
+}

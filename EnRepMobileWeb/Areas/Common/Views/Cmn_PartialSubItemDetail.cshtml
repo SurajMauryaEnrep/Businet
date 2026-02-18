@@ -1,0 +1,2379 @@
+﻿@model EnRepMobileWeb.MODELS.Common.SubItemPopupDt
+@using EnRepMobileWeb.Resources;
+@*
+    <<-----Comment Section------>>
+    modified by Suraj Maurya on 18-11-2024 Added OrdrToProduceQuantity flag for MRP.
+    modified by Suraj on 15-10-2024 to comment td for pending qty in case ForeCastandSOQtyforPPL1 in Footer only; Error Got when working on page
+    modified by nitesh on 16-10-2024 for add flag(POMRS_Issue  and POMRS_Quantity ) fro show production order material Detail
+    <<-----Comment Section End------>>
+
+    Pages where this partial is used :-
+    ----------Production----------
+    1. Production Plan
+    2. Material Requirment Plan
+    3. Producton Order
+    4. Producton Advice
+    5. Production Confirmation
+    6. Production Quality Inspection
+    7. Reworkable Job Order
+    ----------Inventory----------
+    1. Material Transfer Requisition
+    2. Material Transfer Issue
+    3. Material Transfer Reciept
+    4. Material Requisition Slip
+    5. internal Issue
+    6. External Issue
+    7. Sample Issue
+    8. Sample Reciept
+    9. Opening material Reciept
+    10. Stock Reservation
+    11. Stock Take
+    12. Swap Stock
+    13. External Receipt
+    14. Assembly Kit
+    ----------Sales----------
+    1. Sales Quotation
+    2. Sales Order
+    3. Packing List
+    4. Shipment
+    5. Sales invoice
+    6. Sales Return
+    7. Scrap Sale Invoice
+
+    ------Precurement( Purchase Cycle)and Inventory-----------
+    1.Purchase Requisition
+    2.Request For Quotation
+    3.Purchase Quotation
+    4.Purchase Order
+    5.Delivery Note
+    6.Quality Inspection (QC)
+    7.Goods Receipt Note (GRN)
+    8.Purchase Invoice
+    9.Purchase Return
+    10. Inter Branch Purchase (IBP)
+
+     ------Sub Contracting Cycle----------
+    1. Job Order
+    2. Material Dispatch
+    3.Delivery Note SC
+    4.GRN SC
+
+*@
+@{
+
+    string QtyDigit = "0.";
+    var VD = Convert.ToInt32(Session["QtyDigit"].ToString());
+    if (ViewBag.DocumentMenuId == "105103145110" || ViewBag.DocumentMenuId == "105103145105" || ViewBag.DocumentMenuId == "105103145115" || ViewBag.DocumentMenuId == "105103145120" || ViewBag.DocumentMenuId == "105103145125")
+    {
+        VD = Convert.ToInt32(Session["ExpImpQtyDigit"].ToString());
+    }
+    else
+    {
+        VD = Convert.ToInt32(Session["QtyDigit"].ToString());
+    }
+
+    for (var i = 0; i < VD; i++)
+    {
+        QtyDigit += "0";
+    }
+
+    decimal issuedQty = 0;
+
+    string IsNull(string str, string str2)
+    {
+        return string.IsNullOrEmpty(str) == true ? str2 : str;
+    }
+
+    string Case(string str, string strwhen, string strthen, string strelse)
+    {
+        // (dr["Qty"].ToString(), "0", "", "same")
+        if (str == strwhen)
+        {
+            return strthen;
+        }
+        else if (strelse == "same")
+        {
+            return str;
+        }
+        else
+        {
+            return strelse;
+        }
+    }
+    string stocktakeCase(string str, string avlstr, string qty, string strwhen, string strthen, string strelse)
+    {
+
+        if (str == "" && qty == "")
+        {
+            return strthen;
+        }
+        if (str == "" && qty != "")
+        {
+            if (Convert.ToDouble(qty) > 0)
+            {
+                return avlstr;
+            }
+            else
+            {
+                return strthen;
+            }
+
+        }
+
+        if (str == strwhen)
+        {
+            return strthen;
+        }
+        else if (strelse == "same")
+        {
+            return str;
+        }
+        else
+        {
+            return strelse;
+        }
+    }
+
+
+    decimal subItmTotal = 0;
+    decimal subItmTotalBill = 0;
+    decimal subItmTotalReceiv = 0;
+    decimal subItmTotalAcc = 0;
+    decimal subItmTotalRej = 0;
+    decimal subItmTotalRew = 0;
+    decimal subItmTotalShort = 0;
+    decimal subItmTotalSample = 0;
+    decimal subItmInvoice = 0;
+    decimal Issued = 0;
+    decimal Consumed = 0;
+    decimal Received = 0;
+    decimal ReqQty = 0;
+    decimal OrdQty = 0;
+    decimal DispQty = 0;
+    decimal SOOrdQty = 0;
+    decimal PendQty = 0;
+    decimal AvlQty = 0;
+    decimal short_qty = 0;
+    decimal surplus_qty = 0;
+    decimal ShipPackedQty = 0;
+    decimal ShippedQty = 0;
+    decimal subItmAvlStkTotal = 0;
+    decimal PYearSalQty = 0;
+    decimal SrcDocQty = 0;
+    decimal PendiQty = 0;
+    decimal stphyqty = 0;
+    decimal subItemProdTotal = 0;
+    decimal subItemPendTotal = 0;
+    decimal subItemQcTotal = 0;
+    decimal subItemQcTotalPC = 0;
+
+    string Fn_KeyPress = "Cmn_IntValueonly(this, event)";
+    if (Model.decimalAllowed == "Y")
+    {
+        Fn_KeyPress = "Cmn_FloatValueonly(this, event,'#QtyDigit')";
+    }
+    string dsbl = "";
+    if (Model.IsDisabled == "Y")
+    {
+        dsbl = "disabled";
+    }
+
+
+    /**Added By Nitesh 02-03-2024 For Set Palceholder When Value Is "0.000" **/
+    var QtyVsPlaceholder = "";
+    void CheckValueNullPlaceholder(string value, string flag)
+    {
+        if (flag == "")
+        {
+
+        }
+        else
+        {
+            if ((value.ToString() == "") || (value == null))
+            {
+                QtyVsPlaceholder = "";
+            }
+            else
+            {
+                if (Convert.ToDecimal(value) == Convert.ToDecimal(0))
+                {
+                    QtyVsPlaceholder = "";
+                }
+                else
+                {
+                    QtyVsPlaceholder = Case(value.ToString(), "0", "", "same");
+                }
+
+            }
+        }
+    }
+    /***----------------------------------End--------------------------------------***/
+    void CalculateSubItem(System.Data.DataRow dr, string Flag)
+    {
+        if (Flag == "QC")
+        {
+            subItmTotalAcc = subItmTotalAcc + Convert.ToDecimal(IsNull(dr["accept_qty"].ToString(), "0"));
+            subItmTotalRej = subItmTotalRej + Convert.ToDecimal(IsNull(dr["reject_qty"].ToString(), "0"));
+            subItmTotalRew = subItmTotalRew + Convert.ToDecimal(IsNull(dr["rework_qty"].ToString(), "0"));
+            //if (ViewBag.QcType == "PUR" || ViewBag.QcType == "RQC")
+            if (ViewBag.QcType == "PUR")
+            {
+                subItmTotalShort = subItmTotalShort + Convert.ToDecimal(IsNull(dr["short_qty"].ToString(), "0"));
+                subItmTotalSample = subItmTotalSample + Convert.ToDecimal(IsNull(dr["sample_qty"].ToString(), "0"));
+            }
+
+        }
+        else if (Model.Flag == "PRDProdQty" || Model.Flag == "PRDPendQty" || Model.Flag == "PRDProduceQty")
+        {
+            subItemProdTotal = subItemProdTotal + Convert.ToDecimal(IsNull(dr["cnf_prod_qty"].ToString(), "0"));
+            subItemPendTotal = subItemPendTotal + Convert.ToDecimal(IsNull(dr["pend_qty"].ToString(), "0"));
+            subItemQcTotal = subItemQcTotal + Convert.ToDecimal(IsNull(dr["qc_qty"].ToString(), "0"));
+        }
+        else if (Flag == "PInvVariance")/*Added By Suraj on 11-10-2023 for PI Variance*/
+        {
+            subItmTotalBill = subItmTotalBill + Convert.ToDecimal(IsNull(dr["bill_qty"].ToString(), "0"));
+            subItmTotalReceiv = subItmTotalReceiv + Convert.ToDecimal(IsNull(dr["recd_qty"].ToString(), "0"));
+            subItmTotalAcc = subItmTotalAcc + Convert.ToDecimal(IsNull(dr["rec_qty"].ToString(), "0"));
+            subItmTotalRej = subItmTotalRej + Convert.ToDecimal(IsNull(dr["rej_qty"].ToString(), "0"));
+            subItmTotalRew = subItmTotalRew + Convert.ToDecimal(IsNull(dr["rework_qty"].ToString(), "0"));
+            subItmTotalShort = subItmTotalShort + Convert.ToDecimal(IsNull(dr["short_qty"].ToString(), "0"));
+            subItmTotalSample = subItmTotalSample + Convert.ToDecimal(IsNull(dr["sample_qty"].ToString(), "0"));
+            subItmInvoice = subItmInvoice + Convert.ToDecimal(IsNull(dr["Invoice_qty"].ToString(), "0"));
+
+        }
+
+        else if (Flag == "DNSCPendQty" || Flag == "DNSCDispQty")
+        {
+            if (Flag == "DNSCDispQty")
+            {
+                DispQty = DispQty + Convert.ToDecimal(IsNull(dr["Disp_Qty"].ToString(), "0"));
+            }
+            else
+            {
+                DispQty = DispQty + Convert.ToDecimal(IsNull(dr["Disp_Qty"].ToString(), "0"));
+                PendQty = PendQty + Convert.ToDecimal(IsNull(dr["Pending_Qty"].ToString(), "0"));
+            }
+        }
+        else if (Flag == "DNSCBillQty" || Flag == "DNSCRecQty")
+        {
+            if (Flag == "DNSCBillQty")
+            {
+                DispQty = DispQty + Convert.ToDecimal(IsNull(dr["Disp_Qty"].ToString(), "0"));
+                PendQty = PendQty + Convert.ToDecimal(IsNull(dr["Pending_Qty"].ToString(), "0"));
+                subItmTotalBill = subItmTotalBill + Convert.ToDecimal(IsNull(dr["BilledQty"].ToString(), "0"));
+                subItmTotalReceiv = subItmTotalReceiv + Convert.ToDecimal(IsNull(dr["RecievedQty"].ToString(), "0"));
+
+            }
+            else
+            {
+                DispQty = DispQty + Convert.ToDecimal(IsNull(dr["Disp_Qty"].ToString(), "0"));
+                PendQty = PendQty + Convert.ToDecimal(IsNull(dr["Pending_Qty"].ToString(), "0"));
+                subItmTotalBill = subItmTotalBill + Convert.ToDecimal(IsNull(dr["BilledQty"].ToString(), "0"));
+                subItmTotalReceiv = subItmTotalReceiv + Convert.ToDecimal(IsNull(dr["RecievedQty"].ToString(), "0"));
+
+            }
+        }
+        else if (Flag == "DNBillQty" || Flag == "DNRecQty" || Flag == "DNAllSubQtyShow")
+        {
+            OrdQty = OrdQty + Convert.ToDecimal(IsNull(dr["Order_Qty"].ToString(), "0"));
+            PendQty = PendQty + Convert.ToDecimal(IsNull(dr["Pending_Qty"].ToString(), "0"));
+            subItmTotalBill = subItmTotalBill + Convert.ToDecimal(IsNull(dr["BilledQty"].ToString(), "0"));
+            subItmTotalReceiv = subItmTotalReceiv + Convert.ToDecimal(IsNull(dr["RecievedQty"].ToString(), "0"));
+            subItmTotalAcc = subItmTotalAcc + Convert.ToDecimal(IsNull(dr["Accept_Qty"].ToString(), "0"));
+            subItmTotalRej = subItmTotalRej + Convert.ToDecimal(IsNull(dr["Reject_Qty"].ToString(), "0"));
+            subItmTotalRew = subItmTotalRew + Convert.ToDecimal(IsNull(dr["Rework_Qty"].ToString(), "0"));
+            subItmTotalShort = subItmTotalShort + Convert.ToDecimal(IsNull(dr["short_qty"].ToString(), "0"));
+            subItmTotalSample = subItmTotalSample + Convert.ToDecimal(IsNull(dr["sample_qty"].ToString(), "0"));
+
+        }
+        else if (Flag == "DNSC_QCAcptRejRwkQty")
+        {
+            subItmTotalAcc = subItmTotalAcc + Convert.ToDecimal(IsNull(dr["AccptQty"].ToString(), "0"));
+            subItmTotalRej = subItmTotalRej + Convert.ToDecimal(IsNull(dr["RejQty"].ToString(), "0"));
+            subItmTotalRew = subItmTotalRew + Convert.ToDecimal(IsNull(dr["RewrkQty"].ToString(), "0"));
+        }
+        else if (Flag == "MTO")
+        {
+            subItmTotal = subItmTotal + Convert.ToDecimal(IsNull(dr["Qty"].ToString(), "0"));
+            Issued = Issued + Convert.ToDecimal(IsNull(dr["issue_qty"].ToString(), "0"));
+            Received = Received + Convert.ToDecimal(IsNull(dr["rec_qty"].ToString(), "0"));
+        }
+        else if (Flag == "RJO_QCAcptRejRwkQty")
+        {
+            subItmTotalAcc = subItmTotalAcc + Convert.ToDecimal(IsNull(dr["AccptQty"].ToString(), "0"));
+            subItmTotalRej = subItmTotalRej + Convert.ToDecimal(IsNull(dr["RejQty"].ToString(), "0"));
+            subItmTotalRew = subItmTotalRew + Convert.ToDecimal(IsNull(dr["RewrkQty"].ToString(), "0"));
+            if (Model._subitemPageName == "GRN")
+            {
+                subItmTotalShort = subItmTotalShort + Convert.ToDecimal(IsNull(dr["ShortQty"].ToString(), "0"));
+                subItmTotalSample = subItmTotalSample + Convert.ToDecimal(IsNull(dr["SampleQty"].ToString(), "0"));
+            }
+        }
+        else if (Flag == "MTI")
+        {
+            subItmTotal = subItmTotal + Convert.ToDecimal(IsNull(dr["Qty"].ToString(), "0"));
+            PendQty = PendQty + Convert.ToDecimal(IsNull(dr["pend_qty"].ToString(), "0"));
+            if (Model._subitemPageName != "SampleIssue")
+            {
+                AvlQty = AvlQty + Convert.ToDecimal(IsNull(dr["avl_stk"].ToString(), "0"));
+            }
+            ReqQty = ReqQty + Convert.ToDecimal(IsNull(dr["req_qty"].ToString(), "0"));
+        }
+
+        else if (Flag == "RJO_RewrkQuantity" || Model.Flag == "CM_ConsumeQty" || Flag == "PC_ConsumeQuantity" || Flag == "Input")
+        {
+            subItmTotal = subItmTotal + Convert.ToDecimal(IsNull(dr["Qty"].ToString(), "0"));
+            if (Model.Flag1 != "RM_RequireQty_rwk")
+            {
+                AvlQty = AvlQty + Convert.ToDecimal(IsNull(dr["avl_stk"].ToString(), "0"));
+            }
+            if (Model.Flag == "CM_ConsumeQty")
+            {
+                ReqQty = ReqQty + Convert.ToDecimal(IsNull(dr["req_qty"].ToString(), "0"));
+            }
+        }
+
+        else if (Flag == "MRS")
+        {
+            subItmTotal = subItmTotal + Convert.ToDecimal(IsNull(dr["Qty"].ToString(), "0"));
+            Issued = Issued + Convert.ToDecimal(IsNull(dr["issue_qty"].ToString(), "0"));
+        }
+        else if (Flag == "POMRS_Issue")
+        {
+            subItmTotal = subItmTotal + Convert.ToDecimal(IsNull(dr["Qty"].ToString(), "0"));
+            Issued = Issued + Convert.ToDecimal(IsNull(dr["issue_qty"].ToString(), "0"));
+        }
+        else if (Flag == "PR")
+        {
+            subItmTotal = subItmTotal + Convert.ToDecimal(IsNull(dr["Qty"].ToString(), "0"));
+            OrdQty = OrdQty + Convert.ToDecimal(IsNull(dr["Ord_qty"].ToString(), "0"));
+        }
+        else if (Flag == "GRNSCIssueQty" || Flag == "GRNSCConsumeQty")
+        {
+            if (Flag == "GRNSCIssueQty")
+            {
+                Issued = Issued + Convert.ToDecimal(IsNull(dr["Issue_Qty"].ToString(), "0"));
+            }
+            else
+            {
+                Issued = Issued + Convert.ToDecimal(IsNull(dr["Issue_Qty"].ToString(), "0"));
+                Consumed = Consumed + Convert.ToDecimal(IsNull(dr["Consumed_Qty"].ToString(), "0"));
+            }
+
+        }
+        else if (Flag == "MTReciept")
+        {
+            subItmTotal = subItmTotal + Convert.ToDecimal(IsNull(dr["Qty"].ToString(), "0"));
+            ReqQty = ReqQty + Convert.ToDecimal(IsNull(dr["req_qty"].ToString(), "0"));
+            PendQty = PendQty + Convert.ToDecimal(IsNull(dr["pend_qty"].ToString(), "0"));
+        }
+        else if (Flag == "SOrderQty")
+        {
+            subItmTotal = subItmTotal + Convert.ToDecimal(IsNull(dr["Qty"].ToString(), "0"));
+            SOOrdQty = SOOrdQty + Convert.ToDecimal(IsNull(dr["order_qty"].ToString(), "0"));
+
+        }
+        else if (Flag == "PackList" || Model.Flag == "FocPackList" || Flag == "MDDispQty")
+        {
+            OrdQty = OrdQty + Convert.ToDecimal(IsNull(dr["ord_qty"].ToString(), "0"));
+            PendQty = PendQty + Convert.ToDecimal(IsNull(dr["PendingQty"].ToString(), "0"));
+            if (Flag == "PackList" || Model.Flag == "FocPackList")
+            {
+                subItmTotal = subItmTotal + Convert.ToDecimal(IsNull(dr["PackQty"].ToString(), "0"));
+            }
+            else
+            {
+                subItmTotal = subItmTotal + Convert.ToDecimal(IsNull(dr["Qty"].ToString(), "0"));
+            }
+
+        }
+        else if (Flag == "ForeCastandSOQtyforPPL")
+        {
+            SrcDocQty = SrcDocQty + Convert.ToDecimal(IsNull(dr["SrcDoc_Qty"].ToString(), "0"));
+            subItmTotal = subItmTotal + Convert.ToDecimal(IsNull(dr["Qty"].ToString(), "0"));
+            PendiQty = PendiQty + Convert.ToDecimal(IsNull(dr["PendingQty"].ToString(), "0"));
+        }
+        else if (Flag == "ForeCastandSOQtyforPPL1")
+        {
+            SrcDocQty = SrcDocQty + Convert.ToDecimal(IsNull(dr["SrcDoc_Qty"].ToString(), "0"));
+            subItmTotal = subItmTotal + Convert.ToDecimal(IsNull(dr["Qty"].ToString(), "0"));
+            //PendiQty = PendiQty + Convert.ToDecimal(IsNull(dr["PendingQty"].ToString(), "0"));
+        }
+        else if (Flag == "PackOrderPending")
+        {
+            OrdQty = OrdQty + Convert.ToDecimal(IsNull(dr["ord_qty"].ToString(), "0"));
+            PendQty = PendQty + Convert.ToDecimal(IsNull(dr["PendingQty"].ToString(), "0"));
+
+        }
+        else if (Flag == "ShipPacked")
+        {
+            ShipPackedQty = ShipPackedQty + Convert.ToDecimal(IsNull(dr["pack_qty"].ToString(), "0"));
+        }
+        else if (Flag == "Shipped")
+        {
+            ShippedQty = ShippedQty + Convert.ToDecimal(IsNull(dr["ship_qty"].ToString(), "0"));
+        }
+        else if (Flag == "avl_stk")
+        {
+            subItmAvlStkTotal = subItmAvlStkTotal + Convert.ToDecimal(IsNull(dr[Flag].ToString(), "0"));
+        }
+        else if (Flag == "StockTake")
+        {
+            if (Model.stqty != "")
+            {
+                if (Convert.ToDouble(Model.stqty) > 0)
+                {
+                    stphyqty = Convert.ToDecimal(IsNull(dr["avl_stk"].ToString(), "0"));
+                }
+            }
+
+            subItmAvlStkTotal = subItmAvlStkTotal + Convert.ToDecimal(IsNull(dr["avl_stk"].ToString(), "0"));
+            subItmTotal = subItmTotal + Convert.ToDecimal(IsNull(dr["Qty"].ToString(), stphyqty.ToString()));
+            short_qty = short_qty + Convert.ToDecimal(IsNull(dr["short_qty"].ToString(), "0"));
+            surplus_qty = surplus_qty + Convert.ToDecimal(IsNull(dr["surplus_qty"].ToString(), "0"));
+        }
+        else if (Flag == "PYearSalQty")
+        {
+            PYearSalQty = PYearSalQty + Convert.ToDecimal(IsNull(dr["inv_qty"].ToString(), "0"));
+        }
+        else if (Flag == "PackResQuantity")
+        {
+            subItmTotal = subItmTotal + Convert.ToDecimal(IsNull(dr["Qty"].ToString(), "0"));
+            Issued = Issued + Convert.ToDecimal(IsNull(dr["res_qty"].ToString(), "0"));
+        }
+        else if (Flag == "PackResTotalQty")
+        {
+            subItmTotal = subItmTotal + Convert.ToDecimal(IsNull(dr["Qty"].ToString(), "0"));
+            OrdQty = OrdQty + Convert.ToDecimal(IsNull(dr["ord_pack_qty"].ToString(), "0"));
+            AvlQty = AvlQty + Convert.ToDecimal(IsNull(dr["avl_stk"].ToString(), "0"));
+            Issued = Issued + Convert.ToDecimal(IsNull(dr["res_qty"].ToString(), "0"));
+        }
+        else if (Flag == "StkResDocDetail")
+        {
+            OrdQty = OrdQty + Convert.ToDecimal(IsNull(dr["ord_qty"].ToString(), "0"));
+            subItmTotal = subItmTotal + Convert.ToDecimal(IsNull(dr["pend_pack_qty"].ToString(), "0"));
+            PendQty = PendQty + Convert.ToDecimal(IsNull(dr["pend_res_qty"].ToString(), "0"));
+        }
+        else if (Flag == "SlsReturn")
+        {
+            OrdQty = OrdQty + Convert.ToDecimal(IsNull(dr["inv_qty"].ToString(), "0"));
+            //subItmTotal = subItmTotal + Convert.ToDecimal(IsNull(dr["pending_qty"].ToString(), "0"));commented by shubham maurya on 28-04-2025
+            subItmTotal = subItmTotal + Convert.ToDecimal(IsNull(dr["avl_stk"].ToString(), "0"));
+            if (Model._subitemPageName != "AvlQty")
+                PendQty = PendQty + Convert.ToDecimal(IsNull(dr["Qty"].ToString(), "0"));
+        }
+        else if (Flag == "StkResTotalResQty")
+        {
+            if (Model._subitemPageName == "Res")
+            {
+                AvlQty = AvlQty + Convert.ToDecimal(IsNull(dr["avl_stk"].ToString(), "0"));
+                PendQty = PendQty + Convert.ToDecimal(IsNull(dr["pend_res_qty"].ToString(), "0"));
+            }
+            else
+            {
+                PendQty = PendQty + Convert.ToDecimal(IsNull(dr["res_qty"].ToString(), "0"));
+            }
+
+            subItmTotal = subItmTotal + Convert.ToDecimal(IsNull(dr["Qty"].ToString(), "0"));
+        }
+        else if (Flag == "SRAgnst_Issue")
+        {
+            subItmTotal = subItmTotal + Convert.ToDecimal(IsNull(dr["Qty"].ToString(), "0"));
+            Issued = Issued + Convert.ToDecimal(IsNull(dr["issued_qty"].ToString(), "0"));
+            PendQty = PendQty + Convert.ToDecimal(IsNull(dr["pend_qty"].ToString(), "0"));
+        }
+        else if (Flag == "SwapQty")
+        {
+            AvlQty = AvlQty + Convert.ToDecimal(IsNull(dr["avl_stk"].ToString(), "0"));
+            subItmTotal = subItmTotal + Convert.ToDecimal(IsNull(dr["Qty"].ToString(), "0"));
+        }
+        else if (Flag == "Scrap")
+        {
+            AvlQty = AvlQty + Convert.ToDecimal(IsNull(dr["avl_stk"].ToString(), "0"));
+            subItmTotal = subItmTotal + Convert.ToDecimal(IsNull(dr["Qty"].ToString(), "0"));
+        }
+        else if (Flag == "AvlScrap")
+        {
+            AvlQty = AvlQty + Convert.ToDecimal(IsNull(dr["avl_stk"].ToString(), "0"));
+        }
+        else if (Flag == "IBP") /*Added by Surbhi on 14/07/2025 for Inter Branch Purchase Invoice(105101153)*/
+        {
+            subItmTotal = subItmTotal + Convert.ToDecimal(IsNull(dr["Qty"].ToString(), "0"));
+        }
+        else if (Flag == "AssemblyKitINput")
+        {
+            AvlQty = AvlQty + Convert.ToDecimal(IsNull(dr["avl_stk"].ToString(), "0"));
+            subItmTotal = subItmTotal + Convert.ToDecimal(IsNull(dr["Qty"].ToString(), "0"));
+        }
+        else if (Flag == "QCQty")
+        {
+            subItemQcTotalPC = subItemQcTotalPC + Convert.ToDecimal(IsNull(dr["qc_qty_pc"].ToString(), "0"));
+            subItemProdTotal = subItemProdTotal + Convert.ToDecimal(IsNull(dr["accept_qty"].ToString(), "0"));
+            subItemPendTotal = subItemPendTotal + Convert.ToDecimal(IsNull(dr["reject_qty"].ToString(), "0"));
+            subItemQcTotal = subItemQcTotal + Convert.ToDecimal(IsNull(dr["rework_qty"].ToString(), "0"));
+        }
+        else if (Flag == "Exterissued_qty" || Flag == "ExterPendingQty" || Flag == "ExterRec_qty")
+        {
+            if(Flag == "Exterissued_qty")
+            {
+                issuedQty = ReqQty + Convert.ToDecimal(IsNull(dr["IssuedQty"].ToString(), "0"));
+            }
+            else if(Flag == "ExterPendingQty")
+            {
+                issuedQty = ReqQty + Convert.ToDecimal(IsNull(dr["IssuedQty"].ToString(), "0"));
+                PendQty = PendQty + Convert.ToDecimal(IsNull(dr["pend_qty"].ToString(), "0"));
+            }
+            else
+            {
+                issuedQty = ReqQty + Convert.ToDecimal(IsNull(dr["IssuedQty"].ToString(), "0"));
+
+                PendQty = PendQty + Convert.ToDecimal(IsNull(dr["pend_qty"].ToString(), "0"));
+
+                subItmTotal = subItmTotal + Convert.ToDecimal(IsNull(dr["Qty"].ToString(), "0"));
+            }
+
+        }
+        else
+        {
+            subItmTotal = subItmTotal + Convert.ToDecimal(IsNull(dr[Flag].ToString(), "0"));
+        }
+
+    }
+}
+<div class="modal-content">
+    <div class="modal-header">
+        <h2>@Resource.SubItem @Resource.Detail</h2>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body pop_top">
+        <div id="subSrcDocNo" class="col-md-4 col-sm-12" style="padding-left:0px; display:none">
+            <label class="col-form-label label-align">
+                @Resource.Source @Resource.DocumentNumber
+            </label>
+            <input id="Sub_SrcDocNo" class="form-control" autocomplete="off" type="text" name="SourceDocumentNumber" placeholder="@Resource.Source @Resource.DocumentNumber" disabled="">
+            <input id="hdSub_SrcDocNo" hidden value="@ViewBag.src_doc_no">
+            <input hidden id="hdn_subitmFlag" value="@Model.Flag" />
+            <input hidden id="hdn_subitmShowStkFlag" value="@Model.ShowStock" />
+            <input hidden="hidden" id="SwapSrcType" value="@Model.Flag1" />
+        </div>
+        <div id="subSrcDocdate" class="col-md-4 col-sm-12" style="padding-left:0px; display:none">
+            <label class="col-form-label label-align">
+                @Resource.Source @Resource.DocumentDate
+            </label>
+            <input id="Sub_SrcDocDate" class="form-control" autocomplete="off" type="date" name="SourceDocumentDate" placeholder="@Resource.Source @Resource.DocumentDate" disabled="">
+            <input id="hdSub_SrcDocDate" hidden value="@ViewBag.src_doc_dt">
+
+        </div>
+        <div id="subWHName" class="col-md-4 col-sm-12" style="padding-left:0px; display:none">
+            @if (Model.Flag == "SRTReturnQty" || Model.Flag == "AdSRTReturnQty")
+            {
+                <label class="col-form-label label-align">
+                    @Resource.Return @Resource.Warehouse
+                </label>
+            }
+            else
+            {
+                <label class="col-form-label label-align">
+                    @Resource.WarehouseName
+                </label>
+            }
+            <input id="sub_WHName" class="form-control" autocomplete="off" type="text" name="WarehouseName" placeholder="@Resource.WarehouseName" disabled="">
+            <input id="hdSub_WHId" hidden>
+            <input hidden id="hdn_subitmFlag" value="@Model.Flag" />
+            <input hidden id="hdn_subitmShowStkFlag" value="@Model.ShowStock" />
+            <input hidden="hidden" id="SwapSrcType" value="@Model.Flag1" />
+        </div>
+        <div id="subJONmbr" class="col-md-4 col-sm-12" style="padding-left:0px; display:none">
+            <label class="col-form-label label-align">
+                @Resource.JobOrderNo
+            </label>
+            <input id="sub_JONumbr" class="form-control" autocomplete="off" type="text" name="JobOrderNo" placeholder="@Resource.JobOrderNo" disabled="">
+        </div>
+        <div class="col-md-6 col-sm-12 pl-0">
+            <label class="col-form-label label-align">
+                @Resource.Product @Resource.Name
+            </label>
+            <input id="Sub_ProductlName" class="form-control" autocomplete="off" type="text" name="ProductlName" placeholder="@Resource.Product @Resource.Name" disabled="">
+            <input id="Sub_ProductlId" hidden>
+
+        </div>
+        <div class="col-md-2 col-sm-12 pl-0">
+            <label class="col-form-label label-align">
+                @Resource.UOM
+            </label>
+            <input id="Sub_serialUOM" class="form-control" autocomplete="off" type="text" name="serialUOM" placeholder="UOM" onblur="this.placeholder='UOM'" disabled="">
+        </div>
+        @if (Model.Flag == "QCQty")
+        {
+            <div class="col-md-2 col-sm-12 pl-0">
+                <label class="col-form-label label-align ">@Resource.ProducedQuantity</label>
+                <input id="CnfSubProd_Quantity" class="form-control num_right" autocomplete="off" type="text" name="Quantity" placeholder="0000.00" disabled="">
+            </div>
+            <div class="col-md-2 col-sm-12 pl-0 pr-0">
+                <label class="col-form-label label-align ">@Resource.QC @Resource.Quantity</label>
+                @Html.HiddenFor(m => m.decimalAllowed, new { id = "decimalAllowed" })
+                <input id="Sub_Quantity" class="form-control num_right" autocomplete="off" type="text" name="Quantity" placeholder="0000.00" disabled="">
+            </div>
+        }
+        else
+        {
+            <div class="col-md-3 col-sm-12 pl-0">
+                <label class="col-form-label label-align ">@Resource.Quantity</label>
+                @Html.HiddenFor(m => m.decimalAllowed, new { id = "decimalAllowed" })
+                <input id="Sub_Quantity" class="form-control num_right" autocomplete="off" type="text" name="Quantity" placeholder="0000.00" disabled="">
+            </div>
+        }
+        <div class="card-box table-responsive dy_table margin15 price_item_detail">
+            <div id="" class="sticky-table sticky-ltr-cells sb-container container-example1 OrderHistory height30VH">
+                <table id="Sub_ItemDetailTbl" data-order="" class="table table-striped table-bordered rowhighlighttbl" style="width:100%">
+                    <thead>
+                        <tr class="sticky-header">
+                            @if (Model.Flag == "DNAllSubQtyShow" || Model.Flag == "DNBillQty" || Model.Flag == "DNRecQty"
+                              || Model._subitemPageName == "QC" || Model._subitemPageName == "RQC")
+                            {
+                                <th width="5%">@Resource.SrNo</th>
+                            }
+                            else
+                            {
+                                <th width="10%">@Resource.SrNo</th>
+                            }
+                            @*<th width="10%">@Resource.SrNo</th>*@
+
+                            @if (Model.Flag == "QCAccQty" || Model.Flag == "QCRejQty" || Model.Flag == "QCRewQty" || Model.Flag == "QCShortQty" || Model.Flag == "QCSampleQty"
+                                                        || Model.Flag == "MTI" || Model.Flag == "IssueQty" || Model.Flag == "StockTake"
+                                                        || Model.Flag == "ForeCastandSOQtyforPPL" || Model.Flag == "PackResTotalQty"
+                                                        || Model.Flag == "RJO_RewrkQuantity" || Model.Flag == "CM_ConsumeQty" || Model.Flag == "PC_ConsumeQuantity" || Model.Flag == "RJO_QCAccptQty"
+                                                        || Model.Flag == "RJO_QCRejQty" || Model.Flag == "RJO_QCRwkQty" || Model.Flag == "SRAgnst_Issue"
+                                                       || Model.Flag == "GRNSCConsumeQty" || Model.Flag == "DNSCPendQty" || Model.Flag == "DNSCBillQty" || Model.Flag == "DNSCRecQty" || Model.Flag == "DNSC_QCAcptRejRwkQty" || Model.Flag == "Scrap"
+                                || Model.Flag == "Input" || Model.Flag == "OutPut" || Model.Flag == "ExternalReceipt" || Model.Flag == "AssemblyKitINput" || Model.Flag == "QCQty"
+                                                      )
+                            {
+
+                                <th width="30%">@Resource.SubItem @Resource.Name</th>
+                            }
+                            else if (Model.Flag == "MTO" || Model.Flag == "PackList" || Model.Flag == "FocPackList" || Model.Flag == "MDDispQty" || Model.Flag == "StkResDocDetail"
+                                || Model.Flag == "StkResTotalResQty" || Model.Flag == "SlsReturn" || Model.Flag == "DNSCDispQty" || Model.Flag == "BYPSRecvQty")
+                            {
+                                <th width="45%">@Resource.SubItem @Resource.Name</th>
+                            }
+                            else if (Model.Flag == "DNAllSubQtyShow" || Model.Flag == "DNBillQty" || Model.Flag == "DNRecQty" || Model.Flag == "PInvVariance")
+                            {
+                                <th width="25%">@Resource.SubItem @Resource.Name</th>
+                            }
+                            else
+                            {
+                                <th width="40%"> @Resource.SubItem @Resource.Name </th>
+                            }
+                            <th hidden></th>
+                            @if (Model.ShowStock == "Y")
+                            {
+                                <th width="20%">@Resource.SubItem @Resource.AvailableStock</th>
+                            }
+                            @if (Model.Flag == "MTO" || Model.Flag == "MTReciept")/*for page specific code*/
+                            {
+                                <th width="15%">@Resource.Requisition @Resource.Quantity</th>
+                                if (Model.Flag == "MTReciept")
+                                {
+                                    <th width="15%">@Resource.Pending @Resource.Quantity</th>
+                                }
+                                else
+                                {
+                                    <th width="15%">@Resource.Issued @Resource.Quantity</th>
+                                }
+                                <th width="15%">@Resource.Received @Resource.Quantity</th>
+                            }
+                            else if (Model.Flag == "MTI" || Model.Flag == "IssueQty")
+                            {
+                                <th width="15%">@Resource.Requisition @Resource.Quantity</th>
+                                <th width="15%">@Resource.Pending @Resource.Quantity</th>
+                                if (Model._subitemPageName != "SampleIssue")
+                                {
+                                    <th width="15%">@Resource.AvailableStock</th>
+                                }
+                                <th width="15%">@Resource.Issued @Resource.Quantity</th>
+                            }
+                            else if (Model.Flag == "Scrap")
+                            {
+                                <th width="20%">@Resource.SubItem @Resource.AvailableStock</th>
+                                //<th width="30%">@Resource.Dispatch @Resource.Quantity</th>
+                                <th width="20%">@Resource.Invoice <br />@Resource.Quantity</th>
+                            }
+                            else if (Model.Flag == "AvlScrap")
+                            {
+                                <th width="20%">@Resource.AvailableStock</th>
+                            }
+                            else if (Model.Flag == "DNSCDispQty" || Model.Flag == "DNSCPendQty" || Model.Flag == "DNSCBillQty" || Model.Flag == "DNSCRecQty")
+                            {
+                                if (Model.Flag == "DNSCDispQty")
+                                {
+                                    <th width="40%">@Resource.Dispatch @Resource.Quantity</th>
+                                }
+                                else if (Model.Flag == "DNSCPendQty")
+                                {
+                                    <th width="30%">@Resource.Dispatch @Resource.Quantity</th>
+                                    <th width="30%">@Resource.Pending <br />@Resource.Quantity</th>
+                                }
+
+                                else if (Model.Flag == "DNSCBillQty")
+                                {
+                                    <th width="20%">@Resource.Dispatch @Resource.Quantity</th>
+                                    <th width="20%">@Resource.PendingQuantity</th>
+                                    <th width="20%">@Resource.Billed <br />@Resource.Quantity</th>
+                                    <th width="15%" style="display:none;">@Resource.Received <br />@Resource.Quantity</th>
+                                }
+                                else
+                                {
+                                    <th width="15%">@Resource.Dispatch @Resource.Quantity</th>
+                                    <th width="15%">@Resource.PendingQuantity</th>
+                                    <th width="15%">@Resource.Billed <br />@Resource.Quantity</th>
+                                    <th width="15%">@Resource.Received <br />@Resource.Quantity</th>
+                                }
+                            }
+                            else if (Model.Flag == "DNSC_QCAcptRejRwkQty")
+                            {
+                                <th width="20%">@Resource.AcceptedQuantity</th>
+                                <th width="20%">@Resource.RejectedQuantity</th>
+                                <th width="20%">@Resource.ReworkableQuantity</th>
+                            }
+                            else if (Model.Flag == "DNAllSubQtyShow" || Model.Flag == "DNBillQty" || Model.Flag == "DNRecQty")
+                            {
+                                @*if (ViewBag.DocId == "105108110")
+            {
+             <th width="10%">@Resource.Dispatch <br />@Resource.Quantity</th>
+            }
+            else
+            {*@
+                                <th width="8%">@Resource.Order <br />@Resource.Quantity</th>
+
+                                //}
+
+                                <th width="8%">@Resource.Pending <br />@Resource.Quantity</th>
+                                <th width="8%">@Resource.Billed <br />@Resource.Quantity</th>
+                                <th width="8%">@Resource.Received <br />@Resource.Quantity</th>
+                                <th width="8%">@Resource.Accepted <br />@Resource.Quantity</th>
+                                <th width="8%">@Resource.Rejected <br />@Resource.Quantity</th>
+                                <th width="8%">@Resource.Reworkable <br />@Resource.Quantity</th>
+                                <th width="7%">@Resource.Short <br />@Resource.Quantity</th>
+                                <th width="7%">@Resource.Sample <br />@Resource.Quantity</th>
+                            }
+                            else if (Model.Flag == "PInvVariance")/*Added By Suraj on 11-10-2023 for PI Variance*/
+                            {
+                                <th width="8%">@Resource.Billed <br />@Resource.Quantity</th>
+                                <th width="8%">@Resource.Received <br />@Resource.Quantity</th>
+                                <th width="8%">@Resource.Accepted <br />@Resource.Quantity</th>
+                                <th width="8%">@Resource.Rejected <br />@Resource.Quantity</th>
+                                <th width="7%">@Resource.Reworkable <br />@Resource.Quantity</th>
+                                <th width="7%">@Resource.Short <br />@Resource.Quantity</th>
+                                <th width="7%">@Resource.Sample <br />@Resource.Quantity</th>
+                                <th width="7%">@Resource.Invoice <br />@Resource.Quantity</th>
+                            }
+                            else if (Model.Flag == "MRS")
+                            {
+                                <th width="20%">@Resource.Requisition @Resource.Quantity</th>
+                                <th width="20%">@Resource.Issued @Resource.Quantity</th>
+                            }
+                            else if (Model.Flag == "POMRS_Issue")
+                            {
+                                <th width="20%">@Resource.Requisition @Resource.Quantity</th>
+                                <th width="20%">@Resource.Issued @Resource.Quantity</th>
+                            }
+                            else if (Model.Flag == "PR")
+                            {
+                                <th width="20%">@Resource.Requisition @Resource.Quantity</th>
+                                <th width="20%">@Resource.Ordered @Resource.Quantity</th>
+                            }
+                            else if (Model.Flag == "PackResQuantity")
+                            {
+                                <th width="20%">@Resource.Order @Resource.ReservedStock</th>
+                                <th width="20%">@Resource.Packed @Resource.Quantity</th>
+                            }
+                            else if (Model.Flag == "PackResTotalQty")
+                            {
+                                <th width="12%">@Resource.Order @Resource.PackedQuantity</th>
+                                <th width="12%">@Resource.AvailableStock</th>
+                                <th width="12%">@Resource.ReservedStock</th>
+                                <th width="12%">@Resource.Total @Resource.AvailableStock</th>
+                                <th width="12%">@Resource.Packed @Resource.Quantity</th>
+                            }
+                            else if (Model.Flag == "SOrderQty")
+                            {
+                                <th width="15%">@Resource.Quotation @Resource.Quantity</th>
+                                <th width="15%">@Resource.Ordered @Resource.Quantity </th>
+
+                            }
+                            else if (Model.Flag == "PackList" || Model.Flag == "FocPackList" || Model.Flag == "MDDispQty")
+                            {
+                                <th width="15%">@Resource.Order @Resource.Quantity</th>
+                                <th width="15%">@Resource.Pending @Resource.Quantity</th>
+                                if (Model.Flag == "PackList" || Model.Flag == "FocPackList")
+                                {
+                                    <th width="15%">@Resource.Pack @Resource.Quantity</th>
+                                }
+                                else
+                                {
+                                    <th width="15%">@Resource.Quantity</th>
+                                }
+
+                            }
+                            else if (Model.Flag == "ForeCastandSOQtyforPPL")
+                            {
+                                <th width="30%">@Resource.Source @Resource.Document @Resource.Quantity</th>
+                                <th width="15%">@Resource.Pending @Resource.Quantity</th>
+                                <th width="30%">@Resource.SubItem @Resource.Quantity</th>
+                            }
+                            else if (Model.Flag == "ForeCastandSOQtyforPPL1")
+                            {
+                                <th width="30%">@Resource.Source @Resource.Document @Resource.Quantity</th>
+                                // <th width="15%">@Resource.Pending @Resource.Quantity</th>
+                                <th width="30%">@Resource.SubItem @Resource.Quantity</th>
+                            }
+                            else if (Model.Flag == "PackOrderPending")
+                            {
+                                <th width="15%">@Resource.Order @Resource.Quantity</th>
+                                <th width="15%">@Resource.Pending @Resource.Quantity</th>
+                            }
+                            else if (Model.Flag == "AdPRTReturnQty")
+                            {
+                                <th width="15%">@Resource.AvailableStock</th>
+                                if (Model.ShowStock == "Y")
+                                {
+                                    <th width="20%">@Resource.SubItem @Resource.Quantity</th>
+                                }
+                                else
+                                {
+
+                                    <th width="40%">@Resource.SubItem @Resource.Quantity</th>
+                                }
+                            }
+                            else if (Model.Flag == "Quantity" || Model.Flag == "JO_HdrOrdQty" || Model.Flag == "JOReqQty" || Model.Flag == "BYPSRecvQty" || Model.Flag == "RMOrdrToPrecurQuantity" || Model.Flag == "OrdrToPrecurQuantity" || Model.Flag == "RFQPRReqQty"
+                            || Model.Flag == "MDIssueQty" || Model.Flag == "PRFQQtQty" || Model.Flag == "Service_RM_RequireQty"
+                            || Model.Flag == "PRTReturnQty" || Model.Flag == "SRTReturnQty" || Model.Flag == "AdSRTReturnQty" ||
+                            Model.Flag == "OrdrToProduceQuantity" || Model.Flag == "POMRS_Quantity"|| Model.Flag == "FocQuantity")/*"RFQPRReqQty,OrdrToPrecurQuantity,RM_RequireQty" Add by Hina on-11-10-2023 for RFQ,for RJO*/
+                            {
+                                if (Model.ShowStock == "Y")
+                                {
+                                    <th width="20%">@Resource.SubItem @Resource.Quantity</th>
+                                }
+                                else
+                                {
+
+                                    <th width="40%">@Resource.SubItem @Resource.Quantity</th>
+                                }
+                            }
+                            else if (Model.Flag == "GRNSCIssueQty" || Model.Flag == "GRNSCConsumeQty")
+                            {
+                                if (Model.Flag == "GRNSCIssueQty")
+                                {
+                                    <th width="40%">@Resource.IssuedQuantity</th>
+                                }
+                                else
+                                {
+                                    <th width="30%">@Resource.IssuedQuantity</th>
+                                    <th width="30%">@Resource.ConsumedQuantity</th>
+                                }
+
+                            }
+                            else if (Model.Flag == "SRAgnst_Issue")
+                            {
+                                if (Model.ShowStock == "Y")
+                                {
+                                    //<th width="20%">@Resource.SubItem @Resource.Quantity</th>
+                                    <th>@Resource.Issued @Resource.Quantity</th>
+                                    <th>@Resource.Pending @Resource.Quantity</th>
+                                    <th>@Resource.Received @Resource.Quantity</th>
+                                }
+                                else
+                                {
+                                    <th>@Resource.Issued @Resource.Quantity</th>
+                                    <th>@Resource.Pending @Resource.Quantity</th>
+                                    <th>@Resource.Received @Resource.Quantity</th>
+
+                                }
+                            }
+                            else if (Model.Flag == "ProduceQty")
+                            {
+                                if (Model._subitemPageName == "QC" || Model._subitemPageName == "RQC" || Model._subitemPageName == "SMR")
+                                {
+                                    <th width="40%">@Resource.QC @Resource.Quantity</th>
+                                }
+                                else
+                                {
+                                    <th width="40%">@Resource.ProducedQuantity</th>
+                                }
+
+                            }
+                            else if (Model.Flag == "PRDProdQty" || Model.Flag == "PRDPendQty" || Model.Flag == "PRDProduceQty")
+                            {
+                                <th width="20%">@Resource.Produced @Resource.Quantity</th>
+                                <th width="20%">@Resource.Pending @Resource.Quantity</th>
+                                <th width="20%">@Resource.QC @Resource.Quantity</th>
+                            }
+                            else if (Model.Flag == "QCQty")
+                            {
+                                <th width="15%">@Resource.QC @Resource.Quantity</th>
+                                <th width="15%">@Resource.QC @Resource.Accepted</th>
+                                <th width="15%">@Resource.QC @Resource.Rejected</th>
+                                <th width="15%">@Resource.QC @Resource.Reworkable</th>
+                            }
+                            else if (Model.Flag == "PendingQty")
+                            {
+                                <th width="40%">@Resource.PendingQuantity</th>
+                            }
+                            else if (Model.Flag == "OrderedQty")
+                            {
+                                <th width="40%">@Resource.OrderedQuantity</th>
+                            }
+                            else if (Model.Flag == "ShipPacked")
+                            {
+                                <th width="40%">@Resource.PackedQuantity</th>
+                            }
+                            else if (Model.Flag == "Shipped")
+                            {
+                                <th width="40%">@Resource.ShippedQuantity</th>
+                            }else if (Model.Flag == "ShippedFoc")
+                            {
+                        <th width="40%">@Resource.Shipped @Resource.FOC @Resource.Quantity</th>
+                            }
+                            else if (Model.Flag == "RJO_QCAccptQty" || Model.Flag == "RJO_QCRejQty" || Model.Flag == "RJO_QCRwkQty")
+                            {
+                                if (Model._subitemPageName == "GRN")
+                                {
+                                    <th width="12%">@Resource.AcceptedQuantity</th>
+                                    <th width="12%">@Resource.RejectedQuantity</th>
+                                    <th width="12%">@Resource.ReworkableQuantity</th>
+                                    <th width="12%">@Resource.Short @Resource.Quantity</th>
+                                    <th width="12%">@Resource.Sample @Resource.Quantity</th>
+                                }
+                                else
+                                {
+                                    <th width="20%">@Resource.AcceptedQuantity</th>
+                                    <th width="20%">@Resource.RejectedQuantity</th>
+                                    <th width="20%">@Resource.ReworkableQuantity</th>
+                                }
+
+                            }
+                            else if (Model.Flag == "QCAccQty" || Model.Flag == "QCRejQty" || Model.Flag == "QCRewQty" || Model.Flag == "QCShortQty" || Model.Flag == "QCSampleQty")
+                            {
+                                if (Model._subitemPageName == "QC" || Model._subitemPageName == "RQC")
+                                {
+                                    if (ViewBag.QcType == "PUR" || ViewBag.QcType == "RQC")
+                                    {
+                                        <th width="10%">@Resource.QC @Resource.Quantity</th>
+                                    }
+                                    else
+                                    {
+                                        <th width="15%">@Resource.QC @Resource.Quantity</th>
+                                    }
+                                }
+                                else if (Model._subitemPageName == "PP" || Model._subitemPageName == "CNF")
+                                {
+                                    <th width="15%">@Resource.Produced @Resource.Quantity</th>
+                                }
+                                //if (ViewBag.QcType == "PUR" || ViewBag.QcType == "RQC")//Modifyed by shubham maurya on 21-02-2025
+                                if (ViewBag.QcType == "PUR")
+                                {
+                                    <th width="10%">@Resource.AcceptedQuantity</th>
+                                    <th width="10%">@Resource.RejectedQuantity</th>
+                                    <th width="10%">@Resource.ReworkableQuantity</th>
+                                    <th width="10%">@Resource.Short @Resource.Quantity</th>
+                                    <th width="10%">@Resource.Sample @Resource.Quantity</th>
+                                }
+                                else
+                                {
+                                    <th width="20%">@Resource.AcceptedQuantity</th>
+                                    <th width="20%">@Resource.RejectedQuantity</th>
+                                    <th width="20%">@Resource.ReworkableQuantity</th>
+                                }
+                            }
+                            else if (Model.Flag == "StockTake")
+                            {
+                                <th width="15%">@Resource.SubItem @Resource.AvailableStock</th>
+                                <th width="15%">@Resource.PhysicalStock</th>
+                                <th width="15%">@Resource.Short @Resource.Quantity</th>
+                                <th width="15%">@Resource.Surplus @Resource.Quantity</th>
+                            }
+                            else if (Model.Flag == "RJO_RewrkQuantity" || Model.Flag == "CM_ConsumeQty"
+                                || Model.Flag == "PC_ConsumeQuantity" || Model.Flag == "Input" || Model.Flag == "RM_RequireQty")
+                            {
+                                if (Model.Flag == "CM_ConsumeQty")
+                                {
+                                    <th width="20%">@Resource.SubItem @Resource.AvailableStock</th>
+                                    <th width="20%">@Resource.Required @Resource.Quantity</th>
+                                    <th width="20%">@Resource.SubItem @Resource.Quantity</th>
+                                }
+                                else
+                                {
+                                    if (Model.Flag1 == "RM_RequireQty_rwk")
+                                    {
+                                        <th width="30%">@Resource.SubItem @Resource.Quantity</th>
+                                    }
+                                    else
+                                    {
+                                        <th width="30%">@Resource.SubItem @Resource.AvailableStock</th>
+                                        <th width="30%">@Resource.SubItem @Resource.Quantity</th>
+                                    }
+
+                                }
+                            }
+                            else if (Model.Flag == "PYearSalQty")
+                            {
+                                <th width="40%"> @Resource.Quantity </th>
+                            }
+                            else if (Model.Flag == "StkResDocDetail")
+                            {
+                                <th width="15%">@Resource.Document @Resource.Quantity</th>
+                                <th width="15%">@Resource.Pending @Resource.PackedQuantity</th>
+                                <th width="15%">@Resource.Pending @Resource.Reserved @Resource.Quantity</th>
+                            }
+                            else if (Model.Flag == "SlsReturn")
+                            {
+                                if (Model._subitemPageName == "AvlQty")
+                                {
+                                    <th width="22%">@Resource.Shipped @Resource.Quantity</th>
+                                    <th width="22%">@Resource.AvailableQuantity</th>
+                                }
+                                else
+                                {
+                                    <th width="15%">@Resource.Shipped @Resource.Quantity</th>
+                                    <th width="15%">@Resource.AvailableQuantity</th>
+                                    <th width="15%">@Resource.ReturnQuantity</th>
+                                }
+                            }
+                            else if (Model.Flag == "StkResTotalResQty")
+                            {
+                                if (Model._subitemPageName == "Res")
+                                {
+                                    <th width="15%">@Resource.AvailableStock</th>
+                                    <th width="15%">@Resource.Pending @Resource.Reserved @Resource.Quantity</th>
+                                    <th width="15%">@Resource.Reserved @Resource.Quantity</th>
+                                }
+                                else
+                                {
+                                    <th width="22%">@Resource.Reserved @Resource.Quantity</th>
+                                    <th width="22%">@Resource.Unreserve @Resource.Quantity</th>
+                                }
+
+
+                            }
+                            else if (Model.Flag == "MTIMIS")
+                            {
+                                @*<th width="40%">@Resource.Available @Resource.Quantity</th>*@
+                                <th width="40%">@Resource.Issued @Resource.Quantity</th>
+                            }
+
+                            else if (Model.Flag == "SwapQty")
+                            {
+                                <th width="22%">@Resource.AvailableStock</th>
+                                <th width="22%">@Resource.Swap @Resource.Quantity</th>
+                            }
+                            else if (Model.Flag == "AssemblyKitINput")
+                            {
+                                <th width="30%">@Resource.SubItem @Resource.AvailableStock</th>
+                                <th width="30%">@Resource.SubItem @Resource.Quantity</th>
+                            }
+                            else if (Model.Flag == "Exterissued_qty" || Model.Flag == "ExterPendingQty" || Model.Flag == "ExterRec_qty")
+                            {
+                                if (Model.Flag == "Exterissued_qty")
+                                {
+                                    <th width="15%">@Resource.Issued @Resource.Quantity</th>
+                                }
+                                else if (Model.Flag == "ExterPendingQty")
+                                {
+                                    <th width="15%">@Resource.Issued @Resource.Quantity</th>
+                                    <th width="15%">@Resource.Pending @Resource.Quantity</th>
+                                }
+                                else
+                                {
+                                    <th width="15%">@Resource.Issued @Resource.Quantity</th>
+                                    <th width="15%">@Resource.Pending @Resource.Quantity</th>
+                                    <th width="15%">@Resource.Received @Resource.Quantity</th>
+                                }
+
+                            }
+                            else
+                            {
+                                <th width="40%">@Resource.SubItem @Resource.Quantity</th>
+                            }
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.dt_SubItemDetails != null)
+                        {
+                            var srno = 1;
+                            foreach (System.Data.DataRow dr in Model.dt_SubItemDetails.Rows)
+                            {
+                        <tr>
+                            <td><input type="text" class="form-control" disabled id="" value='@srno'></td>
+                            <td><input type="text" class="form-control" disabled id="" value='@dr["sub_item_name"]'></td>
+                            <td hidden><input type="text" class="" id="subItemId" value='@dr["sub_item_id"]'></td>
+                            @if (Model.ShowStock == "Y")
+                            {
+                                <td class="num_right">
+                                    <input type="text" class="form-control num_right" disabled id="subItemAvlStk" value='@Convert.ToDecimal(dr["avl_stk"]).ToString(QtyDigit)'>
+                                </td>
+                                CalculateSubItem(dr, "avl_stk");
+                            }
+                            @if (Model.Flag == "QCAccQty" || Model.Flag == "QCRejQty" || Model.Flag == "QCRewQty" || Model.Flag == "QCShortQty" || Model.Flag == "QCSampleQty")
+                            {
+                                if ((Model._subitemPageName == "QC" || Model._subitemPageName == "PP" || Model._subitemPageName == "CNF" || Model._subitemPageName == "RQC"))
+                                {
+                                    <td class="num_right">
+                                        <input type="text" class="form-control num_right" disabled id="subItemQty" value='@dr["prod_qty"]'>
+                                    </td>
+                                    CalculateSubItem(dr, "prod_qty");
+                                }
+                            }
+                            @if (Model.Flag == "AdPRTReturnQty")
+                            {
+                                <td class="num_right">
+                                    <input type="text" class="form-control num_right" disabled id="subItemAvlStk" value='@dr["avl_stk"]'>
+                                </td>
+                                CalculateSubItem(dr, "avl_stk");
+                            }
+                            @if (Model.Flag == "Quantity" || Model.Flag == "POMRS_Quantity" || Model.Flag == "JO_HdrOrdQty" || Model.Flag == "PopUpStk_Qty" || Model.Flag == "JOReqQty" || Model.Flag == "RMOrdrToPrecurQuantity" || Model.Flag == "OrdrToPrecurQuantity" || Model.Flag == "RFQPRReqQty" || Model.Flag == "BYPSRecvQty"
+                               || Model.Flag == "MDIssueQty" || Model.Flag == "PRFQQtQty" || Model.Flag == "Service_RM_RequireQty"
+                               || Model.Flag == "PRTReturnQty" || Model.Flag == "AdPRTReturnQty" || Model.Flag == "SRTReturnQty"
+                               || Model.Flag == "AdSRTReturnQty" || Model.Flag == "OrdrToProduceQuantity" || Model.Flag == "OutPut"
+                               || Model.Flag == "ExternalReceipt" || Model.Flag == "FocQuantity")
+                            {
+                                if (Model.IsDisabled == "Y")
+                                {
+                                    if (ViewBag.DocumentMenuId == "105103145110")
+                                    {
+                                        if (ViewBag.status == "A")
+                                        {
+                                            <td class="num_right"><input type="text" class="form-control num_right" placeholder="0000.00" disabled id="subItemQty" value='@Convert.ToDecimal(dr["Qty"]).ToString(QtyDigit)'></td>
+
+                                        }
+                                        else
+                                        {
+                                            <td class="num_right"><input type="text" class="form-control num_right" placeholder="0000.00" disabled id="subItemQty" value='@dr["Qty"]'></td>
+
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <td class="num_right"><input type="text" class="form-control num_right" placeholder="0000.00" disabled id="subItemQty" value='@dr["Qty"]'></td>
+                                    }
+                                }
+                                else
+                                {
+
+                                    if (Model.Flag == "Quantity")
+                                    {
+                                        CheckValueNullPlaceholder(dr["Qty"].ToString(), "Quantity");/***Added BY Nitesh 02-03-2024 ***/
+                                        <td>
+                                            <div class="col-sm-12 lpo_form no-padding">
+                                                <input type="text" class="form-control num_right" placeholder="0000.00" autocomplete="off" onchange="Cmn_OnChangeSubItemQty(event)" onkeyup="Cmn_CalCSubItemTotal('@Model.Flag')" onkeypress=" return @Fn_KeyPress" id="subItemQty" value='@QtyVsPlaceholder'>
+                                                <span id="subItemQty_Error" class="error-message is-visible"></span>
+                                            </div>
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td>
+                                            <div class="col-sm-12 lpo_form no-padding">
+                                                <input type="text" class="form-control num_right" placeholder="0000.00" autocomplete="off" onchange="Cmn_OnChangeSubItemQty(event)" onkeyup="Cmn_CalCSubItemTotal('')" onkeypress=" return @Fn_KeyPress" id="subItemQty" value='@dr["Qty"]'>
+                                                <span id="subItemQty_Error" class="error-message is-visible"></span>
+                                            </div>
+                                        </td>
+                                    }
+
+                                }
+                                CalculateSubItem(dr, "Qty");
+                            }
+                            else if (Model.Flag == "GRNSCIssueQty" || Model.Flag == "GRNSCConsumeQty")
+                            {
+                                if (Model.Flag == "GRNSCIssueQty")
+                                {
+                                    <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemGrnscIssueQty" value='@dr["Issue_Qty"]'></td>
+                                    CalculateSubItem(dr, "GRNSCIssueQty");
+                                }
+                                else
+                                {
+                                    <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemGrnscIssueQty" value='@dr["Issue_Qty"]'></td>
+                                    <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemGrnscConsumeQty" value='@dr["Consumed_Qty"]'></td>
+                                    CalculateSubItem(dr, "GRNSCConsumeQty");
+                                }
+
+                            }
+                            else if (Model.Flag == "SRAgnst_Issue")
+                            {
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subitemissu_qty" value='@dr["issued_qty"]'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItem_pendQty" value='@dr["pend_qty"]'></td>
+                                <td class="num_right">
+                                    <div class="col-sm-12 lpo_form no-padding">
+                                        <input type="text" @dsbl class="form-control num_right" autocomplete="off" onchange="Cmn_OnChangeSubItemQty(event)" onkeyup="Cmn_CalCSubItemTotal('')" onkeypress=" return @Fn_KeyPress" id="subItemQty" value='@dr["Qty"]'>
+                                        <span id="subItemQty_Error" class="error-message is-visible"></span>
+                                    </div>
+                                </td>
+                                @*<td><input type="text" class="form-control num_right" autocomplete="off" onchange="Cmn_OnChangeSubItemQty(event)" onkeyup="Cmn_CalCSubItemTotal()" onkeypress=" return @Fn_KeyPress" id="subItemQty" value='@dr["Qty"]'></td>*@
+                                //}
+                                CalculateSubItem(dr, "SRAgnst_Issue");
+
+                            }
+                            else if (Model.Flag == "MTO")
+                            {
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemQty" value='@dr["Qty"]'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemissueQty" value='@dr["issue_qty"]'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemrecQty" value='@dr["rec_qty"]'></td>
+                                CalculateSubItem(dr, "MTO");
+                            }
+                            else if (Model.Flag == "MTReciept")
+                            {
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemissueQty" value='@dr["req_qty"]'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemrecQty" value='@dr["pend_qty"]'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemQty" value='@dr["Qty"]'></td>
+                                CalculateSubItem(dr, "MTReciept");
+                            }
+                            else if (Model.Flag == "SOrderQty")
+                            {
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemQty" value='@dr["Qty"]'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemOrderQty" value='@dr["order_qty"]'></td>
+                                CalculateSubItem(dr, "SOrderQty");
+                            }
+                            else if (Model.Flag == "IssueQty")
+                            {
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemReqQty" value='@dr["req_qty"]'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemPendQty" value='@dr["pend_qty"]'></td>
+                                if (Model._subitemPageName != "SampleIssue")
+                                {
+                                    <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemAvlQty" value='@dr["avl_stk"]'></td>
+                                }
+                                CheckValueNullPlaceholder(dr["Qty"].ToString(), "IssueQty");/**Added By Nitesh 02-03-2024 **/
+                                <td class="num_right">
+                                    <div class="col-sm-12 lpo_form no-padding">
+                                        <input type="text" @dsbl class="form-control num_right" autocomplete="off" placeholder="0000.00" onchange="Cmn_OnChangeSubItemQty(event)" onkeyup="Cmn_CalCSubItemTotal('')" onkeypress=" return @Fn_KeyPress" id="subItemQty" value='@QtyVsPlaceholder'>
+                                        <span id="subItemQty_Error" class="error-message is-visible"></span>
+                                    </div>
+                                </td>
+                                CalculateSubItem(dr, "MTI");
+                            }
+                            else if (Model.Flag == "DNSCDispQty" || Model.Flag == "DNSCPendQty")
+                            {
+                                if (Model.Flag == "DNSCDispQty")
+                                {
+                                    <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemDispQty" value='@dr["Disp_Qty"]'></td>
+                                    CalculateSubItem(dr, "DNSCDispQty");
+                                }
+                                else
+                                {
+                                    <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemDispQty" value='@dr["Disp_Qty"]'></td>
+                                    <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemPendQty" value='@dr["Pending_Qty"]'></td>
+                                    CalculateSubItem(dr, "DNSCPendQty");
+
+                                }
+                            }
+                            else if (Model.Flag == "DNSCBillQty")
+                            {
+
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemDispQty" value='@Case(dr["Disp_Qty"].ToString(),"0","","same")'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemPendQty" value='@Case(dr["Pending_Qty"].ToString(),"0","","same")'></td>
+
+                                if (Model.IsDisabled == "N")
+                                {
+                                    <td class="num_right">
+                                        <div class="col-sm-12 lpo_form" style="padding:0px;">
+                                            <input type="text" class="form-control num_right" autocomplete="off" onchange="Cmn_OnChangeDNSubItemQty(event,'@Model.Flag')" onkeyup="Cmn_CalCSubItemTotal('@Model.Flag')" onkeypress=" return @Fn_KeyPress" id="subItemBillQty" value='@Case(dr["BilledQty"].ToString(),"0","","same")' placeholder='0000.00'>
+                                            <span id="subItemBillQty_Error" class="error-message is-visible"></span>
+                                        </div>
+
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemBillQty" value='@Case(dr["BilledQty"].ToString(),"0","","same")'></td>
+                                }
+                                <td class="num_right" style="display:none;"><input type="text" class="form-control num_right" disabled id="subItemReceiveQty" value='@Case(dr["RecievedQty"].ToString(),"0","","same")'></td>
+
+                                CalculateSubItem(dr, "DNSCBillQty");
+                            }
+                            else if (Model.Flag == "DNSCRecQty")
+                            {
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemDispQty" value='@Case(dr["Disp_Qty"].ToString(),"0","","same")'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemPendQty" value='@Case(dr["Pending_Qty"].ToString(),"0","","same")'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemBillQty" value='@Case(dr["BilledQty"].ToString(),"0","","same")'></td>
+
+                                if (Model.IsDisabled == "N")
+                                {
+                                    <td class="num_right">
+                                        <div class="col-sm-12 lpo_form" style="padding:0px;">
+                                            <input type="text" class="form-control num_right" autocomplete="off" onchange="Cmn_OnChangeDNSubItemQty(event,'@Model.Flag')" onkeyup="Cmn_CalCSubItemTotal('@Model.Flag')" onkeypress=" return @Fn_KeyPress" id="subItemReceiveQty" value='@Case(dr["RecievedQty"].ToString(),"0","","same")' placeholder='0000.00'>
+                                            <span id="subItemReceivQty_Error" class="error-message is-visible"></span>
+                                        </div>
+
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemReceiveQty" value='@Case(dr["RecievedQty"].ToString(),"0","","same")'></td>
+                                }
+
+                                CalculateSubItem(dr, "DNSCRecQty");
+                            }
+                            else if (Model.Flag == "DNSC_QCAcptRejRwkQty")
+                            {
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemDNSCAccptQty" value='@dr["AccptQty"]'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemDNSCRejQty" value='@dr["RejQty"]'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemDNSCRewkQty" value='@dr["RewrkQty"]'></td>
+                                CalculateSubItem(dr, "DNSC_QCAcptRejRwkQty");
+                            }
+                            else if (Model.Flag == "DNAllSubQtyShow")
+                            {
+                                @*if (ViewBag.DocId == "105108110")
+            {
+                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemDispQty" value='@dr["Disp_Qty"]'></td>
+
+            }
+            else
+            {*@
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemOrdQty" value='@dr["Order_Qty"]'></td>
+
+                                //}
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemPendQty" value='@dr["Pending_Qty"]'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemBillQty" value='@dr["BilledQty"]'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemReceiveQty" value='@dr["RecievedQty"]'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemAccptQty" value='@dr["Accept_Qty"]'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemRejctQty" value='@dr["Reject_Qty"]'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemRewrkQty" value='@dr["Rework_Qty"]'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemShortQty" value='@dr["short_qty"]'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemSampleQty" value='@dr["sample_qty"]'></td>
+
+                                CalculateSubItem(dr, "DNAllSubQtyShow");
+                            }
+                            else if (Model.Flag == "PInvVariance")/*Added By Suraj on 11-10-2023 for PI Variance*/
+                            {
+                                <td><input type="text" class="form-control num_right" disabled id="subItemBillQty" value='@dr["bill_qty"]'></td>
+                                <td><input type="text" class="form-control num_right" disabled id="subItemReceiveQty" value='@dr["recd_qty"]'></td>
+                                <td><input type="text" class="form-control num_right" disabled id="subItemAccptQty" value='@dr["rec_qty"]'></td>
+                                <td><input type="text" class="form-control num_right" disabled id="subItemRejctQty" value='@dr["rej_qty"]'></td>
+                                <td><input type="text" class="form-control num_right" disabled id="subItemRewrkQty" value='@dr["rework_qty"]'></td>
+                                <td><input type="text" class="form-control num_right" disabled id="subItemShortQty" value='@dr["short_qty"]'></td>
+                                <td><input type="text" class="form-control num_right" disabled id="subItemSampleQty" value='@dr["sample_qty"]'></td>
+                                <td><input type="text" class="form-control num_right" disabled id="subItemInvoiceQty" value='@dr["Invoice_qty"]'></td>
+                                CalculateSubItem(dr, "PInvVariance");
+                            }
+                            else if (Model.Flag == "DNBillQty")
+                            {
+
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemOrdQty" value='@Case(dr["Order_Qty"].ToString(),"0","","same")'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemPendQty" value='@Case(dr["Pending_Qty"].ToString(),"0","","same")'></td>
+
+                                if (Model.IsDisabled == "N")
+                                {
+                                    var BillQty = "";
+                                    if (Convert.ToDecimal(dr["BilledQty"].ToString()) == Convert.ToDecimal(0))
+                                    {
+                                        BillQty = "";
+                                    }
+                                    else
+                                    {
+                                        BillQty = Case(dr["BilledQty"].ToString(), "0", "", "same");
+                                    }
+                                    <td class="num_right">
+                                        <div class="col-sm-12 lpo_form" style="padding:0px;">
+                                            <input type="text" class="form-control num_right" autocomplete="off" onchange="Cmn_OnChangeDNSubItemQty(event,'@Model.Flag')" onkeyup="Cmn_CalCSubItemTotal('@Model.Flag')" onkeypress=" return @Fn_KeyPress" id="subItemBillQty" value='@BillQty' placeholder='0000.00'>
+                                            <span id="subItemBillQty_Error" class="error-message is-visible"></span>
+                                        </div>
+
+                                    </td>
+                                }
+                                else
+                                {
+                                    var BillQty = "";
+                                    if (Convert.ToDecimal(dr["BilledQty"].ToString()) == Convert.ToDecimal(0))
+                                    {
+                                        BillQty = "";
+                                    }
+                                    else
+                                    {
+                                        BillQty = Case(dr["BilledQty"].ToString(), "0", "", "same");
+                                    }
+                                    <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemBillQty" value='@BillQty' placeholder='0000.00'></td>
+                                }
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemReceiveQty" value='@Case(dr["RecievedQty"].ToString(),"0","","same")'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemAccptQty" value='@dr["Accept_Qty"]'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemRejctQty" value='@dr["Reject_Qty"]'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemRewrkQty" value='@dr["Rework_Qty"]'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemShortQty" value='@dr["short_qty"]'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemSampleQty" value='@dr["sample_qty"]'></td>
+                                CalculateSubItem(dr, "DNBillQty");
+                            }
+                            else if (Model.Flag == "DNRecQty")
+                            {
+                                @*if (ViewBag.DocId == "105108110")
+            {
+                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemDispQty" value='@Case(dr["Disp_Qty"].ToString(),"0","","same")'></td>
+
+            }
+            else
+            {*@
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemOrdQty" value='@Case(dr["Order_Qty"].ToString(),"0","","same")'></td>
+
+                                //}
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemPendQty" value='@Case(dr["Pending_Qty"].ToString(),"0","","same")'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemBillQty" value='@Case(dr["BilledQty"].ToString(),"0","","same")'></td>
+
+                                if (Model.IsDisabled == "N")
+                                {
+                                    var recqty = "";
+                                    if (Convert.ToDecimal(dr["RecievedQty"].ToString()) == Convert.ToDecimal(0))
+                                    {
+                                        recqty = "";
+                                    }
+                                    else
+                                    {
+                                        recqty = Case(dr["RecievedQty"].ToString(), "0", "", "same");
+                                    }
+                                    <td class="num_right">
+                                        <div class="col-sm-12 lpo_form" style="padding:0px;">
+                                            <input type="text" class="form-control num_right" autocomplete="off" onchange="Cmn_OnChangeDNSubItemQty(event,'@Model.Flag')" onkeyup="Cmn_CalCSubItemTotal('@Model.Flag')" onkeypress=" return @Fn_KeyPress" id="subItemReceiveQty" value='@recqty' placeholder='0000.00'>
+                                            <span id="subItemReceivQty_Error" class="error-message is-visible"></span>
+                                        </div>
+
+                                    </td>
+                                }
+                                else
+                                {
+                                    var recqty = "";
+                                    if (Convert.ToDecimal(dr["RecievedQty"].ToString()) == Convert.ToDecimal(0))
+                                    {
+                                        recqty = "";
+                                    }
+                                    else
+                                    {
+                                        recqty = Case(dr["RecievedQty"].ToString(), "0", "", "same");
+                                    }
+                                    <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemReceiveQty" value='@recqty' placeholder='0000.00'></td>
+                                }
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemAccptQty" value='@dr["Accept_Qty"]'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemRejctQty" value='@dr["Reject_Qty"]'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemRewrkQty" value='@dr["Rework_Qty"]'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemShortQty" value='@dr["short_qty"]'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemSampleQty" value='@dr["sample_qty"]'></td>
+                                CalculateSubItem(dr, "DNRecQty");
+                            }
+                            else if (Model.Flag == "MRS")
+                            {
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemReqQty" value='@dr["Qty"]'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemReqQty" value='@dr["issue_qty"]'></td>
+                                CalculateSubItem(dr, "MRS");
+                            }
+                            else if (Model.Flag == "POMRS_Issue")
+                            {
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemReqQty" value='@dr["Qty"]'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemReqQty" value='@dr["issue_qty"]'></td>
+                                CalculateSubItem(dr, "POMRS_Issue");
+                            }
+                            else if (Model.Flag == "PR")
+                            {
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemReqQty" value='@dr["Qty"]'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemOrdQty" value='@dr["Ord_qty"]'></td>
+                                CalculateSubItem(dr, "PR");
+                            }
+                            else if (Model.Flag == "PackResQuantity")
+                            {
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemResQty" value='@dr["res_qty"]'></td>
+                                <td class="num_right">
+                                    <div class="col-sm-12 lpo_form no-padding">
+                                        <input type="text" @dsbl class="form-control num_right" autocomplete="off" onchange="Cmn_OnChangeSubItemQty(event)"
+                                               onkeyup="Cmn_CalCSubItemTotal('')" onkeypress=" return @Fn_KeyPress" id="subItemQty" value='@dr["Qty"]'>
+                                        <span id="subItemQty_Error" class="error-message is-visible"></span>
+                                    </div>
+                                </td>
+                                CalculateSubItem(dr, "PackResQuantity");
+                            }
+                            else if (Model.Flag == "PackResTotalQty")
+                            {
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemOrderPackQty" value='@Convert.ToDecimal(dr["ord_pack_qty"]).ToString(QtyDigit)'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemAvlQty" value='@Convert.ToDecimal(dr["avl_stk"]).ToString(QtyDigit)'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemResQty" value='@Convert.ToDecimal(dr["res_qty"]).ToString(QtyDigit)'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemTotalAvlQty" value='@Convert.ToDecimal((Convert.ToDecimal(Case(dr["avl_stk"].ToString(),"","0","same"))+Convert.ToDecimal(Case(dr["res_qty"].ToString(),"","0","same")))).ToString(QtyDigit)'></td>
+                                <td class="num_right">
+                                    <div class="col-sm-12 lpo_form no-padding">
+                                        <input type="text" @dsbl class="form-control num_right" autocomplete="off" onchange="Cmn_OnChangeSubItemQty(event)"
+                                               onkeyup="Cmn_CalCSubItemTotal('')" onkeypress=" return @Fn_KeyPress" id="subItemQty" value='@Convert.ToDecimal(dr["Qty"]).ToString(QtyDigit)'>
+                                        <span id="subItemQty_Error" class="error-message is-visible"></span>
+                                    </div>
+                                </td>
+                                CalculateSubItem(dr, "PackResTotalQty");
+                            }
+                            else if (Model.Flag == "MTI")
+                            {
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemReqQty" value='@dr["req_qty"]'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemPendQty" value='@dr["pend_qty"]'></td>
+                                if (Model._subitemPageName != "SampleIssue")
+                                {
+                                    <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemAvlQty" value='@dr["avl_stk"]'></td>
+                                }
+                                <td class="num_right"><input type="text" disabled class="form-control num_right" autocomplete="off" onchange="Cmn_OnChangeSubItemQty(event)" onkeyup="Cmn_CalCSubItemTotal('')" onkeypress=" return @Fn_KeyPress" id="subItemQty" value='@dr["Qty"]'></td>
+                                CalculateSubItem(dr, "MTI");
+                            }
+                            else if (Model.Flag == "PackList" || Model.Flag == "FocPackList" || Model.Flag == "MDDispQty")
+                            {
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemOrdQty" value='@Convert.ToDecimal(dr["ord_qty"]).ToString(QtyDigit)'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemPendQty" value='@Convert.ToDecimal(dr["PendingQty"]).ToString(QtyDigit)'></td>
+                                if (Model.Flag == "PackList" || Model.Flag == "FocPackList")
+                                {
+                                    <td class="num_right">
+                                        <div class="col-sm-12 lpo_form no-padding">
+                                            <input type="text" @dsbl class="form-control num_right" placeholder="0000.00" autocomplete="off" onchange="Cmn_OnChangeSubItemQty(event)" onkeyup="Cmn_CalCSubItemTotal('')" onkeypress=" return @Fn_KeyPress" id="subItemQty" value='@dr["PackQty"]'>
+                                            <span id="subItemQty_Error" class="error-message is-visible"></span>
+                                        </div>
+                                    </td>
+                                    CalculateSubItem(dr, "PackList");
+                                }
+                                else
+                                {
+                                    <td class="num_right">
+                                        <div class="col-sm-12 lpo_form no-padding">
+                                            <input type="text" @dsbl class="form-control num_right" autocomplete="off" placeholder="0000.00" onchange="Cmn_OnChangeSubItemQty(event)" onkeyup="Cmn_CalCSubItemTotal('')" onkeypress=" return @Fn_KeyPress" id="subItemQty" value='@dr["Qty"]'>
+                                            <span id="subItemQty_Error" class="error-message is-visible"></span>
+                                        </div>
+                                    </td>
+                                    CalculateSubItem(dr, "MDDispQty");
+                                }
+
+                                //CalculateSubItem(dr, "PackList");
+                            }
+                            else if (Model.Flag == "ForeCastandSOQtyforPPL")
+                            {
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="SrcDocQty" value='@dr["SrcDoc_Qty"]'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="PPLPendingQty" value='@dr["PendingQty"]'></td>
+                                <td class="num_right">
+                                    <div class="col-sm-12 lpo_form no-padding">
+                                        <input type="text" @dsbl class="form-control num_right" autocomplete="off" onchange="Cmn_OnChangeSubItemQty(event)" onkeyup="Cmn_CalCSubItemTotal('')" onkeypress=" return @Fn_KeyPress" id="subItemQty" value='@dr["Qty"]' placeholder="0000.00">
+                                        <span id="subItemQty_Error" class="error-message is-visible"></span>
+                                    </div>
+                                </td>
+                                CalculateSubItem(dr, "ForeCastandSOQtyforPPL");
+                            }
+                            else if (Model.Flag == "ForeCastandSOQtyforPPL1")
+                            {
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="SrcDocQty" value='@dr["SrcDoc_Qty"]'></td>
+                                //<td class="num_right"><input type="text" class="form-control num_right" disabled id="PPLPendingQty" value='@dr["PendingQty"]'></td>
+                                <td class="num_right">
+                                    <div class="col-sm-12 lpo_form no-padding">
+                                        <input type="text" @dsbl class="form-control num_right" autocomplete="off" onchange="Cmn_OnChangeSubItemQty(event)" onkeyup="Cmn_CalCSubItemTotal('')" onkeypress=" return @Fn_KeyPress" id="subItemQty" value='@dr["Qty"]'>
+                                        <span id="subItemQty_Error" class="error-message is-visible"></span>
+                                    </div>
+                                </td>
+                                CalculateSubItem(dr, "ForeCastandSOQtyforPPL1");
+                            }
+                            else if (Model.Flag == "PackOrderPending")
+                            {
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemOrdQty" value='@Convert.ToDecimal(dr["ord_qty"]).ToString(QtyDigit)'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemPendQty" value='@Convert.ToDecimal(dr["PendingQty"]).ToString(QtyDigit)'></td>
+                                CalculateSubItem(dr, "PackOrderPending");
+                            }
+                            else if (Model.Flag == "ProduceQty")
+                            {
+                                <td class="num_right">
+                                    @if (Model._subitemPageName == "RQC")
+                                    {
+                                        <div class="col-sm-12 lpo_form no-padding">
+                                            <input type="text" @dsbl class="form-control num_right" autocomplete="off" onchange="Cmn_OnChangeSubItemQty(event)" onkeyup="Cmn_CalCSubItemTotal('')" onkeypress=" return @Fn_KeyPress" id="subItemQty" value='@dr["prod_qty"]'>
+                                            <span id="subItemQty_Error" class="error-message is-visible"></span>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <input type="text" class="form-control num_right" disabled id="subItemQty" value='@dr["prod_qty"]'>
+                                    }
+
+                                </td>
+                                CalculateSubItem(dr, "prod_qty");
+                            }
+                            else if (Model.Flag == "PRDProdQty" || Model.Flag == "PRDPendQty" || Model.Flag == "PRDProduceQty")
+                            {
+                                var dsabl = "";
+                                if (Model.Flag == "PRDProdQty" || Model.Flag == "PRDPendQty")
+                                {
+                                    dsabl = "disabled";
+                                }
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemOrdQty" value='@dr["cnf_prod_qty"]'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemPendQty" value='@dr["pend_qty"]'></td>
+                                <td class="num_right">
+                                    <div class="lpo_form">
+                                        <input type="text" autocomplete="off" class="form-control num_right" @dsabl @dsbl onchange="Cmn_OnChangeSubItemQty(event)" onkeyup="Cmn_CalCSubItemTotal('PRDProduceQty')" onkeypress=" return @Fn_KeyPress" onpaste="return NOanycopypastedata(event)" id="subItemQcsQty" value='@dr["qc_qty"]'><span id="subItemQcsQty_Error" class="error-message is-visible"></span>
+                                    </div>
+                                </td>
+
+                                CalculateSubItem(dr, "PRDProdQty");
+                            }
+                            else if (Model.Flag == "QCQty")
+                            {
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="" value='@dr["qc_qty_pc"]'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="" value='@dr["accept_qty"]'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="" value='@dr["reject_qty"]'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="" value='@dr["rework_qty"]'></td>
+                                CalculateSubItem(dr, "QCQty");
+                            }
+                            else if (Model.Flag == "PendingQty")
+                            {
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemQty" value='@dr["pending_ord_qty"]'></td>
+                                CalculateSubItem(dr, "pending_ord_qty");
+                            }
+                            else if (Model.Flag == "OrderedQty")
+                            {
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemQty" value='@dr["Qty"]'></td>
+                                CalculateSubItem(dr, "Qty");
+                            }
+                            else if (Model.Flag == "ShipPacked")
+                            {
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemQty" value='@Convert.ToDecimal(dr["pack_qty"]).ToString(QtyDigit)'></td>
+                                CalculateSubItem(dr, "ShipPacked");
+                            }
+                            else if (Model.Flag == "Shipped" || Model.Flag == "ShippedFoc")
+                            {
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemQty" value='@Convert.ToDecimal(dr["ship_qty"]).ToString(QtyDigit)'></td>
+                                CalculateSubItem(dr, "Shipped");
+                            }
+                            else if (Model.Flag == "RJO_QCAccptQty" || Model.Flag == "RJO_QCRejQty" || Model.Flag == "RJO_QCRwkQty")
+                            {
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemQty" value='@dr["AccptQty"]'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemQty" value='@dr["RejQty"]'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemQty" value='@dr["RewrkQty"]'></td>
+                                if (Model._subitemPageName == "GRN")
+                                {
+                                    <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemQty" value='@dr["ShortQty"]'></td>
+                                    <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemQty" value='@dr["SampleQty"]'></td>
+                                }
+                                CalculateSubItem(dr, "RJO_QCAcptRejRwkQty");
+                            }
+                            else if ((Model.Flag == "QCAccQty" || Model.Flag == "QCRejQty" || Model.Flag == "QCRewQty") && Model._subitemPageName != "QC" && Model._subitemPageName != "RQC")
+                            {
+
+                                <td class="num_right"><input type="text" class="form-control num_right" placeholder="0000.00" disabled id="subItemAccQty" value='@dr["accept_qty"]'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" placeholder="0000.00" disabled id="subItemRejQty" value='@dr["reject_qty"]'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" placeholder="0000.00" disabled id="subItemRewQty" value='@dr["rework_qty"]'></td>
+                                CalculateSubItem(dr, "QC");
+
+                            }
+                            else if (Model.Flag == "QCAccQty")
+                            {
+                                if (Model.IsDisabled == "N")
+                                {
+                                    CheckValueNullPlaceholder(dr["accept_qty"].ToString(), "QCAccQty");/**Nitesh  Added By Nitesh 02-03-2024 **/
+                                    <td class="num_right">
+                                        <div class="col-sm-12 lpo_form" style="padding:0px;">
+                                            <input type="text" class="form-control num_right" autocomplete="off" placeholder="0000.00" onchange="Cmn_OnchangeQCsubitemQty(event,'@Model.Flag')" onkeyup="Cmn_CalCSubItemTotal('@Model.Flag')" onkeypress=" return @Fn_KeyPress" onpaste="return NOanycopypastedata(event)" id="subItemAccQty" value='@QtyVsPlaceholder'>
+                                            <span id="subItemAccQty_Error" class="error-message is-visible"></span>
+                                        </div>
+
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td class="num_right"><input type="text" class="form-control num_right" placeholder="0000.00" disabled id="subItemAccQty" value='@Case(dr["accept_qty"].ToString(),"0","","same")'></td>
+                                }
+                                <td class="num_right"><input type="text" class="form-control num_right" placeholder="0000.00" disabled id="subItemRejQty" value='@Case(dr["reject_qty"].ToString(),"0","","same")'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" placeholder="0000.00" disabled id="subItemRewQty" value='@Case(dr["rework_qty"].ToString(),"0","","same")'></td>
+                                //if (ViewBag.QcType == "RQC" || ViewBag.QcType == "PUR")//Modifyed by shubham maurya on 21-02-2025
+                                if (ViewBag.QcType == "PUR")
+                                {
+                                    <td class="num_right"><input type="text" class="form-control num_right" placeholder="0000.00" disabled id="subItemShortQty" value='@Case(dr["short_qty"].ToString(),"0","","same")'></td>
+                                    <td class="num_right"><input type="text" class="form-control num_right" placeholder="0000.00" disabled id="subItemSampleQty" value='@Case(dr["sample_qty"].ToString(),"0","","same")'></td>
+                                }
+                                CalculateSubItem(dr, "QC");
+                            }
+                            else if (Model.Flag == "QCRejQty")
+                            {
+                                <td class="num_right"><input type="text" class="form-control num_right" placeholder="0000.00" disabled id="subItemAccQty" value='@Case(dr["accept_qty"].ToString(),"0","","same")'></td>
+                                if (Model.IsDisabled == "N")
+                                {
+                                    // var value = dr["reject_qty"].ToString();
+                                    CheckValueNullPlaceholder(dr["reject_qty"].ToString(), "QCRejQty");/**Nitesh  Added By Nitesh 02-03-2024 **/
+
+                                    <td class="num_right">
+                                        <div class="col-sm-12 lpo_form" style="padding:0px;">
+                                            @*<input type="text" id="subItemRejQty" class="form-control num_right" placeholder="0000.00" onchange="Cmn_OnchangeQCsubitemQty(event,'@Model.Flag')" onkeyup="Cmn_CalCSubItemTotal('@Model.Flag')" onkeypress=" return @Fn_KeyPress" value='@Case(dr["reject_qty"].ToString(), "0", "", "same")'>*@
+                                            <input type="text" id="subItemRejQty" class="form-control num_right" autocomplete="off" placeholder="0000.00" onchange="Cmn_OnchangeQCsubitemQty(event,'@Model.Flag')" onkeyup="Cmn_CalCSubItemTotal('@Model.Flag')" onkeypress=" return @Fn_KeyPress" onpaste="return NOanycopypastedata(event)" value='@QtyVsPlaceholder'>
+                                            <span id="subItemRejQty_Error" class="error-message is-visible"></span>
+                                        </div>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td class="num_right"><input type="text" class="form-control num_right" placeholder="0000.00" disabled id="subItemRejQty" value='@Case(dr["reject_qty"].ToString(),"0","","same")'></td>
+                                }
+                                <td class="num_right"><input type="text" class="form-control num_right" placeholder="0000.00" disabled id="subItemRewQty" value='@Case(dr["rework_qty"].ToString(),"0","","same")'></td>
+                                //if (ViewBag.QcType == "RQC" || ViewBag.QcType == "PUR")//Modifyed by shubham maurya on 21-02-2025
+                                if (ViewBag.QcType == "PUR")
+                                {
+                                    <td class="num_right"><input type="text" class="form-control num_right" placeholder="0000.00" disabled id="subItemShortQty" value='@Case(dr["short_qty"].ToString(),"0","","same")'></td>
+                                    <td class="num_right"><input type="text" class="form-control num_right" placeholder="0000.00" disabled id="subItemSampleQty" value='@Case(dr["sample_qty"].ToString(),"0","","same")'></td>
+                                }
+                                CalculateSubItem(dr, "QC");
+                            }
+                            else if (Model.Flag == "QCRewQty")
+                            {
+                                <td class="num_right"><input type="text" class="form-control num_right" placeholder="0000.00" disabled id="subItemAccQty" value='@Case(dr["accept_qty"].ToString(),"0","","same")'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" placeholder="0000.00" disabled id="subItemRejQty" value='@Case(dr["reject_qty"].ToString(),"0","","same")'></td>
+                                if (Model.IsDisabled == "N")
+                                {
+                                    CheckValueNullPlaceholder(dr["rework_qty"].ToString(), "QCRewQty"); /**Nitesh  Added By Nitesh 02-03-2024 **/
+                                    <td class="num_right">
+                                        <div class="col-sm-12 lpo_form" style="padding:0px;">
+                                            @*  <input type="text" id="subItemRewQty" class="form-control num_right" placeholder="0000.00" onchange="Cmn_OnchangeQCsubitemQty(event,'@Model.Flag')" onkeyup="Cmn_CalCSubItemTotal('@Model.Flag')" onkeypress=" return @Fn_KeyPress" value='@Case(dr["rework_qty"].ToString(),"0","","same")'>*@
+                                            <input type="text" id="subItemRewQty" class="form-control num_right" autocomplete="off" placeholder="0000.00" onchange="Cmn_OnchangeQCsubitemQty(event,'@Model.Flag')" onkeyup="Cmn_CalCSubItemTotal('@Model.Flag')" onkeypress=" return @Fn_KeyPress" onpaste="return NOanycopypastedata(event)" value='@QtyVsPlaceholder'>
+                                            <span id="subItemRewQty_Error" class="error-message is-visible"></span>
+                                        </div>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td class="num_right"><input type="text" class="form-control num_right" placeholder="0000.00" disabled id="subItemRewQty" value='@Case(dr["rework_qty"].ToString(),"0","","same")'></td>
+                                }
+                                //if (ViewBag.QcType == "RQC" || ViewBag.QcType == "PUR")//Modifyed by shubham maurya on 21-02-2025
+                                if (ViewBag.QcType == "PUR")
+                                {
+                                    <td class="num_right"><input type="text" class="form-control num_right" placeholder="0000.00" disabled id="subItemShortQty" value='@Case(dr["short_qty"].ToString(),"0","","same")'></td>
+                                    <td class="num_right"><input type="text" class="form-control num_right" placeholder="0000.00" disabled id="subItemSampleQty" value='@Case(dr["sample_qty"].ToString(),"0","","same")'></td>
+                                }
+                                CalculateSubItem(dr, "QC");
+                            }
+                            else if (Model.Flag == "QCShortQty" && (ViewBag.QcType == "RQC" || ViewBag.QcType == "PUR"))
+                            {
+                                <td class="num_right"><input type="text" class="form-control num_right" placeholder="0000.00" disabled id="subItemAccQty" value='@Case(dr["accept_qty"].ToString(),"0","","same")'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" placeholder="0000.00" disabled id="subItemRejQty" value='@Case(dr["reject_qty"].ToString(),"0","","same")'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" placeholder="0000.00" disabled id="subItemRewQty" value='@Case(dr["rework_qty"].ToString(),"0","","same")'></td>
+                                if (Model.IsDisabled == "N")
+                                {
+                                    CheckValueNullPlaceholder(dr["short_qty"].ToString(), "QCShortQty"); /**Nitesh  Added By Nitesh 02-03-2024 **/
+                                    <td class="num_right">
+                                        <div class="col-sm-12 lpo_form" style="padding:0px;">
+                                            @*  <input type="text" id="subItemShortQty" class="form-control num_right" placeholder="0000.00" onchange="Cmn_OnchangeQCsubitemQty(event,'@Model.Flag')" onkeyup="Cmn_CalCSubItemTotal('@Model.Flag')" onkeypress=" return @Fn_KeyPress" value='@Case(dr["short_qty"].ToString(),"0","","same")'>*@
+                                            <input type="text" id="subItemShortQty" class="form-control num_right" autocomplete="off" placeholder="0000.00" onchange="Cmn_OnchangeQCsubitemQty(event,'@Model.Flag')" onkeyup="Cmn_CalCSubItemTotal('@Model.Flag')" onkeypress=" return @Fn_KeyPress" value='@QtyVsPlaceholder'>
+                                            <span id="subItemShortQty_Error" class="error-message is-visible"></span>
+                                        </div>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td class="num_right"><input type="text" class="form-control num_right" placeholder="0000.00" disabled id="subItemShortQty" value='@Case(dr["short_qty"].ToString(),"0","","same")'></td>
+                                }
+                                <td class="num_right"><input type="text" class="form-control num_right" placeholder="0000.00" disabled id="subItemSampleQty" value='@Case(dr["sample_qty"].ToString(),"0","","same")'></td>
+                                CalculateSubItem(dr, "QC");
+                            }
+                            else if (Model.Flag == "QCSampleQty" && (ViewBag.QcType == "RQC" || ViewBag.QcType == "PUR"))
+                            {
+                                <td class="num_right"><input type="text" class="form-control num_right" placeholder="0000.00" disabled id="subItemAccQty" value='@Case(dr["accept_qty"].ToString(),"0","","same")'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" placeholder="0000.00" disabled id="subItemRejQty" value='@Case(dr["reject_qty"].ToString(),"0","","same")'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" placeholder="0000.00" disabled id="subItemRewQty" value='@Case(dr["rework_qty"].ToString(),"0","","same")'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" placeholder="0000.00" disabled id="subItemShortQty" value='@Case(dr["short_qty"].ToString(),"0","","same")'></td>
+                                if (Model.IsDisabled == "N")
+                                {
+                                    CheckValueNullPlaceholder(dr["sample_qty"].ToString(), "QCSampleQty"); /**Nitesh  Added By Nitesh 02-03-2024 **/
+                                    <td class="num_right">
+                                        <div class="col-sm-12 lpo_form" style="padding:0px;">
+                                            @*<input type="text" id="subItemSampleQty" class="form-control num_right" placeholder="0000.00" onchange="Cmn_OnchangeQCsubitemQty(event,'@Model.Flag')" onkeyup="Cmn_CalCSubItemTotal('@Model.Flag')" onkeypress=" return @Fn_KeyPress" value='@Case(dr["sample_qty"].ToString(),"0","","same")'>*@
+                                            <input type="text" id="subItemSampleQty" class="form-control num_right" autocomplete="off" placeholder="0000.00" onchange="Cmn_OnchangeQCsubitemQty(event,'@Model.Flag')" onkeyup="Cmn_CalCSubItemTotal('@Model.Flag')" onkeypress=" return @Fn_KeyPress" value='@QtyVsPlaceholder'>
+                                            <span id="subItemSampleQty_Error" class="error-message is-visible"></span>
+                                        </div>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td class="num_right"><input type="text" class="form-control num_right" placeholder="0000.00" disabled id="subItemSampleQty" value='@Case(dr["sample_qty"].ToString(),"0","","same")'></td>
+                                }
+                                CalculateSubItem(dr, "QC");
+                            }
+                            else if (Model.Flag == "StockTake")
+                            {
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemAvlQty" value='@dr["avl_stk"]'></td>
+                                <td class="num_right">
+                                    <div class="col-sm-12 lpo_form" style="padding:0px;">
+                                        <input type="text" id="subItemQty" class="form-control num_right" @dsbl onchange="OnchangesubitemPhyQty(event)" onkeyup="Cmn_CalCSubItemTotal('@Model.Flag')" onkeypress="return @Fn_KeyPress" value='@stocktakeCase(dr["Qty"].ToString(),dr["avl_stk"].ToString(),Model.stqty.ToString(),"0","0","same")'>
+                                        <span id="subItemQty_Error" class="error-message is-visible"></span>
+                                    </div>
+                                </td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemShortQty" value='@dr["short_qty"]'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemSurplusQty" value='@dr["surplus_qty"]'></td>
+                                CalculateSubItem(dr, "StockTake");
+                            }
+                            else if (Model.Flag == "StkResDocDetail")
+                            {
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemAvlQty" value='@dr["ord_qty"]'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemShortQty" value='@dr["pend_pack_qty"]'></td>
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemSurplusQty" value='@dr["pend_res_qty"]'></td>
+                                CalculateSubItem(dr, "StkResDocDetail");
+                            }
+                            else if (Model.Flag == "RJO_RewrkQuantity" || Model.Flag == "CM_ConsumeQty" ||
+                                Model.Flag == "PC_ConsumeQuantity" || Model.Flag == "Input" || Model.Flag == "RM_RequireQty")
+                            {
+                                if (Model.Flag1 != "RM_RequireQty_rwk")
+                                {
+                                    <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemAvlQty" value='@dr["avl_stk"]'></td>
+                                }
+
+                                if (Model.Flag == "CM_ConsumeQty")
+                                {
+                                    <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemReqQty" value='@dr["req_qty"]'></td>
+
+                                }
+                                <td class="num_right">
+                                    <div class="col-sm-12 lpo_form" style="padding:0px;">
+                                        <input type="text" id="subItemQty" class="form-control num_right" @dsbl autocomplete="off" placeholder="0000.00" onchange="Cmn_OnChangeSubItemQty(event)" onkeyup="Cmn_CalCSubItemTotal('')" onkeypress="return @Fn_KeyPress" value='@dr["Qty"]'>
+                                        <span id="subItemQty_Error" class="error-message is-visible"></span>
+                                    </div>
+                                </td>
+                                @*<td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemQty" value='@dr["Qty"]'></td>*@
+                                if (Model.Flag == "RJO_RewrkQuantity" || Model.Flag == "CM_ConsumeQty" || Model.Flag == "RM_RequireQty")
+                                {
+                                    CalculateSubItem(dr, "RJO_RewrkQuantity");
+                                }
+                                else if (Model.Flag == "Input")
+                                {
+                                    CalculateSubItem(dr, "Input");
+                                }
+                                else
+                                {
+                                    CalculateSubItem(dr, "PC_ConsumeQuantity");
+                                }
+
+                            }
+                            else if (Model.Flag == "SlsReturn")
+                            {
+                                <td class="num_right"><input type="text" class="form-control num_right" placeholder="0000.00" disabled id="subItemInvQty" value='@dr["inv_qty"]'></td>
+                                @*<td class="num_right"><input type="text" class="form-control num_right" placeholder="0000.00" disabled id="subItemPendQty" value='@dr["pending_qty"]'></td>Commented by shubham maurya on 28-04-2025*@
+                                <td class="num_right"><input type="text" class="form-control num_right" placeholder="0000.00" disabled id="subItemPendQty" value='@dr["avl_stk"]'></td>
+                                if (Model._subitemPageName != "AvlQty")
+                                {
+                                    <td class="num_right">
+                                        <div class="col-sm-12 lpo_form" style="padding:0px;">
+                                            <input type="text" id="subItemQty" class="form-control num_right" @dsbl placeholder="0000.00" autocomplete="off" onchange="Cmn_OnChangeSubItemQty(event)" onkeyup="Cmn_CalCSubItemTotal('@Model.Flag')" onkeypress="return @Fn_KeyPress" value='@Case(dr["Qty"].ToString(),"0","","same")'>
+                                            <span id="subItemQty_Error" class="error-message is-visible"></span>
+                                        </div>
+                                    </td>
+                                }
+                                CalculateSubItem(dr, "SlsReturn");
+                            }
+                            else if (Model.Flag == "StkResTotalResQty")
+                            {
+                                if (Model._subitemPageName == "Res")
+                                {
+                                    <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemAvlQty" value='@dr["avl_stk"]'></td>
+                                    <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemPendQty" value='@dr["pend_res_qty"]'></td>
+                                }
+                                else
+                                {
+                                    <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemPendQty" value='@dr["res_qty"]'></td>
+                                }
+                                <td class="num_right">
+                                    <div class="col-sm-12 lpo_form" style="padding:0px;">
+                                        <input type="text" id="subItemQty" class="form-control num_right" @dsbl autocomplete="off" onchange="Cmn_OnChangeSubItemQty(event)" onkeyup="Cmn_CalCSubItemTotal('@Model.Flag')" placeholder="00.0000" onkeypress="return @Fn_KeyPress" value='@Case(dr["Qty"].ToString(),"0","","same")'>
+                                        <span id="subItemQty_Error" class="error-message is-visible"></span>
+                                    </div>
+                                </td>
+                                CalculateSubItem(dr, "StkResTotalResQty");
+                            }
+                            else if (Model.Flag == "PYearSalQty")
+                            {
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemQty" value='@dr["inv_qty"]'></td>
+                                CalculateSubItem(dr, "PYearSalQty");
+                            }
+
+                            else if (Model.Flag == "MTIMIS")
+                            {
+                                issuedQty = issuedQty + Convert.ToDecimal(@dr["Qty"]);
+                                @*<td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemQty" value='@dr["avl_stk"]'></td>*@
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="qty" value='@dr["Qty"]'></td>
+                                //CalculateSubItem(dr, "PYearSalQty");
+                            }
+                            else if (Model.Flag == "SwapQty")
+                            {
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemAvlQty" value='@dr["avl_stk"]'></td>
+                                @*<td class="num_right"><input type="text" class="form-control num_right" id="subItemQty" value='@dr["Qty"]'></td>*@
+                                <td class="num_right">
+                                    <div class="col-sm-12 lpo_form" style="padding:0px;">
+                                        <input type="text" id="subItemQty" class="form-control num_right" @dsbl autocomplete="off" onchange="Cmn_OnChangeSubItemQty(event)" onkeyup="Cmn_CalCSubItemTotal('@Model.Flag')" onkeypress="return @Fn_KeyPress" value='@Case(dr["Qty"].ToString(),"0","","same")' placeholder="0000.00">
+                                        <span id="subItemQty_Error" class="error-message is-visible"></span>
+                                    </div>
+                                </td>
+                                CalculateSubItem(dr, "SwapQty");
+                            }
+                            else if (Model.Flag == "Scrap")
+                            {
+
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemAvlQty" value='@dr["avl_stk"]'></td>
+
+                                <td class="num_right">
+                                    <div class="col-sm-12 lpo_form" style="padding:0px;">
+                                        <input type="text" class="form-control num_right" @dsbl autocomplete="off" onchange="Cmn_OnChangeSubItemQty(event)" onkeyup="Cmn_CalCSubItemTotal('@Model.Flag')" onkeypress="return @Fn_KeyPress" id="subItemQty" value='@dr["Qty"]'>
+
+                                        <span id="subItemQty_Error" class="error-message is-visible"></span>
+                                    </div>
+                                </td>
+                                CalculateSubItem(dr, "Scrap");
+                            }
+                            else if (Model.Flag == "AvlScrap")
+                            {
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemAvlQty" value='@dr["avl_stk"]'></td>
+                                CalculateSubItem(dr, "AvlScrap");
+                            }
+                            else if (Model.Flag == "IBP")/*Added by Surbhi on 14/07/2025 for Inter Branch Purchase Invoice(105101153)*/
+                            {
+                                <td class="num_right">
+                                    <div class="col-sm-12 lpo_form" style="padding:0px;">
+                                        <input type="text" class="form-control num_right" disabled autocomplete="off" onchange="Cmn_OnChangeSubItemQty(event)" onkeyup="Cmn_CalCSubItemTotal('@Model.Flag')" onkeypress="return @Fn_KeyPress" id="subItemQty" value='@dr["Qty"]'>
+
+                                        <span id="subItemQty_Error" class="error-message is-visible"></span>
+                                    </div>
+                                </td>
+                                CalculateSubItem(dr, "IBP");
+                            }
+                            else if (Model.Flag == "ExternelReceipt")
+                            {
+                                <td class="num_right">
+                                    <div class="col-sm-12 lpo_form" style="padding:0px;">
+                                        <input type="text" class="form-control num_right" @dsbl autocomplete="off" onchange="Cmn_OnChangeSubItemQty(event)" onkeyup="Cmn_CalCSubItemTotal('@Model.Flag')" onkeypress="return @Fn_KeyPress" id="subItemQty" value='@dr["Qty"]'>
+
+                                        <span id="subItemQty_Error" class="error-message is-visible"></span>
+                                    </div>
+                                </td>
+                                CalculateSubItem(dr, "ExternelReceipt");
+                            }
+                            else if (Model.Flag == "AssemblyKitINput")
+                            {
+                                <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemAvlQty" value='@dr["avl_stk"]'></td>
+
+                                <td class="num_right">
+                                    <div class="col-sm-12 lpo_form" style="padding:0px;">
+                                        <input type="text" class="form-control num_right" @dsbl autocomplete="off" onchange="Cmn_OnChangeSubItemQty(event)" onkeyup="Cmn_CalCSubItemTotal('@Model.Flag')" onkeypress="return @Fn_KeyPress" id="subItemQty" value='@dr["Qty"]'>
+
+                                        <span id="subItemQty_Error" class="error-message is-visible"></span>
+                                    </div>
+                                </td>
+                                CalculateSubItem(dr, "AssemblyKitINput");
+                            }
+                            else if (Model.Flag == "Exterissued_qty" || Model.Flag == "ExterPendingQty" || Model.Flag == "ExterRec_qty")
+                            {
+                                if (Model.Flag == "Exterissued_qty")
+                                {
+                                    <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemIssuedQty" value='@dr["IssuedQty"]'></td>
+                                    CalculateSubItem(dr, "Exterissued_qty");
+                                }
+                                else if (Model.Flag == "ExterPendingQty")
+                                {
+                                    <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemIssuedQty" value='@dr["IssuedQty"]'></td>
+                                    <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemPendQty" value='@dr["pend_qty"]'></td>
+                                    CalculateSubItem(dr, "ExterPendingQty");
+                                }
+                                else
+                                {
+                                    <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemIssuedQty" value='@dr["IssuedQty"]'></td>
+                                    <td class="num_right"><input type="text" class="form-control num_right" disabled id="subItemPendQty" value='@dr["pend_qty"]'></td>
+                                    <td class="num_right">
+                                        <div class="col-sm-12 lpo_form" style="padding:0px;">
+                                            <input type="text" @dsbl class="form-control num_right" autocomplete="off" onchange="Cmn_OnChangeSubItemQty(event)"
+                                                   onkeyup="Cmn_CalCSubItemTotal('')" onkeypress=" return @Fn_KeyPress" id="subItemQty" value='@dr["Qty"]'>
+                                            <span id="subItemQty_Error" class="error-message is-visible"></span>
+                                        </div>
+
+                                    </td>
+                                    CalculateSubItem(dr, "ExterRec_qty");
+                                }
+
+
+
+
+                            }
+                        </tr>
+
+                                srno++;
+                            }
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td class="num_right" colspan="@(Model._subitemPageName == "ShflStkTrf"?"2":"")" style="padding:5px 5px 0px 0px;"><strong> @Resource.Total</strong></td>
+                            <td hidden></td>
+                            @if (Model.ShowStock == "Y" && Model._subitemPageName != "ShflStkTrf")
+                            {
+                                <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmAvlStkTotal</span></td>
+                            }
+                            @if (Model.Flag == "QCAccQty" || Model.Flag == "QCRejQty" || Model.Flag == "QCRewQty" || Model.Flag == "QCShortQty" || Model.Flag == "QCSampleQty")
+                            {
+                                if ((Model._subitemPageName == "QC" || Model._subitemPageName == "PP" || Model._subitemPageName == "CNF" || Model._subitemPageName == "RQC"))
+                                {
+                                    <td class="num_right"><span id="SubItemTotalQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotal</span></td>
+                                }
+                            }
+                            @if (Model.Flag == "QCAccQty" || Model.Flag == "QCRejQty" || Model.Flag == "QCRewQty" || Model.Flag == "QCShortQty" || Model.Flag == "QCSampleQty")
+                            {
+                                <td class="num_right"><span id="SubItemTotalAccQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotalAcc</span></td>
+                                <td class="num_right"><span id="SubItemTotalRejQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotalRej</span></td>
+                                <td class="num_right"><span id="SubItemTotalRewQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotalRew</span></td>
+                                //if (ViewBag.QcType == "RQC" || ViewBag.QcType == "PUR")//Modifyed by shubham maurya on 21-02-2025
+                                if (ViewBag.QcType == "PUR")
+                                {
+                                    <td class="num_right"><span id="SubItemTotalShortQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotalShort</span></td>
+                                    <td class="num_right"><span id="SubItemTotalSampleQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotalSample</span></td>
+                                }
+                            }
+                            else if (Model.Flag == "RJO_QCAccptQty" || Model.Flag == "RJO_QCRejQty" || Model.Flag == "RJO_QCRwkQty" || Model.Flag == "DNSC_QCAcptRejRwkQty")
+                            {
+                                <td class="num_right"><span id="SubItemTotalAccQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotalAcc</span></td>
+                                <td class="num_right"><span id="SubItemTotalRejQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotalRej</span></td>
+                                <td class="num_right"><span id="SubItemTotalRewQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotalRew</span></td>
+                                if (Model._subitemPageName == "GRN")
+                                {
+                                    <td class="num_right"><span id="SubItemTotalShortQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotalShort</span></td>
+                                    <td class="num_right"><span id="SubItemTotalSampleQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotalSample</span></td>
+                                }
+                            }
+                            else if (Model.Flag == "MTO")
+                            {
+                                <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotal</span></td>
+                                <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@Issued</span></td>
+                                <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@Received</span></td>
+                            }
+
+                            else if (Model.Flag == "MTReciept")
+                            {
+                                <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@ReqQty</span></td>
+                                <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@PendQty</span></td>
+                                <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotal</span></td>
+                            }
+                            else if (Model.Flag == "GRNSCIssueQty" || Model.Flag == "GRNSCConsumeQty")
+                            {
+                                if (Model.Flag == "GRNSCIssueQty")
+                                {
+                                    <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@Issued</span></td>
+                                }
+                                else
+                                {
+                                    <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@Issued</span></td>
+                                    <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@Consumed</span></td>
+                                }
+
+                            }
+                            else if (Model.Flag == "MTI" || Model.Flag == "IssueQty")
+                            {
+                                <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@ReqQty</span></td>
+                                <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@PendQty</span></td>
+                                if (Model._subitemPageName != "SampleIssue")
+                                {
+                                    <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@AvlQty</span></td>
+                                }
+                                <td class="num_right"><span id="SubItemTotalQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotal</span></td>
+                            }
+                            else if (Model.Flag == "DNSCDispQty" || Model.Flag == "DNSCPendQty")
+                            {
+                                if (Model.Flag == "DNSCDispQty")
+                                {
+                                    <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@DispQty</span></td>
+                                }
+                                else
+                                {
+                                    <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@DispQty</span></td>
+                                    <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@PendQty</span></td>
+                                }
+
+                            }
+
+                            else if (Model.Flag == "DNSCBillQty" || Model.Flag == "DNSCRecQty")
+                            {
+                                if (Model.Flag == "DNSCBillQty")
+                                {
+                                    <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@DispQty</span></td>
+                                    <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@PendQty</span></td>
+                                    <td class="num_right"><span id="SubItemTotalBillQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotalBill</span></td>
+                                    <td class="num_right" style="display:none"><span id="SubItemTotalReceivQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotalReceiv</span></td>
+
+                                }
+                                else
+                                {
+                                    <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@DispQty</span></td>
+                                    <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@PendQty</span></td>
+                                    <td class="num_right"><span id="SubItemTotalBillQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotalBill</span></td>
+                                    <td class="num_right"><span id="SubItemTotalReceivQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotalReceiv</span></td>
+
+                                }
+                            }
+                            else if (Model.Flag == "DNAllSubQtyShow" || Model.Flag == "DNBillQty" || Model.Flag == "DNRecQty")
+                            {
+
+                                <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@OrdQty</span></td>
+                                <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@PendQty</span></td>
+                                <td class="num_right"><span id="SubItemTotalBillQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotalBill</span></td>
+                                <td class="num_right"><span id="SubItemTotalReceivQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotalReceiv</span></td>
+                                <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotalAcc</span></td>
+                                <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotalRej</span></td>
+                                <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotalRew</span></td>
+                                <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotalShort</span></td>
+                                <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotalSample</span></td>
+                            }
+                            else if (Model.Flag == "PInvVariance") /*Added By Suraj on 11-10-2023 for PI Variance*/
+                            {
+                                <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotalBill</span></td>
+                                <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotalReceiv</span></td>
+                                <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotalAcc</span></td>
+                                <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotalRej</span></td>
+                                <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotalRew</span></td>
+                                <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotalShort</span></td>
+                                <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotalSample</span></td>
+                                <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmInvoice</span></td>
+                            }
+                            else if (Model.Flag == "MRS")
+                            {
+                                <td class="num_right"><span class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotal</span></td>
+                                <td class="num_right"><span class="font-weight-bold" style="padding:5px 5px 0px 0px;">@Issued</span></td>
+                            }
+                            else if (Model.Flag == "POMRS_Issue")
+                            {
+                                <td class="num_right"><span class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotal</span></td>
+                                <td class="num_right"><span class="font-weight-bold" style="padding:5px 5px 0px 0px;">@Issued</span></td>
+                            }
+                            else if (Model.Flag == "PR")
+                            {
+                                <td class="num_right"><span class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotal</span></td>
+                                <td class="num_right"><span class="font-weight-bold" style="padding:5px 5px 0px 0px;">@OrdQty</span></td>
+                            }
+                            else if (Model.Flag == "RJO_RewrkQuantity" || Model.Flag == "CM_ConsumeQty" || Model.Flag == "PC_ConsumeQuantity" || Model.Flag == "Input" || Model.Flag == "RM_RequireQty")
+                            {
+                                if (Model.Flag1 != "RM_RequireQty_rwk")
+                                {
+                                    <td class="num_right"><span class="font-weight-bold" style="padding:5px 5px 0px 0px;">@AvlQty</span></td>
+                                }
+                                if (Model.Flag == "CM_ConsumeQty")
+                                {
+                                    <td class="num_right"><span class="font-weight-bold" style="padding:5px 5px 0px 0px;">@ReqQty</span></td>
+                                }
+                                <td class="num_right"><span id="SubItemTotalQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotal</span></td>
+                            }
+                            else if (Model.Flag == "PackResQuantity")
+                            {
+                                <td class="num_right"><span class="font-weight-bold" style="padding:5px 5px 0px 0px;">@Issued</span></td>
+                                <td class="num_right"><span id="SubItemTotalQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotal</span></td>
+                            }
+                            else if (Model.Flag == "PackResTotalQty")
+                            {
+                                <td class="num_right"><span class="font-weight-bold" style="padding:5px 5px 0px 0px;">@Convert.ToDecimal(OrdQty).ToString(QtyDigit)</span></td>
+                                <td class="num_right"><span class="font-weight-bold" style="padding:5px 5px 0px 0px;">@Convert.ToDecimal(AvlQty).ToString(QtyDigit)</span></td>
+                                <td class="num_right"><span class="font-weight-bold" style="padding:5px 5px 0px 0px;">@Convert.ToDecimal(Issued).ToString(QtyDigit)</span></td>
+                                <td class="num_right"><span class="font-weight-bold" style="padding:5px 5px 0px 0px;">@Convert.ToDecimal((Issued + AvlQty)).ToString(QtyDigit)</span></td>
+                                <td class="num_right"><span id="SubItemTotalQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@Convert.ToDecimal(subItmTotal).ToString(QtyDigit)</span></td>
+                            }
+                            else if (Model.Flag == "SOrderQty")
+                            {
+                                <td class="num_right"><span id="SubItemTotalQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotal</span></td>
+                                <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@SOOrdQty</span></td>
+
+                            }
+                            else if (Model.Flag == "PackList" || Model.Flag == "FocPackList" || Model.Flag == "MDDispQty")
+                            {
+                                <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@Convert.ToDecimal(OrdQty).ToString(QtyDigit)</span></td>
+                                <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@Convert.ToDecimal(PendQty).ToString(QtyDigit)</span></td>
+                                <td class="num_right"><span id="SubItemTotalQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@Convert.ToDecimal(subItmTotal).ToString(QtyDigit)</span></td>
+
+                            }
+                            else if (Model.Flag == "ForeCastandSOQtyforPPL")
+                            {
+                                <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@SrcDocQty</span></td>
+                                <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@PendiQty</span></td>
+
+                                <td class="num_right"><span id="SubItemTotalQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotal</span></td>
+
+                            }
+                            else if (Model.Flag == "ForeCastandSOQtyforPPL1")
+                            {
+                                <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@SrcDocQty</span></td>
+
+                                @*<td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@PendiQty</span></td>*@
+
+                                <td class="num_right"><span id="SubItemTotalQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotal</span></td>
+
+                            }
+                            else if (Model.Flag == "SOQtyforPPL")
+                            {
+                                <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@SOOrdQty</span></td>
+                                <td class="num_right"><span id="SubItemTotalQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotal</span></td>
+
+                            }
+                            else if (Model.Flag == "PackOrderPending")
+                            {
+                                <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@Convert.ToDecimal(OrdQty).ToString(QtyDigit)</span></td>
+                                <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@Convert.ToDecimal(PendQty).ToString(QtyDigit)</span></td>
+                            }
+                            else if (Model.Flag == "ShipPacked")
+                            {
+                                <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@Convert.ToDecimal(ShipPackedQty).ToString(QtyDigit)</span></td>
+                            }
+                            else if (Model.Flag == "Shipped" || Model.Flag == "ShippedFoc")
+                            {
+                                <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@Convert.ToDecimal(ShippedQty).ToString(QtyDigit)</span></td>
+                            }
+                            else if (Model.Flag == "StockTake")
+                            {
+                                <td class="num_right"><span id="SubItemTotalAvlQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmAvlStkTotal</span></td>
+                                <td class="num_right"><span id="SubItemTotalQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotal</span></td>
+                                <td class="num_right"><span id="SubItemTotalShortQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@short_qty</span></td>
+                                <td class="num_right"><span id="SubItemTotalSurplusQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@surplus_qty</span></td>
+
+                            }
+                            else if (Model.Flag == "StkResDocDetail" || Model.Flag == "SlsReturn")
+                            {
+                                <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@OrdQty</span></td>
+                                <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotal</span></td>
+                                if (Model._subitemPageName != "AvlQty")
+                                {
+                                    <td class="num_right"><span id="SubItemTotalQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@PendQty</span></td>
+                                }
+                            }
+                            else if (Model.Flag == "StkResTotalResQty")
+                            {
+                                if (Model._subitemPageName == "Res")
+                                {
+                                    <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@AvlQty</span></td>
+                                    <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@PendQty</span></td>
+                                }
+                                else
+                                {
+                                    <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@PendQty</span></td>
+                                }
+                                <td class="num_right"><span id="SubItemTotalQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotal</span></td>
+                            }
+
+                            else if (Model.Flag == "PYearSalQty")
+                            {
+                                <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@PYearSalQty</span></td>
+                            }
+                            else if (Model.Flag == "SRAgnst_Issue")
+                            {
+
+                                <td class="num_right pr-1"><span id="" class="font-weight-bold"><span id="SubItemTotaliss_Qty" class="font-weight-bold">@Issued</span> </span></td>
+                                <td class="num_right pr-1"><span id="" class="font-weight-bold"><span id="SubItemTotalpendQty" class="font-weight-bold">@PendQty</span> </span></td>
+                                <td class="num_right pt-1 pr-1"><span id="SubItemTotalQty" class="font-weight-bold">@subItmTotal</span></td>
+                            }
+                            else if (Model.Flag == "MTIMIS")
+                            {
+                                <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@issuedQty</span></td>
+                            }
+                            else if (Model.Flag == "SwapQty")
+                            {
+                                <td class="num_right"><span id="subItmAvlStkTotal" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@AvlQty</span></td>
+                                <td class="num_right"><span id="SubItemTotalQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotal</span></td>
+                            }
+                            else if (Model.Flag == "Scrap")
+                            {
+                                <td class="num_right"><span id="subItmAvlStkTotal" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@AvlQty</span></td>
+                                <td class="num_right"><span id="SubItemTotalinvQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotal</span></td>
+                            }
+                            else if (Model.Flag == "AvlScrap")
+                            {
+                                <td class="num_right"><span id="subItmAvlStkTotal" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@AvlQty</span></td>
+                            }
+                            else if (Model.Flag == "IBP")/*Added by Surbhi on 14/07/2025 for Inter Branch Purchase Invoice(105101153)*/
+                            {
+                                <td class="num_right"><span id="SubItemTotalinvQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotal</span></td>
+                            }
+                            else if (Model.Flag == "AssemblyKitINput")
+                            {
+                                <td class="num_right"><span id="subItmAvlStkTotal" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@AvlQty</span></td>
+                                <td class="num_right"><span id="SubItemTotalQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotal</span></td>
+                            }
+                            else if (Model.Flag == "PRDProdQty" || Model.Flag == "PRDPendQty" || Model.Flag == "PRDProduceQty")
+                            {
+                                <td class="num_right"><span id="SubItemTotalprodQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItemProdTotal</span></td>
+                                <td class="num_right"><span id="SubItemTotalpendQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItemPendTotal</span></td>
+                                <td class="num_right"><span id="SubItemTotalQcQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItemQcTotal</span></td>
+                            }
+                            else if (Model.Flag == "QCQty")
+                            {
+                                <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItemQcTotalPC</span></td>
+                                <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItemProdTotal</span></td>
+                                <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItemPendTotal</span></td>
+                                <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItemQcTotal</span></td>
+                            }
+                            else if (Model.Flag == "AdPRTReturnQty")
+                            {
+                                <td class="num_right pt-1 pr-1">
+                                    <span id="SubItemAvlTotalQty" class="font-weight-bold">@subItmAvlStkTotal</span>
+                                </td>
+                                <td class="num_right pt-1 pr-1">
+                                    <span id="SubItemTotalQty" class="font-weight-bold">@subItmTotal</span>
+                                </td>
+                            }
+                            else if (Model.Flag == "Exterissued_qty" || Model.Flag == "ExterPendingQty" || Model.Flag == "ExterRec_qty")
+                            {
+                                if (Model.Flag == "Exterissued_qty")
+                                {
+                                    <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@issuedQty</span></td>
+                                }
+                                else if (Model.Flag == "ExterPendingQty")
+                                {
+                                    <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@issuedQty</span></td>
+                                    <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@PendQty</span></td>
+                                }
+                                else
+                                {
+                                    <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@issuedQty</span></td>
+                                    <td class="num_right"><span id="" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@PendQty</span></td>
+                                    <td class="num_right"><span id="SubItemTotalQty" class="font-weight-bold" style="padding:5px 5px 0px 0px;">@subItmTotal</span></td>
+                                }
+
+                            }
+                            else if (Model.Flag == "Quantity" && Model._subitemPageName== "MRS")
+                            {
+                                <td class="num_right pt-1 pr-1">
+                                    <span id="SubItem_TotalQty" class="font-weight-bold">@subItmTotal</span>
+                                </td>
+                            }
+                            else
+                            {
+                                <td class="num_right pt-1 pr-1">
+                                    <span id="SubItemTotalQty" class="font-weight-bold">@subItmTotal</span>
+                                </td>
+                            }
+                        </tr>
+                    </tfoot>
+                </table>
+
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        @if (Model.IsDisabled == "Y")
+        {
+            @*<button type="button" class="btn btn-primary btn-sm" onclick="ResetSubItems()" id="SerialResetBtn"> @Resource.Reset</button>
+                <button type="button" class="btn btn-primary btn-sm" id="SerialSaveAndExitBtn" onclick="SaveAndExitSubItem()">@Resource.SaveAndExit</button>*@
+            <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" id="" onclick="">@Resource.Close</button>
+
+        }
+        else
+        {
+            if (Model.Flag == "PRDProdQty" || Model.Flag == "PRDPendQty")
+            {
+                <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" id="" onclick="">@Resource.Close</button>
+            }
+            else if (Model.Flag == "ExterRec_qty" || Model.Flag == "Quantity" || Model.Flag == "PopUpStk_Qty" || Model.Flag == "JO_HdrOrdQty" || Model.Flag == "JOReqQty"
+                || Model.Flag == "BYPSRecvQty" || Model.Flag == "MDIssueQty" || Model.Flag == "RM_RequireQty" || Model.Flag == "RMOrdrToPrecurQuantity"
+                || Model.Flag == "OrdrToPrecurQuantity" || Model.Flag == "OrdrToProduceQuantity" || Model.Flag == "IssueQty" || Model.Flag == "PackList"
+                || Model.Flag == "FocPackList"
+                || Model.Flag == "MDDispQty" || Model.Flag == "ForeCastandSOQtyforPPL" || Model.Flag == "ForeCastandSOQtyforPPL1" ||
+                Model._subitemPageName == "RQC" || Model.Flag == "StockTake" || Model.Flag == "PackResQuantity" || Model.Flag == "StkResTotalResQty"
+                || Model.Flag == "PackResTotalQty" || Model.Flag == "SlsReturn" || (Model._subitemPageName == "QC" && Model.Flag != "ProduceQty"
+                || Model.Flag == "RJO_RewrkQuantity" || Model.Flag == "CM_ConsumeQty" || Model.Flag == "PC_ConsumeQuantity"
+                || Model.Flag == "SRAgnst_Issue" || Model.Flag == "SwapQty"
+                || Model.Flag == "DNBillQty" || Model.Flag == "DNRecQty" || Model.Flag == "PRTReturnQty" || Model.Flag == "AdPRTReturnQty" || Model.Flag == "SRTReturnQty"
+                || Model.Flag == "DNSCBillQty" || Model.Flag == "DNSCRecQty" || Model.Flag == "Scrap" || Model.Flag == "Input"
+                || Model.Flag == "AssemblyKitINput" || Model.Flag == "OutPut" || Model.Flag == "RM_RequireQty"
+                || Model.Flag == "Service_RM_RequireQty" || Model.Flag == "ExternalReceipt" || Model.Flag == "AdSRTReturnQty" || Model.Flag == "FocQuantity"))
+            {
+                <button type="button" class="btn btn-primary btn-sm" onclick="Cmn_ResetSubItems('@Model.Flag')" id="SubItemResetBtn"> @Resource.Reset</button>
+                <button type="button" class="btn btn-primary btn-sm" id="SubItemSaveAndExitBtn" onclick="Cmn_SaveAndExitSubItem('@Model.Flag')">@Resource.SaveAndExit</button>
+                <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" id="SubItemDiscardAndExitBtn" onclick="">@Resource.DiscardAndExit</button>
+            }
+            else
+            {
+                <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" id="" onclick="">@Resource.Close</button>
+            }
+        }
+
+
+    </div>
+</div>

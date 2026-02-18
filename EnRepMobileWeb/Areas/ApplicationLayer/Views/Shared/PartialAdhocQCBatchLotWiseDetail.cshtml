@@ -1,0 +1,282 @@
+﻿@*@model EnRepMobileWeb.MODELS.ApplicationLayer.InventoryManagement.QualityInspection.QualityInspectionModel*@
+@using EnRepMobileWeb.Resources;
+@{
+    var Disable = true;
+    //decimal TotalIssueQty = 0;
+    var QtyDigit = "0.";
+    decimal AccQty = 0;
+    decimal RejQty = 0;
+    decimal RewQty = 0;
+    decimal ShortQty = 0;
+    decimal SampleQty = 0;
+    var VD = Convert.ToInt32(Session["QtyDigit"].ToString());
+    for (var i = 0; i < VD; i++)
+    {
+        QtyDigit += "0";
+    }
+
+    if (Model.TransType != null)
+    {
+        if (Model.TransType == "Update")
+        {
+            if (Model.Command == "Edit")
+            {
+                Disable = false;
+            }
+            else
+            {
+                Disable = true;
+            }
+        }
+        else
+        {
+            if (Model.Command == "Refresh")
+            {
+                Disable = true;
+            }
+            else
+            {
+                Disable = false;
+            }
+        }
+    }
+    var txtdisable = "";
+    if (Disable || Model.DocumentStatus == "A")
+    {
+        txtdisable = "disabled";
+    }
+}
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+
+<div class="modal-content">
+    <div class="modal-header">
+        <h2>@Resource.LotBatchDetail</h2>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body" style="padding-top: 0px;">
+        <div class="col-md-4 col-sm-12" style="padding-left:0px;">
+            <label class="col-form-label label-align">
+                @Resource.ItemName
+            </label>
+            <input id="ItemNameBatchWise" class="form-control" type="text" name="ItemName" placeholder="@Resource.ItemName" disabled>
+            <input type="hidden" id="HDItemNameBatchWise" />
+        </div>
+        <div class="col-md-1 col-sm-12" style="padding-left:0px;">
+            <label class="col-form-label label-align">
+                @Resource.UOM
+            </label>
+            <input id="UOMBatchWise" class="form-control" type="text" name="UOM" placeholder="@Resource.UOM" disabled>
+            <input type="hidden" id="HDUOMBatchWise" />
+        </div>
+        <div class="col-md-1 col-sm-12" style="padding-left:0px; padding-right:0px;">
+            <label class="col-form-label label-align">
+                @Resource.QC @Resource.Quantity
+
+            </label>
+            <input id="QCQuantity" class="form-control num_right" type="text" name="Quantity" placeholder="0000.00" disabled>
+        </div>
+        <div class="clearfix"></div>
+        <div class="price_item_detail">
+            <div class="BatchDetail">
+                <div class="tableFixHead" style="height: 250px;">
+                    <table id="BatchWiseItemStockTbl" class="table margin5 table-striped">
+                        <thead>
+                            <tr class="sticky-header" disabled="disabled">
+                                <th width="8%"> @Resource.Lot</th>
+                                <th width="8%"> @Resource.Batch1</th>
+                                <th width="8%"> @Resource.Serial1</th>
+                                <th width="20%">@Resource.Manufacturer @Resource.Name</th>
+                                <th width="8%">@Resource.MRP</th>
+                                <th width="8%">@Resource.Manufactured @Resource.Date</th>
+                                <th width="8%"> @Resource.Expiry <br />  @Resource.Date</th>
+                                <th width="8%" disabled="disabled"> @Resource.Available <br />  @Resource.Quantity</th>
+                                <th width="8%">@Resource.Accepted <br />   @Resource.Quantity</th>
+                                <th width="8%">@Resource.Rejected <br />   @Resource.Quantity</th>
+                                <th width="8%">@Resource.Reworkable <br />   @Resource.Quantity</th>
+                                @if (Model.qc_type != "RQC")
+                                {
+                                    <th width="9%">@Resource.Short <br />   @Resource.Quantity</th>
+                                    <th width="9%">@Resource.Sample <br />   @Resource.Quantity</th>
+                                }
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (ViewBag.ItemStockBatchWise != null)
+                            {
+                                string IsZero(string data)
+                                {
+                                    if (data == "0" || data == "" || data == null)
+                                    {
+                                        return "";
+                                    }
+                                    return Convert.ToDecimal(data).ToString(QtyDigit);
+                                };
+                                foreach (System.Data.DataRow Row in ViewBag.ItemStockBatchWise.Rows)
+                                {
+                                    if (@Row["AccQty"] != null && @Row["AccQty"].ToString() != "")
+                                    {
+                                        AccQty += Convert.ToDecimal(@Row["AccQty"]);
+                                    }
+                                    if (@Row["RejQty"] != null && @Row["RejQty"].ToString() != "")
+                                    {
+                                        RejQty += Convert.ToDecimal(@Row["RejQty"]);
+                                    }
+                                    if (@Row["RewQty"] != null && @Row["RewQty"].ToString() != "")
+                                    {
+                                        RewQty += Convert.ToDecimal(@Row["RewQty"]);
+                                    }
+                                    if (@Row["ShortQty"] != null && @Row["ShortQty"].ToString() != "")
+                                    {
+                                        ShortQty += Convert.ToDecimal(@Row["ShortQty"]);
+                                    }
+                                    if (@Row["SampleQty"] != null && @Row["SampleQty"].ToString() != "")
+                                    {
+                                        SampleQty += Convert.ToDecimal(@Row["SampleQty"]);
+                                    }
+                                    <tr>
+                                        <td>
+                                            <input id="Lot" value="@Row["lot_id"].ToString()" class="form-control" autocomplete="off" type="text" name="Lot" placeholder="@Resource.Lot" onblur="this.placeholder='@Resource.Lot'" disabled="">
+                                        </td>
+                                        <td>
+                                            <input id="BatchNumber" value="@Row["batch_no"].ToString()" class="form-control" autocomplete="off" type="text" name="BatchNumber" placeholder="@Resource.BatchNumber" onblur="this.placeholder='@Resource.BatchNumber'" disabled="">
+                                        </td>
+                                        <td>
+                                            <input id="SerialNumber" value="@Row["serial_no"].ToString()" class="form-control" autocomplete="off" type="text" name="SerialNumber" placeholder="@Resource.SerialNumber" onblur="this.placeholder='@Resource.SerialNumber'" disabled="">
+                                        </td>
+                                        <td>
+                                            <input id="BtMfgName" value="@Row["mfg_name"].ToString()" class="form-control remarksmessage" autocomplete="off" type="text" name="MfgName" placeholder="" disabled="">
+                                        </td>
+                                        <td>
+                                            <input id="BtMfgMrp" value="@Row["mfg_mrp"].ToString()" class="form-control num_right" autocomplete="off" type="text" name="MfgMrp" placeholder="" disabled="">
+                                        </td>
+                                        <td>
+                                            <input id="" value="@(Row["mfg_date"].ToString() == "" ? "" : Convert.ToDateTime(Row["mfg_date"]).ToString("dd-MM-yyyy"))" class="form-control" autocomplete="off" type="text" name="MfgDate" placeholder="" disabled="">
+                                            <input id="BtMfgDate" hidden value="@Row["mfg_date"].ToString()" class="form-control" autocomplete="off" type="text" name="MfgDate" placeholder="" disabled="">
+                                        </td>
+                                        <td>
+                                            @if (@Row["expiry_date"].ToString() == "01-01-1900")
+                                            {
+                                                <input id="ExpiryDate" value="" class="form-control" autocomplete="off" type="text" name="ExpiryDate" placeholder="dd-mm-yyyy" onblur="this.placeholder='dd-mm-yyyy'" disabled="">
+                                            }
+                                            else
+                                            {
+                                                <input id="ExpiryDate" value="@Row["expiry_date"].ToString()" class="form-control" autocomplete="off" type="text" name="ExpiryDate" placeholder="dd-mm-yyyy" onblur="this.placeholder='dd-mm-yyyy'" disabled="">
+                                            }
+                                            <input id="hfExDate" hidden="hidden" value="@Row["exp_dt"].ToString()" />
+                                        </td>
+                                        <td align="right">
+                                            <input id="AvailableQuantity" value="@Convert.ToDecimal(Row["avl_batch_qty"]).ToString(QtyDigit)" class="form-control num_right" autocomplete="off" type="text" name="AvailableQuantity" placeholder="@Resource.AvailableQuantity" onblur="this.placeholder='@Resource.AvailableQuantity'" disabled="">
+                                        </td>
+                                        <td class="num_right">
+                                            <div class="lpo_form">
+                                                <input id="LBAccQuantity" @txtdisable onkeypress="return OnKeyPressNumField(this, event)" value="@IsZero(Row["AccQty"].ToString())" onchange="OnChangeLBQty(event)" onkeyup="OnkeyUpLBQty(event)" class="form-control num_right" autocomplete="off" type="text" name="IssuedQuantity" placeholder="0000.00">
+                                                <span id="LBQuantity_Error" class="error-message is-visible"></span>
+                                            </div>
+
+                                        </td>
+                                        <td class="num_right">
+                                            <div class="lpo_form">
+                                                <input id="LBRejQuantity" @txtdisable onkeypress="return OnKeyPressNumField(this, event)" value="@IsZero(Row["RejQty"].ToString())" onchange="OnChangeLBQty(event)" onkeyup="OnkeyUpLBQty(event)" class="form-control num_right" autocomplete="off" type="text" name="IssuedQuantity" placeholder="0000.00">
+                                                <span id="LBQuantity_Error" class="error-message is-visible"></span>
+                                            </div>
+                                        </td>
+                                        <td class="num_right">
+                                            <div class="lpo_form">
+                                                <input id="LBRewQuantity" @txtdisable onkeypress="return OnKeyPressNumField(this, event)" value="@IsZero(Row["RewQty"].ToString())" onchange="OnChangeLBQty(event)" onkeyup="OnkeyUpLBQty(event)" class="form-control num_right" autocomplete="off" type="text" name="IssuedQuantity" placeholder="0000.00">
+                                                <span id="LBQuantity_Error" class="error-message is-visible"></span>
+                                            </div>
+                                        </td>
+                                        @if (Model.qc_type != "RQC")
+                                        {
+                                            <td class="num_right">
+                                                <div class="lpo_form">
+                                                    <input id="LBShortQuantity" @txtdisable onkeypress="return OnKeyPressNumField(this, event)" value="@IsZero(Row["ShortQty"].ToString())" onchange="OnChangeLBQty(event)" onkeyup="OnkeyUpLBQty(event)" class="form-control num_right" autocomplete="off" type="text" name="" placeholder="0000.00">
+                                                    <span id="LBQuantity_Error" class="error-message is-visible"></span>
+                                                </div>
+                                            </td>
+                                            <td class="num_right">
+                                                <div class="lpo_form">
+                                                    <input id="LBSampleQuantity" @txtdisable onkeypress="return OnKeyPressNumField(this, event)" value="@IsZero(Row["SampleQty"].ToString())" onchange="OnChangeLBQty(event)" onkeyup="OnkeyUpLBQty(event)" class="form-control num_right" autocomplete="off" type="text" name="" placeholder="0000.00">
+                                                    <span id="LBQuantity_Error" class="error-message is-visible"></span>
+                                                </div>
+                                            </td>
+                                        }
+
+
+                                    </tr>
+
+
+                                }
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr class="total">
+                                <th>&nbsp;</th>
+                                <th>&nbsp;</th>
+                                <th>&nbsp;</th>
+                                <th>&nbsp;</th>
+                                <th>&nbsp;</th>
+                                <th>&nbsp;</th>
+                                <th>&nbsp;</th>
+                                <th>@Resource.Total</th>
+                                <th class="num_right padding_right5" id="TotalLBAccQty" style="padding-right: 5px !important;">@AccQty.ToString(QtyDigit)</th>
+                                <th class="num_right padding_right5" id="TotalLBRejQty" style="padding-right: 5px !important;">@RejQty.ToString(QtyDigit)</th>
+                                <th class="num_right padding_right5" id="TotalLBRewQty" style="padding-right: 5px !important;">@RewQty.ToString(QtyDigit)</th>
+                                @if (Model.qc_type != "RQC")
+                                {
+                                    <th class="num_right padding_right5" id="TotalLBShortQty" style="padding-right: 5px !important;">@ShortQty.ToString(QtyDigit)</th>
+                                    <th class="num_right padding_right5" id="TotalLBSampleQty" style="padding-right: 5px !important;">@SampleQty.ToString(QtyDigit)</th>
+                                }
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        @if (Disable || Model.DocumentStatus == "A")
+        {
+            @*<button type="button" disabled class="btn btn-primary btn-sm" id="btnItemBatchReset">@Resource.Reset</button>
+                <button type="button" disabled class="btn btn-primary btn-sm" id="btnItemBatchSaveAndExit">@Resource.SaveAndExit</button>
+                <button type="button" disabled class="btn btn-primary btn-sm" data-dismiss="modal" id="btnItemBatchDiscardAndExit">@Resource.DiscardAndExit</button>*@
+            <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" id="btnItemBatchDiscardAndExit">@Resource.Close</button>
+        }
+        else
+        {
+            <button type="button" id="btnItemBatchReset" onclick="OnClickItemBatchResetbtn()" class="btn btn-primary btn-sm">@Resource.Reset</button>
+            <button type="button" id="btnItemBatchSaveAndExit" onclick="onclickbtnItemBatchSaveAndExit()" class="btn btn-primary btn-sm">@Resource.SaveAndExit</button>
+            <button type="button" id="btnItemBatchDiscardAndExit" class="btn btn-primary btn-sm" data-dismiss="modal">@Resource.DiscardAndExit</button>
+        }
+        @*@if (ViewBag.DocID != "105103135" && ViewBag.DocID != "105103145120")
+            {
+                if (Disable)
+                {
+                <button type="button" disabled class="btn btn-primary btn-sm" id="btnItemBatchReset">@Resource.Reset</button>
+                <button type="button" disabled class="btn btn-primary btn-sm" id="btnItemBatchSaveAndExit">@Resource.SaveAndExit</button>
+                <button type="button" disabled class="btn btn-primary btn-sm" data-dismiss="modal" id="btnItemBatchDiscardAndExit">@Resource.DiscardAndExit</button>
+                }
+                else
+                {
+                    if (Disable || Session["DocumentStatus"].ToString() == "A")
+                    {
+                    <button type="button" disabled class="btn btn-primary btn-sm" id="btnItemBatchReset">@Resource.Reset</button>
+                    <button type="button" disabled class="btn btn-primary btn-sm" id="btnItemBatchSaveAndExit">@Resource.SaveAndExit</button>
+                    <button type="button" disabled class="btn btn-primary btn-sm" data-dismiss="modal" id="btnItemBatchDiscardAndExit">@Resource.DiscardAndExit</button>
+                    }
+                    else
+                    {
+                    <button type="button" id="btnItemBatchReset" onclick="OnClickItemBatchResetbtn()" class="btn btn-primary btn-sm">@Resource.Reset</button>
+                    <button type="button" id="btnItemBatchSaveAndExit" onclick="onclickbtnItemBatchSaveAndExit()" class="btn btn-primary btn-sm">@Resource.SaveAndExit</button>
+                    <button type="button" id="btnItemBatchDiscardAndExit" class="btn btn-primary btn-sm" data-dismiss="modal">@Resource.DiscardAndExit</button>
+                    }
+                }
+            }*@
+    </div>
+</div>
+
+
+
+

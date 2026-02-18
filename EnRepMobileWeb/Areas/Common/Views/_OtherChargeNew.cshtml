@@ -1,0 +1,190 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.SalesAndDistribution.DomesticSaleInvoice.DomesticSaleInvoice_Model
+
+@using EnRepMobileWeb.Resources;
+@{
+    var Disable = true;
+    string ValDigit = "0.";
+    var VD = Convert.ToInt32(Session["ValDigit"].ToString());
+    for (var i = 0; i < VD; i++)
+    {
+        ValDigit += "0";
+    }
+    string RateDigit = "0.";
+    var RD = Convert.ToInt32(Session["RateDigit"].ToString());
+    for (var i = 0; i < RD; i++)
+    {
+        RateDigit += "0";
+    }
+    decimal TotalOC_amt = 0;
+    decimal Total_OC_AmountInBs = 0;
+
+    if (Session["TransType"] != null)
+    {
+        if (Session["TransType"].ToString() == "Update")
+        {
+            if (Session["Command"].ToString() == "Edit")
+            {
+                Disable = false;
+            }
+            else
+            {
+                Disable = true;
+            }
+        }
+        else
+        {
+            if (Session["Command"].ToString() == "Refresh")
+            {
+                Disable = true;
+            }
+            else
+            {
+                Disable = false;
+            }
+        }
+    }
+}
+<script src="~/Content/Scripts/Common/CommonJS.js"></script>
+<div class="modal-content">
+    <div class="modal-header">
+        <h2>@Resource.OtherChargesCalculator</h2> <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body pop_top">
+        <div class="col-md-3 col-sm-12 pop_right pop_left">
+            <label class="col-form-label label-align">@Resource.OtherCharges <span class="required">*</span> </label>
+            @*<select class="form-control" id="OtherCharge_DDL" onchange="OnChangeOC();" style="margin-bottom: 0px;">
+        </select>*@
+            @if ((Session["DocumentStatus"].ToString() == "D" && Session["Command"].ToString() == "Edit") || Session["Command"].ToString() == "New")
+            {
+                @Html.DropDownListFor(model => model.OcCalci_OtherCharge, new SelectList(Model.OcCalciOtherChargeList, "oc_id", "oc_name"), new { @class = "form-control", @onchange = "OnChangeOC(this)", @id = "OtherCharge_DDL" })
+                @Html.ValidationMessageFor(model => model.OcCalci_OtherCharge, String.Empty, new { @style = "color:red;!important; position:relative;", @id = "vmTax_name" })
+                @Html.HiddenFor(model => model.OcCalci_OtherCharge, new { @id = "hdn_othrcharge" })
+                <span id="SpanOCName" class="error_message"></span>
+            }
+            else
+            {
+                @Html.DropDownListFor(model => model.OcCalci_OtherCharge, new SelectList(Model.OcCalciOtherChargeList, "oc_id", "oc_name"), new { @class = "form-control", @onchange = "OnChangeOC(this)", @id = "OtherCharge_DDL", @disabled = "disabled" })
+                @Html.ValidationMessageFor(model => model.OcCalci_OtherCharge, String.Empty, new { @style = "color:red;!important; position:relative;", @id = "vmTax_name" })
+                @Html.HiddenFor(model => model.OcCalci_OtherCharge, new { @id = "hdn_othrcharge" })
+                <span id="SpanOCName" class="error_message"></span>
+            }
+        </div>
+        <div class="col-md-2 col-sm-12 pop_right pop_left">
+            <label class="col-form-label label-align">@Resource.Currency</label>
+            @*<input id="OCCurrency" class="form-control" readonly maxlength="20" type="text" name="OCCurrency" placeholder="0000.00" style="margin-bottom: 0px;">*@
+            @Html.TextBoxFor(model => model.OcCalci_OCCurrency, new { @class = "form-control", @readonly = "readonly", @id = "OCCurrency", @name = "OCCurrency", @placeholder = "0000.00", type = "text" })
+        </div>
+        <div class="col-md-2 col-sm-12 pop_right pop_left">
+            <label class="col-form-label label-align">@Resource.ExchangeRate <span class="required">*</span></label>
+            @*<input id="OCconv_rate" maxlength="3" readonly class="form-control num_right" type="text" name="OCconv_rate" placeholder="0000:00">*@
+            @Html.TextBoxFor(model => model.OcCalci_OCconv_rate, new { @class = "form-control num_right", @readonly = "readonly", @id = "OCconv_rate", @name = "OCconv_rate", @placeholder = "0000.00", type = "text" })
+
+        </div>
+
+        <div class="col-md-2 col-sm-12 pop_right pop_left">
+            <label class="col-form-label label-align"> @Resource.Amount  @Resource.InSpecific</label>
+            @*<input id="TxtOCAmt" class="form-control date num_right" autocomplete="off" maxlength="10" onchange="OnChangeOCAmount();" onkeypress="return CmnAmtFloatVal(this,event);" type="text" name="TxtOCAmt" placeholder="0000.00" style="margin-bottom: 0px;">*@
+            @if ((Session["DocumentStatus"].ToString() == "D" && Session["Command"].ToString() == "Edit") || Session["Command"].ToString() == "New")
+            {
+                @Html.TextBoxFor(model => model.OcCalci_OCAmount, new { @class = "form-control date num_right", @autocomplete = "off", @maxlength = "10", @id = "TxtOCAmt", @name = "TxtOCAmt", @onchange = "OnChangeOCAmount();",@onkeypress = "return CmnAmtFloatVal(this,event);", @placeholder = "0000.00", type = "text" })
+                <span id="SpanOCAmt" class="error_message"></span>
+            }
+            else
+            {
+                @Html.TextBoxFor(model => model.OcCalci_OCAmount, new { @class = "form-control date num_right", @autocomplete = "off", @maxlength = "10", @id = "TxtOCAmt", @name = "TxtOCAmt", @onchange = "OnChangeOCAmount();", @disabled = "disabled", @onkeypress = "return CmnAmtFloatVal(this,event);", @placeholder = "0000.00", type = "text" })
+                <span id="SpanOCAmt" class="error_message"></span>
+            }
+        </div>
+        <div class="col-md-2 col-sm-12 pop_right pop_left">
+            <label class="col-form-label label-align">@Resource.Amount @Resource.InBase</label>
+            @*<input id="TxtOCAmtInBs" readonly class="form-control date num_right" autocomplete="off" maxlength="10" type="text" name="TxtOCAmtInBs" placeholder="0000.00" style="margin-bottom: 0px;">*@
+            @Html.TextBoxFor(model => model.OcCalci_OCAmtInBs, new { @class = "form-control date num_right", @autocomplete = "off", @maxlength = "10", @id = "TxtOCAmtInBs", @disabled = "disabled", @name = "TxtOCAmtInBs", @placeholder = "0000.00", type = "text" })
+                <span id="" class="error_message"></span>
+        </div>
+
+
+        <div class="col-md-1 col-sm-12 pop_right pop_left">
+            @if ((Session["DocumentStatus"].ToString() == "D" && Session["Command"].ToString() == "Edit") || Session["Command"].ToString() == "New")
+            {
+                <a href="#">
+                    <div class="plus_icon1 margin25"> <i class="fa fa-plus" id="AddOCDetailBtn" onclick="AddOCDetail()" title="Add New"></i> </div>
+                </a>
+            }
+            else
+            {
+                <a href="#">
+                </a>
+            }
+</div>
+        <div class="clear"></div>
+        <div class="tableFixHead height30VH">
+            <table class="table table-bordered margin15" style="" id="Tbl_OC_Deatils">
+                <thead>
+                    <tr>
+                        <th width="4%">&nbsp;</th>
+                        <th class="center" width="40%">@Resource.OtherCharges</th>
+                        <th hidden="hidden">&nbsp;</th>
+                        <th>@Resource.Currency</th>
+                        <th>@Resource.ExchangeRate</th>
+                        <th>@Resource.Amount <br /> @Resource.InSpecific</th>
+                        <th>@Resource.Amount <br /> @Resource.InBase</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (ViewBag.OtherCharge != null)
+                    {
+                        var rowIdx = 0;
+                        foreach (System.Data.DataRow Row in ViewBag.OtherCharge.Rows)
+                        {
+                            rowIdx++;
+                            <tr>
+                                @if ((Session["DocumentStatus"].ToString() == "D" && Session["Command"].ToString() == "Edit") || Session["Command"].ToString() == "New")
+                                {
+                                    <td id="deletetext" class=" red center"><i class="deleteIcon fa fa-trash" id="OCDelIcon" aria-hidden="true" title="@Resource.Delete"></i></td>
+                                }
+                                else
+                                {
+                                   <td></td>
+                                }
+                                <td id="OC_name">@Row["oc_name"].ToString()</td>
+                                <td id="OC_Curr">@Row["curr_name"].ToString()</td>
+                                <td id="OC_Conv">@Convert.ToDecimal(Row["conv_rate"]).ToString(RateDigit)</td>
+                                <td hidden="hidden" id="OC_ID">@Row["oc_id"].ToString()</td>
+                                <td class="num_right" id="OCAmtSp">@Convert.ToDecimal(Row["oc_val"]).ToString(ValDigit)</td>
+                                <td class="num_right" id="OCAmtBs">@Convert.ToDecimal(Row["OCValBs"]).ToString(ValDigit)</td>
+
+                            </tr>
+                            TotalOC_amt = TotalOC_amt + Convert.ToDecimal(Row["oc_val"]);
+                            Total_OC_AmountInBs = Total_OC_AmountInBs + Convert.ToDecimal(Row["OCValBs"]);
+                        }
+                    }
+                </tbody>
+                <tfoot>
+                    <tr class="total">
+                        <td>&nbsp;</td>
+                        <td class="num_right"><strong> @Resource.TotalOtherCharges</strong></td>
+                        @*<td class="num_right"><strong>0000.00</strong></td>*@
+                        <td></td>
+                        <td></td>
+                        <td class="num_right"><strong><span id="Total_OC_Amount">@TotalOC_amt.ToString(ValDigit)</span></strong></td>
+                        <td class="num_right"><strong><span id="Total_OC_AmountInBs">@Total_OC_AmountInBs.ToString(ValDigit)</span></strong></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+    </div>
+    <div class="modal-footer">
+        @if ((Session["DocumentStatus"].ToString() == "D" && Session["Command"].ToString() == "Edit") || Session["Command"].ToString() == "New")
+        {
+            <button type="button" class="btn btn-primary btn-sm" id="SaveAndExitBtn_OC" onclick="OnClickSaveAndExit_OC_Btn();">@Resource.SaveAndExit</button>
+            <button type="button" class="btn btn-primary btn-sm" id="DiscardAndExit_OC" data-dismiss="modal" onclick="OnClickDiscardAndExit_OC_Btn();">@Resource.DiscardAndExit</button>
+        }
+        else
+        {
+            
+        }
+    </div>
+</div>
+

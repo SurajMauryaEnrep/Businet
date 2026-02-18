@@ -1,0 +1,69 @@
+﻿@using EnRepMobileWeb.Resources;
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/Procurement/PurchaseQuotation/PurchaseQuotation.js"></script>
+
+<table id="datatable-buttons" class="table table-striped table-bordered width2000 rowhighlighttbl itmfrz">
+    <thead>
+        <tr class="sticky-header">
+            <th width="2%">@Resource.SrNo</th>
+            <th width="6%" class="itmStick">@Resource.Quotation <br /> @Resource.Number</th>
+            <th hidden="hidden"></th>
+            <th width="6%">@Resource.Quotation <br /> @Resource.Date</th>
+            <th width="16%">@Resource.Supplier <br /> @Resource.Name</th>
+            <th width="5%">@Resource.Supplier <br /> @Resource.Type</th>
+            <th width="7%">@Resource.Source <br /> @Resource.Type</th>
+            <th width="9%">@Resource.SourceDocumentNumber @*<br /> @Resource.Number*@</th>
+            <th width="8%">@Resource.SourceDocumentDate @*<br /> @Resource.Date*@</th>
+            <th width="7%">@Resource.Valid <br /> @Resource.Upto</th>
+            <th width="12%">@Resource.PONumberAnd <br /> @Resource.Date</th>
+            <th width="6%">@Resource.Status</th>
+            <th width="7%">@Resource.CreatedBy</th>
+            <th width="7%">@Resource.Createdon</th>
+            <th width="7%">@Resource.ApprovedOn</th>
+            <th width="7%">@Resource.AmendedOn</th>
+        </tr>
+    </thead>
+    <tbody id="">
+        @if (ViewBag.PQList != null)
+        {
+            var i = 0;
+            foreach (System.Data.DataRow dr in ViewBag.PQList.Rows)
+            {
+                i++;
+        <tr>
+            <td class="sr_padding">@i</td>
+            <td id="QuotationNumber" class="ItmNameBreak itmStick tditemfrz">@dr["qt_no"].ToString()</td>
+            <td hidden="hidden" id="QuotationDate">@dr["qt_dt"].ToString()</td>
+            <td>@dr["qt_date"].ToString()</td>
+            <td>@dr["supp_name"].ToString()</td>
+            <td>@dr["supp_type"].ToString()</td>
+            <td>@dr["src_type"].ToString()</td>
+            <td>@dr["src_doc_number"].ToString()</td>
+            <td>@dr["src_doc_date"].ToString()</td>
+            <td>@dr["valid_upto"].ToString()</td>
+            <td>@dr["po_no_and_date"].ToString()</td>
+            <td>@dr["status"].ToString()</td>
+            <td>@dr["create_by"].ToString()</td>
+            <td>@dr["create_dt"].ToString()</td>
+            <td>@dr["app_dt"].ToString()</td>
+            <td>@dr["mod_dt"].ToString()</td>
+        </tr>
+            }
+
+        }
+
+    </tbody>
+</table>
+@if (Model.PQSearch != null)
+{
+    if (Model.PQSearch == "PQ_Search")
+    {
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+        @Scripts.Render("~/Content/Scripts/DatatablesJs")
+        //Session["PQSearch"] = null;
+    }
+}
+
+
+
+

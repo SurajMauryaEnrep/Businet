@@ -1,0 +1,117 @@
+﻿@using EnRepMobileWeb.Resources;
+@*<table id="datatable-buttons1" class="table table-bordered width1500">*@
+<style>
+    #divStkTrf #StockTransferMISList_wrapper .buttons-csv {
+        position: absolute;
+        margin-left: 19%;
+        /* top: -10px;*/
+    }
+
+    #divStkTrf #StockTransferMISList_filter {
+        position: absolute;
+        right: 0;
+        top: 0;
+    }
+
+    #divStkTrf .dataTables_length {
+        position: absolute;
+        z-index: 10;
+    }
+
+    #divStkTrf #StockTransferMISList_wrapper {
+        height: 30px;
+    }
+    #divStkTrf .buttons-pdf {
+        margin-left: 15% !important;
+    }
+</style>
+<script src="~/Content/Scripts/Common/CommonJS.js"></script>
+@*<table id="StockTransferMISList" class="table table-bordered width1500">
+    <thead>
+        <tr class="headings">*@
+<table id="StockTransferMISList" class="table table-striped width2000 rowhighlighttbl" cellspacing="0">
+    <thead>
+        <tr class="sticky-header">
+
+            <th width="4%">Sr.No.</th>
+            <th width="22">
+                <div class="col-md-3 col-sm-12"></div>
+                <div class="col-md-6 col-sm-12">
+                    <span class="item_add">@Resource.Item @Resource.Name</span>
+                    @*<a href="#">
+                            <div class="plus_icon1"> <i class="fa fa-plus" id="BtnAddItem" onclick="AddNewRow()" title="Add New"></i> </div>
+                        </a>*@
+                </div>
+                <div class="col-md-3 col-sm-12"></div>
+            </th>
+            <th width="5%" title="Unit Of Measure"> @Resource.UOM</th>
+            <th width="9%" title="Unit Of Measure"> @Resource.Transfer @Resource.Type</th>
+            <th width="9%" title="Unit Of Measure"> @Resource.SourceBranch</th>
+            <th width="9%">@Resource.SourceWarehouse</th>
+            <th width="9%">@Resource.DestinationBranch</th>
+            <th width="9%">@Resource.DestinationWarehouse</th>
+            <th width="8%">@Resource.RequisitionQuantity</th>
+            <th width="8%">@Resource.TransferQuantity</th>
+            <th width="8%">@Resource.ReceiptQuantity</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (ViewBag.StkTrfData != null)
+        {
+            int rowNo = 1;
+            foreach (System.Data.DataRow dtr in ViewBag.StkTrfData.Rows)
+            {
+                <tr>
+                    <td class="sr_padding">@rowNo </td>
+                    <td>
+                        <input type="hidden" id="hfItemID" value="@dtr["item_id"].ToString()" />
+                        <input type="hidden" id="hfFromBr" value="@dtr["from_br"].ToString()" />
+                        <input type="hidden" id="hfToBr" value="@dtr["to_br"].ToString()" />
+                        <input type="hidden" id="hfFromWh" value="@dtr["from_wh"].ToString()" />
+                        <input type="hidden" id="hfToWh" value="@dtr["to_wh"].ToString()" />
+                        <input type="hidden" id="hfTrfType" value="@dtr["trf_type"].ToString()" />
+                        <input type="hidden" id="hfItemName" value="@dtr["item_name"].ToString()" />
+                        <input type="hidden" id="hfUOM" value="@dtr["uom_alias"].ToString()" />
+                        <input type="hidden" id="hfFromBrName" value="@dtr["FromBranch"].ToString()" />
+                        <input type="hidden" id="hfToBrName" value="@dtr["ToBranch"].ToString()" />
+                        <input type="hidden" id="hfFromWhName" value="@dtr["FromWarehouse"].ToString()" />
+                        <input type="hidden" id="hfToWhName" value="@dtr["ToWarehouse"].ToString()" />
+                        <input type="hidden" id="hfTransferType" value="@dtr["TransferType"].ToString()" />
+                        <input type="hidden" id="hfTrfQty" value="@dtr["req_qty"].ToString()" />
+                        <input type="hidden" id="hfIssueQty" value="@dtr["issue_qty"].ToString()" />
+                        <input type="hidden" id="hfRcptQty" value="@dtr["rec_qty"].ToString()" />
+                        <div class="col-sm-11 no-padding">@dtr["item_name"].ToString()</div>
+                        <div class="col-sm-1 i_Icon">
+                            <button type="button" class="calculator" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" onclick="OnClickIconBtn(event);" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.ItemInformation"></button>
+                        </div>
+                    </td>
+                    <td>@dtr["uom_alias"].ToString()</td>
+                    <td>@dtr["TransferType"].ToString()</td>
+                    <td>@dtr["FromBranch"].ToString()</td>
+                    <td>@dtr["FromWarehouse"].ToString()</td>
+                    <td>@dtr["ToBranch"].ToString()</td>
+                    <td>@dtr["ToWarehouse"].ToString()</td>
+                    <td>
+                        <div class="col-sm-10 no-padding">@dtr["req_qty"].ToString()</div>
+                        <div class="col-sm-2 i_Icon">
+                            <button type="button" class="calculator" data-toggle="modal" data-target="#RequisitionQuantity" data-backdrop="static" onclick="GetStkTrfPopupData(event,'Req');" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Requisition @Resource.Detail"></button>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="col-sm-10 no-padding">@dtr["issue_qty"].ToString()</div>
+                        <div class="col-sm-2 i_Icon">
+                            <button type="button" class="calculator" data-toggle="modal" data-target="#TransferQuantity" data-backdrop="static" onclick="GetStkTrfPopupData(event,'Trf');" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Issued @Resource.Detail"></button>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="col-sm-10 no-padding">@dtr["rec_qty"].ToString()</div>
+                        <div class="col-sm-2 i_Icon">
+                            <button type="button" class="calculator" data-toggle="modal" data-target="#ReceiptQuantity" data-backdrop="static" onclick="GetStkTrfPopupData(event,'Rcpt');" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Receipt @Resource.Detail"></button>
+                        </div>
+                    </td>
+                </tr>
+                rowNo = rowNo + 1;
+            }
+        }
+    </tbody>
+</table>

@@ -1,0 +1,164 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.FinancialAccountingAndControl.MIS.BudgetAnalysis.BudgetAnalysisModel
+@using EnRepMobileWeb.Resources;
+@{
+    string ValDigit = "0.";
+    var VD = Convert.ToInt32(Session["ValDigit"].ToString());
+    for (var i = 0; i < VD; i++)
+    {
+        ValDigit += "0";
+    }
+}
+<style>
+    #datatable-buttons1_wrapper .btn-group a:nth-child(3) {
+        display: inline-block;
+        position: absolute;
+    }
+</style>
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<table id="datatable-buttons1" class="table table-striped width2200 itmfrz" cellspacing="0">
+    <thead>
+        <tr class="sticky-header">
+            <th width="3%">&nbsp;</th>
+            <th width="10%" class="itmStick">&nbsp;</th>
+            <th width="13%" >&nbsp;</th>
+            @if (ViewBag.Qtr != null)
+            {
+                if (ViewBag.Qtr.ToString().Contains("1") || ViewBag.Qtr.ToString() == "0")
+                {
+                    <th width="5%" class="light_cream_colour">&nbsp;</th>
+                    <th width="5%" class="light_cream_colour">@Resource.Quarter 1</th>
+                    <th width="5%" class="light_cream_colour">&nbsp;</th>
+                }
+                if (ViewBag.Qtr.ToString().Contains("2") || ViewBag.Qtr.ToString() == "0")
+                {
+                    <th width="5%" class="light_blue_colour">&nbsp;</th>
+                    <th width="5%" class="light_blue_colour">@Resource.Quarter 2</th>
+                    <th width="5%" class="light_blue_colour">&nbsp;</th>
+                }
+                if (ViewBag.Qtr.ToString().Contains("3") || ViewBag.Qtr.ToString() == "0")
+                {
+                    <th width="5%" class="light_blue1_colour">&nbsp;</th>
+                    <th width="5%" class="light_blue1_colour">@Resource.Quarter 3</th>
+                    <th width="5%" class="light_blue1_colour">&nbsp;</th>
+                }
+                if (ViewBag.Qtr.ToString().Contains("4") || ViewBag.Qtr.ToString() == "0")
+                {
+                    <th width="5%" class="light_cream1_colour">&nbsp;</th>
+                    <th width="5%" class="light_cream1_colour">@Resource.Quarter 4</th>
+                    <th width="5%" class="light_cream1_colour">&nbsp;</th>
+                }
+            }
+            else
+            {
+                <th width="5%" class="light_cream_colour">&nbsp;</th>
+                <th width="5%" class="light_cream_colour">@Resource.Quarter 1</th>
+                <th width="5%" class="light_cream_colour">&nbsp;</th>
+                <th width="5%" class="light_blue_colour">&nbsp;</th>
+                <th width="5%" class="light_blue_colour">@Resource.Quarter 2</th>
+                <th width="5%" class="light_blue_colour">&nbsp;</th>
+                <th width="5%" class="light_blue1_colour">&nbsp;</th>
+                <th width="5%" class="light_blue1_colour">@Resource.Quarter 3</th>
+                <th width="5%" class="light_blue1_colour">&nbsp;</th>
+                <th width="5%" class="light_cream1_colour">&nbsp;</th>
+                <th width="5%" class="light_cream1_colour">@Resource.Quarter 4</th>
+                <th width="5%" class="light_cream1_colour">&nbsp;</th>
+
+            }
+        </tr>
+
+        <tr class="sticky-header">
+            <th width="3%">@Resource.SrNo</th>
+            <th width="14%" class="itmStick">@Resource.GLAccount</th>
+            <th width="23%">@Resource.GLGroup</th>
+            @if (ViewBag.Qtr != null)
+            {
+                if (ViewBag.Qtr.ToString().Contains("1") || ViewBag.Qtr.ToString() == "0")
+                {
+                    <th width="5%" class="light_cream_colour">@Resource.Budget  <br /> @Resource.Amount</th>
+                    <th width="5%" class="light_cream_colour">@Resource.Actual  <br /> @Resource.Amount</th>
+                    <th width="5%" class="light_cream_colour">@Resource.Variance <br /> @Resource.InPercentage</th>
+                }
+                if (ViewBag.Qtr.ToString().Contains("2") || ViewBag.Qtr.ToString() == "0")
+                {
+                    <th width="5%" class="light_blue_colour">@Resource.Budget  <br /> @Resource.Amount</th>
+                    <th width="5%" class="light_blue_colour">@Resource.Actual  <br /> @Resource.Amount</th>
+                    <th width="5%" class="light_blue_colour">@Resource.Variance <br /> @Resource.InPercentage</th>
+                }
+                if (ViewBag.Qtr.ToString().Contains("3") || ViewBag.Qtr.ToString() == "0")
+                {
+                    <th width="5%" class="light_blue1_colour">@Resource.Budget  <br /> @Resource.Amount</th>
+                    <th width="5%" class="light_blue1_colour">@Resource.Actual  <br /> @Resource.Amount</th>
+                    <th width="5%" class="light_blue1_colour">@Resource.Variance <br /> @Resource.InPercentage</th>
+                }
+                if (ViewBag.Qtr.ToString().Contains("4") || ViewBag.Qtr.ToString() == "0")
+                {
+                    <th width="5%" class="light_cream1_colour">@Resource.Budget  <br /> @Resource.Amount</th>
+                    <th width="5%" class="light_cream1_colour">@Resource.Actual  <br /> @Resource.Amount</th>
+                    <th width="5%" class="light_cream1_colour">@Resource.Variance <br /> @Resource.InPercentage</th>
+                }
+            }
+            else
+            {
+                <th width="5%" class="light_cream_colour">@Resource.Budget  <br /> @Resource.Amount</th>
+                <th width="5%" class="light_cream_colour">@Resource.Actual  <br /> @Resource.Amount</th>
+                <th width="5%" class="light_cream_colour">@Resource.Variance <br /> @Resource.InPercentage</th>
+                <th width="5%" class="light_blue_colour">@Resource.Budget  <br /> @Resource.Amount</th>
+                <th width="5%" class="light_blue_colour">@Resource.Actual  <br /> @Resource.Amount</th>
+                <th width="5%" class="light_blue_colour">@Resource.Variance <br /> @Resource.InPercentage</th>
+                <th width="5%" class="light_blue1_colour">@Resource.Budget  <br /> @Resource.Amount</th>
+                <th width="5%" class="light_blue1_colour">@Resource.Actual  <br /> @Resource.Amount</th>
+                <th width="5%" class="light_blue1_colour">@Resource.Variance <br /> @Resource.InPercentage</th>
+                <th width="5%" class="light_cream1_colour">@Resource.Budget  <br /> @Resource.Amount</th>
+                <th width="5%" class="light_cream1_colour">@Resource.Actual  <br /> @Resource.Amount</th>
+                <th width="5%" class="light_cream1_colour">@Resource.Variance <br /> @Resource.InPercentage</th>
+            }
+        </tr>
+    </thead>
+    <tbody id="">
+        @if (ViewBag.QuarterlyBAReport != null)
+        {
+            var srno = 1;
+            foreach (System.Data.DataRow dtr in ViewBag.QuarterlyBAReport.Rows)
+            {
+                <tr>
+                    <td>@srno</td>
+                    <td class="ItmNameBreak itmStick tditemfrz" >@dtr["acc_name"].ToString()</td>
+                    <td>@dtr["AccGroupName"].ToString()</td>
+                    @if (ViewBag.Qtr.ToString().Contains("1") || ViewBag.Qtr.ToString() == "0")
+                    {
+                        <td class="light_cream_colour num_right">@dtr["Q1BudgetAmount"].ToString()</td>
+                        <td class="light_cream_colour num_right">@dtr["Q1Amt"].ToString()</td>
+                        <td class="num_right light_cream_colour">@dtr["Q1Variance"].ToString()</td>
+                    }
+                    @if (ViewBag.Qtr.ToString().Contains("2") || ViewBag.Qtr.ToString() == "0")
+                    {
+                        <td class="light_blue_colour num_right">@dtr["Q2BudgetAmount"].ToString()</td>
+                        <td class="light_blue_colour num_right">@dtr["Q2Amt"].ToString()</td>
+                        <td class="num_right light_blue_colour">@dtr["Q2Variance"].ToString()</td>
+                    }
+                    @if (ViewBag.Qtr.ToString().Contains("3") || ViewBag.Qtr.ToString() == "0")
+                    {
+                        <td class="light_blue1_colour num_right">@dtr["Q3BudgetAmount"].ToString()</td>
+                        <td class="light_blue1_colour num_right">@dtr["Q3Amt"].ToString()</td>
+                        <td class="num_right light_blue1_colour">@dtr["Q3Variance"].ToString()</td>
+                    }
+                    @if (ViewBag.Qtr.ToString().Contains("4") || ViewBag.Qtr.ToString() == "0")
+                    {
+                        <td class="light_cream1_colour num_right">@dtr["Q4BudgetAmount"].ToString()</td>
+                        <td class="light_cream1_colour num_right">@dtr["Q4Amt"].ToString()</td>
+                        <td class="num_right light_cream1_colour">@dtr["Q4Variance"].ToString()</td>
+                    }
+                </tr>
+                srno = srno + 1;
+            }
+        }
+    </tbody>
+</table>
+@if (Model.Search != null)
+{
+    if (Model.Search == "SEARCH")
+    {
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+        @Scripts.Render("~/Content/Scripts/DatatablesJs")
+    }
+}

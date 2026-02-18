@@ -1,0 +1,126 @@
+﻿@model EnRepMobileWeb.MODELS.BusinessLayer.OCDetail.OCDetailModel
+@using EnRepMobileWeb.Resources;
+@using System.Data
+@if (Session["UserId"] == null)
+{
+    Response.Redirect("~/Login");
+}
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+<script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+<script src="~/Content/Scripts/BusinessLayer/OCSetup/OCList.js"></script>
+
+<title>@Model.Title</title>
+<div class="clearfix"></div>
+<div class="row">
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <h2 class="col-md-7 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                <!-- Smart Wizard -->
+                @Html.HiddenFor(m => m.ListFilterData, new { @id = "ListFilterData" })
+
+            <div id="" class="col-md-5 col-sm-12 work_flow heading_right_padding">
+                @if (ViewBag.VBRoleList != null)
+                {
+                    foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                    {
+                        if (Row["feature_id"].ToString() == "103195001")
+                        {
+                            <ul>
+                                <li>
+                                    <a class="tooltip-test"
+                                       title="@Resource.AddNew" href="@Url.Action("AddNewOC","OCList")"><img src="~/Content/Images/addgreen.png" width="32" id="addNewItem" onclick="OCDetail()" height="32" alt="Add"></a>
+                                </li>
+                            </ul>
+                        }
+                    }
+                }
+            </div>
+                <div class="x_title pad_mar ">
+                    <div class="col-md-12 col-sm-12 icon_tool padding_zero">
+                        <form class="available_stock pad_mar" action="" method="post" novalidate>
+                            <div class="col-md-12 col-sm-12 padding_zero">
+                                <div class="col-md-3 col-sm-12">
+                                    <label class="col-form-label label-align">
+                                        @Resource.OtherChargeName
+                                    </label>
+                                    @Html.DropDownListFor(model => model.OTC, new SelectList(Model.OTCLists, "OT_id", "OT_Val"), new { @class = "form-control", @id = "OCListName", @OnClick = "OnChangeOTC()" })
+                                    @*<select class="form-control" id="OtherChargeName">
+                <option value="0">ALL</option>
+            </select>
+                                        <input type="hidden" id="OCListName" value='@Url.Action("GetAutoCompleteOCList", "OCList")' />*@
+                                </div>
+
+
+                                <div class="col-md-2 col-sm-12">
+                                    <label class="col-form-label label-align">
+                                        @Resource.OtherChargeType
+
+                                    </label>
+                                    @Html.DropDownListFor(model => model.OTCType, new SelectList(new List<SelectListItem> {
+                                                                                      new SelectListItem {Text="ALL",Value="ALL" },
+                                                                                      new SelectListItem {Text="Self",Value="S" },
+                                                                                      new SelectListItem {Text="Third Party",Value="T" },
+                                                                                      }, "Value", "Text"
+                                       ), new { @class = "form-control", @id = "OtherChargeType", @name = "OTCType" })
+                                    @*<select class="form-control" id="OtherChargeType">
+                <option value="ALL">ALL</option>
+                <option value="S">Self</option>
+                <option value="T">Third Party</option>
+
+            </select>*@
+
+                                </div>
+                                <div class="col-md-3 col-sm-12">
+                                    <label class="col-form-label label-align">@Resource.HSNCode</label>
+                                    <div>
+                                       
+                                            @Html.DropDownListFor(model => model.HSN_code, new SelectList(Model.HSNList, "setup_id", "setup_val"), new { @id = "ListHSN_Id", @class = "form-control" })
+                                    </div>
+                                </div>
+                                <div class="col-md-2 col-sm-12">
+                                    <label class="col-form-label label-align">
+                                        @Resource.Active
+                                    </label>
+                                    @Html.DropDownListFor(model => model.item_ActStatus, new SelectList(new List<SelectListItem> {
+                                                                                               new SelectListItem {Text="ALL",Value="ALL" },
+                                                                                               new SelectListItem {Text="Yes",Value="Y" },
+                                                                                               new SelectListItem {Text="No",Value="N" },
+                                                                                               }, "Value", "Text"
+                                                ), new { @class = "form-control", @id = "act_Status", @name = "item_ActStatus" })
+                                    @*<select class="form-control" id="act_Status">
+                <option value="ALL">ALL</option>
+                <option value="Y">Yes</option>
+                <option value="N">No</option>
+
+            </select>*@
+                                </div>
+                                <div class="col-md-1 col-sm-12">
+                                    <button type="button" class="btn btn-primary btn-sm margintop20" id="BtnSearch" onclick="FilterOCList()"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <div class="card-box table-responsive dy_table">
+                    <div id="OCList" class="sticky-table sticky-ltr-cells sb-container container-example1">                      
+                         @Html.Partial("~/Areas/BusinessLayer/Views/Shared/PartialOCList.cshtml")                      
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- page content end -->

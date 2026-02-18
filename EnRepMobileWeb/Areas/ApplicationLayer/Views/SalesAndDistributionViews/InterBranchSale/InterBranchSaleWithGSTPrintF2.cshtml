@@ -1,0 +1,1066 @@
+﻿
+@using System.Data;
+@{
+    var a = "";
+}
+<style>
+    .tableborder, .tableborder > tbody > tr > td, .tableborder th {
+        border: 0.5px solid black;
+    }
+
+        /*.invoice {
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 18px;
+        font-weight: bold;
+        text-decoration: underline;
+        text-align: left;
+    }*/
+
+        .tableborder, .tableborder > tbody > tr > td, .tableborder th {
+            border: 0.5px solid black;
+        }
+
+    .invoice_sub {
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 12px;
+        /*font-weight: bold;*/
+        /*text-decoration: underline;*/
+        text-align: center;
+        padding-bottom: 0px;
+        padding-top: 0px;
+    }
+
+    .invoice {
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 18px;
+        font-weight: bold;
+        text-decoration: underline;
+        text-align: left;
+    }
+
+    .bank_detail {
+        font-size: 12px;
+        font-weight: normal;
+        width: 35%;
+    }
+
+    .bank_detail_value {
+        font-size: 11px;
+        font-weight: bold;
+        width: 65%;
+    }
+
+    .company_detail {
+        font-size: 16px;
+        font-weight: normal;
+        width: 65%;
+        paddingbottom: 5px;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .bank_detail, .bank_detail_value {
+        font-family: Arial, Helvetica, sans-serif;
+        paddingtop: 2px;
+        paddingbottom: 2px;
+    }
+
+    .declaration {
+        font-size: 12px;
+        font-weight: normal;
+        width: 50%;
+        paddingbottom: 5px;
+        padding-right: 5%;
+    }
+
+    .bank_detail_main {
+        font-size: 12px;
+        font-weight: normal;
+        width: 45%;
+    }
+</style>
+@{
+    string lpath = string.Empty;
+    lpath = ViewBag.FLogoPath.ToString();
+    string copyname = string.Empty;/*Add by Hina sharma on 01-10-2024 to show multiple print copy for sale invoice only*/
+    if (ViewBag.Copyno != null)/*Add by Hina sharma on 01-10-2024 to show multiple print copy for sale invoice only*/
+    {
+        if (Convert.ToInt32(ViewBag.Copyno) == 1)
+        {
+            copyname = "Original";
+        }
+        if (Convert.ToInt32(ViewBag.Copyno) == 2)
+        {
+            copyname = "Duplicate";
+        }
+        if (Convert.ToInt32(ViewBag.Copyno) == 3)
+        {
+            copyname = "Triplicate";
+        }
+        if (Convert.ToInt32(ViewBag.Copyno) == 4)
+        {
+            copyname = "Extra Copy";
+        }
+    }
+    else
+    {
+        copyname = "";
+    }
+}
+<div>
+    <div style="width:100%;">
+        <div style="margin:0 auto; background:url(images/draft.png) no-repeat; background-position: center center ">
+            <table style="width:100%; ">
+                <tr>
+                    <td>
+                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                            <tr>
+                                <td>
+                                    <table width="100%" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td width="40%"> &nbsp;</td>
+                                            <td class="" width="60%"> &nbsp;</td>
+                                            <td class="" width="8%" style="font-size: 10px; font-weight:normal; text-align:right;">@copyname.ToString()</td>
+                                        </tr>
+                                        <tr>
+                                            <td width="40%">
+                                                <img src="@lpath" alt="Logo" width="100" />
+                                            </td>
+                                            <td class="invoice" width="60%">@ViewBag.Title.ToString()</td>
+                                            <td class="" width="8%" style="font-size: 10px; font-weight:normal; text-align:right;">@*@copyname.ToString()*@</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2">
+                                                <table width="100%" cellpadding="0" cellspacing="0">
+
+                                                    @if (ViewBag.PrintOption.Rows[0]["showInvHeading"].ToString() == "Y")
+                                                    {
+                                                        <tr>
+                                                            <td width="20%">&nbsp;</td>
+                                                            <td class="invoice_sub" width="60%">@ViewBag.Details.Tables[0].Rows[0]["inv_heading"].ToString()</td>
+                                                            <td width="20%">&nbsp;</td>
+                                                        </tr>
+                                                    }
+                                                    else
+                                                    {
+                                                        <tr>
+                                                            <td>&nbsp;</td>
+                                                        </tr>
+                                                    }
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </table>
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <table width="100%" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <!--<td style="vertical-align: top; width:20%">-->
+                                            @*<img src='@Server.MapPath("~/"+ViewBag.Details.Tables[0].Rows[0]["logo"].ToString())' alt="Logo" width="150" /> <br />*@
+                                            <!--</td>-->
+                                            <td width="35%" style="font-size: 12px; font-weight:normal;padding: 0px 0px 0px 5px; line-height:18px; vertical-align:top; ">
+                                                @if (ViewBag.PrintOption.Rows[0]["ShowWithoutSybbol"].ToString() == "Y")
+                                                {
+                                                    <strong>Tax Invoice No. : @ViewBag.Details.Tables[0].Rows[0]["app_inv_no_without"].ToString()</strong><br />
+                                                }
+                                                else
+                                                {
+                                                    <strong>Tax Invoice No. : @ViewBag.Details.Tables[0].Rows[0]["app_inv_no"].ToString()</strong><br />
+                                                }
+                                                <strong>Invoice Date : @ViewBag.Details.Tables[0].Rows[0]["InvDate"].ToString()</strong><br />
+                                                <strong>Customer Ref.Number : @ViewBag.Details.Tables[0].Rows[0]["cust_ref_no"].ToString()</strong><br />@*/*add by Hina on 05-03-2025*/*@
+                                                <strong>Customer Ref.Date : @ViewBag.Details.Tables[0].Rows[0]["cust_ref_dt"].ToString()</strong><br />
+
+                                                @*<strong>Customer Ref. @ViewBag.Details.Tables[0].Rows[0]["CustomerRef"].ToString()</strong><br />
+                                                    @if (ViewBag.Details.Tables[6].Rows.Count > 0)
+                                                    {
+                                                        <strong>Payment Terms : @ViewBag.Details.Tables[0].Rows[0]["PaymentTerms"].ToString()</strong><br />
+                                                    }
+                                                    else
+                                                    {
+                                                        <strong>Payment Terms :</strong><br />
+                                                    }*@
+                                                @*<strong>Delivery Order No. :  @ViewBag.Details.Tables[8].Rows[0]["ship_no"].ToString()</strong><br />
+                                                    <strong>Delivery Date :  @ViewBag.Details.Tables[8].Rows[0]["ship_dt"].ToString()</strong><br />*@
+                                            </td>
+                                            <td width="35%" style="font-size: 12px; font-weight:normal;padding: 0px 0px 0px 5px; line-height:18px; vertical-align:top;">
+                                                <strong>Shipping Type:  @ViewBag.Details.Tables[6].Rows[0]["ShipType"].ToString()</strong><br />
+                                                @if (ViewBag.PrintOption != null)
+                                                {
+                                                    if (ViewBag.PrintOption.Rows[0]["PrintShipFromAddress"].ToString() == "Y")
+                                                    {
+                                                        <strong>
+                                                            Ship From Address : @ViewBag.Details.Tables[0].Rows[0]["ship_from_addr"].ToString()
+                                                        </strong><br />
+                                                    }
+
+                                                }
+                                                <strong>Transport Name: @ViewBag.Details.Tables[6].Rows[0]["TransName"].ToString()</strong><br />
+                                                <strong>Vehicle No. :  @ViewBag.Details.Tables[6].Rows[0]["VehNo"].ToString()</strong><br />
+                                                <strong>GR./LR. No. & Date : @ViewBag.Details.Tables[6].Rows[0]["GrLrNoAndDate"].ToString()</strong><br />
+                                                <strong>EWB No. : @ViewBag.Details.Tables[0].Rows[0]["gst_ewb_no"].ToString()</strong><br />
+                                            </td>
+                                            <td width="10%"> <img src="images/barcode.png" alt="Logo" width="90" /> </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <table style=" width:100%;border: solid 1px #afafaf;">
+                            <tbody>
+                                <tr>
+                                    <td width="33%" style="font-size: 12px; font-weight:normal;padding: 0px 0px 0px 5px; vertical-align:top; line-height:18px;  border-right: solid 1px #afafaf;">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="font-size: 12px; font-weight:normal;">
+                                            <tr>
+                                                <td style="font-weight: bold; paddingtop: 3px; paddingbottom: 3px;">
+                                                    <div style="width:100%; float:left;">
+                                                        <div style="width:24%; float:left;">IRN No. :</div>
+                                                        <div style="width:98%; float:left;">@ViewBag.Details.Tables[0].Rows[0]["gst_irn_no"].ToString()</div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-weight: bold; paddingtop: 3px; paddingbottom: 3px;">
+                                                    <div style="width:100%; float:left;">
+                                                        <div style="width:22%; float:left;">Bill From</div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-weight: bold; paddingtop: 3px; paddingbottom: 3px;">@ViewBag.Details.Tables[0].Rows[0]["comp_nm"].ToString()</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="paddingtop: 3px; paddingbottom: 3px; line-height:17px;">@ViewBag.Details.Tables[0].Rows[0]["Comp_Add"].ToString()</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="paddingtop: 3px; paddingbottom: 3px;">Ph.No.  @ViewBag.Details.Tables[0].Rows[0]["PhoneNo"].ToString()</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="paddingtop: 3px; paddingbottom: 3px;">Email Id:  @ViewBag.Details.Tables[0].Rows[0]["EmailId"].ToString()</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="paddingtop: 3px; paddingbottom: 3px;">Website:@ViewBag.Details.Tables[0].Rows[0]["comp_website"].ToString()</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="paddingtop: 3px; paddingbottom: 3px;">State Code/State:  @ViewBag.Details.Tables[0].Rows[0]["State"].ToString()</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="paddingtop: 3px; paddingbottom: 3px; font-weight:bold;">MSME No. : @ViewBag.Details.Tables[0].Rows[0]["msme_no"].ToString()</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-weight: bold; paddingtop: 3px; paddingbottom: 3px;">GSTIN No. : @ViewBag.Details.Tables[0].Rows[0]["gst_no"].ToString() </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-weight: bold; paddingtop: 3px; paddingbottom: 3px;"> PAN No. : @ViewBag.Details.Tables[0].Rows[0]["pan_no"].ToString() </td>
+                                            </tr>
+
+                                        </table>
+
+                                        @*<div style="font-weight:bold;">IRN No. :  @ViewBag.Details.Tables[0].Rows[0]["gst_irn_no"].ToString()</div>*@
+                                        @*<div style="width:100%; float:left;"><div style="font-weight:bold; width:22%; float:left;">IRN No. :</div> <div style="width:98%; float:left;">@ViewBag.Details.Tables[0].Rows[0]["gst_irn_no"].ToString()</div></div><br />*@
+                                        @*<div style="width:100%; float:left;"><div style="font-weight:bold; width:22%; float:left;">Bill From</div></div>
+                                            <br />*@
+                                        @*<div style="font-weight:bold;"> @ViewBag.Details.Tables[0].Rows[0]["comp_nm"].ToString()</div> <br />*@
+                                        @*@ViewBag.Details.Tables[0].Rows[0]["Comp_Add"].ToString() <br />*@
+                                        @*Ph.No.  @ViewBag.Details.Tables[0].Rows[0]["PhoneNo"].ToString()<br />*@
+                                        @*Email Id:  @ViewBag.Details.Tables[0].Rows[0]["EmailId"].ToString() <br />*@
+                                        @*Website:@ViewBag.Details.Tables[0].Rows[0]["comp_website"].ToString()<br />*@
+                                        @*State Code/State:  @ViewBag.Details.Tables[0].Rows[0]["State"].ToString()<br />*@
+                                        @*MSME No: UDYAM-DL-02-0065352 <br />*@
+                                        @*<strong>GSTIN No. : @ViewBag.Details.Tables[0].Rows[0]["gst_no"].ToString() </strong><br />*@
+                                        @*<strong>PAN No. : @ViewBag.Details.Tables[0].Rows[0]["pan_no"].ToString() </strong><br />*@
+                                        @*/*Commented By Hina on 08-03-2024 to comment on this after discuss by Vishal Sir*/*@
+                                        @*<strong>TAN No. : @ViewBag.Details.Tables[0].Rows[0]["TanNo"].ToString() </strong><br />
+                                            <strong>MSME No. : @ViewBag.Details.Tables[0].Rows[0]["MsmeNo"].ToString() </strong><br />*@
+                                    </td>
+                                    <td width="33%" style="font-size: 12px; font-weight:normal;padding: 0px 0px 0px 5px; line-height:16px; vertical-align:top; border-right: solid 1px #afafaf;">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="font-size: 12px; font-weight:normal;">
+                                            <tr>
+                                                <td style="font-weight: bold; paddingtop: 3px; paddingbottom: 3px;">Acknowledgement No. :  @ViewBag.Details.Tables[0].Rows[0]["gst_einv_ack_no"].ToString()</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-weight: bold; paddingtop: 3px; paddingbottom: 3px;">Bill To</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-weight: bold; paddingtop: 3px; paddingbottom: 3px;">
+                                                    <div style="width:40%; float:left;">Customer Name</div> <div style="font-weight:normal; width:100%; float:left;">
+                                                        @if (ViewBag.PrintOption.Rows[0]["CustAliasName"].ToString() == "Y")
+                                                        {
+                                                            @ViewBag.Details.Tables[1].Rows[0]["cust_alias"].ToString()
+                                                        }
+                                                        else
+                                                        {
+                                                            @ViewBag.Details.Tables[1].Rows[0]["cust_name"].ToString()
+                                                        }
+                                                    </div>
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td style="paddingtop: 3px; paddingbottom: 3px; line-height:17px;"> @ViewBag.Details.Tables[1].Rows[0]["cust_add"].ToString()</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-weight: bold; paddingtop: 3px; paddingbottom: 3px;"> GST No. : @ViewBag.Details.Tables[1].Rows[0]["cust_gst_no"].ToString()</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-weight: bold; paddingtop: 3px; paddingbottom: 3px;"> State Code/State : @ViewBag.Details.Tables[1].Rows[0]["State"].ToString()</td>
+                                            </tr>
+
+                                        </table>
+
+
+                                        @*<div style="font-weight:bold;">Acknowledgement No. :  @ViewBag.Details.Tables[0].Rows[0]["gst_einv_ack_no"].ToString()</div><br />*@
+                                        @*<div style="font-weight:bold;">Bill To</div> <br />*@
+                                        @*Customer Code : @ViewBag.Details.Tables[1].Rows[0]["CustCode"].ToString()<br />*@
+
+                                        @*<div style="font-weight:bold;">Bill To</div> <br />*@
+                                        @*<div style="font-weight:bold; width:40%; float:left;">Customer Name</div> <div style="font-weight:normal; width:100%; float:left;">
+                                                @if (ViewBag.PrintOption.Rows[0]["CustAliasName"].ToString() == "Y")
+                                                {
+                                                    @ViewBag.Details.Tables[1].Rows[0]["cust_alias"].ToString()
+                                                }
+                                                else
+                                                {
+                                                    @ViewBag.Details.Tables[1].Rows[0]["cust_name"].ToString()
+                                                }
+                                            </div>*@
+
+                                        @*Customer Name :*@
+
+
+                                        @*@ViewBag.Details.Tables[1].Rows[0]["cust_add"].ToString()<br />*@
+                                        @*<strong>GST No. : @ViewBag.Details.Tables[1].Rows[0]["cust_gst_no"].ToString()</strong><br />*@
+                                        @*<strong>State Code/State : @ViewBag.Details.Tables[1].Rows[0]["State"].ToString()</strong><br />*@
+                                        @*<strong>Place of Supply : @ViewBag.Details.Tables[1].Rows[0]["PlaceOfSupply"].ToString()</strong><br />*@
+                                        @*/*Commented By Hina on 08-03-2024 to comment on this after discuss by Vishal Sir*/*@
+                                        @*<strong>MSME No. : @ViewBag.Details.Tables[1].Rows[0]["MsmeNo"].ToString()</strong><br />*@
+                                    </td>
+                                    <td width="34%" style="font-size: 12px; font-weight:normal;padding: 0px 0px 0px 5px; line-height:16px; vertical-align:top;">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="font-size: 12px; font-weight:normal;">
+                                            <tr>
+                                                <td style="font-weight: bold; paddingtop: 3px; paddingbottom: 3px;">Acknowledgement Date : @ViewBag.Details.Tables[0].Rows[0]["gst_einv_ack_dt"].ToString()</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-weight: bold; paddingtop: 3px; paddingbottom: 3px;">Ship To</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-weight: bold; paddingtop: 3px; paddingbottom: 3px;">
+                                                    @*<div style="font-weight:bold;">Ship To</div><br />*@
+                                                    @if (@ViewBag.Details.Tables[0].Rows[0]["address"].ToString() == @ViewBag.Details.Tables[0].Rows[0]["ship_add_id"].ToString())
+                                                    {
+                                                        @*<strong> Customer Name :</strong>*@
+
+                                                        <div style="font-weight:bold; width:40%; float:left;">Customer Name</div> <div style="font-weight:normal; width:100%; float:left;">
+                                                            @if (ViewBag.PrintOption.Rows[0]["CustAliasName"].ToString() == "Y")
+                                                            {
+                                                                @ViewBag.Details.Tables[2].Rows[0]["cust_alias"].ToString()
+                                                            }
+                                                            else
+                                                            {
+                                                                @ViewBag.Details.Tables[2].Rows[0]["cust_name"].ToString()
+                                                            }
+                                                            <br />
+                                                        </div>
+
+                                                    }
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td style="paddingtop: 3px; paddingbottom: 3px; line-height:17px;">@ViewBag.Details.Tables[2].Rows[0]["cust_add"].ToString()</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="paddingtop: 3px; paddingbottom: 3px;"><strong>GST No. : @ViewBag.Details.Tables[2].Rows[0]["cust_gst_no"].ToString()</strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-weight: bold; paddingtop: 3px; paddingbottom: 3px;">State Code/State : @ViewBag.Details.Tables[2].Rows[0]["State"].ToString()</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-weight: bold; paddingtop: 3px; paddingbottom: 3px;">Place of Supply : @ViewBag.Details.Tables[0].Rows[0]["placeofsupply"].ToString()</td>
+                                            </tr>
+
+                                        </table>
+
+                                        @*<div style="font-weight:bold;">Acknowledgement Date : @ViewBag.Details.Tables[0].Rows[0]["gst_einv_ack_dt"].ToString()</div><br />*@
+                                        @*<div style="font-weight:bold;">Ship To</div><br />*@
+
+
+
+
+                                        @*@if (@ViewBag.Details.Tables[0].Rows[0]["address"].ToString() == @ViewBag.Details.Tables[0].Rows[0]["ship_add_id"].ToString())
+                                            {
+
+                                                <div style="font-weight:bold;">Ship To</div><br />
+                                                <div style="font-weight:bold; width:40%; float:left;">Customer Name</div> <div style="font-weight:normal; width:100%; float:left;">
+                                                    @if (ViewBag.PrintOption.Rows[0]["CustAliasName"].ToString() == "Y")
+                                                    {
+                                                        @ViewBag.Details.Tables[2].Rows[0]["cust_alias"].ToString()
+                                                    }
+                                                    else
+                                                    {
+                                                        @ViewBag.Details.Tables[2].Rows[0]["cust_name"].ToString()
+                                                    }
+                                                    <br />
+                                                </div>
+
+                                            }*@
+                                        @*@ViewBag.Details.Tables[2].Rows[0]["cust_add"].ToString()<br />*@
+                                        @*<strong>GST No. : @ViewBag.Details.Tables[2].Rows[0]["cust_gst_no"].ToString()</strong><br />*@
+                                        @*<strong>State Code/State : @ViewBag.Details.Tables[2].Rows[0]["State"].ToString()</strong><br />*@
+                                        @*<strong>Place of Supply : @ViewBag.Details.Tables[0].Rows[0]["placeofsupply"].ToString()</strong><br />*@
+                                        @*/*Commented By Hina on 08-03-2024 to comment on this after discuss by Vishal Sir*/*@
+                                        @*<strong>MSME No. : @ViewBag.Details.Tables[2].Rows[0]["MsmeNo"].ToString()</strong><br />*@
+                                    </td>
+                                    @*<td width="10%" style="font-size: 12px; font-weight:normal;padding: 0px 0px 0px 5px; line-height:18px; vertical-align:top; ">
+                                            <strong>EWB No. : @ViewBag.Details.Tables[0].Rows[0]["gst_ewb_no"].ToString()</strong><br />
+                                        </td>*@
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <table cellspacing="0" cellpadding="0" style=" width:100%; font-size: 10px; font-weight:normal;padding: 0px 0px; line-height:18px; font-weight:normal; vertical-align:top; border: solid 1px #000000;">
+                            <thead>
+                                <tr>
+                                    <th width="5%" style="border-right: solid 1px #000000; text-align:center;"><strong>S.No.</strong><br /></th>
+                                    <th width="50%" style="border-right: solid 1px #000000; text-align: center;"><strong>Goods Description</strong></th>
+                                    @*@if (ViewBag.PrintOption.Rows[0]["ShowProdTechDesc"].ToString().ToUpper() == "Y")
+        {
+            <th width="10%" style="border-right: solid 1px #000000; text-align: center;"><strong>Technical <br /> Description</strong><br /></th>
+        }*@
+                                    <th width="12%" style="border-right: solid 1px #000000; text-align: center;"><strong>HSN/SAC</strong></th>
+                                   
+                                        @if (ViewBag.PrintOption.Rows[0]["ShowPackSize"].ToString() == "Y")
+                                        {
+                                            <th width="12%" style="border-right: solid 1px #000000; text-align: center;"><strong>Pack Size</strong></th>
+                                        }
+                                        <th width="11%" style="border-right: solid 1px #000000; text-align: center;"><strong>Qty.</strong></th>
+                                        @*<th width="4%" style="border-right: solid 1px #000000; text-align: center;"><strong>UOM</strong><br /></th>*@
+                                        @*<th width="8%" style="border-right: solid 1px #000000; text-align: center;"><strong>Unit Price <br /> [INR]</strong><br /></th>*@
+                                        <th width="13%" style="border-right: solid 1px #000000; text-align: center;"><strong>Rate</strong></th>
+                                        <th width="5%" style="border-right: solid 1px #000000; text-align: center; paddingtop: 5px; paddingbottom: 5px;"><strong>Disc (%)</strong></th>
+                                        @*<th width="10%" style="border-right: solid 1px #000000; text-align: center;"><strong>Disc Amount</strong><br /></th>*@
+                                        @*<th width="10%" style="border-right: solid 1px #000000; text-align: center;"><strong>Total After <br />  Disc. [INR]</strong><br /></th>*@
+                                        @*<th colspan="2" style="border-right: solid 1px #000000; padding: 5px; text-align: center;"><strong>CGST [INR]</strong><br /></th>
+            <th colspan="2" style="border-right: solid 1px #000000; padding: 5px; text-align: center;"><strong>SGST [INR]</strong><br /></th>
+            <th colspan="2" style="border-right: solid 1px #000000; padding: 5px; text-align: center;"><strong>IGST [INR]</strong><br /></th>*@
+                                        <th width="12%" style="text-align: center;"><strong>Amount</strong><br /></th>
+                                    </tr>
+                                @*<tr>
+                                        <th colspan="8" width="54%" style="border-right: solid 1px #000000; border-top: solid 1px #000000; text-align: center;"><strong>&nbsp;</strong><br /></th>
+                                        <th width="5%" style="border-right: solid 1px #000000; border-top: solid 1px #000000; text-align: center;"><strong>Rate</strong><br /></th>
+                                        <th width="8%" style="border-right: solid 1px #000000; border-top: solid 1px #000000; text-align: center;"><strong>Amount</strong><br /></th>
+                                        <th width="5%" style="border-right: solid 1px #000000; border-top: solid 1px #000000; text-align: center;"><strong>Rate</strong><br /></th>
+                                        <th width="8%" style="border-right: solid 1px #000000; border-top: solid 1px #000000; text-align: center;"><strong>Amount</strong><br /></th>
+                                        <th width="5%" style="border-right: solid 1px #000000; border-top: solid 1px #000000; text-align: center;"><strong>Rate</strong><br /></th>
+                                        <th width="8%" style="border-right: solid 1px #000000; border-top: solid 1px #000000; text-align: center;"><strong>Amount</strong><br /></th>
+                                        <th width="7%" style="border-top: solid 1px #000000;"><strong>&nbsp;</strong><br /></th>
+                                    </tr>*@
+                            </thead>
+                            <tbody>
+                                @{
+                                    var srno = 0;
+                                }
+                                @if (@ViewBag.Details.Tables[3].Rows.Count > 0)
+                                {
+                                    DataView data1 = new DataView();
+                                    foreach (DataRow data in @ViewBag.Details.Tables[3].Rows)
+                                    {
+                                        srno = srno + 1;
+                                <tr>
+                                    <td style="text-align: center; width: 5%; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000;">@srno</td>
+                                    @*<td style="padding-left: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000;">@data["itemName"].ToString()<br />@data["ItmTechDiscriptn"].ToString()</td>*@
+                                    <td style="paddingleft: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000;">
+                                        @if (ViewBag.PrintOption.Rows[0]["ShowCustSpecProdDesc"].ToString().ToUpper() == "Y")
+                                        {
+                                            @data["CustSpecItemDesc"].ToString()
+                                        }
+                                        else
+                                        {
+                                            @data["itemName"].ToString()
+                                        }
+                                        @if (ViewBag.PrintOption.Rows[0]["ShowProdTechDesc"].ToString().ToUpper() == "Y")
+                                        {
+                                            <br /> @data["ItmTechDiscriptn"].ToString()
+                                        }
+                                        @if (ViewBag.PrintOption.Rows[0]["ShowSubItem"].ToString() == "Y")
+                                        {
+                                            if (ViewBag.Details.Tables[8].Rows.Count > 0)
+                                            {
+                                                data1 = ViewBag.Details.Tables[8].DefaultView;
+                                                DataTable NewDT1 = new DataTable();
+                                                data1.RowFilter = "item_id='" + data["itemId"].ToString() + "'";
+                                                NewDT1 = data1.ToTable();
+                                                <table width="100%" style="font-size: 11px;">
+                                                    <tr>
+                                                        <td colspan="3"></td>
+                                                    </tr>
+                                                    @foreach (System.Data.DataRow drsubitm in NewDT1.Rows)
+                                                    {
+                                                        if (data["itemId"].ToString() == drsubitm["item_id"].ToString())
+                                                        {
+                                                            <tr>
+                                                                <td width="10%" style="paddingtop: 0px;paddingbottom:0px;"></td>
+                                                                <td width="45%" style="paddingtop: 0px; paddingbottom: 0px;">@drsubitm["sub_item_name"] </td>
+                                                                <td width="45%" style="text-align: right; paddingtop: 0px; paddingbottom: 0px; paddingright: 5px;"> @drsubitm["inv_qty"]</td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                </table>
+                                            }
+                                        }
+                                        <br /> @data["it_remarks"].ToString()
+                                    </td>
+
+                                    <td style="paddingleft: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000;">@data["hsnCode"].ToString()</td>
+                                    @if (ViewBag.PrintOption.Rows[0]["ShowPackSize"].ToString() == "Y")
+                                    {
+                                        <td style="paddingleft: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000;">@data["pack_size"].ToString()</td>
+                                    }
+                                    <td style="text-align: right; paddingright: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000;">@data["shipQty"].ToString() @data["uom"].ToString()</td>
+                                    <td style="text-align: right; paddingright: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000;">@data["bef_disc_item_price"].ToString()</td>
+                                    <td style="text-align: right; paddingright: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000;">@data["item_disc_perc"].ToString()</td>
+                                    @*<td style="text-align: right; padding-right: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000;">@data["itemDiscPer"].ToString()</td>*@
+                                    <td style="text-align: right; paddingright: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000;">@data["totalAfterDisc"].ToString()</td>
+                                    @*<td style="text-align: right; padding-right: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000;">@data["totalAfterDisc"].ToString()</td>*@
+                                    @*<td style="text-align: right; padding-right: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000;">@data["cgstRate"].ToString()</td>
+        <td style="text-align: right; padding-right: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000;">@data["cgst"].ToString()</td>
+        <td style="text-align: right; padding-right: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000;">@data["sgstRate"].ToString()</td>
+        <td style="text-align: right; padding-right: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000;">@data["sgst"].ToString()</td>
+        <td style="text-align: right; padding-right: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000;">@data["igstRate"].ToString()</td>
+        <td style="text-align: right; padding-right: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000;">@data["igst"].ToString()</td>
+        <td style="text-align: right; padding-right: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000;">@data["lineTotal"].ToString()</td>*@
+                                </tr>
+
+
+                                    }
+                                    if (ViewBag.PrintOption != null)
+                                    {
+                                        if (ViewBag.PrintOption.Rows[0]["ShowTotalQty"].ToString() == "Y")
+                                        {
+                                            <tr>
+                                                <td colspan="2" style="text-align: right; vertical-align: top; border-bottom: solid 1px #000000; border-right: solid 1px #000000; font-weight: bold;">&nbsp;</td>
+                                                <td style="text-align: right; vertical-align: top; border-bottom: solid 1px #000000; border-right: solid 1px #000000;  font-weight: bold; paddingright:5px;">Total</td>
+                                                <td style="text-align: right; paddingright:5px; vertical-align: top; border-bottom: solid 1px #000000; border-right: solid 1px #000000; ">@ViewBag.TotalshipQty</td>
+                                                <td colspan="3" style="text-align: center;  vertical-align: top;  border-bottom: solid 1px #000000; ">&nbsp;</td>
+                                            </tr>
+                                        }
+                                    }
+                                }
+
+                                @*<tr>
+                                        <td colspan="15" style="text-align:left; width:5%;vertical-align:top;border-bottom: solid 1px #000000;">
+                                            <table style="width:100%" cellpadding="0" cellspacing="0">
+                                                <tr>
+                                                    <td width="30%" style="font-size: 12px; font-weight:bold;padding: 0px 0px 0px 5px;">&nbsp;</td>
+                                                    <td width="35%" align="right" style="font-size: 12px;padding: 0px 0px 0px 5px;">Freight</td>
+                                                    <td width="35%" style="font-size: 12px; font-weight:bold;padding: 0px 0px 0px 5px;">&nbsp;</td>
+                                                </tr>
+                                                <tr>
+                                                    <td width="20%" style="font-size: 12px; font-weight:bold;padding: 0px 0px 0px 5px;">&nbsp;</td>
+                                                    <td width="35%" align="right" style="font-size: 12px;padding: 0px 0px 0px 5px;">Insurance</td>
+                                                    <td width="35%" style="font-size: 12px; font-weight:bold;padding: 0px 0px 0px 5px;">&nbsp;</td>
+                                                </tr>
+                                                <tr>
+                                                    <td width="20%" style="font-size: 12px; font-weight:bold;padding: 0px 0px 0px 5px;">&nbsp;</td>
+                                                    <td width="35%" align="right" style="font-size: 12px;padding: 0px 0px 0px 5px;">Packing & Forwarding</td>
+                                                    <td width="35%" style="font-size: 12px; font-weight:bold;padding: 0px 0px 0px 5px;">&nbsp;</td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>*@
+
+
+                                @*<tr>
+                                        <td colspan="7" style="text-align:left; width:5%;vertical-align:top;border-bottom: solid 1px #000000;">
+                                            <table style="width:100%" cellpadding="0" cellspacing="0">
+                                                <tr>
+                                                    <td width="70%" style="font-size: 12px; font-weight:bold;padding: 0px 0px 0px 5px;">Whether the tax is payable on Reverse Charge Basis : @ViewBag.Details.Tables[0].Rows[0]["Rev_charge"].ToString()</td>
+                                                    <td width="30%" style="font-size: 12px; font-weight:bold;padding: 0px 0px 0px 5px;">Total Amount [INR]</td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>*@
+                            <tr>
+                                @{
+                                    var colspan = 7;
+                                    if (ViewBag.PrintOption.Rows[0]["ShowPackSize"].ToString() == "Y")
+                                    {
+                                        colspan = colspan + 1;
+                                    }
+                                }
+                                <td colspan="@colspan">
+                                    <table style="width:100%" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td>
+                                                <table style="width:100%" cellpadding="0" cellspacing="0">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td width="70%" valign="top">
+                                                                <table style=" width:100%;">
+                                                                    <tr>
+                                                                        <td style="font-size: 12px; font-weight:bold; width:60%; vertical-align:top;">
+                                                                            @*Terms &amp; Conditions :*@
+                                                                            Payment Terms :
+                                                                            <br />
+                                                                            <ul style="list-style-type: decimal; paddingtop: 0px; paddingtop: 0px; paddingleft: 0px; paddingbottom: 0px; font-weight: normal; margintop: 0px; marginbottom: 0px; line-height:12px; ">
+                                                                                @if (ViewBag.Details.Tables[0].Rows.Count > 0)
+                                                                                {
+                                                                                    foreach (DataRow data in @ViewBag.Details.Tables[0].Rows)
+                                                                                    {
+                                                                                        <li style="paddingtop: 0px; paddingbottom: 0px; line-height: 10px; "> @data["pay_term"].ToString()</li>
+                                                                                    }
+                                                                                }
+                                                                            @*<li>Goods once sold will not be taken back</li>
+                                                    <li>
+                                                        Interest @("@18%") p.a. will be charged on the due amount, if invoice is not paid within due date. <br />
+                                                        Default due date is 30 Days. if not mentioned on invoice.
+                                                    </li>
+                                                    <li>All disputes subjected to Greater Noida Jurisdiction</li>*@
+                                                                            </ul>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td style="font-size: 12px; font-weight:bold; width:60%; vertical-align:top;">
+                                                                            Delivery Terms :
+                                                                            <br />
+                                                                            <ul style="list-style-type: decimal; paddingtop: 0px; paddingtop: 0px; paddingleft: 0px; paddingbottom: 0px; font-weight: normal; margintop: 0px; marginbottom: 0px; line-height: 12px; ">
+                                                                                @if (ViewBag.Details.Tables[0].Rows.Count > 0)
+                                                                                {
+                                                                                    foreach (DataRow data in @ViewBag.Details.Tables[0].Rows)
+                                                                                    {
+                                                                                        <li style="paddingtop: 0px; paddingbottom: 0px; line-height: 10px; ">@data["deli_term"].ToString()</li>
+                                                                                    }
+                                                                                }
+                                                                                @*<li>Goods once sold will not be taken back</li>*@
+                                                                                @*<li>
+                                                            Interest @("@18%") p.a. will be charged on the due amount, if invoice is not paid within due date. <br />
+                                                            Default due date is 30 Days. if not mentioned on invoice.
+                                                        </li>
+                                                        <li>All disputes subjected to Greater Noida Jurisdiction</li>*@
+                                                                            </ul>
+                                                                        </td>
+                                                                    </tr>
+                                                                </table>
+                                                            </td>
+                                                            <td width="30%" valign="top">
+                                                                <table style="width:100%" cellpadding="0" cellspacing="0">
+                                                                    <tr>
+                                                                        <td width="20%" style="paddingright: 5px; paddingtop: 2px; paddingbottom: 2px; border-top: solid 1px #000000; border-left: solid 1px #000000; border-right: solid 1px #000000; border-bottom: solid 1px #000000; text-align: right; font-weight: bold; font-size: 12px; "> @*Taxable Amt*@ Amount(Before Tax) <br /></td>
+                                                                        <td width="10%" style="text-align: right; paddingright: 5px; paddingtop: 2px; paddingbottom: 2px; border-top: solid 1px #000000; border-right: solid 1px #000000; font-size: 12px; font-weight: bold; border-bottom: solid 1px #000000; ">@ViewBag.Details.Tables[10].Rows[0]["TotalTaxableVal"].ToString()</td>
+                                                                    </tr>
+                                                                    @*@{
+                                                decimal cgst = 0;
+                                                decimal sgst = 0;
+                                                decimal igst = 0;
+                                                decimal.TryParse(@ViewBag.Details.Tables[10].Rows[0]["TotalCgst"], out cgst);
+                                                decimal.TryParse(@ViewBag.Details.Tables[10].Rows[0]["TotalSgst"], out sgst);
+                                                decimal.TryParse(@ViewBag.Details.Tables[10].Rows[0]["TotalIgst"], out igst);
+
+
+                                            }
+                                            @if (cgst > 0)
+                                            {
+                                                <tr>
+                                                    <td style="paddingright: 5px; paddingtop: 2px; paddingbottom: 2px; border-left: solid 1px #000000; border-right: solid 1px #000000; border-bottom: solid 1px #000000; text-align: right; font-weight: bold; font-size: 12px;">CGST Amount<br /></td>
+                                                    <td style="text-align: right; padding-right: 5px; paddingtop: 2px; paddingbottom: 2px; font-size: 12px; font-weight: bold; border-bottom: solid 1px #000000;">@cgst.ToString()</td>
+                                                </tr>
+                                            }
+                                            @if (sgst > 0)
+                                            {
+                                                <tr>
+                                                    <td style="paddingright: 5px; paddingtop: 2px; paddingbottom: 2px; border-left: solid 1px #000000; border-right: solid 1px #000000; border-bottom: solid 1px #000000; text-align: right; font-weight: bold; font-size: 12px;">SGST Amount<br /></td>
+                                                    <td style="text-align: right; padding-right: 5px; paddingtop: 2px; paddingbottom: 2px; font-size: 12px; font-weight: bold; border-bottom: solid 1px #000000;">@sgst.ToString()</td>
+                                                </tr>
+                                            }
+                                            @if (igst > 0)
+                                            {
+                                                <tr>
+                                                    <td style="paddingright: 5px; paddingtop: 2px; paddingbottom: 2px; border-left: solid 1px #000000; border-right: solid 1px #000000; border-bottom: solid 1px #000000; text-align: right; font-weight: bold; font-size: 12px;">IGST Amount<br /></td>
+                                                    <td style="text-align: right; padding-right: 5px; paddingtop: 2px; paddingbottom: 2px; font-size: 12px; font-weight: bold; border-bottom: solid 1px #000000;">@igst.ToString()</td>
+                                                </tr>
+                                            }*@
+
+                                                                    @*/*Add By Hina Sharma on 20-12-2024 to show separate Taxes*/*@
+                                                                    @if (@*@ViewBag.Details.Tables[11].Rows.Count > 0 &&*@ Convert.ToDecimal(ViewBag.Details.Tables[10].Rows[0]["TotalCgst"]) > 0)
+              {
+                  foreach (var cgsttaxes in @ViewBag.Details.Tables[11].Rows)
+                  {
+                      if (Convert.ToDecimal(ViewBag.Details.Tables[11].Rows[0]["TotalCgst"]) > 0)
+                      {
+                            <tr>
+                                <td style="paddingright: 5px; paddingtop: 2px; paddingbottom: 2px; border-left: solid 1px #000000; border-right: solid 1px #000000; border-right: solid 1px #000000; border-bottom: solid 1px #000000; text-align: right; font-weight: bold; font-size: 12px;"> @cgsttaxes["CgstTaxName"].ToString() <br /></td>
+                                <td style="text-align: right; paddingright: 5px; paddingtop: 2px; paddingbottom: 2px; border-right: solid 1px #000000; border-bottom: solid 1px #000000; font-size: 12px; font-weight: bold; ">@cgsttaxes["TotalCgst"].ToString()</td>
+                            </tr>
+                        }
+                    }
+                }
+                                                                    @if (Convert.ToDecimal(ViewBag.Details.Tables[10].Rows[0]["TotalSgst"]) > 0)
+                                                                    {
+                                                                        foreach (var sgsttaxes in @ViewBag.Details.Tables[11].Rows)
+                                                                        {
+                                                                            if (Convert.ToDecimal(ViewBag.Details.Tables[11].Rows[0]["TotalSgst"]) > 0)
+                                                                            {
+                                                                                <tr>
+                                                                                    <td style="paddingright: 5px; paddingtop: 2px; paddingbottom: 2px; border-left: solid 1px #000000; border-right: solid 1px #000000; border-bottom: solid 1px #000000; text-align: right; font-weight: bold; font-size: 12px;"> @sgsttaxes["SgstTaxName"].ToString() <br /></td>
+                                                                                    <td style="text-align: right; paddingright: 5px; paddingtop: 2px; paddingbottom: 2px; border-right: solid 1px #000000; border-bottom: solid 1px #000000; font-size: 12px; font-weight: bold; ">@sgsttaxes["TotalSgst"].ToString()</td>
+                                                                                </tr>
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                    @if (Convert.ToDecimal(ViewBag.Details.Tables[10].Rows[0]["TotalIgst"]) > 0)
+                                                                    {
+                                                                        foreach (var igsttaxes in @ViewBag.Details.Tables[11].Rows)
+                                                                        {
+                                                                            if (Convert.ToDecimal(ViewBag.Details.Tables[11].Rows[0]["TotalIgst"]) > 0)
+                                                                            {
+                                                                                <tr>
+                                                                                    <td style="paddingright: 5px; paddingtop: 2px; paddingbottom: 2px; border-left: solid 1px #000000; border-right: solid 1px #000000; border-bottom: solid 1px #000000; text-align: right; font-weight: bold; font-size: 12px;"> @igsttaxes["IgstTaxName"].ToString() <br /></td>
+                                                                                    <td style="text-align: right; paddingright: 5px; paddingtop: 2px; paddingbottom: 2px; border-right: solid 1px #000000; border-bottom: solid 1px #000000; font-size: 12px; font-weight: bold; ">@igsttaxes["TotalIgst"].ToString()</td>
+                                                                                </tr>
+                                                                            }
+                                                                        }
+                                                                    }
+
+                                                                    @if (@ViewBag.Details.Tables[5].Rows.Count > 0)
+                                                                    {
+                                                                        foreach (var othercharges in @ViewBag.Details.Tables[5].Rows)
+                                                                        {
+                                                                            <tr>
+                                                                                <td style="paddingright: 5px; paddingtop: 2px; paddingbottom: 2px; border-left: solid 1px #000000; border-right: solid 1px #000000; border-bottom: solid 1px #000000; text-align: right; font-weight: bold; font-size: 12px;"> @othercharges["oc_name"].ToString() <br /></td>
+                                                                                <td style="text-align: right; paddingright: 5px; paddingtop: 2px; paddingbottom: 2px; border-bottom: solid 1px #000000; font-size: 12px; font-weight: bold; ">@othercharges["total_amt"].ToString()</td>
+                                                                            </tr>
+                                                                        }
+                                                                    }
+                                                                    @if (@ViewBag.Details.Tables[12].Rows.Count > 0)
+                                                                    {
+                                                                        foreach (var tcs in @ViewBag.Details.Tables[12].Rows)
+                                                                        {
+                                                                            <tr>
+                                                                                <td style="paddingright: 5px; paddingtop: 2px; paddingbottom: 2px; border-left: solid 1px #000000; border-right: solid 1px #000000; border-bottom: solid 1px #000000; text-align: right; font-weight: bold; font-size: 12px;"> @tcs["tcs_acc_name"].ToString() <br /></td>
+                                                                                <td style="text-align: right; paddingright: 5px; paddingtop: 2px; paddingbottom: 2px; border-right: solid 1px #000000; border-bottom: solid 1px #000000; font-size: 12px; font-weight: bold; ">@tcs["tcs_val"].ToString() </td>
+                                                                            </tr>
+                                                                        }
+                                                                    }
+                                                                    <tr>
+                                                                        <td style="paddingright: 5px; paddingtop: 2px; paddingbottom: 2px; border-left: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000; text-align: right; font-weight: bold; font-size: 12px; ">Round Off</td>
+                                                                        <td style="text-align: right; padding-right: 5px; paddingtop: 2px; paddingright: 5px; border-bottom: solid 1px #000000; border-right: solid 1px #000000; paddingbottom: 2px; font-size: 12px; font-weight: bold; ">
+                                                                            @ViewBag.Details.Tables[14].Rows[0]["RoundOff"].ToString()
+                                                                        </td>
+                                                                    </tr>
+
+                                                                    <tr>
+                                                                        <td style="paddingright: 5px; paddingtop: 2px; paddingbottom: 2px; border-left: solid 1px #000000; border-right: solid 1px #000000; border-bottom: solid 1px #000000; text-align: right; font-weight: bold; font-size: 12px;">@*Invoice*@ Total [INR]<br /></td>
+                                                                        <td style="text-align: right; paddingright: 5px; paddingtop: 2px; paddingbottom: 2px; font-size: 12px; font-weight: bold; border-right: solid 1px #000000; border-bottom: solid 1px #000000;">@ViewBag.Details.Tables[4].Rows[0]["invTotal"].ToString()</td>
+                                                                    </tr>
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+
+                @*<tr>
+                        <td>
+                            <table style="width:100%" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td style="font-size: 12px; font-weight:normal;padding: 0px 0px 0px 0px;  vertical-align:top; width:20%;"><strong>Total Amount in Words [INR]</strong><br /> </td>
+                                    <td style="font-size: 12px; font-weight:normal;padding: 0px 0px;  vertical-align:top; width:80%;">
+                                        @ViewBag.Details.Tables[4].Rows[0]["net_val_spec_inwords"].ToString()
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>*@
+
+                <!--Done changes by Prakash Start-->
+                @*<tr>
+                        <td>
+                            <table cellspacing="0" cellpadding="4" style=" width:100%; font-size: 10px; font-weight:normal;padding: 0px 0px; line-height:18px; font-weight:normal; vertical-align:top; border: solid 1px #000000;">
+                                <thead>
+                                    <tr>
+                                        <th width="5%" style="border-right: solid 1px #000000; text-align:center;"><strong> # </strong><br /></th>
+                                        <th width="35%" style="border-right: solid 1px #000000; text-align: center;"><strong>Description <br /> of Goods</strong><br /></th>
+                                        <th width="10%" style="border-right: solid 1px #000000; text-align: center;"><strong>HSN/SAC</strong><br /></th>
+                                        <th width="10%" style="border-right: solid 1px #000000; text-align: center;"><strong>Qty.</strong><br /></th>
+                                        <th width="10%" style="border-right: solid 1px #000000; text-align: center;"><strong>Rate</strong><br /></th>
+                                        <th width="10%" style="border-right: solid 1px #000000; text-align: center;"><strong>Disc.</strong><br /></th>
+                                        <th width="10%" style="border-right: solid 1px #000000; text-align: center;"><strong>Total After <br />  Disc. [INR]</strong><br /></th>
+                                        <th width="10%"><strong>Amount</strong><br /></th>
+                                    </tr>
+
+                                </thead>
+                                <tbody>
+
+                                    <tr>
+                                        <td style="text-align: center; width: 5%; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000;">01</td>
+                                        <td style="padding-left: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000;">1105</td>
+                                        <td style="padding-left: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000;">02112023</td>
+                                        <td style="text-align: right; padding-right: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000;">100.00</td>
+                                        <td style="padding-left: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000;">Set</td>
+                                        <td style="text-align: right; padding-right: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000;">12.00</td>
+                                        <td style="text-align: right; padding-right: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000;">0.00</td>
+                                        <td style="text-align: right; padding-right: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000;">1200.00</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" style="text-align: center; width: 5%; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000; font-size:12px;"><strong>Round Off</strong></td>
+                                        <td style="padding-left: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000;">&nbsp;</td>
+                                        <td style="text-align: right; padding-right: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000;">&nbsp;</td>
+                                        <td style="padding-left: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000;">&nbsp;</td>
+                                        <td style="text-align: right; padding-right: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000;">&nbsp;</td>
+                                        <td style="text-align: right; padding-right: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000;">&nbsp;</td>
+                                        <td style="text-align: right; padding-right: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000;">0.28</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" style="text-align: center; width: 5%; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000;font-size:12px;"><strong>Total</strong></td>
+                                        <td style="padding-left: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000;">&nbsp;</td>
+                                        <td style="text-align: right; padding-right: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000;">&nbsp;</td>
+                                        <td style="padding-left: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000;">&nbsp;</td>
+                                        <td style="text-align: right; padding-right: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000;">&nbsp;</td>
+                                        <td style="text-align: right; padding-right: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000;">&nbsp;</td>
+                                        <td style="text-align: right; padding-right: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000;">12530.00</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <table style="width:100%" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td style="font-size: 12px; font-weight:normal;padding: 0px 0px 0px 0px;  vertical-align:top; width:20%;"><strong>Total Amount in Words [INR]</strong><br /> </td>
+                                    <td style="font-size: 12px; font-weight:normal;padding: 0px 0px;  vertical-align:top; width:80%;">
+                                        Twelve Thousand Five Hundred Thirty INR Only
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>*@
+                <!--Done changes by Prakash End-->
+                <!--Done changes by Prakash Start-->
+                <tr>
+                    <td>
+                        <table cellspacing="0" cellpadding="0" style=" width:100%; font-size: 10px; font-weight:normal;padding: 0px 0px; line-height:18px; font-weight:normal; vertical-align:top; border: solid 1px #000000;">
+                            <thead>
+                                <tr>
+                                    <th rowspan="2" width="10%" style="border-right: solid 1px #000000; text-align: center;"><strong>HSN/SAC</strong><br /></th>
+                                    <th rowspan="2" width="10%" style="border-right: solid 1px #000000; text-align: center;"><strong>Taxable Value</strong><br /></th>
+                                    @if (Convert.ToDecimal(ViewBag.Details.Tables[10].Rows[0]["TotalCgst"].ToString()) > 0)
+                                    {
+                                        <th colspan="2" style="border-right: solid 1px #000000; padding: 5px; text-align: center;"><strong>CGST [INR]</strong><br /></th>
+                                    }
+                                    @if (Convert.ToDecimal(ViewBag.Details.Tables[10].Rows[0]["TotalSgst"].ToString()) > 0)
+                                    {
+                                        <th colspan="2" style="border-right: solid 1px #000000; padding: 5px; text-align: center;"><strong>SGST [INR]</strong><br /></th>
+                                    }
+                                    @if (Convert.ToDecimal(ViewBag.Details.Tables[10].Rows[0]["TotalIgst"].ToString()) > 0)
+                                    {
+                                        <th colspan="2" style="border-right: solid 1px #000000; paddingtop: 5px; paddingbottom:2px; text-align: center;"><strong>IGST [INR]</strong><br /></th>
+                                    }
+                                    <th width="10%" style="text-align: center;"><strong>Total Tax @*<br />*@Amount</strong><br /></th>
+                                </tr>
+                                <tr>
+                                    @if (Convert.ToDecimal(ViewBag.Details.Tables[10].Rows[0]["TotalCgst"].ToString()) > 0)
+                                    {
+                                        <th width="5%" style="border-right: solid 1px #000000; border-top: solid 1px #000000; text-align: center; paddingtop: 2px; paddingbottom: 2px;"><strong>Rate (%)</strong><br /></th>
+
+                                        <th width="8%" style="border-right: solid 1px #000000; border-top: solid 1px #000000; text-align: center; paddingtop: 2px; paddingbottom: 2px;"><strong>Amount</strong><br /></th>
+                                    }
+                                    @if (Convert.ToDecimal(ViewBag.Details.Tables[10].Rows[0]["TotalSgst"].ToString()) > 0)
+                                    {
+                                        <th width="5%" style="border-right: solid 1px #000000; border-top: solid 1px #000000; text-align: center; paddingtop: 2px; paddingbottom: 2px;"><strong>Rate  (%)</strong><br /></th>
+
+                                        <th width="8%" style="border-right: solid 1px #000000; border-top: solid 1px #000000; text-align: center; paddingtop: 2px; paddingbottom: 2px;"><strong>Amount</strong><br /></th>
+                                    }
+                                    @if (Convert.ToDecimal(ViewBag.Details.Tables[10].Rows[0]["TotalIgst"].ToString()) > 0)
+                                    {
+                                        <th width="5%" style="border-right: solid 1px #000000; border-top: solid 1px #000000; text-align: center; paddingtop: 2px; paddingbottom: 2px;"><strong>Rate (%)</strong><br /></th>
+                                        <th width="8%" style="border-right: solid 1px #000000; border-top: solid 1px #000000; text-align: center; paddingtop: 2px; paddingbottom: 2px;"><strong>Amount</strong><br /></th>
+
+                                    }
+                                    <th width="7%" style="border-top: solid 1px #000000;"><strong>&nbsp;</strong><br /></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                @foreach (var dta in @ViewBag.Details.Tables[9].Rows)
+                                {
+                                    <tr>
+                                        <td style="text-align: left; width: 5%; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000; paddingleft: 5px; paddingright: 5px;">@dta["hsnCode"].ToString()</td>
+                                        <td style="text-align: right; padding-left: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000; paddingleft: 5px; paddingright: 5px;">@dta["TaxableValue"].ToString()</td>
+                                        @if (Convert.ToDecimal(ViewBag.Details.Tables[10].Rows[0]["TotalCgst"].ToString()) > 0)
+                                        {
+                                            <td style="text-align: right; padding-right: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000; paddingleft: 5px; paddingright: 5px;">@dta["cgstRate"].ToString()</td>
+
+                                            <td style="text-align: right; padding-left: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000; paddingleft: 5px; paddingright: 5px;">@dta["CgstAmount"].ToString()</td>
+                                        }
+                                        @if (Convert.ToDecimal(ViewBag.Details.Tables[10].Rows[0]["TotalSgst"].ToString()) > 0)
+                                        {
+                                            <td style="text-align: right; padding-right: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000; paddingleft: 5px; paddingright: 5px;">@dta["sgstRate"].ToString()</td>
+
+                                            <td style="text-align: right; padding-left: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000; paddingleft: 5px; paddingright: 5px;">@dta["SgstAmount"].ToString()</td>
+                                        }
+                                        @if (Convert.ToDecimal(ViewBag.Details.Tables[10].Rows[0]["TotalIgst"].ToString()) > 0)
+                                        {
+                                            <td style="text-align: right; padding-right: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000; paddingleft: 5px; paddingright: 5px;">@dta["igstRate"].ToString()</td>
+                                            <td style="text-align: right; text-align: right; padding-right: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000; paddingleft: 5px; paddingright: 5px;">@dta["IgstAmount"].ToString()</td>
+
+                                        }
+                                        <td style="text-align: right; padding-right: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000; paddingleft: 5px; paddingright: 5px;">@dta["TotalTax"].ToString()</td>
+                                    </tr>
+                                }
+                                <tr>
+                                    <td style="text-align: right; paddingright:5px; width: 5%; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000; font-size: 12px;"><strong>Total</strong></td>
+                                    <td style="text-align: right; padding-left: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000; paddingleft: 5px; paddingright: 5px;">@ViewBag.Details.Tables[10].Rows[0]["TotalTaxableVal"].ToString()</td>
+                                    @if (Convert.ToDecimal(ViewBag.Details.Tables[10].Rows[0]["TotalCgst"].ToString()) > 0)
+                                    {
+                                        <td style="text-align: right; padding-right: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000; paddingleft: 5px; paddingright: 5px;">&nbsp;</td>
+                                        <td style="text-align: right; padding-left: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000; paddingleft: 5px; paddingright: 5px;">@ViewBag.Details.Tables[10].Rows[0]["TotalCgst"].ToString()</td>
+                                    }
+                                    @if (Convert.ToDecimal(ViewBag.Details.Tables[10].Rows[0]["TotalSgst"].ToString()) > 0)
+                                    {
+                                        <td style="text-align: right; padding-right: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000; paddingleft: 5px; paddingright: 5px;">&nbsp;</td>
+                                        <td style="text-align: right; padding-left: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000; paddingleft: 5px; paddingright: 5px;">@ViewBag.Details.Tables[10].Rows[0]["TotalSgst"].ToString()</td>
+                                    }
+                                    @if (Convert.ToDecimal(ViewBag.Details.Tables[10].Rows[0]["TotalIgst"].ToString()) > 0)
+                                    {
+                                        <td style="text-align: right; padding-right: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000;paddingleft: 5px; paddingright: 5px;">&nbsp;</td>
+                                        <td style="text-align: right; padding-right: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000; paddingleft: 5px; paddingright: 5px;">@ViewBag.Details.Tables[10].Rows[0]["TotalIgst"].ToString()</td>
+                                    }
+                                    <td style="text-align: right; padding-right: 5px; vertical-align: top; border-top: solid 1px #000000; border-bottom: solid 1px #000000; border-right: solid 1px #000000; paddingleft: 5px; paddingright: 5px;">@ViewBag.Details.Tables[10].Rows[0]["TotalTax"].ToString()</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <table style="width:100%" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td style="font-size: 12px; font-weight:normal;padding: 0px 0px 0px 0px;  vertical-align:top; width:25%;"><strong>Total Amount in Words [INR]</strong><br /> </td>
+                                <td style="font-size: 12px; font-weight:normal;padding: 0px 0px;  vertical-align:top; width:75%;">
+                                    @ViewBag.Details.Tables[4].Rows[0]["net_val_spec_inwords"].ToString()
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <!--Done changes by Prakash End-->
+                <tr>
+                    <td>
+                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                            <tr>
+                                <td class="declaration">
+                                    @if (ViewBag.PrintOption.Rows[0]["showDeclare1"].ToString() == "Y")
+                                    {
+                                        <strong style="text-decoration: underline;">Declaration 1</strong> <br />@*@ViewBag.Details.Tables[0].Rows[0]["declar_1"].ToString()*@
+                                        {
+                                            var txt = @ViewBag.Details.Tables[0].Rows[0]["declar_1"].ToString();
+                                            ViewBag.TextData = txt;
+                                        }
+                                        @Html.Partial("~/Areas/Common/Views/Cmn_PartialMultilineSpacedData.cshtml")
+                                    }
+                                </td>
+
+
+                                <td class="bank_detail_main" rowspan="2" valign="top">
+                                    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                        <tr>
+                                            <td colspan="2" class=""> Company's Bank Details </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="bank_detail"> A/C Holder's Name  </td>
+                                            <td class="bank_detail_value"> : @ViewBag.Details.Tables[7].Rows[0]["benif_name"].ToString()  </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="bank_detail"> Bank Name  </td>
+                                            <td class="bank_detail_value"> : @ViewBag.Details.Tables[7].Rows[0]["bank_name"].ToString()</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="bank_detail"> A/C No  </td>
+                                            <td class="bank_detail_value"> : @ViewBag.Details.Tables[7].Rows[0]["acc_no"].ToString()</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="bank_detail"> Branch & IFS Code  </td>
+                                            <td class="bank_detail_value"> : @ViewBag.Details.Tables[7].Rows[0]["BranchAndIFSCode"].ToString()</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="bank_detail"> SWIFT Code  </td>
+                                            <td class="bank_detail_value"> : @ViewBag.Details.Tables[7].Rows[0]["swift_code"].ToString()</td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="declaration">
+                                    @if (ViewBag.PrintOption.Rows[0]["showDeclare2"].ToString() == "Y")
+                                    {
+                                        <strong style="text-decoration: underline;">Declaration 2</strong> <br />@*@ViewBag.Details.Tables[0].Rows[0]["declar_2"].ToString()*@
+                                        {
+                                            var txt = @ViewBag.Details.Tables[0].Rows[0]["declar_2"].ToString();
+                                            ViewBag.TextData = txt;
+                                        }
+                                        @Html.Partial("~/Areas/Common/Views/Cmn_PartialMultilineSpacedData.cshtml")
+                                    }
+                                </td>
+
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+            </table>
+        </div>
+    </div>
+</div>
+<div style="page-break-inside: avoid;">
+    <table style="width:100%" cellpadding="0" cellspacing="0">
+        <tr>
+            <td width="50%">
+                <table style="width:100%" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td style="font-size: 12px; font-weight:normal;padding: 0px 0px 0px 0px; vertical-align:top; width:60%;"><strong>Remarks (if any)</strong><br /> </td>
+                    </tr>
+                    <tr>
+                        <td style="font-size: 12px; font-weight:normal;padding: 0px 0px;  vertical-align:top; width:60%;">@ViewBag.Details.Tables[0].Rows[0]["remarks"].ToString() </td>
+                    </tr>
+                </table>
+            </td>
+            <td width="50%">
+                <table style="width:100%" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td style="font-size: 12px; font-weight:bold;paddingtop: 5px; paddingbottom:5px; text-align:center;">For @ViewBag.Details.Tables[0].Rows[0]["comp_nm"].ToString() @*Bizexeed Technology Private. Limited*@</td>
+                    </tr>
+                    <tr>
+                        <td style="font-size: 12px; font-weight:bold; vertical-align:top; text-align:center;">
+                            @if (!string.IsNullOrEmpty(@ViewBag.DigiSign))
+                            {
+                                <img src="@ViewBag.DigiSign.ToString()" alt="Logo" width="100" />
+                            }
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="font-size: 12px; font-weight:bold; vertical-align:top; text-align:center;"><strong>Authorised Signatory</strong><br /></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>

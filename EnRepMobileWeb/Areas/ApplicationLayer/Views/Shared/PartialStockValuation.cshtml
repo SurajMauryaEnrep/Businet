@@ -1,0 +1,422 @@
+﻿@using EnRepMobileWeb.Resources;
+@using System.Data
+@{
+    DataTable dt = ViewBag.TotalVal_StkValuation as DataTable;
+    DataTable PlNameList = new DataTable();
+
+    if (ViewBag.PLNameList != null)
+    {
+        PlNameList = ViewBag.PLNameList as DataTable;
+    }
+    List<string> items = new List<string>();
+    List<string> item2 = new List<string>();
+    if (dt != null)
+    {
+        foreach (var row in dt.Columns)
+        {
+            items.Add(row.ToString());
+        }
+    }
+
+    string[] array = items.ToArray();
+    decimal tableWidth = (ViewBag.rpt_type == "G") ? 1000 : ViewBag.rpt_type == "A" ? 500 : 2000;//= "width1800";
+    if (ViewBag.cost_type == "PL")
+    {
+        if (dt != null)
+        {
+            var count = dt.Columns.Count;
+            var countList = PlNameList.Rows.Count;
+            if (count > 0)
+            {
+                tableWidth = tableWidth + countList * 4 * 100 + 100 * (count - countList);
+            }
+        }
+    }
+    else
+    {
+        tableWidth = 2000;
+    }
+
+
+    string Truncate(string text, int maxLength=25)
+    {
+        if (string.IsNullOrEmpty(text)) return text;
+        if (text.Length <= maxLength) return text;
+
+        return text.Substring(0, maxLength) + "...";
+    }
+}
+<style>
+    #datatable-buttons_wrapper .btn-group a:nth-child(3) {
+        display: inline-block;
+        position: absolute;
+    }
+
+    .ap {
+        position: absolute !important;
+    }
+</style>
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<div class="col-md-12 col-sm-12 ">
+    <table id="datatable-buttons" class="table table-striped itmfrz rowhighlighttbl" style="min-width:@(tableWidth.ToString()+"px") !important;" cellspacing="0">
+        <thead>
+            <tr class="sticky-header">
+                <th width="3%">@Resource.SrNo</th>
+                @if (ViewBag.rpt_type == "I")
+                {
+                    <th width="12%" class="itmStick width-250">@Resource.ItemName</th>
+                    <th >@Resource.UOM</th>
+                    <th>@Resource.groupname</th>
+                    <th>@Resource.Group <br /> @Resource.Structure </th>
+                }
+                @if (ViewBag.rpt_type == "G")
+                {
+                    <th width="15%" class="itmStick width-250">@Resource.groupname</th>
+                    <th width="15%">@Resource.Group <br /> @Resource.Structure </th>
+                }
+                @if (ViewBag.rpt_type == "A")
+                {
+                    <th width="15%">@Resource.GLAccount </th>
+                }
+                @if (ViewBag.cost_type == "PL")
+                {
+
+                    item2.Add("opening_qty");
+                    <th>@Resource.Opening <br />  @Resource.Quantity</th>
+                    foreach (DataRow row in PlNameList.Rows)
+                    {
+                        var newArr = array.Where(x => x.Contains(row["pl_name"].ToString())
+                        && (x.Contains("1_") || x.Contains("0_"))
+                        ).ToArray();
+
+                        foreach (var columnName in newArr)
+                        {
+                            var thName = columnName.Replace("1_Opening", $"{Resource.Opening} {Resource.Value}")
+                                .Replace("0_Price", $"{Resource.Price}");
+                            <th title="@thName">@Truncate(thName)</th>
+                            item2.Add(columnName);
+                        }
+                    }
+                    <th>@Resource.Receipt <br />  @Resource.Quantity</th>
+                    item2.Add("rcpt_qty");
+                    foreach (DataRow row in PlNameList.Rows)
+                    {
+                        var newArr = array.Where(x => x.Contains(row["pl_name"].ToString())
+                        && (x.Contains("2_") || x.Contains("0_"))
+                        ).ToArray();
+
+                        foreach (var columnName in newArr)
+                        {
+                            var thName = columnName.Replace("0_Price", $"{Resource.Price}")
+                                .Replace("2_Receipt", $"{Resource.Receipt} {Resource.Value}");
+                            <th title="@thName">@Truncate(thName)</th>
+                            item2.Add(columnName);
+                        }
+                    }
+                    <th>@Resource.Issue <br />  @Resource.Quantity</th>
+                    item2.Add("issue_qty");
+                    foreach (DataRow row in PlNameList.Rows)
+                    {
+                        var newArr = array.Where(x => x.Contains(row["pl_name"].ToString())
+                        && (x.Contains("3_") || x.Contains("0_"))
+                        ).ToArray();
+
+                        foreach (var columnName in newArr)
+                        {
+                            var thName = columnName.Replace("0_Price", $"{Resource.Price}")
+                                .Replace("3_Issue", $"{Resource.Issue} {Resource.Value}");
+                            <th title="@thName">@Truncate(thName)</th>
+                            item2.Add(columnName);
+                        }
+                    }
+                    <th>@Resource.Closing <br />  @Resource.Quantity</th>
+                    item2.Add("closing_qty");
+                    if (ViewBag.rpt_type == "I" || ViewBag.rpt_type == "G")
+                    {
+                        <th title="@Resource.Closing @Resource.Quantity @Resource.InSpecific">@Truncate($"{Resource.Closing} {Resource.Quantity} {Resource.InSpecific}")</th>
+                        if (ViewBag.rpt_type == "G")
+                        {
+                            <th hidden></th>
+                        }
+                    }
+                    foreach (DataRow row in PlNameList.Rows)
+                    {
+                        var newArr = array.Where(x => x.Contains(row["pl_name"].ToString())
+                        && (x.Contains("4_") || x.Contains("0_"))
+                        ).ToArray();
+
+                        foreach (var columnName in newArr)
+                        {
+                            var thName = columnName.Replace("0_Price", $"{Resource.Price}")
+                                .Replace("4_Closing", $"{Resource.Closing} {Resource.Value}");
+                            <th title="@thName">@Truncate(thName)</th>
+                            item2.Add(columnName);
+                        }
+                    }
+                }
+                else
+                {
+                    <th>@Resource.Opening <br />  @Resource.Quantity</th>
+                    <th>@Resource.Opening <br />  @Resource.Value</th>
+                    <th>@Resource.Receipt <br />  @Resource.Quantity</th>
+                    <th>@Resource.Receipt <br />  @Resource.Value</th>
+                    <th>@Resource.Issue <br />  @Resource.Quantity</th>
+                    <th>@Resource.Issue <br />  @Resource.Value</th>
+                    <th>@Resource.Closing <br />  @Resource.Quantity</th>
+                    if (ViewBag.rpt_type == "I" || ViewBag.rpt_type == "G")
+                    {
+                        <th width="10%">@Resource.Closing  @Resource.Quantity <br /> @Resource.InSpecific</th>
+                        if (ViewBag.rpt_type == "G")
+                        {
+                            <th hidden></th>
+                        }
+                    }
+                    <th>@Resource.Closing <br />  @Resource.Value</th>
+                }
+
+            </tr>
+        </thead>
+        <tbody>
+            @if (ViewBag.StkValDetails != null)
+            {
+                var srno = 1;
+                foreach (System.Data.DataRow dr in ViewBag.StkValDetails.Rows)
+                {
+                    var j = 0;//Used in Dynamic Table Body
+                    <tr>
+                        <td>@srno</td>
+                        @if (ViewBag.rpt_type == "I")
+                        {
+                            <td class="ItmNameBreak itmStick tditemfrz">
+                                <span id="span_name">@dr["item_name"].ToString()</span>
+                                <input type="hidden" id="hdn_itmid" value="@dr["item_id"].ToString()" />
+                                <input type="hidden" id="hdn_rpttype" value="itm_wise" />
+                            </td>
+                            <td>@dr["Uom"].ToString()</td>
+                            <td>@dr["grp_name"].ToString()</td>
+                            <td>@dr["group_str"].ToString()</td>
+                        }
+                        @if (ViewBag.rpt_type == "G")
+                        {
+                            <td>
+                                <div class="col-sm-11 no-padding">
+                                    <span id="span_name">@dr["grp_name"].ToString()</span>
+                                </div>
+                                <input type="hidden" id="hdn_grpid" value="@dr["grp_id"].ToString()" />
+                                <input type="hidden" id="hdn_rpttype" value="grp_wise" />
+                                <div class="col-sm-1 i_Icon">
+                                    <button type="button" class="calculator" onclick="OnClickIcon_ItemDetail(event);" data-toggle="modal" data-target="#ItemDetail" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.ItemInformation">   </button>
+                                </div>
+
+                            </td>
+                            <td>@dr["group_str"].ToString()</td>
+                        }
+                        @if (ViewBag.rpt_type == "A")
+                        {
+                            <td>
+                                <div class="col-sm-11 no-padding"><span id="span_name">@dr["acc_name"].ToString()</span></div>
+                                <input type="hidden" id="hdn_accid" value="@dr["acc_id"].ToString()" />
+                                <input type="hidden" id="hdn_rpttype" value="acc_wise" />
+                                <div class="col-sm-1 i_Icon">
+                                    <button type="button" class="calculator" onclick="OnClickIcon_ItemDetail(event);" data-toggle="modal" data-target="#ItemDetail" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.ItemInformation">   </button>
+                                </div>
+                            </td>
+                        }
+                        @if (ViewBag.cost_type == "PL")
+                        {
+                            foreach (var columnName in item2)
+                            {
+                                if (columnName == "rcpt_qty")
+                                {
+                                    <td class="num_right">
+                                        <div class="col-sm-11 no-padding">
+                                            @dr["rcpt_qty"].ToString()
+                                        </div>
+                                        <div class="col-sm-1 i_Icon">
+                                            <button type="button" class="calculator" onclick="getrcpt_issuedetail(event,'rcpt');" data-toggle="modal" data-target="#rec_issueDetail" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.ReceivedQuantity">   </button>
+                                        </div>
+                                    </td>
+                                }
+                                else if (columnName == "issue_qty")
+                                {
+                                    <td class="num_right">
+                                        <div class="col-sm-11 no-padding">
+                                            @dr["issue_qty"].ToString()
+                                        </div>
+                                        <div class="col-sm-1 i_Icon">
+                                            <button type="button" class="calculator" onclick="getrcpt_issuedetail(event,'issue');" data-toggle="modal" data-target="#rec_issueDetail" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.IssuedQuantity">   </button>
+                                        </div>
+                                    </td>
+                                }
+                                else if (columnName == "closing_qty")
+                                {
+                                    <td class="num_right">@dr[columnName].ToString()</td>
+                                    if (ViewBag.rpt_type == "I" || ViewBag.rpt_type == "G")
+                                    {
+                                        <td class="num_right">@dr["closing_qty_in_sp_uom"].ToString()</td>
+                                        if (ViewBag.rpt_type == "G")
+                                        {
+                                            <td class="num_right" id="sp_uom_id" hidden>@dr["sp_uom_id"].ToString()</td>
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    <td class="num_right">@dr[columnName].ToString()</td>
+                                }
+                            }
+                        }
+                        else
+                        {
+                            <td class="num_right">@dr["opening_qty"].ToString()</td>
+                            <td class="num_right">@dr["opening_val"].ToString()</td>
+                            <td class="num_right">
+                                <div class="col-sm-11 no-padding">
+                                    @dr["rcpt_qty"].ToString()
+                                </div>
+                                <div class="col-sm-1 i_Icon">
+                                    <button type="button" class="calculator" onclick="getrcpt_issuedetail(event,'rcpt');" data-toggle="modal" data-target="#rec_issueDetail" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.ReceivedQuantity">   </button>
+                                </div>
+                            </td>
+                            <td class="num_right">@dr["rcpt_val"].ToString()</td>
+                            <td class="num_right">
+                                <div class="col-sm-11 no-padding">
+                                    @dr["issue_qty"].ToString()
+                                </div>
+                                <div class="col-sm-1 i_Icon">
+                                    <button type="button" class="calculator" onclick="getrcpt_issuedetail(event,'issue');" data-toggle="modal" data-target="#rec_issueDetail" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.IssuedQuantity">   </button>
+                                </div>
+                            </td>
+                            <td class="num_right">@dr["issue_val"].ToString()</td>
+                            <td class="num_right">@dr["closing_qty"].ToString()</td>
+                            if (ViewBag.rpt_type == "I" || ViewBag.rpt_type == "G")
+                            {
+                                <td class="num_right">@dr["closing_qty_in_sp_uom"].ToString()</td>
+                                if (ViewBag.rpt_type == "G")
+                                {
+                                    <td class="num_right" id="sp_uom_id" hidden>@dr["sp_uom_id"].ToString()</td>
+                                }
+                            }
+                            <td class="num_right">@dr["closing_val"].ToString()</td>
+                        }
+
+                    </tr>
+
+                    srno = srno + 1;
+                }
+            }
+        </tbody>
+        <tfoot>
+            @*/*Add by Hina sharma on 03-02-2025 for show total of all values*/*@
+            @if (ViewBag.rpt_type == "I" || ViewBag.rpt_type == "G" || ViewBag.rpt_type == "A")
+            {
+                if (ViewBag.TotalVal_StkValuation != null)
+                {
+                    foreach (DataRow dr in ViewBag.TotalVal_StkValuation.Rows)
+                    {
+            <tr class="total">
+                @if (ViewBag.rpt_type == "G")
+                {
+                    <td colspan="3" align="right"><strong>@Resource.Total</strong></td>
+                }
+                else if (ViewBag.rpt_type == "I")
+                {
+                    <td colspan="5" align="right"><strong>@Resource.Total</strong></td>
+                }
+                else
+                {
+                    <td colspan="2" align="right"><strong>@Resource.Total</strong></td>
+                }
+                @*<td class="num_right"><strong></strong></td>*@
+                @if (ViewBag.cost_type == "PL")
+                {
+                    foreach (var columnName in item2)
+                    {
+                        if (columnName == "rcpt_qty" || columnName == "issue_qty" || columnName == "opening_qty" || columnName.StartsWith("0_Price"))
+                        {
+                            <td class="num_right"><strong></strong></td>
+                        }
+                        else if (columnName.StartsWith("closing_qty"))
+                        {
+                            <td class="num_right"><strong></strong></td>
+                            if (ViewBag.rpt_type != "A")
+                            {
+                                <td class="num_right"><strong></strong></td>
+                            }
+                        }
+                        else
+                        {
+                            <td class="num_right"><strong>@dr[columnName].ToString()</strong></td>
+                        }
+                    }
+                }
+                else
+                {
+                    <td class="num_right"><strong></strong></td>
+                    <td class="num_right"><strong>@dr["opening_val"].ToString()</strong></td>
+                    <td class="num_right"><strong></strong></td>
+                    <td class="num_right"><strong>@dr["rcpt_val"].ToString()</strong></td>
+                    <td class="num_right"><strong></strong></td>
+                    <td class="num_right"><strong>@dr["issue_val"].ToString()</strong></td>
+                    <td class="num_right"><strong></strong></td>
+                    if (ViewBag.rpt_type != "A")
+                    {
+                        <td class="num_right"><strong></strong></td>
+                    }
+                    <td class="num_right"><strong>@dr["closing_val"].ToString()</strong></td>
+                }
+
+            </tr>
+                    }
+                }
+            }
+            @*@if (ViewBag.rpt_type == "A" || ViewBag.rpt_type == "G")
+            {
+                if (ViewBag.TotalVal_StkValuation != null)
+                {
+                    foreach (DataRow dr in ViewBag.TotalVal_StkValuation.Rows)
+                    {
+                        <tr class="total">
+
+                            @if (ViewBag.rpt_type == "G")
+                            {
+                                <td colspan="3" align="right"><strong>@Resource.Total</strong></td>
+                            }
+                            else
+                            {
+                                <td colspan="2" align="right"><strong>@Resource.Total</strong></td>
+                            }
+
+                            <td class="num_right"><strong></strong></td>
+                            <td class="num_right"><strong>@dr["opening_val"].ToString()</strong></td>
+                            <td class="num_right"><strong></strong></td>
+                            <td class="num_right"><strong>@dr["rcpt_val"].ToString()</strong></td>
+                            <td class="num_right"><strong></strong></td>
+                            <td class="num_right"><strong>@dr["issue_val"].ToString()</strong></td>
+                            <td class="num_right"><strong></strong></td>
+                            @if (ViewBag.rpt_type == "G")
+                            {
+                                <td class="num_right"><strong></strong></td>
+                            }
+                            <td class="num_right"><strong>@dr["closing_val"].ToString()</strong></td>
+                        </tr>
+                    }
+                }
+            }*@
+
+        </tfoot>
+    </table>
+</div>
+@{
+    if (Model.SearchStatus != null)
+    {
+        if (Model.SearchStatus == "SEARCH")
+        {
+            @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+            @Scripts.Render("~/Content/Scripts/DatatablesJs")
+            Model.SearchStatus = null;
+        }
+    }
+}
+
+

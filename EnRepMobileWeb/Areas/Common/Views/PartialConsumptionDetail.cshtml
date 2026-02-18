@@ -1,0 +1,137 @@
+﻿@using EnRepMobileWeb.Resources;
+@using System.Data;
+@{
+
+    string QtyDigit = "0.";
+    var QD = Convert.ToInt32(Session["QtyDigit"].ToString());
+    for (var i = 0; i < QD; i++)
+    {
+        QtyDigit += "0";
+    }
+
+    decimal total = 0;
+}
+
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<div class="modal-content">
+    <div class="modal-header">
+        <h2>@Resource.ConsumptionDetail</h2>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body" style="padding-top:0px;">
+        <div class="col-md-3 col-sm-12 pl-0 pr-0">
+            <label class="col-form-label label-align">@Resource.MaterialName</label>
+            <input id="MaterialName" class="form-control" autocomplete="off" type="text" name="MaterialName" placeholder="@Resource.MaterialName" onblur="this.placeholder = '@Resource.MaterialName'" disabled="">
+            <input id="Material_id" type="hidden" />
+        </div>
+        <div class="col-md-3">
+            <div class="col-md-4 col-sm-12" style="padding-left:0px;">
+                <label class="col-form-label label-align">@Resource.UOM</label>
+                <input id="UOM" class="form-control" autocomplete="off" type="text" name="UOM" placeholder="@Resource.UOM" onblur="this.placeholder = '@Resource.UOM'" disabled="">
+            </div>
+            <div class="col-md-8 col-sm-12 pl-0 pr-0">
+                <label class="col-form-label label-align">@Resource.Consumption @Resource.Quantity</label>
+                <input id="ConsumptionQuantity" class="form-control num_right" autocomplete="off" type="text" name="ConsumptionQuantity" placeholder="0000.00" disabled="">
+            </div>
+        </div>
+       
+            @if (@ViewBag.ConsumptionMaterialDetails != null)
+            {
+                if (ViewBag.ConsumptionMaterialDetails.Rows.Count > 0)
+                {
+                    <div class="col-md-3 col-sm-12" style="padding-left:0px;">
+                        <label class="col-form-label label-align">@Resource.ShopfloorName </label>
+                        <input id="ConsumptionQuantity" value="@ViewBag.ConsumptionMaterialDetails.Rows[0]["shfl_name"]" class="form-control" autocomplete="off" type="text" name="ConsumptionQuantity" placeholder="0000.00" disabled="">
+                    </div>
+                    <div class="col-md-3 col-sm-12" style="padding-left:0px;">
+                        <label class="col-form-label label-align">@Resource.OperationName </label>
+                        <input id="ConsumptionQuantity" value="@ViewBag.ConsumptionMaterialDetails.Rows[0]["op_name"]" class="form-control" autocomplete="off" type="text" name="ConsumptionQuantity" placeholder="0000.00" disabled="">
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-md-3 col-sm-12" style="padding-left:0px;">
+                    <label class="col-form-label label-align">@Resource.ShopfloorName</label>
+                    <input id="UOM" class="form-control" autocomplete="off" type="text" name="UOM" placeholder="@Resource.ShopfloorName" onblur="this.placeholder = '@Resource.UOM'" disabled="">
+                </div>
+                <div class="col-md-3 col-sm-12" style="padding-left:0px;">
+                    <label class="col-form-label label-align">@Resource.OperationName</label>
+                    <input id="UOM" class="form-control" autocomplete="off" type="text" name="UOM" placeholder="@Resource.OperationName" onblur="this.placeholder = '@Resource.UOM'" disabled="">
+                </div>
+            }
+       
+        <div class="clearfix"></div>
+        <div class="card-box table-responsive dy_table margin10">
+            <div id="" class="sticky-table sticky-ltr-cells sb-container container-example1 OrderHistory height30VH pop_csv">
+                <table id="tblConsumpDetail" data-order="" class="table table-striped table-bordered rowhighlighttbl" style="width:100%">
+                    <thead>
+                        <tr class="sticky-header">
+                            <th width="2%"> @Resource.SrNo</th>
+                            <th width="24%">@Resource.ProductionNumberAndDate</th>
+                            <th hidden="hidden">@Resource.ConfirmationNumber</th>
+                            <th hidden="hidden">@Resource.ConfirmationDate</th>
+                            <th>@Resource.FGProductName</th>
+                            <th hidden="hidden"></th>
+                            <th>@Resource.FGUOM</th>
+                            @*<th>@Resource.OperationName</th>
+                            <th>@Resource.Shopfloor</th>*@
+                            <th>@Resource.Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody id="">
+                        @if (ViewBag.ConsumptionMaterialDetails != null)
+                        {
+                            var srno = 1;
+                            foreach (DataRow dr in ViewBag.ConsumptionMaterialDetails.Rows)
+                            {
+                                <tr class="odd">
+                                    <td width="3%">@srno</td>
+                                    <td>@dr["cnf_no_And_dt"].ToString()</td>
+                                    <td id="cnf_no" hidden="hidden">@dr["cnf_no"].ToString()</td>
+                                    <td id="cnf_dt" hidden="hidden">@dr["cnf_dt"].ToString()</td>
+                                    <td>@dr["product_name"].ToString()</td>
+                                    <td id="product_id" hidden="hidden">@dr["product_id"].ToString()</td>
+                                    <td>@dr["puom_alias"].ToString()</td>
+                                    @*<td>@dr["op_name"].ToString()</td>
+                                    <td>@dr["shfl_name"].ToString()</td>*@
+                                    <td>
+                                        <div class="col-sm-10 num_right" id=""><span id="Cons_Qty"> @Convert.ToDecimal(dr["cons_qty"]).ToString(QtyDigit) </span></div>
+                                        <div class="col-sm-2 i_Icon">
+                                            <button type="button" id="" class="calculator" onclick="OnClickConsuptionQty(event)" data-toggle="modal" data-target="#LotDetail" data-backdrop="static" data-keyboard="false">
+                                                <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Lot @Resource.Detail"> @*<i class="fa fa-info" aria-hidden="true" title="@Resource.Lot @Resource.Detail"></i>*@
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                total = total + @Convert.ToDecimal(dr["cons_qty"]);
+                                srno = srno + 1;
+                            }
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr class="total">
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td hidden="hidden">&nbsp;</td>
+                            <td hidden="hidden">&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td hidden="hidden">&nbsp;</td>
+                            @*<td>&nbsp;</td>
+                            <td>&nbsp;</td>*@
+                            <td align="right"><strong>Total</strong></td>
+                            <td class="num_right"><strong>@total.ToString(QtyDigit)</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" id="" onclick="OnClickSerialDiscardAndExit()">@Resource.Close</button>
+    </div>
+</div>
+
+
+

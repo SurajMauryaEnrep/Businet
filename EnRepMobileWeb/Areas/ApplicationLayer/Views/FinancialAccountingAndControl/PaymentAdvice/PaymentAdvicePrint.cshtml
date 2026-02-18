@@ -1,0 +1,184 @@
+﻿@using System.Data;
+@*
+    USing  This Partial //// Added this Comment By Nitesh 23-02-2024
+        1. Journal Voucher
+        2. Cash Recipt
+        3. Bank Recipt
+        4.
+*@
+<style>
+    .tbl_border {
+        border: 0.5px solid #000000;
+    }
+
+        .tbl_border > thead > tr > th {
+            border: 0.5px solid #000000;
+            paddingtop: 5px;
+            paddingbottom: 5px;
+            font-weight: bold;
+            text-align: center;
+            font-size:12px;
+        }
+
+        .tbl_border > tbody > tr > td {
+            border: 0.5px solid #000000;
+            paddingleft: 5px;
+            paddingright: 5px;
+            paddingtop: 5px;
+            paddingbottom: 3px;
+            font-size: 12px;
+        }
+        .tbl_border > tr > td {
+            font-size:12px;
+            paddingleft: 5px;
+            paddingright: 5px;
+            paddingtop: 5px;
+            paddingbottom: 3px;
+        }
+    .num_right {
+        text-align:right;
+    }
+</style>
+<div style="width:100%;">
+    <div style="width:100%; margin:0 auto; ">
+        <table style="width:100%;">
+            <tr>
+                <td>
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td width="10">&nbsp;</td>
+                            <td>
+                                @Html.Partial("~/Areas/ApplicationLayer/Views/FinancialAccountingAndControl/MIS/GeneralLedger/GLHeaderPrint.cshtml")
+                            </td>
+                            <td width="15">&nbsp;</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0" >
+                        <tr>
+                            <td width="15">&nbsp;</td>
+                            <td>
+                                <table width="100%" border="0" class="tbl_border">
+                                    <tr>                                        
+                                        <td width="17%"><strong>Advice No.</strong> <br /> @ViewBag.Details.Tables[0].Rows[0]["padv_no"]</td>
+                                            <td width="17%"><strong>Advice Date</strong> <br /> @ViewBag.Details.Tables[0].Rows[0]["padv_date"]</td>
+                                            <td width="17%"><strong>From Date</strong> <br /> @ViewBag.Details.Tables[0].Rows[0]["from_date"]</td>
+                                            <td width="17%"><strong>To Date</strong> <br />@ViewBag.Details.Tables[0].Rows[0]["to_date"]</td>
+                                            <td width="17%"><strong>Instrument Type</strong> <br /> @ViewBag.Details.Tables[0].Rows[0]["Ins_typeName"]</td>
+                                            <td width="15%"><strong>Bank Account</strong> <br /> @ViewBag.Details.Tables[0].Rows[0]["BankName"]</td>
+                                        
+                                       
+                                    </tr>
+                                </table>
+                            </td>
+                            <td width="15">&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td width="15">&nbsp;</td>
+                            <td style="font-size: 11px; font-weight:normal;padding: 10px 0px 0px 0px; line-height:18px;">
+                                <table class="tbl_border" cellspacing="0" cellpadding="0" style=" width:100%; font-size: 12px; font-weight:normal;padding: 0px 0px; line-height:18px; font-weight:normal; vertical-align:top;">
+                                    <thead>
+                                        <tr>
+                                            <th width="4%">S.NO.</th>
+                                            <th width="14%">Voucher Number</th>
+                                            <th width="7%">Voucher Date</th>
+                                            <th width="17%">Bank Account</th>
+                                            <th width="23%">Payee Name</th>
+                                            <th width="8%" >Amount</th>
+                                            <th width="10%">Instrument Type</th>
+                                            <th width="10%">Instrument Number</th>
+                                            <th width="7%">Instrument Date</th>
+
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (ViewBag.Details.Tables[1].Rows != null)
+                                        {
+                                            var i = 1;
+                                            DataView data = new DataView();
+                                            foreach (DataRow dr in ViewBag.Details.Tables[1].Rows)
+                                            {
+                                                <tr>
+                                                    <td style='text-align:center;'>@i</td>
+                                                    <td>@dr["vou_no"].ToString()</td>
+                                                    <td>@dr["vou_date"].ToString()</td>
+                                                    <td>@dr["BankName"].ToString()</td>
+                                                    <td>@dr["GLName_CS"].ToString()</td>
+                                                    <td class="num_right">@dr["amount"].ToString()</td>
+                                                    <td>@dr["ins_typeName"].ToString()</td>
+                                                    <td>@dr["ins_no"].ToString()</td>
+                                                    <td>@dr["ins_dt"].ToString()</td>
+
+                                                </tr>
+                                                i++;
+                                            }
+                                        }
+
+                                    </tbody>
+                                </table>
+                            </td>
+                            <td width="15">&nbsp;</td>
+                        </tr>
+                        
+                        @*<tr>
+                            <td style='width:100px;'></td>
+                            <td>
+                                <table style='width:100%;'>
+                                    <tr><td style='font-size:12px;font-weight:normal;padding:10px 0px 0px 0px;width:75%;font-weight:bold;'>Amount in Words:</td></tr>
+                                    <tr><td style='font-size:12px;font-weight:normal;padding:0px 0px;width:60%;'> @ViewBag.Details.Tables[1].Rows[0]["value_inwords"]</td></tr>
+                                </table>
+                            </td>
+
+                            <td style='width:10px;'></td>
+                        </tr>*@
+                        
+                    </table>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>
+                    <table width="100%" style="paddingleft:8px; paddingright:9px; vertical-align:top;">
+                        
+                            <tr>
+                                @*<td width="35%" style="vertical-align:top;">
+                                    <table style=" width:100%;">
+                                        <tr>
+                                            <td style="font-size: 12px; font-weight:normal;padding: 10px 0px 0px 0px; "><strong>Receiver's Signature</strong> : </td>
+                                        </tr>
+                                    </table>
+                                </td>*@
+                                <td width="50%" style="vertical-align:top;">
+                                    <table style=" width:100%;">
+                                        <tr>
+                                            <td style="font-size: 12px; font-weight:normal;padding: 10px 0px 0px 0px; "><strong>Created By</strong> : @ViewBag.Details.Tables[0].Rows[0]["Created_by"]</td>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td width="50%" style="vertical-align:top;">
+                                    <table style=" width:100%;">
+                                        <tr>
+                                            <td style="font-size: 12px; font-weight:normal;padding: 10px 0px 0px 0px; "><strong>Approved By</strong> : @ViewBag.Details.Tables[0].Rows[0]["Approved_by"]</td>
+                                        </tr>
+                                    </table>
+                                </td>
+
+                            </tr>
+                       
+                       
+
+                    </table>
+                </td>
+
+            </tr>
+
+        </table>
+    </div>
+</div>
+
+

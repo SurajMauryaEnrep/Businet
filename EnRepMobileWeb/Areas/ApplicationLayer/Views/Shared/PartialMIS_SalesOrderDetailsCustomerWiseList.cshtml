@@ -1,0 +1,266 @@
+﻿@using EnRepMobileWeb.Resources;
+@{
+    //string ValDigit = "0.";
+    //var VD = Convert.ToInt32(Session["ValDigit"].ToString());
+    //for (var i = 0; i < VD; i++)
+    //{
+    //    ValDigit += "0";
+    //}
+    //decimal total = 0;
+}
+<style>
+    #datatable-buttons1_wrapper .btn-group a:nth-child(3) {
+        display: inline-block;
+        position: absolute;
+    }
+</style>
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+@if (ViewBag.flag == "SOCostomerWise")
+{
+    <table id="DataTable2" class="table table-striped width1800 rowhighlighttbl itmfrz" cellspacing="0" width="100%">
+        <thead>
+            <tr class="sticky-header">
+                <th width="3%">@Resource.SrNo</th>
+                <th width="20%" class="itmStick">@Resource.Customer <br /> @Resource.Name</th>
+                <th hidden="hidden"></th>
+                <th>@Resource.Currency</th>
+                <th hidden="hidden"></th>
+                <th>@Resource.RegionName</th>
+                <th>@Resource.Category</th>
+                <th>@Resource.Portfolio</th>
+                <th>@Resource.Customer @Resource.Zone</th>
+                <th>@Resource.Customer @Resource.Group</th>
+                <th>@Resource.State</th>
+                <th>@Resource.City</th>
+                <th>@Resource.OrderType</th>
+                <th>@Resource.GrossValue <br /> @Resource.InSpecific</th>
+                <th>@Resource.GrossValue <br /> @Resource.InBase</th>
+                <th>@Resource.TaxAmount <br /> @Resource.InSpecific</th>
+                <th>@Resource.TaxAmount <br /> @Resource.InBase</th>
+                <th>@Resource.OtherCharges <br /> @Resource.InSpecific</th>
+                <th>@Resource.OtherCharges <br /> @Resource.InBase</th>
+                <th>@Resource.Order @Resource.Amount  <br /> @Resource.InSpecific </th>
+                <th>@Resource.Order @Resource.Amount  <br /> @Resource.InBase </th>
+            </tr>
+        </thead>
+        <tbody id="">
+            @if (ViewBag.OrderDetailCostomerWiseList != null)
+            {
+                var srno = 1;
+                foreach (System.Data.DataRow dr in ViewBag.OrderDetailCostomerWiseList.Rows)
+                {
+            <tr>
+                <td>@srno</td>
+                <td id="cust_name" class="ItmNameBreak itmStick tditemfrz">@dr["cust_name"].ToString()</td>
+                <td id="txtCustName" hidden="hidden">@dr["cust_id"].ToString()</td>
+                <td id="curr_symbol" class="center">@dr["curr_symbol"].ToString()</td>
+                <td hidden="hidden" id="txtCurr_id">@dr["curr_id"].ToString()</td>
+                <td>@dr["cust_region"].ToString()</td>
+                <td>@dr["cust_catg"].ToString()</td>
+                <td>@dr["cust_port"].ToString()</td>
+                <td>@dr["cust_zone"].ToString()</td>
+                <td>@dr["cust_group"].ToString()</td>
+                <td>@dr["cust_state"].ToString()</td>
+                <td>@dr["cust_city"].ToString()</td>
+                <td>@dr["sale_type"].ToString()</td>
+                <td class="num_right" id="txt_SaleAmtSpec">@dr["sale_amount_spec"].ToString()</td>
+                <td class="num_right" id="txt_SaleAmt">@dr["sale_amount_bs"].ToString()</td>
+                <td class="num_right" id="txt_TaxAmtSpec">@dr["tax_amt_spec"].ToString()</td>
+                <td class="num_right" id="txt_TaxAmt">@dr["tax_amt_bs"].ToString()</td>
+                <td class="num_right" id="txt_OcAmtSpec">@dr["oc_amt_spec"].ToString()</td>
+                <td class="num_right" id="txt_OcAmt">@dr["oc_amt_bs"].ToString()</td>
+                <td class="num_right" id="txt_InvoiceAmtSpec">
+                    <div class="col-sm-11" id="">@dr["order_amt_spec"].ToString() </div>
+                    <div class="col-sm-1 i_Icon">
+                        <button type="button" id="" class="calculator iButton" onclick="CW_OnclickInvoiceAmt(event)" data-toggle="modal" data-target="#CustomerInvoiceDetail" data-backdrop="static" data-keyboard="false">  <img src="~/Content/Images/iIcon1.png" alt="" title="@Resource.InvoiceDetail" /> @*<i class="fa fa-info" aria-hidden="true" title="@Resource.InvoiceDetail"></i>*@ </button>
+                    </div>
+                </td>
+                <td class="num_right" id="txt_InvoiceAmt">
+                    <div class="col-sm-11" id="">@dr["order_amt_bs"].ToString() </div>
+                    <div class="col-sm-1 i_Icon">
+                        <button type="button" id="CustomerInvoiceDetail" class="calculator iButton" onclick="CW_OnclickInvoiceAmt(event)" data-toggle="modal" data-target="#CustomerInvoiceDetail" data-backdrop="static" data-keyboard="false">  <img src="~/Content/Images/iIcon1.png" alt="" title="@Resource.InvoiceDetail" /> @*<i class="fa fa-info" aria-hidden="true" title="@Resource.InvoiceDetail"></i>*@ </button>
+                    </div>
+                </td>
+            </tr>
+                    srno = srno + 1;
+                }
+            }
+        </tbody>
+        <tfoot id="tfootttl">
+            @if (ViewBag.SOCostomerWiseTotal != null)
+            {
+                foreach (System.Data.DataRow dr in ViewBag.SOCostomerWiseTotal.Rows)
+                {
+            <tr class="total">
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td hidden="hidden">&nbsp;</td>
+                <td>&nbsp;</td>
+                <td hidden="hidden">&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td align="right"><strong>Total</strong></td>
+                <td class="num_right"><strong>@dr["sale_amount_spec"].ToString()</strong></td>
+                <td class="num_right"><strong>@dr["sale_amount_bs"].ToString()</strong></td>
+                <td class="num_right"><strong>@dr["tax_amt_spec"].ToString()</strong></td>
+                <td class="num_right"><strong>@dr["tax_amt_bs"].ToString()</strong></td>
+                <td class="num_right"><strong>@dr["oc_amt_spec"].ToString()</strong></td>
+                <td class="num_right"><strong>@dr["oc_amt_bs"].ToString()</strong></td>
+                <td class="num_right"><strong>@dr["Order_amt_spec"].ToString()</strong></td>
+                <td class="num_right"><strong>@dr["Order_amt_bs"].ToString()</strong></td>
+            </tr>
+                }
+            }
+        </tfoot>
+    </table>
+}
+else
+{
+    <table id="DataTable2" class="table table-striped width2600 rowhighlighttbl itmfrz" cellspacing="0" width="100%">
+        <thead>
+            <tr class="sticky-header">
+                <th width="2%">@Resource.SrNo</th>
+                <th width="6%" class="itmStick">@Resource.Customer <br /> @Resource.Name</th>
+                <th hidden="hidden"></th>
+                <th width="6%">@Resource.Currency</th>
+                <th hidden="hidden"></th>
+                <th width="6%">@Resource.RegionName</th>
+                <th>@Resource.Category</th>
+                <th>@Resource.Portfolio</th>
+                <th>@Resource.Customer @Resource.Zone</th>
+                <th>@Resource.Customer @Resource.Group</th>
+                <th>@Resource.State</th>
+                <th>@Resource.City</th>
+                <th width="6%">@Resource.Order  @Resource.Type</th>
+                <th width="6%">@Resource.Order <br /> @Resource.Number </th>
+                <th width="6%">@Resource.Order <br /> @Resource.Date</th>
+                <th width="5%">@Resource.Customer @Resource.ReferenceNumber</th>
+                <th hidden="hidden"></th>
+                <th width="8%">@Resource.Sales <br /> @Resource.Representative</th>
+                <th width="6%">@Resource.GrossValue <br /> @Resource.InSpecific</th>
+                <th width="6%">@Resource.GrossValue <br /> @Resource.InBase</th>
+                <th width="6%">@Resource.TaxAmount <br /> @Resource.InSpecific</th>
+                <th width="6%">@Resource.TaxAmount <br /> @Resource.InBase</th>
+                <th width="6%">@Resource.OtherCharges <br /> @Resource.InSpecific </th>
+                <th width="6%">@Resource.OtherCharges <br /> @Resource.InBase </th>
+                <th width="6%">@Resource.Order @Resource.Amount  <br /> @Resource.InSpecific </th>
+                <th width="6%">@Resource.Order @Resource.Amount  <br /> @Resource.InBase </th>
+                <th width="6%">@Resource.ApprovedOn</th>
+            </tr>
+        </thead>
+        <tbody id="">
+            @if (ViewBag.OrderDetailCostomerWiseList != null)
+            {
+                var srno = 1;
+                foreach (System.Data.DataRow dr in ViewBag.OrderDetailCostomerWiseList.Rows)
+                {
+            <tr>
+                <td>@srno</td>
+                <td id="CustomerName" class="ItmNameBreak itmStick tditemfrz">@dr["cust_name"].ToString()</td>
+                <td id="hdnCustId" hidden="hidden">@dr["cust_id"].ToString()</td>
+                <td id="Currency" class="center">@dr["curr_symbol"].ToString()</td>
+                <td hidden="hidden" id="Currency_id">@dr["curr_id"].ToString()</td>
+                <td>@dr["cust_region"].ToString()</td>
+                <td>@dr["cust_catg"].ToString()</td>
+                <td>@dr["cust_port"].ToString()</td>
+                <td>@dr["cust_zone"].ToString()</td>
+                <td>@dr["cust_group"].ToString()</td>
+                <td>@dr["cust_state"].ToString()</td>
+                <td>@dr["cust_city"].ToString()</td>
+                <td>@dr["sale_type"].ToString()</td>
+                <td id="app_inv_no">@dr["app_so_no"].ToString()</td>
+                <td>@dr["so_dt1"].ToString()</td>
+                <td>@dr["ref_doc_no"].ToString()</td>
+                <td hidden="hidden" id="txtInv_dt">@dr["so_dt"].ToString()</td>
+                <td>@dr["sale_per"].ToString()</td>
+                <td>@dr["sale_amount_spec"].ToString()</td>
+                <td>@dr["sale_amount_bs"].ToString()</td>
+                <td>@dr["tax_amt_spec"].ToString()</td>
+                <td>@dr["tax_amt_bs"].ToString()</td>
+                <td>@dr["oc_amt_spec"].ToString()</td>
+                <td>@dr["oc_amt_bs"].ToString()</td>
+                <td class="num_right">
+                    <div class="col-sm-11">@dr["Order_amt_spec"].ToString()</div>
+                    <div class="col-sm-1 i_Icon">
+                        <button type="button" id="" class="calculator iButton" onclick="CW_OnclickInvoiceAmtGetItem(event)" data-toggle="modal" data-target="#CustomerInvoiceProductDetail" data-backdrop="static" data-keyboard="false">  <img src="/Content/Images/iIcon1.png" alt="" title="Product Detail">  </button>
+                    </div>
+                </td>
+                <td class="num_right">
+                    <div class="col-sm-11" id="">@dr["Order_amt_bs"].ToString()</div>
+                    <div class="col-sm-1 i_Icon">
+                        <button type="button" id="" class="calculator iButton" onclick="CW_OnclickInvoiceAmtGetItem(event)" data-toggle="modal" data-target="#CustomerInvoiceProductDetail" data-backdrop="static" data-keyboard="false">  <img src="/Content/Images/iIcon1.png" alt="" title="Product Detail">  </button>
+                    </div>
+                </td>
+                <td>@dr["app_dt"].ToString()</td>
+            </tr>
+                    srno = srno + 1;
+                }
+            }
+        </tbody>
+        <tfoot>
+            @if (ViewBag.OrderWiseDetailTotal != null)
+            {
+                foreach (System.Data.DataRow dr in ViewBag.OrderWiseDetailTotal.Rows)
+                {
+            <tr class="total">
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td hidden="hidden">&nbsp;</td>
+                <td>&nbsp;</td>
+                <td hidden="hidden">&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td hidden="hidden">&nbsp;</td>
+                <td align="right"><strong>Total</strong></td>
+                <td class="num_right"><strong>@dr["sale_amount_spec"].ToString()</strong></td>
+                <td class="num_right"><strong>@dr["sale_amount_bs"].ToString()</strong></td>
+                <td class="num_right"><strong>@dr["tax_amt_spec"].ToString()</strong></td>
+                <td class="num_right"><strong>@dr["tax_amt_bs"].ToString()</strong></td>
+                <td class="num_right"><strong>@dr["oc_amt_spec"].ToString()</strong></td>
+                <td class="num_right"><strong>@dr["oc_amt_bs"].ToString()</strong></td>
+                <td class="num_right"><strong>@dr["Order_amt_spec"].ToString()</strong></td>
+                <td class="num_right"><strong>@dr["Order_amt_bs"].ToString()</strong></td>
+                <td>&nbsp;</td>
+            </tr>
+                }
+            }
+
+        </tfoot>
+    </table>
+}
+@{
+    if (Model.ODFilter != null)
+    {
+        if (Model.ODFilter == "ODFilter")
+        {
+
+            @*<script src="~/Content/Scripts/Common/CommonJS.js"></script>
+                <script src="~/Content/Css/build/js/customdatatable.min.js"></script>*@
+            @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+            @Scripts.Render("~/Content/Scripts/DatatablesJs")
+            Model.ODFilter = null;
+            <script>
+                $(document).ready(function () {
+                    $(".dataTables_filter input").attr('onkeyup', 'CalculateAmtOnSearchInput("datatable-buttons1",4)');
+                    $(".dataTables_filter input").attr('onmouseout', 'CalculateAmtOnSearchInput("datatable-buttons1",4)');
+                    CalculateAmtOnSearchInput("datatable-buttons1", 5);
+                });
+            </script>
+        }
+    }
+}
+

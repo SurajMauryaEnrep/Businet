@@ -1,0 +1,157 @@
+﻿@{ 
+    decimal TotalDrAmt = 0;/*Add by Hina sharma on 17-10-2024 for show on print*/
+    decimal TotalCrAmt = 0;
+}
+<div style="width:100%; background-color:#000000">
+    <div style="width:100%; margin:0 auto; background-color:#ffffff;">
+        <table style="width:100%;">
+            <tr>
+                <td>
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td width="10">&nbsp;</td>
+                            <td>
+                                @Html.Partial("~/Areas/ApplicationLayer/Views/FinancialAccountingAndControl/MIS/GeneralLedger/GLHeaderPrint.cshtml")
+                            </td>
+                            <td width="15">&nbsp;</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td width="15">&nbsp;</td>
+                            <td style="padding: 10px 0px 0px 0px; line-height:18px;">
+                                <table cellpadding="0" cellspacing="0" width="100%" style="font-size: 14px;">
+                                    <tr>
+                                        <td width="10%" style="font-weight:bold;"> GL Account :</td>
+                                        <td width="22%" style="text-align:left;"> @ViewBag.PrintGL.Rows[0]["acc_name"]</td>
+                                        <td width="39%">&nbsp;</td>
+                                        <td width="15%" style="font-weight: bold; text-align: right;">Opening Balance </td>
+                                        @*<td width="11%" style="text-align:right;">@ViewBag.PrintGL.Rows[0]["op_bal"].ToString()</td>*@
+                                        <td width="11%" style="text-align:right;">@ViewBag.PrintGL.Rows[0]["br_op_bal_bs"].ToString()</td>
+                                        <td width="3%" style="text-align:right;">@ViewBag.PrintGL.Rows[0]["br_op_bal_type"].ToString()</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td width="15">&nbsp;</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td width="15">&nbsp;</td>
+                            <td style="padding: 10px 0px 0px 0px; line-height:18px;">
+                                <table cellpadding="0" cellspacing="0" width="100%" style="font-size: 14px;">
+                                    <tr>
+                                        <td width="10%" style="font-weight:bold;"> Period :</td>
+                                        <td width="8%"> @ViewBag.FromDate</td>
+                                        <td width="3%" style="font-weight:bold; text-align:left;">To</td>
+                                        <td width="8%" style="text-align:left;">@ViewBag.ToDate</td>
+                                        <td width="42%">&nbsp;</td>
+                                        <td width="15%" style="font-weight: bold; text-align: right;">Closing Balance</td>
+                                        @*<td width="11%" style="text-align:right;">@ViewBag.PrintGL.Rows[ViewBag.PrintGL.Rows.Count - 1]["closing_bal"]</td>*@
+                                        <td width="11%" style="text-align:right;">@ViewBag.PrintGL.Rows[ViewBag.PrintGL.Rows.Count - 1]["br_acc_bal_bs"]</td>
+                                        <td width="3%" style="text-align:right;">@ViewBag.PrintGL.Rows[ViewBag.PrintGL.Rows.Count - 1]["br_acc_bal_type"]</td>
+                                    </tr>
+                                    <tr style="paddingtop: 5px; line-height:18px;">
+                                        <td width="10%" style="font-weight:bold;"> Currency :</td>
+                                        <td width="22%" style="text-align:left;"> @ViewBag.Currency</td>
+                                        <td width="39%">&nbsp;</td>
+                                        <td width="15%" style="font-weight: bold; text-align: right;"> </td>
+                                        <td width="11%" style="text-align:right;"></td>
+                                        <td width="3%" style="text-align:right;"></td>
+                                    </tr>
+                                    @*<tr>
+                                        <td width="100%"><span style="font-weight:bold;">Currency</span> : </td>
+                                    </tr>*@
+                                </table>
+                            </td>
+                            <td width="15">&nbsp;</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td width="15">&nbsp;</td>
+                            <td style="font-size: 11px; font-weight:normal;padding: 10px 0px 0px 0px; line-height:18px;">
+                                <table cellspacing="0" cellpadding="0" style=" width:100%; font-size: 12px; font-weight:normal;padding: 0px 0px; line-height:18px; font-weight:normal; vertical-align:top; border: solid 1px #000000;">
+                                    <thead>
+                                        <tr>
+                                            <th width="4%" style="border-right: solid 1px #000000; paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center; ">S.NO.</th>
+                                            <th width="11%" style="border-right: solid 1px #000000; paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center;">Voucher <br /> Number</th>
+                                            <th width="7%" style="border-right: solid 1px #000000; paddingtop: 5px; paddingbottom: 5px; text-align: center; ">Voucher <br /> Date</th>
+                                            <th width="32%" style="border-right: solid 1px #000000; paddingtop: 5px; paddingbottom: 5px; width: 150px; font-weight: bold; text-align: center; ">Narration</th>
+                                            <th width="9%" style="border-right: solid 1px #000000; paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center; ">Opening <br /> Balance</th>
+                                            <th width="5%" style="border-right: solid 1px #000000; paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center; ">Balance <br /> Type</th>
+                                            <th width="9%" style="border-right: solid 1px #000000; paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center; ">Debit <br /> Amount</th>
+                                            <th width="9%" style="border-right: solid 1px #000000; paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center; ">Credit <br /> Amount</th>
+                                            <th width="9%" style="border-right: solid 1px #000000; paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center; ">Closing <br /> Balance </th>
+                                            <th width="5%" style="font-weight: bold; paddingtop: 5px; paddingbottom: 5px; text-align: center; ">Balance <br /> Type</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (ViewBag.PrintGL != null)
+                                        {
+                                            
+                                            var rowno = 1;
+                                            foreach (System.Data.DataRow dr in ViewBag.PrintGL.Rows)
+                                            {
+                                                <tr>
+                                                    <td style="text-align:center;vertical-align:top;border-top: solid 1px #000000;border-right: solid 1px #000000;">@rowno</td>
+                                                    <td style="paddingleft:5px;vertical-align:top;border-top: solid 1px #000000;border-right: solid 1px #000000;">@dr["src_doc_no"]</td>
+                                                    <td style="paddingleft:5px;vertical-align:top;border-top: solid 1px #000000;border-right: solid 1px #000000;">@dr["src_doc_dt"]</td>
+                                                    <td style="paddingleft: 5px; paddingright: 5px; vertical-align: top; border-top: solid 1px #000000; border-right: solid 1px #000000;">@dr["narr"]</td>
+                                                    @*<td style="text-align:right; paddingright:5px;vertical-align:top;border-top: solid 1px #000000;border-right: solid 1px #000000;">@dr["op_bal"]</td>*@
+                                                    <td style="text-align:right; paddingright:5px;vertical-align:top;border-top: solid 1px #000000;border-right: solid 1px #000000;">@dr["br_op_bal_bs"]</td>
+                                                    <td style="text-align:center; paddingright:5px;vertical-align:top;border-top: solid 1px #000000;border-right: solid 1px #000000;">@dr["br_op_bal_type"]</td>
+                                                    <td style="text-align:right; paddingright:5px;vertical-align:top;border-top: solid 1px #000000;border-right: solid 1px #000000;">@dr["dr_amt"]</td>
+                                                    <td style="text-align:right; paddingright:5px;vertical-align:top;border-top: solid 1px #000000;border-right: solid 1px #000000;">@dr["cr_amt"]</td>
+                                                    @*<td style="text-align:right; paddingright:5px;vertical-align:top;border-top: solid 1px #000000;border-right: solid 1px #000000;">@dr["closing_bal"]</td>*@
+                                                    <td style="text-align:right; paddingright:5px;vertical-align:top;border-top: solid 1px #000000;border-right: solid 1px #000000;">@dr["br_acc_bal_bs"]</td>
+                                                    <td style=" text-align:center; paddingleft:5px;vertical-align:top;border-top: solid 1px #000000;">@dr["br_acc_bal_type"]</td>
+                                                </tr>
+                                                TotalDrAmt = TotalDrAmt + Convert.ToDecimal(@dr["dr_amt"]);
+                                                TotalCrAmt = TotalCrAmt + Convert.ToDecimal(@dr["cr_amt"]);
+                                                rowno = rowno + 1;
+                                            }
+                                        }
+                                    
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td style="border-top: solid 1px #000000; paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center;"> &nbsp;</td>
+
+                                            <td style="border-top: solid 1px #000000; paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center;"> &nbsp;</td>
+                                            <td style="border-top: solid 1px #000000; paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center;"> &nbsp;</td>
+                                            <td style="border-top: solid 1px #000000; paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center;"> &nbsp;</td>
+                                            <td style="border-top: solid 1px #000000; paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center;"> &nbsp;</td>
+                                            <td style="border-right: solid 1px #000000; border-top: solid 1px #000000; paddingtop: 5px; paddingbottom: 5px; paddingright: 5px; font-weight: bold; text-align: right; "><strong>Total</strong></td>
+                                            <td style="border-right: solid 1px #000000; border-top: solid 1px #000000; paddingtop: 5px; paddingbottom: 5px; paddingright: 5px; font-weight: bold; text-align: right; "><strong> @TotalDrAmt</strong></td>
+                                            <td style="border-right: solid 1px #000000; border-top: solid 1px #000000; paddingtop: 5px; paddingbottom: 5px; paddingright: 5px; font-weight: bold; text-align: right; "><strong>@TotalCrAmt </strong></td>
+                                            <td style="border-right: solid 1px #000000; border-top: solid 1px #000000; paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center;"> &nbsp;</td>
+                                            <td style="font-weight: bold; border-top: solid 1px #000000; paddingtop: 5px; paddingbottom: 5px; text-align: center; "> &nbsp;</td>
+                                        </tr>
+                                    </tfoot>
+                                   
+                                </table>
+                            </td>
+                            <td width="15">&nbsp;</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            
+        </table>
+    </div>
+</div>
+
+

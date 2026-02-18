@@ -1,0 +1,304 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.FinancialAccountingAndControl.GeneralLedgerVoucher.InvoiceAdjustment.InvoiceAdjustmentModel
+@using EnRepMobileWeb.Resources;
+@using System.Data
+
+@if (Session["UserId"] == null)
+{
+    Response.Redirect("~/Login");
+}
+
+<script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+<script src="~/Content/Css/build/js/sweetalert.js"></script>
+
+@{
+    var rowId = 0;
+    var rowId1 = 0;
+    var Disable = true;
+    //if (Session["TransType"].ToString() == "Update")
+    if (Model.TransType == "Update")
+    {
+        if (Model.Command == "Edit")
+        {
+            Disable = false;
+        }
+        else
+        {
+            Disable = true;
+        }
+    }
+    else
+    {
+        //if (Session["Command"].ToString() == "Refresh")
+        if (Model.Command == "Refresh")
+        {
+            Disable = true;
+        }
+        else
+        {
+            Disable = false;
+        }
+    }
+    string ValDigit = "0.";
+    var VD = Convert.ToInt32(Session["ValDigit"].ToString());
+    for (var i = 0; i < VD; i++)
+    {
+        ValDigit += "0";
+    }
+    string width1300 = "";
+    if (Model.EntityType == "S")
+    {
+        width1300 = "width1300";
+    }
+    string IsNull(string inStr,string outStr)
+    {
+        return string.IsNullOrEmpty(inStr) ? outStr : inStr;
+    }
+    decimal TotalAdvAdjAmt = 0;
+    decimal TotalInvAdjAmt = 0;
+}
+<div class="card-box table-responsive dy_table">
+    <div class="col-md-12">
+        <div class="price_item_detail">
+            <h2>@Resource.Advance @Resource.Payments</h2>
+            <div class="tableFixHead height23VH">
+                <table id="AdvanceDetailTbl" class="table table-bordered itmfrz">
+                    <thead>
+                        <tr class="headings">
+                            @*<th width="5%"> &nbsp;</th>*@
+                            <th class="center" width="4%">
+                                @*@if (Disable || Session["DocumentStatus"].ToString() != "D")*@
+                                @if (Disable || Model.DocumentStatus != "D")
+                                {
+                                    <input type="checkbox" class="tableflat" id="AllAdvCheck" disabled>
+                                }
+                                else
+                                {
+                                    <input type="checkbox" class="tableflat" id="AllAdvCheck" onclick="OnClickAllAdvCheck()">
+
+                                }
+                            </th>
+                            <th width="4%">@Resource.SrNo</th>
+                            <th width="16%">@Resource.Voucher @Resource.Number</th>
+                            <th width="9%">@Resource.Voucher @Resource.Date</th>
+                            <th width="7%">@Resource.Currency</th>
+                            <th width="12%">@Resource.Advance @Resource.Amount<br /> @Resource.InBase </th>
+                            <th width="12%">@Resource.Advance @Resource.Amount<br /> @Resource.InSpecific</th>
+                            <th width="12%">@Resource.UnAdjustedAmount</th>
+                            <th width="12%">@Resource.AdjustedAmount</th>
+                            <th width="12%">@Resource.RemainingBalance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Advance_List != null)
+                        {
+                            foreach (var row in Model.Advance_List)
+                            {
+                                rowId++;
+                                <tr id="@rowId">
+                                    @*@if (Disable || Session["DocumentStatus"].ToString() != "D")*@
+                                    @if (Disable || Model.DocumentStatus != "D")
+                                    {
+                                        <td class="center"><input type="checkbox" class="tableflat" id="AdvCheck" disabled></td>
+
+                                    }
+                                    else
+                                    {
+                                        <td class="center"><input type="checkbox" class="tableflat" id="AdvCheck" onclick="OnClickAdvCheck(event)"></td>
+
+                                    }
+                                    <td class="center">@rowId</td>
+                                    <td>
+                                        <input id="VouNumber" class="form-control" disabled value="@row.Vou_No">
+                                    </td>
+                                    <td><input id="VouDate" class="form-control" disabled="" value="@row.Vou_Dt"></td>
+                                    <td>
+                                        <input id="AdvCurr" class="form-control center" disabled="" value="@row.Adv_Curr">
+                                        <input id="HdAdvCurr" hidden="hidden" value="@row.AdvCurrId">
+                                    </td>
+                                    <td><input id="AdvInvAmtBs" class="form-control num_right" disabled value="@row.Adv_Amt_Bs"></td>
+                                    <td><input id="AdvInvAmtSp" class="form-control num_right" disabled value="@row.Adv_Amt_Sp"></td>
+                                    <td><input id="HdAdvUnAdjAmt" class="form-control num_right" disabled value="@row.Adv_Un_Adj_Amt"></td>
+
+                                    @*@if (Disable || Session["DocumentStatus"].ToString() != "D")*@
+                                    @if (Disable || Model.DocumentStatus != "D")
+                                    {
+                                        <td>
+                                            <div class="lpo_form">
+                                                <input id="AdvAdjAmount" class="form-control num_right" disabled value="@row.Adv_Adj_Amt">
+                                                <span id="AdvAmount_Error" class="error-message is-visible"></span>
+                                            </div>
+                                        </td>
+
+                                    }
+                                    else
+                                    {
+                                        <td>
+                                            <div class="lpo_form">
+                                                <input id="AdvAdjAmount" class="form-control num_right" placeholder="0000.00" onchange="OnChangeAdvAdjAmount(event)" onkeypress="return AmountFloatVal(this, event)" value="@row.Adv_Adj_Amt">
+                                                <span id="AdvAmount_Error" class="error-message is-visible"></span>
+                                            </div>
+                                        </td>
+                                    }
+                                    <td>
+                                        <input id="AdvRemBal" class="form-control num_right" disabled value="@row.Adv_Rem_Bal">
+
+                                    </td>
+                                </tr>
+                                TotalAdvAdjAmt = TotalAdvAdjAmt + Convert.ToDecimal(IsNull(row.Adv_Adj_Amt,"0"));
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <table id="" class="table table-bordered">
+                <tfoot>
+                    <tr class="total">
+                        <td width="77%" class="num_right text_bold right_padding">@Resource.Total @Resource.AdjustedAmount</td>
+                        <td width="11%" class="num_right text_bold right_padding"><span id="AdvTotal">@string.Format(new System.Globalization.CultureInfo("en-IN"), "{0:N2}", TotalAdvAdjAmt)@*@TotalAdvAdjAmt.ToString(ValDigit)*@@*@ViewBag.TotalVouAmt*@</span></td>
+                        <td width="12%">&nbsp</td>
+                        @*@TotalAdvAdjAmt.ToString("N2")*@
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="card-box table-responsive dy_table">
+    <div class="col-md-12">
+        <div class="price_item_detail">
+            @*@if (Disable || Session["DocumentStatus"].ToString() != "D")*@
+            @if (Disable || Model.DocumentStatus != "D")
+            {
+                <h2><span style="margin-right:10px;">@Resource.InvoiceDetail</span> <button type="button" disabled class="btn btn-primary btn-sm" onclick="OnClickInvFifoAdj();">@Resource.FIFOAdjustment</button></h2>
+            }
+            else
+            {
+                <h2><span style="margin-right:10px;">@Resource.InvoiceDetail</span> <button type="button" id="BtnInvoiceDetail" class="btn btn-primary btn-sm" onclick="OnClickInvFifoAdj();">@Resource.FIFOAdjustment</button></h2>
+            }
+            <div class="tableFixHead height23VH">
+                <table id="BillDetailTbl" class="table table-bordered @width1300 itmfrz">
+                    <thead>
+                        <tr class="headings">
+                            @*<th width="5%"> &nbsp;</th>*@
+                            <th class="center" width="3%">
+                                @*@if (Disable || Session["DocumentStatus"].ToString() != "D")*@
+                                @if (Disable || Model.DocumentStatus != "D")
+                                {
+                                    <input type="checkbox" class="tableflat" id="AllBillCheck" disabled>
+                                }
+                                else
+                                {
+                                    <input type="checkbox" class="tableflat" id="AllBillCheck" onclick="OnClickAllBillCheck()">
+
+                                }
+                            </th>
+                            <th width="3%">@Resource.SrNo</th>
+                            <th width="12%">@Resource.InvoiceNumber</th>
+                            <th width="8%">@Resource.InvoiceDate</th>
+                            @if (Model.EntityType == "S")
+                            {
+                                <th width="9%">@Resource.BillNumber</th>
+                                <th width="8%">@Resource.BillDate</th>
+                            }
+                            <th width="5%">@Resource.Currency</th>
+                            <th width="10%">@Resource.InvoiceAmount<br /> @Resource.InBase</th>
+                            <th width="10%">@Resource.InvoiceAmount<br /> @Resource.InSpecific</th>
+                            <th width="10%">@Resource.UnAdjustedAmount</th>
+                            <th width="11%">@Resource.AdjustedAmount</th>
+                            <th width="11%">@Resource.RemainingBalance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Bills_List != null)
+                        {
+                            foreach (var row in Model.Bills_List)
+                            {
+                                rowId1++;
+                        <tr id="@rowId1">
+                            @*@if (Disable || Session["DocumentStatus"].ToString() != "D")*@
+                            @if (Disable || Model.DocumentStatus != "D")
+                            {
+                                <td class="center"><input type="checkbox" class="tableflat" id="BillCheck" disabled></td>
+                            }
+                            else
+                            {
+                                <td class="center"><input type="checkbox" class="tableflat" id="BillCheck" onclick="OnClickBillCheck(event)"></td>
+
+                            }
+                            <td class="center">@rowId1</td>
+                            <td>
+                                <input id="InvoiceNumber" class="form-control" disabled value="@row.Inv_No">
+                            </td>
+                            <td><input id="InvoiceDate" class="form-control" disabled value="@row.Inv_Dt"></td>
+                            @if (Model.EntityType == "S")
+                            {
+                                <td>
+                                    <input id="BillNumber" class="form-control" disabled value="@row.Bill_No">
+                                </td>
+                                <td><input id="BillDate" class="form-control" disabled value="@row.Bill_Dt"></td>
+
+                            }
+
+                            <td>
+                                <input id="InvCurr" class="form-control center" disabled value="@row.Inv_Curr">
+                                <input id="HdInvCurr" hidden="hidden" value="@row.InvCurrId">
+                            </td>
+                            <td><input id="InvAmtBs" class="form-control num_right" disabled value="@row.Inv_Amt_Bs"></td>
+                            <td><input id="InvAmtSp" class="form-control num_right" disabled value="@row.Inv_Amt_Sp"></td>
+                            <td><input id="InvUnAdjAmt" class="form-control num_right" disabled value="@row.Inv_Un_Adj_Amt"></td>
+                            @*@if (Disable || Session["DocumentStatus"].ToString() != "D")*@
+                            @if (Disable || Model.DocumentStatus != "D")
+                            {
+                                <td>
+                                    <div class="lpo_form">
+                                        <input id="InvAdjAmt" disabled class="form-control num_right" type="text" placeholder="0000.00" value="@row.Inv_Adj_Amt">
+                                        <span id="PayAmount_Error" class="error-message is-visible"></span>
+                                    </div>
+                                </td>
+                            }
+                            else
+                            {
+                                <td>
+                                    <div class="lpo_form">
+                                        <input id="InvAdjAmt" class="form-control num_right" onchange="OnChangeBillAdjAmount(event)" onkeypress="return AmountFloatVal(this, event)" type="text" placeholder="0000.00" value="@row.Inv_Adj_Amt">
+                                        <span id="PayAmount_Error" class="error-message is-visible"></span>
+                                    </div>
+                                </td>
+                            }
+                            <td><input id="InvRemBal" class="form-control num_right" type="text" placeholder="0000.00" disabled value="@row.Inv_Rem_Bal"></td>
+
+                        </tr>
+                                TotalInvAdjAmt = TotalInvAdjAmt + Convert.ToDecimal(IsNull(row.Inv_Adj_Amt, "0"));
+                            }
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+            <table id="" class="table table-bordered">
+                <tfoot>
+                    <tr class="total">
+                        <td width="77%" class="num_right text_bold right_padding">@Resource.Total @Resource.AdjustedAmount</td>
+                        <td width="11%" class="num_right text_bold right_padding"><span id="InvTotal">@string.Format(new System.Globalization.CultureInfo("en-IN"), "{0:N2}", TotalAdvAdjAmt)@*@TotalInvAdjAmt.ToString(ValDigit)*@@*@ViewBag.TotalVouAmt*@</span></td>
+                        <td width="12%">&nbsp</td>
+                        @*@TotalAdvAdjAmt.ToString("N2")*@
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+@*@if (Session["BalanceBy"] != null && Session["BalanceByFilter"] != null)*@
+@if (Model.BalanceBy != null && Model.BalanceByFilter != null)
+{
+    <script src="~/Content/Scripts/Common/CommonJS.js"></script>
+    <script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+
+    @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+    @Scripts.Render("~/Content/Scripts/DatatablesJs")
+    //Session["BalanceBy"] = null;
+    Model.BalanceBy = null;
+    Model.BalanceByFilter = null;
+}

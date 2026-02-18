@@ -1,0 +1,122 @@
+﻿@using EnRepMobileWeb.Resources;
+@{
+    var EditAccess = false;
+    if (ViewBag.VBRoleList != null)
+    {
+        foreach (System.Data.DataRow dr in ViewBag.VBRoleList.Rows)
+        {
+            if (dr["feature_id"].ToString() == "105102122002")
+            {
+                EditAccess = true;
+            }
+        }
+    }
+    string disable = "";
+    if (EditAccess && ViewBag.ack_status == "P")
+    {
+        disable = "";
+    }
+    else
+    {
+        disable = "readonly";
+    }
+
+
+}
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<div class="modal-content">
+    <div class="modal-header">
+        <h2>@Resource.Acknowledge</h2>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body" style="padding-top: 0px;">
+        <div class="col-md-12 col-sm-12 pr-0">
+            <div class="col-md-4 col-sm-12 pl-0">
+                <label class="col-form-label label-align">@Resource.ItemName</label>
+                <input id="AcknowledgeItemName" class="form-control" disabled type="text" name="ItemName" placeholder="@Resource.ItemName">
+            </div>
+            <div class="col-md-4 col-sm-12 pl-0">
+                <label class="col-form-label label-align">@Resource.EntityName</label>
+                <input id="AcknowledgeEntityName" class="form-control" disabled type="text" name="EntityName" placeholder="@Resource.EntityName">
+            </div>
+            <div class="col-md-4 col-sm-12 pl-0 pr-0">
+                <label class="col-form-label label-align">@Resource.BillNumber</label>
+                <input id="AcknowledgeBillNumber" class="form-control" disabled type="text" name="BillNumber" placeholder="@Resource.BillNumber">
+            </div>
+            <div class="col-md-12 col-sm-12 pl-0 pr-0">
+                <div class="col-md-3 col-sm-12  pl-0 ">
+                    <label class="col-form-label label-align">@Resource.Rejected @Resource.Quantity</label>
+                    <input id="Acknowledge_rej_Quantity" class="form-control" disabled type="text" name="Quantity" placeholder="@Resource.Quantity">
+                </div>
+                <div class="col-md-3 col-sm-12  pl-0 ">
+                    <label class="col-form-label label-align">@Resource.Rework  @Resource.Quantity</label>
+                    <input id="Acknowledge_rwk_Quantity" class="form-control" disabled type="text" name="Quantity" placeholder="@Resource.Quantity">
+                </div>
+                <div class="col-md-3 col-sm-12  pl-0 ">
+                    <label class="col-form-label label-align">@Resource.Short @Resource.Quantity</label>
+                    <input id="Acknowledge_short_Quantity" class="form-control" disabled type="text" name="Quantity" placeholder="@Resource.Quantity">
+                </div>
+                <div class="col-md-3 col-sm-12  pl-0 pr-0">
+                    <label class="col-form-label label-align">@Resource.Sample @Resource.Quantity</label>
+                    <input id="Acknowledge_smpl_Quantity" class="form-control" disabled type="text" name="Quantity" placeholder="@Resource.Quantity">
+                </div>
+            </div>
+              
+
+
+            </div>
+
+        </div>
+        <div class="modal-body" style="padding-top: 0px;">
+            <div hidden>
+                <span id="ncr_hdn_item_id"></span>
+                <span id="ncr_hdn_uom_id"></span>
+                <span id="ncr_hdn_src_type"></span>
+                <span id="ncr_hdn_doc_no"></span>
+                <span id="ncr_hdn_doc_dt"></span>
+                <span id="ncr_hdn_entity_id"></span>
+                <span id="ncr_hdn_srno"></span>
+            </div>
+            <div class="col-md-3 col-sm-12 pl-0">
+                <label class="col-form-label label-align">@Resource.Acknowledge @Resource.By <span class="required">*</span></label>
+                <input id="AcknowledgeBy" class="form-control" @disable value="@ViewBag.ack_by" onchange="onChnageAcknowledgeBy()" onkeypress="onChnageAcknowledgeBy()" type="text" name="AcknowledgeBy" placeholder="@Resource.Acknowledge @Resource.By">
+                <span class="field-validation-valid" id="vmAcknowledgeBy"></span>
+            </div>
+            <div class="col-md-3 col-sm-12 pl-0">
+                <label class="col-form-label label-align">@Resource.Date <span class="required">*</span></label>
+                <input id="AcknowledgeDate" class="form-control" @disable value="@ViewBag.ack_dt" onchange="onChnageAcknowledgeDate()" onkeypress="onChnageAcknowledgeDate()" type="date" name="AcknowledgeDate" placeholder="@Resource.Date">
+                <span class="field-validation-valid" id="vmAcknowledgeDate"></span>
+            </div>
+            <div class="col-md-3 col-sm-12 pl-0">
+                <label class="col-form-label label-align">@Resource.Action1 @Resource.Taken <span class="required">*</span></label>
+                @*<input id="ActionTaken" class="form-control" @disable value="@ViewBag.act_taken" onchange="onChnageActionTaken()" onkeypress="onChnageActionTaken()" type="text" name="ActionTaken" placeholder="@Resource.Action1 @Resource.Taken">*@
+                <textarea class="form-control remarksmessage" @disable cols="20" id="ActionTaken" onchange="onChnageActionTaken()" onkeypress="onChnageActionTaken()" maxlength="250" name="ActionTaken"
+                          placeholder="@Resource.Action1 @Resource.Taken" rows="2"
+                          onmouseover="OnMouseOver(this)" title="">@ViewBag.act_taken</textarea>
+                <span class="field-validation-valid" id="vmActionTaken"></span>
+            </div>
+            <div class="col-md-3 col-sm-12 pl-0 pr-0">
+                <label class="col-form-label label-align">@Resource.remarks @*<span class="required">*</span>*@</label>
+                <textarea class="form-control remarksmessage" @disable cols="20" id="AcknowledgeRemarks" onchange="onChnageRemarks()" onkeypress="onChnageRemarks()" maxlength="500" name="AcknowledgeRemarks"
+                          placeholder="@Resource.Acknowledge @Resource.remarks" rows="2"
+                          onmouseover="OnMouseOver(this)" title="">@ViewBag.remarks</textarea>
+                <span class="field-validation-valid" id="vmAcknowledgeRemarks"></span>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="modal-footer">
+            @if (disable != "readonly")
+            {
+                <button type="button" class="btn btn-primary btn-sm" onclick="NcrAckSaveAndExit()" id="btnItemNcrAckSaveAndExit">@Resource.SaveAndExit</button>
+                <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" id="btnItemBatchDiscardAndExit">@Resource.DiscardAndExit</button>
+            }
+            else
+            {
+                <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" id="">@Resource.Close</button>
+            }
+        </div>
+    </div>
+
+
+
+

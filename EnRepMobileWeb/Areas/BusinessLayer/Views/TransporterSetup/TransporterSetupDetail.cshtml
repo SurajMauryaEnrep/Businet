@@ -1,0 +1,1014 @@
+﻿@model EnRepMobileWeb.MODELS.BusinessLayer.TransporterSetup.TransporterSetupModel
+@using EnRepMobileWeb.MODELS.Common;
+@using EnRepMobileWeb.Resources;
+@using System.Data
+@using Newtonsoft.Json.Linq;
+@if (Session["UserId"] == null)
+{
+    Response.Redirect("~/Login");
+}
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+<script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+<script src="~/Content/Css/build/js/sweetalert.js"></script>
+<script src="~/Content/Scripts/BusinessLayer/TransporterSetup/TransporterSetupDetail.js"></script>
+<title>@Model.Title</title>
+@{
+    if (Model.Message != null)
+    {
+        Model.SaveAndApproveBtnDisatble = null;
+        if (Model.Message == "Save")
+        {
+            <script type="text/javascript">
+                $("#hdnSavebtn").val("");
+                swal("", $("#savemsg").text(), "success");
+            </script>
+        }
+        if (Model.Message == "Deleted" || Model.Message == "Delete")
+        {
+            Model.DeleteCommand = null;
+            <script type="text/javascript">
+                $("#hdnSavebtn").val("");
+                swal("", $("#deletemsg").text(), "success");
+            </script>
+        }
+        if (Model.Message == "Duplicate")
+        {
+            <script type="text/javascript">
+                $("#hdnSavebtn").val("");
+              //  swal("", $("#errormsg").text(), "success");
+                $(document).ready(function () {
+                    $("#TransporterName").css("border-color", "red");
+                    document.getElementById("vmTransporterName").innerHTML = $("#valueduplicate").text();
+                })
+            </script>
+        }
+        if (Model.Message == "Dependency")
+        {
+            Model.DeleteCommand = null;
+            <script type="text/javascript">
+                // $("#hdnSavebtn").val("");
+                $(document).ready(function () {
+                    swal("", $("#DependencyExist").text(), "warning");
+                })
+            </script>
+        }
+    }
+}
+<script>
+    $(document).ready(function () {
+        debugger;
+        ValidationForPanNoSetAttr();
+    });
+</script>
+@{
+    var disablePrintbtn = "";
+    ViewBag.Disable = false;
+}
+@{
+    var Disable = true;
+    if (Model.TransType != null)
+    {
+        //if (Session["TransType"].ToString() == "Update")
+        if (Model.TransType == "Update")
+        {
+            //if (Session["Command"].ToString() == "Edit")
+            if (Model.Command == "Edit")
+            {
+                Disable = false;
+            }
+            else
+            {
+                Disable = true;
+            }
+        }
+        else
+        {
+            Disable = false;
+        }
+        //if (Session["TransType"].ToString() == "Refresh")
+        if (Model.TransType == "Refresh")
+        {
+            Disable = true;
+        }
+        //if (Session["TransType"].ToString() == "Duplicate")
+        if (Model.TransType == "Duplicate")
+        {
+            Disable = false;
+        }
+        //if (Session["TransType"].ToString() == "Save")
+        if (Model.TransType == "Save")
+        {
+            //if (Session["Command"].ToString() == "Add")
+            if (Model.Command == "Add")
+            {
+                Disable = false;
+            }
+            else
+            {
+                Disable = true;
+            }
+        }
+    }
+    else
+    {
+        Disable = false;
+    }
+    if (Model.Message != null)
+    {
+        if (ViewBag.Message == "Duplicate")
+        {
+            Disable = false;
+        }
+    }
+    if (Disable)
+    {
+        Model.PageLevelDisable = "Y";
+    }
+    else
+    {
+        Model.PageLevelDisable = "N";
+    }
+
+}
+<style>
+    #SpantransportGST {
+        position: relative;
+    }
+
+    #SpantransportGSTMidPrt {
+        position: relative;
+    }
+
+    .custom-control-input {
+        left: -5px;
+    }
+</style>
+
+<title>
+    @Model.Title
+</title>
+@{
+    CommonAddress_Detail _Model = new CommonAddress_Detail();
+    _Model = Model._CommonAddress_Detail;
+
+}
+@using (Html.BeginForm("TransporterSetupBtnCommand", "TransporterSetup", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    {
+        <div class="row">
+            <div class="col-md-12 col-sm-12 ">
+                <div class="x_panel mar_pad1 ">
+                    <div class="x_content mar_pad1">
+                        <h2 class="col-md-8 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                        <div id="" class="col-md-4 col-sm-12 work_flow heading_right_padding">
+                            @{
+                                var btnName = Model.BtnName;
+                                switch (btnName)
+                                {
+                                    case "BtnAddNew":
+                                        <ul>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "103130001")
+                                                    {
+                                                        <li>
+                                                            <button class="add"
+                                                                    title="@Resource.AddNew" disabled style="filter: grayscale(100%)" type="submit" id="btn_add" name="Command" value="AddNew" onclick="RemoveSessionData()"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "103130002")
+                                                    {
+                                                        <li>
+                                                            <button class="edit"
+                                                                    title="@Resource.Edit" disabled style="filter: grayscale(100%)" type="submit" id="btn_edit" name="Command" value="Edit" onclick="EnableEditkBtn()"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "103130004")
+                                                    {
+                                                        <li>
+                                                            <button class="delete"
+                                                                    title="@Resource.Delete" disabled style="filter: grayscale(100%)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                        </li>
+                                                    }
+                                                }
+                                            }
+                                            <li>
+                                                <button class="save"
+                                                        title="@Resource.Save" type="submit" onclick="return SaveBtnClick()" id="btn_save" name="Command" value="Save"></button>
+                                            </li>
+                                            <li>
+                                                <button class="refresh"
+                                                        title="@Resource.Refresh" type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                                            </li>
+
+                                            <li>
+                                                <button class="print"
+                                                        title="@Resource.Print" @disablePrintbtn type="submit" id="btn_print" name="Command" value="Print"></button>
+                                            </li>
+
+
+                                            <li>
+                                                <button class="back"
+                                                        title="@Resource.Back" disabled style="filter: grayscale(100%)" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                                            </li>
+                                        </ul>
+                                        break;
+                                    case "BtnEdit":
+                                        <ul>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "103130001")
+                                                    {
+                                                        <li>
+                                                            <button class="add"
+                                                                    title="@Resource.AddNew" disabled style="filter: grayscale(100%)" type="submit" id="btn_add" name="Command" value="AddNew"></button>
+                                                        </li>
+
+
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "103130002")
+                                                    {
+                                                        <li>
+                                                            <button class="edit"
+                                                                    title="@Resource.Edit" disabled style="filter: grayscale(100%)" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "103130004")
+                                                    {
+                                                        <li>
+
+                                                            <button class="delete"
+                                                                    title="@Resource.Delete" disabled style="filter: grayscale(100%)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+
+
+                                                            @Html.HiddenFor(m => m.DeleteCommand, new { @id = "HdDeleteCommand" })
+                                                        </li>
+                                                    }
+                                                }
+                                            }
+                                            <li>
+                                                <button class="save"
+                                                        onclick="return SaveBtnClick()" title="@Resource.Save" type="submit" id="btn_save" name="Command" value="Save"></button>
+
+                                            </li>
+
+                                            <li>
+                                                <button class="refresh"
+                                                        title="@Resource.Refresh" type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+
+                                            </li>
+
+                                            <li>
+                                                <button class="print"
+                                                        title="@Resource.Print" @disablePrintbtn type="submit" id="btn_print" name="Command" value="Print"></button>
+                                            </li>
+
+
+                                            <li>
+                                                <button class="back"
+                                                        title="@Resource.Back" disabled style="filter: grayscale(100%)" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                                            </li>
+                                        </ul>
+                                        break;
+                                    case "BtnDelete":
+                                        <ul>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "103130001")
+                                                    {
+                                                        <li>
+                                                            <button class="add"
+                                                                    title="@Resource.AddNew" type="submit" id="btn_add" name="Command" value="AddNew"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "103130002")
+                                                    {
+                                                        <li>
+                                                            <button class="edit"
+                                                                    title="@Resource.Edit" disabled style="filter: grayscale(100%)" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "103130004")
+                                                    {
+                                                        <li>
+                                                            <button class="delete"
+                                                                    title="@Resource.Delete" disabled style="filter: grayscale(100%)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                        </li>
+                                                        @Html.HiddenFor(m => m.DeleteCommand, new { @id = "HdDeleteCommand" })
+                                                    }
+                                                }
+                                            }
+
+
+
+                                            <li>
+                                                <button class="save"
+                                                        title="@Resource.Save" disabled style="filter: grayscale(100%)" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                            </li>
+
+                                            <li>
+                                                <button class="refresh"
+                                                        title="@Resource.Refresh" disabled style="filter: grayscale(100%)" type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                                            </li>
+
+                                            <li>
+                                                <button class="print"
+                                                        title="@Resource.Print" @disablePrintbtn type="submit" id="btn_print" name="Command" value="Print"></button>
+                                            </li>
+
+
+                                            <li>
+                                                <button class="back"
+                                                        title="@Resource.Back" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                                            </li>
+                                        </ul>
+                                        break;
+                                    case "Delete":
+                                        <ul>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "103130001")
+                                                    {
+                                                        <li>
+                                                            <button class="add"
+                                                                    title="@Resource.AddNew" type="submit" id="btn_add" name="Command" value="AddNew"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "103130002")
+                                                    {
+                                                        <li>
+                                                            <button class="edit"
+                                                                    title="@Resource.Edit" disabled style="filter: grayscale(100%)" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "103130004")
+                                                    {
+                                                        <li>
+                                                            <button class="delete"
+                                                                    title="@Resource.Delete" disabled style="filter: grayscale(100%)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                        </li>
+                                                        @Html.HiddenFor(m => m.DeleteCommand, new { @id = "HdDeleteCommand" })
+                                                    }
+                                                }
+                                            }
+
+
+
+                                            <li>
+                                                <button class="save"
+                                                        title="@Resource.Save" disabled style="filter: grayscale(100%)" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                            </li>
+
+                                            <li>
+                                                <button class="refresh"
+                                                        title="@Resource.Refresh" disabled style="filter: grayscale(100%)" type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                                            </li>
+
+                                            <li>
+                                                <button class="print"
+                                                        title="@Resource.Print" @disablePrintbtn type="submit" id="btn_print" name="Command" value="Print"></button>
+                                            </li>
+
+
+                                            <li>
+                                                <button class="back"
+                                                        title="@Resource.Back" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                                            </li>
+                                        </ul>
+                                        break;
+                                    case "Refresh":
+                                        <ul>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "103130001")
+                                                    {
+                                                        <li>
+                                                            <button class="add"
+                                                                    title="@Resource.AddNew" type="submit" id="btn_add" name="Command" value="AddNew"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "103130002")
+                                                    {
+                                                        <li>
+                                                            <button class="edit"
+                                                                    title="@Resource.Edit" disabled style="filter: grayscale(100%)" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "103130004")
+                                                    {
+
+                                                        <li>
+                                                            <button class="delete"
+                                                                    title="@Resource.Delete" disabled style="filter: grayscale(100%)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                        </li>
+                                                        @Html.HiddenFor(m => m.DeleteCommand, new { @id = "HdDeleteCommand" })
+                                                    }
+                                                }
+                                            }
+
+
+                                            <li>
+                                                <button class="save"
+                                                        title="@Resource.Save" disabled style="filter: grayscale(100%)" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                            </li>
+
+                                            <li>
+                                                <button class="refresh"
+                                                        title="@Resource.Refresh" disabled style="filter: grayscale(100%)" type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                                            </li>
+
+                                            <li>
+                                                <button class="print"
+                                                        title="@Resource.Print" @disablePrintbtn type="submit" id="btn_print" name="Command" value="Print"></button>
+                                            </li>
+
+
+                                            <li>
+                                                <button class="back"
+                                                        title="@Resource.Back" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                                            </li>
+                                        </ul>
+                                        break;
+                                    case "BtnToDetailPage":
+                                        <ul>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "103130001")
+                                                    {
+                                                        <li>
+                                                            <button class="add"
+                                                                    title="@Resource.AddNew" type="submit" id="btn_add" name="Command" value="AddNew"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "103130002")
+                                                    {
+                                                        if (Model.DocumentStatus == "D" || Model.DocumentStatus == "A")
+                                                        {
+                                                            <li>
+                                                                <button class="edit"
+                                                                        title="@Resource.Edit" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                            </li>
+                                                        }
+                                                        else
+                                                        {
+                                                            <li>
+                                                                <button class="edit" disabled style="filter: grayscale(100%)"
+                                                                        title="@Resource.Edit" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                            </li>
+                                                        }
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "103130004")
+                                                    {
+                                                        if (Model.DocumentStatus == "D")
+                                                        {
+                                                            <li>
+                                                                <button class="delete"
+                                                                        title="@Resource.Delete" onclick="return functionConfirm(this)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                            </li>
+                                                        }
+                                                        else
+                                                        {
+                                                            <li>
+                                                                <button class="delete"
+                                                                        title="@Resource.Delete" disabled style="filter: grayscale(100%)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                            </li>
+                                                        }
+                                                        @Html.HiddenFor(m => m.DeleteCommand, new { @id = "HdDeleteCommand" })
+                                                    }
+                                                }
+                                            }
+
+
+
+                                            <li>
+                                                <button class="save"
+                                                        title="@Resource.Save" disabled style="filter: grayscale(100%)" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                            </li>
+
+
+                                            <li>
+                                                <button class="refresh"
+                                                        title="@Resource.Refresh" disabled style="filter: grayscale(100%)" type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                                            </li>
+
+                                            <li>
+                                                <button class="print"
+                                                        title="@Resource.Print" @disablePrintbtn type="submit" id="btn_print" name="Command" value="Print"></button>
+                                            </li>
+
+
+                                            <li>
+                                                <button class="back"
+                                                        title="@Resource.Back" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                                            </li>
+                                        </ul>
+                                        break;
+                                    case "BtnSave":
+                                        <ul>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "103130001")
+                                                    {
+                                                        <li>
+                                                            <button class="add"
+                                                                    title="@Resource.AddNew" type="submit" id="btn_add" name="Command" value="AddNew"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "103130002")
+                                                    {
+                                                        <li>
+
+                                                            <button class="edit"
+                                                                    title="@Resource.Edit" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "103130004")
+                                                    {
+                                                        if (Model.DocumentStatus == "A")
+                                                        {
+                                                            <li>
+                                                                <button class="delete"
+                                                                        title="@Resource.Delete" onclick="return functionConfirm(this)" type="submit" id="btn_del" disabled style="filter: grayscale(100%)" name="Command" value="Delete"></button>
+                                                            </li>
+                                                        }
+                                                        else
+                                                        {
+                                                            <li>
+                                                                <button class="delete"
+                                                                        title="@Resource.Delete" onclick="return functionConfirm(this)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                            </li>
+
+                                                        }
+                                                        @Html.HiddenFor(m => m.DeleteCommand, new { @id = "HdDeleteCommand" })
+                                                    }
+                                                }
+                                            }
+                                            <li>
+                                                <button class="save"
+                                                        title="@Resource.Save" disabled style="filter: grayscale(100%)" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                            </li>
+
+
+
+
+                                            <li>
+                                                <button class="refresh"
+                                                        title="@Resource.Refresh" type="submit" disabled style="filter: grayscale(100%)" id="btn_refresh" name="Command" value="Refresh"></button>
+                                            </li>
+
+                                            <li>
+                                                <button class="print"
+                                                        title="@Resource.Print" @disablePrintbtn type="submit" id="btn_print" name="Command" value="Print"></button>
+                                            </li>
+
+
+                                            <li>
+                                                <button class="back"
+                                                        title="@Resource.Back" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                                            </li>
+                                        </ul>
+                                        break;
+                                    case "BtnApprove":
+                                        <ul>
+                                            @if (ViewBag.VBRoleList != null)
+                                            {
+                                                foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                                                {
+                                                    if (Row["feature_id"].ToString() == "103130001")
+                                                    {
+                                                        <li>
+                                                            <button class="add"
+                                                                    title="@Resource.AddNew" type="submit" id="btn_add" name="Command" value="AddNew"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "103130002")
+                                                    {
+                                                        <li>
+                                                            <button class="edit"
+                                                                    title="@Resource.Edit" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                                                        </li>
+                                                    }
+                                                    if (Row["feature_id"].ToString() == "103130004")
+                                                    {
+                                                        <li>
+                                                            <button class="delete"
+                                                                    title="@Resource.Delete" disabled style="filter: grayscale(100%)" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                                                        </li>
+                                                    }
+                                                }
+                                            }
+
+
+
+                                            <li>
+                                                <button class="save"
+                                                        title="@Resource.Save" disabled style="filter: grayscale(100%)" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                            </li>
+
+
+                                            <li>
+                                                <button class="refresh"
+                                                        title="@Resource.Refresh" type="submit" id="btn_refresh" name="Command" value="Refresh"></button>
+                                            </li>
+
+                                            <li>
+                                                <button class="print"
+                                                        title="@Resource.Print" @disablePrintbtn type="submit" id="btn_print" name="Command" value="Print"></button>
+                                            </li>
+
+
+                                            <li>
+                                                <button class="back"
+                                                        title="@Resource.Back" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                                            </li>
+                                        </ul>
+                                        break;
+
+                                }
+                            }
+                        </div>
+                        <div class="x_title pad_mar ">
+                            <div class="col-md-12 col-sm-12 icon_tool ">
+                                <!--<span>Collapsible / Accordion </span>-->
+                                <div class="approved_by">
+                                    <ul class="margin0 padding0">
+                                        <li><span>@Resource.CreatedBy<br><b id="TransCreatedBy">@Model.CreatedBy</b></span></li>
+                                        <li><span>@Resource.Createdon<br><b id="TransCreatedDate">@Model.CreatedOn</b></span></li>
+                                        @*<li><span>@Resource.ApprovedBy<br><b id="TransApproveBy">@Model.ApprovedBy</b></span></li>
+                <li><span>@Resource.ApprovedOn<br><b id="TransApproveDate">@Model.ApprovedOn</b></span></li>*@
+                                        <li><span>@Resource.AmendedBy<br><b id="TransAmdedBy">@Model.AmendedBy</b></span></li>
+                                        <li><span>@Resource.AmendedOn<br><b id="TransAmdedDate">@Model.AmendedOn</b></span></li>
+                                        @*<li><span>@Resource.Status<br /><b id="TransStatus">@Model.TStatusName</b></span></li>*@
+                                        @*<li style="display: none;">@Html.HiddenFor(model => model.TransStatus, new { @id = "hfTransStatus" })</li>*@
+                                        <li><b>@Html.HiddenFor(model => model.TCreate_id, new { @id = "Create_ID" })</b></li>
+                                    </ul>
+                                </div>
+                                @*@Html.HiddenFor(m => m.ListFilterData1, new { @id = "ListFilterData1", value = Model.ListFilterData1 })*@
+                                @Html.HiddenFor(m => m.SaveAndApproveBtnDisatble, new { @id = "hdnSavebtn" }) @*Added this hidden Field By NItesh 01-01-2024*@
+
+                                @Html.HiddenFor(model => model.DocumentMenuId, new { @id = "DocumentMenuId" })
+                                @Html.HiddenFor(model => model.GstApplicable, new { @id = "GstApplicable" })
+                                @Html.HiddenFor(m => m.PageLevelDisable, new { @id = "hdnDisable" })
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 col-sm-12 ">
+                <div class="x_panel mar_pad1 ">
+                    <div class="x_content mar_pad1">
+                        <article class="panel-group bs-accordion" id="accordion" role="tablist" aria-multiselectable="true">
+                            <section class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="headingOne">
+                                    <h4 class="panel-title"> <!--<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne"> Item detail <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a>--> <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">@Resource.TransportDetail<span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a></h4>
+                                </div>
+                                <!--<div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">-->
+                                <div id="collapseOne" class="panel-collapse in collapse show" role="tabpanel" aria-labelledby="headingOne" style="">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <div class="col-md-12 col-sm-12">
+                                                <div class="col-md-4 col-sm-6 no-padding domestic">
+                                                    <label id="Cust_type" class="col-form-label label-align col-md-4 col-sm-12">@Resource.Transporter  @Resource.Type</label>
+                                                    @if (Disable)
+                                                    {
+                                                        if (Model.TransportType == "E")
+                                                        {
+                                                            <div class="input-group col-md-8 col-sm-12 no-padding ">
+                                                                @*<span>@Resource.Domestic</span> <input checked="checked" id="Domestic" name="Cust_type" onclick="GetCustcurr()" type="radio" value="D"><span>@Resource.Overseas</span> <input id="Export" name="Cust_type" onclick="GetCustcurr()" type="radio" value="E">*@
+                                                                <span>@Resource.Domestic</span> @Html.RadioButtonFor(model => model.TransportType, "D", new { @id = "Domestic", disabled = "true", @onclick = "GetCountryOnChngTransType()" })
+                                                                <span>@Resource.Export</span> @Html.RadioButtonFor(model => model.TransportType, "E", new { @id = "OverSeas", disabled = "true", @checked = "checked", @onclick = "GetCountryOnChngTransType()" })
+                                                                @Html.HiddenFor(model => model.TransportType, new { @id = "HdnTransportType" })
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <div class="input-group col-md-8 col-sm-12 no-padding ">
+                                                                @*<span>@Resource.Domestic</span> <input checked="checked" id="Domestic" name="Cust_type" onclick="GetCustcurr()" type="radio" value="D"><span>@Resource.Overseas</span> <input id="Export" name="Cust_type" onclick="GetCustcurr()" type="radio" value="E">*@
+                                                                <span>@Resource.Domestic</span> @Html.RadioButtonFor(model => model.TransportType, "D", new { @id = "Domestic", disabled = "true", @checked = "checked", onclick = "GetCountryOnChngTransType()" })
+                                                                <span>@Resource.Export</span> @Html.RadioButtonFor(model => model.TransportType, "E", new { @id = "OverSeas", disabled = "true", onclick = "GetCountryOnChngTransType()" })
+                                                                @Html.HiddenFor(model => model.TransportType, new { @id = "HdnTransportType" })
+                                                            </div>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        if (Model.TransportType == "E")
+                                                        {
+                                                            <div class="input-group col-md-8 col-sm-12 no-padding ">
+                                                                @*<span>@Resource.Domestic</span> <input checked="checked" id="Domestic" name="Cust_type" onclick="GetCustcurr()" type="radio" value="D"><span>@Resource.Overseas</span> <input id="Export" name="Cust_type" onclick="GetCustcurr()" type="radio" value="E">*@
+                                                                <span>@Resource.Domestic</span> @Html.RadioButtonFor(model => model.TransportType, "D", new { @id = "Domestic", @onclick = "GetCountryOnChngTransType()" })
+                                                                <span>@Resource.Export</span> @Html.RadioButtonFor(model => model.TransportType, "E", new { @id = "OverSeas", @checked = "checked", @onclick = "GetCountryOnChngTransType()" })
+                                                                @Html.HiddenFor(model => model.TransportType, new { @id = "HdnTransportType" })
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <div class="input-group col-md-8 col-sm-12 no-padding ">
+                                                                @*<span>@Resource.Domestic</span> <input checked="checked" id="Domestic" name="Cust_type" onclick="GetCustcurr()" type="radio" value="D"><span>@Resource.Overseas</span> <input id="Export" name="Cust_type" onclick="GetCustcurr()" type="radio" value="E">*@
+                                                                <span>@Resource.Domestic</span> @Html.RadioButtonFor(model => model.TransportType, "D", new { @id = "Domestic", @checked = "checked", onclick = "GetCountryOnChngTransType()" })
+                                                                <span>@Resource.Export</span> @Html.RadioButtonFor(model => model.TransportType, "E", new { @id = "OverSeas", onclick = "GetCountryOnChngTransType()" })
+                                                                @Html.HiddenFor(model => model.TransportType, new { @id = "HdnTransportType" })
+                                                            </div>
+                                                        }
+                                                    }
+                                                </div>
+                                                <div class="clear"></div>
+                                                <div class="col-md-4 col-sm-12">
+                                                    <label class="col-form-label label-align">@Resource.Transporter @Resource.Name <span class="required">*</span></label>
+                                                    @*<input class="form-control" id="TransporterName" maxlength="50" name="TransporterName" placeholder="@Resource.Transporter @Resource.Name" type="text" value="">*@
+                                                    @if (Disable)
+                                                    {
+                                                        @Html.TextBoxFor(model => model.TransName, new { @id = "TransporterName", @class = "form-control", maxlength = "150", @placeholder = "TransporterName", autocomplete = "off", disabled = "true", @onchange = "OnChangeTransporterName()", @onkeypress = "OnChangeTransporterName()" })
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.TextBoxFor(model => model.TransName, new { @id = "TransporterName", @class = "form-control", maxlength = "150", @placeholder = "TransporterName", autocomplete = "off", @onchange = "OnChangeTransporterName()", @onkeypress = "OnChangeTransporterName()" })
+                                                    }
+                                                    @Html.ValidationMessageFor(model => model.TransName, String.Empty, new { @class = "", @id = "vmTransporterName" })
+                                                    @Html.HiddenFor(model => model.TransId, new { @id = "TransporterID" })
+                                                    @Html.HiddenFor(model => model.TransId, new { @id = "HdnDocNo_ForAttach" })
+                                                    @Html.HiddenFor(model => model.TransType, new { @id = "hdn_TransType" })
+                                                    @Html.HiddenFor(model => model.Title, new { @id = "hdn_title" })
+
+                                                </div>
+                                                <div class="col-md-2 col-sm-12" >
+                                                    <label class="col-form-label label-align">
+                                                        @Resource.TransportMode <span class="required">*</span>
+                                                    </label>
+                                                    @*<select class="form-control" id="cust_type">
+                <option>ALL</option>
+                <option>Air</option>
+                <option>Road</option>
+                <option>Railways</option>
+                <option>Sea</option>
+            </select>*@
+                                                    @if (Disable)
+                                                    {
+                                                        @Html.DropDownListFor(model => model.TransMode, new SelectList(new List<SelectListItem> {
+                                                                  new SelectListItem {Text="---Select---",Value="0" },
+                                                                  new SelectListItem {Text="Air",Value="A" },
+                                                                  new SelectListItem {Text="Road",Value="R" },
+                                                                  new SelectListItem {Text="Railways",Value="RL" },
+                                                                  new SelectListItem {Text="Sea",Value="S" },
+                                                                  }, "Value", "Text"
+                                                       ), new { @class = "form-control", @id = "Trans_Mode", disabled = "true", @onchange = "OnChangeTransMode()" })
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.DropDownListFor(model => model.TransMode, new SelectList(new List<SelectListItem> {
+                                                                 new SelectListItem {Text="---Select---",Value="0" },
+                                                                 new SelectListItem {Text="Air",Value="A" },
+                                                                 new SelectListItem {Text="Road",Value="R" },
+                                                                 new SelectListItem {Text="Railways",Value="RL" },
+                                                                 new SelectListItem {Text="Sea",Value="S" },
+                                                                 }, "Value", "Text"
+                                                      ), new { @class = "form-control", @id = "Trans_Mode", @onchange = "OnChangeTransMode()" })
+                                                    }
+
+
+                                                    @Html.ValidationMessageFor(model => model.TransMode, String.Empty, new { @class = "", @id = "vmTransportMode" })
+                                                </div>
+                                                <div id="Div_GstCatogry">
+                                                    @if (Disable)
+                                                    {
+                                                        if (ViewBag.GstApplicable == "Y")
+                                                        {
+                                                            <div class="col-md-2 col-sm-12 pl-0 " id="">
+                                                                <label class="col-form-label label-align">@Resource.GST @Resource.Category <span id="RequiredGSTCategory" class="required">*</span> </label>
+                                                                <div id="CurrencyDiv">
+                                                                    @Html.DropDownListFor(model => model.Gst_Cat, new SelectList(new List<SelectListItem> {
+                                                                                           new SelectListItem {Text="Registered",Value="RG" },
+                                                                                           new SelectListItem {Text="Un-Registered",Value="UG" },
+                                                                                           }, "Value", "Text"
+                                            ), new { @class = "form-control", @id = "Gst_Cat", @onchange = "OnChangeGSTCat()", @disabled = "disabled", @name = "Gst_Cat" })
+                                                                </div>
+                                                                <span id="Spansuppcurr" class="error_message"></span>
+                                                            </div>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        if (ViewBag.GstApplicable == "Y")
+                                                        {
+                                                            <div class="col-md-2 col-sm-12 pl-0" id="">
+                                                                <label class="col-form-label label-align">@Resource.GST @Resource.Category <span id="RequiredGSTCategory" class="required">*</span> </label>
+                                                                <div id="CurrencyDiv">
+                                                                    @Html.DropDownListFor(model => model.Gst_Cat, new SelectList(new List<SelectListItem> {
+                                              new SelectListItem {Text="Registered",Value="RG" },
+                                              new SelectListItem {Text="Un-Registered",Value="UG" },
+                                              }, "Value", "Text"
+    ), new { @class = "form-control", @id = "Gst_Cat", @onchange = "OnChangeGSTCat()", @name = "Gst_Cat" })
+                                                                </div>
+                                                                <span id="Spansuppcurr" class="error_message"></span>
+                                                            </div>
+                                                        }
+                                                    }
+                                                </div>
+                                                <div class="col-md-1 col-sm-12 float-lg-right mt-1">
+                                                    <div class="custom-control custom-switch margin10">
+                                                        @*<input class="custom-control-input col-md-3 col-sm-12 margin-switch" data-val="true" data-val-required="" id="OnHold" name="OnHold" type="checkbox" value="true">*@
+                                                        @if (Disable)
+                                                        {
+                                                            @Html.CheckBoxFor(modal => modal.OnHold, new { @class = "custom-control-input col-md-3 col-sm-12 margin-switch", @id = "OnHold", disabled = "true", onclick = "OnHoldTransStatusChange()", @value = "true" })
+                                                        }
+                                                        else
+                                                        {
+                                                            @Html.CheckBoxFor(modal => modal.OnHold, new { @class = "custom-control-input col-md-3 col-sm-12 margin-switch", @id = "OnHold", onclick = "OnHoldTransStatusChange()", @value = "true" })
+                                                        }
+                                                        <label class="custom-control-label col-md-9 col-sm-12" for="OnHold" style="padding: 3px 0px;"> @Resource.OnHold  </label>
+                                                    </div>
+
+                                                </div>
+                                                <div class="clear"></div>
+                                                <div class="col-md-4 col-sm-12">
+                                                    <label class="col-form-label label-align">@Resource.Address <span class="required">*</span></label>
+                                                    @*<textarea class="form-control remarksmessage" cols="20" id="Trans_Address" maxlength="200" name="TransAdd" placeholder="@Resource.Address" rows="2" onmouseover="OnMouseOver(this)" onchange="OnChangeTransAddress()" onkeypress="OnChangeTransAddress()" title=""></textarea>*@
+                                                    @*@Html.TextBoxFor(x => x.TransAdd, new {  })*@
+                                                    @if (Disable)
+                                                    {
+                                                        @Html.TextAreaFor(model => model.TransAdd, new { @id = "Trans_Address", @class = "form-control remarksmessage", maxlength = "200", @placeholder = @Resource.Address, @autocomplete = "off", @rows = "2", @onmouseover = "OnMouseOver(this)", @onchange = "OnChangeTransAddress()", disabled = "true", @onkeypress = "OnChangeTransAddress()" })
+
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.TextAreaFor(model => model.TransAdd, new { @id = "Trans_Address", @class = "form-control remarksmessage", maxlength = "200", @placeholder = @Resource.Address, @autocomplete = "off", @rows = "2", @onmouseover = "OnMouseOver(this)", @onchange = "OnChangeTransAddress()", @onkeypress = "OnChangeTransAddress()" })
+                                                    }
+                                                    <span id="TransAddress_Error" class="error_message"></span>
+                                                    @Html.ValidationMessageFor(model => model.TransAdd, String.Empty, new { @class = "", @id = "vmTransAddress" })
+                                                </div>
+
+                                                @*@Html.Partial("~/Areas/Common/Views/Cmn_PartialAddressDetail.cshtml", _Model)*@
+                                                <div class="col-md-4 col-sm-12">
+                                                    <label class="col-form-label label-align">@Resource.Country <span class="required">*</span></label>
+                                                    @if (Disable)
+                                                    {
+                                                        @Html.DropDownListFor(model => model.TransCntry, new SelectList(Model.countryList, "country_id", "country_name"), new { @class = "form-control", @id = "TransportCountry", disabled = "true", @onchange = "OnChangeCountry()" })
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.DropDownListFor(model => model.TransCntry, new SelectList(Model.countryList, "country_id", "country_name"), new { @class = "form-control", @id = "TransportCountry", @onchange = "OnChangeCountry()" })
+                                                    }
+                                                    @Html.ValidationMessageFor(model => model.TransCntry, String.Empty, new { @style = "color:red;!important", @id = "vmTransCountry" })
+                                                </div>
+                                                <div class="col-md-4 col-sm-12">
+                                                    <label class="col-form-label label-align">@Resource.State <span class="required">*</span></label>
+                                                    @if (Disable)
+                                                    {
+                                                        @Html.DropDownListFor(model => model.TransState, new SelectList(Model.StateList, "state_id", "state_name"), new { @class = "form-control", disabled = "true", @id = "TransportState", @onchange = "OnChangeState()" })
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.DropDownListFor(model => model.TransState, new SelectList(Model.StateList, "state_id", "state_name"), new { @class = "form-control", @id = "TransportState", @onchange = "OnChangeState()" })
+                                                    }
+
+                                                    @Html.ValidationMessageFor(model => model.TransState, String.Empty, new { @style = "color:red;!important", @id = "vmStatename" })
+                                                </div>
+                                                <div class="col-md-4 col-sm-12">
+                                                    <label class="col-form-label label-align">@Resource.District <span class="required">*</span></label>
+                                                    @if (Disable)
+                                                    {
+                                                        @Html.DropDownListFor(model => model.TransDist, new SelectList(Model.DistrictList, "district_id", "district_name"), new { @class = "form-control", @id = "CmnDistrict", disabled = "true", @onchange = "OnChangeDistrict()" })
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.DropDownListFor(model => model.TransDist, new SelectList(Model.DistrictList, "district_id", "district_name"), new { @class = "form-control", @id = "CmnDistrict", @onchange = "OnChangeDistrict()" })
+                                                    }
+                                                    @Html.ValidationMessageFor(model => model.TransDist, String.Empty, new { @style = "color:red;!important", @id = "vmDistname" })
+                                                </div>
+                                                <div class="col-md-4 col-sm-12">
+                                                    <label class="col-form-label label-align">@Resource.City <span class="required">*</span></label>
+                                                    @if (Disable)
+                                                    {
+                                                        @Html.DropDownListFor(model => model.TransCity, new SelectList(Model.cityLists, "City_Id", "City_Name"), new { @class = "form-control", @id = "CmnCity", disabled = "true", @onchange = "OnChangeCity()" })
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.DropDownListFor(model => model.TransCity, new SelectList(Model.cityLists, "City_Id", "City_Name"), new { @class = "form-control", @id = "CmnCity", @onchange = "OnChangeCity()" })
+                                                    }
+                                                    @*  @Html.ValidationMessageFor(model => model._CommonAddress_Detail.State_Id, String.Empty, new { @style = "color:red;!important", @id = "vmDistname" })*@
+                                                    @Html.ValidationMessageFor(model => model.TransCity, String.Empty, new { @style = "color:red;!important", @id = "vmCityname" })
+                                                </div>
+                                                <div class="col-md-2 col-sm-12">
+                                                    <label class="col-form-label label-align">@Resource.Pin <span class="required" id="Div_pinReq">*</span></label>
+                                                    @*<input autocomplete="off" class=" form-control" id="Pin" maxlength="50" name="Pin" placeholder="@Resource.Pin" tabindex="" type="text" value="">*@
+                                                    @if (Disable)
+                                                    {
+                                                        @Html.TextBoxFor(model => model.TransPin, new { @id = "CmnPin", @class = "form-control", maxlength = "12", minlength = "4", disabled = "true", @placeholder = "Pin", autocomplete = "off" })
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.TextBoxFor(model => model.TransPin, new { @id = "CmnPin", @class = "form-control", maxlength = "12", minlength = "4", @placeholder = "Pin", autocomplete = "off", @onchange = "onchagepin_No()" })
+                                                    }
+                                                    @Html.ValidationMessageFor(model => model.TransPin, String.Empty, new { @class = "", @id = "vmPin" })
+
+
+                                                </div>
+                                                <div class="col-md-2 col-sm-12">
+                                                    <label class="col-form-label label-align">@Resource.PANNumber <span class="required" id="PanNorequired">*</span></label>
+                                                    @*<input class="form-control" id="" maxlength="50" name="supp_pan_no" placeholder="@Resource.PANNumber" type="text" value="">*@
+                                                    @if (Disable)
+                                                    {
+                                                        @Html.TextBoxFor(model => model.transPanNo, new { @id = "CmnPANNumber", @class = "form-control", maxlength = "50", @placeholder = "PANNumber", autocomplete = "off", @onchange = "OnChangePanNum()", disabled = "true", @onkeypress = "OnChangePanNum()" })
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.TextBoxFor(model => model.transPanNo, new { @id = "CmnPANNumber", @class = "form-control", maxlength = "50", @placeholder = "PANNumber", autocomplete = "off", @onchange = "OnChangePanNum()", @onkeypress = "OnChangePanNum()", onkeyup = "upper(this)" })
+                                                    }
+                                                    @Html.ValidationMessageFor(model => model.transPanNo, String.Empty, new { @class = "error_message", @id = "vmPANNum" })
+                                                </div>
+                                                <div class="clear"></div>
+                                                <div class="col-md-3 col-sm-12 pr-0">
+                                                    <label class="col-form-label label-align" style="width:100%;">
+                                                        @Resource.GSTNumber
+                                                        @if (Model.Gst_Cat == "UG" || ViewBag.GstApplicable == "N" )
+
+                                                        {
+                                                            <span id="GSTNumrequired" class="required" style="display:none">*</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span id="GSTNumrequired" class="required">*</span>
+                                                        }
+
+
+                                                    </label>
+                                                    @if (Disable)
+                                                    {
+                                                        @Html.TextBoxFor(model => model.transGstFirstPart, new { @id = "gst_num", @class = "form-control tel col-md-2 col-sm-12", @placeholder = "GST No", @readonly = "readonly", autocomplete = "off", @onkeyup = "upper(this)", @maxlength = "2", disabled = "true", @onchange = "onchangeGST()", @onkeypress = "onchangeGST()" })
+                                                        @Html.TextBoxFor(model => model.transGstMidPart, new { @id = "GSTMidPrt", @class = "form-control   col-md-7 col-sm-12 gst_left", @placeholder = "GST No", autocomplete = "off", @onkeyup = "upper(this)", @onchange = "onchangeGST()", disabled = "true", @maxlength = "10", @onkeypress = "onchangeGST()" })
+                                                        @Html.TextBoxFor(model => model.transGstLastPart, new { @id = "GSTLastPrt", @class = "form-control col-md-2 col-sm-12 gst_left", @placeholder = "GST No", autocomplete = "off", @onkeyup = "upper(this)", @onchange = "onchangeGST()", disabled = "true", @maxlength = "3", @onkeypress = "onchangeGST()" })
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.TextBoxFor(model => model.transGstFirstPart, new { @id = "gst_num", @class = "form-control tel col-md-2 col-sm-12", @placeholder = "GST No", @readonly = "readonly", autocomplete = "off", @onkeyup = "upper(this)", @maxlength = "2", @onchange = "onchangeGST()", @onkeypress = "onchangeGST()" })
+                                                        @Html.TextBoxFor(model => model.transGstMidPart, new { @id = "GSTMidPrt", @class = "form-control   col-md-7 col-sm-12 gst_left", @placeholder = "GST No", autocomplete = "off", @onkeyup = "upper(this)", @onchange = "onchangeGST()", @maxlength = "10", @onkeypress = "onchangeGST()" })
+                                                        @Html.TextBoxFor(model => model.transGstLastPart, new { @id = "GSTLastPrt", @class = "form-control col-md-2 col-sm-12 gst_left", @placeholder = "GST No", autocomplete = "off", @onkeyup = "upper(this)", @onchange = "onchangeGST()", @maxlength = "3", @onkeypress = "onchangeGST()" })
+                                                    }
+                                                    @*<input id="gst_num" tabindex="25" class="form-control tel col-md-2 col-sm-12" type="text" name="transGstFirstPart" readonly="readonly" data-validate-length-range="8,20" placeholder="@Resource.GSTNumber" maxlength="2" autocomplete="off" onkeyup="upper(this)" onchange="onchangeGST()" onkeypress="onchangeGST()" onblur="this.placeholder='GST Number'">
+            <input class=" form-control col-md-7 col-sm-12 gst_left" id="GSTMidPrt" maxlength="10" name="transGstMidPart" placeholder="" type="text" value="" autocomplete="off" onkeyup="upper(this)" onchange="onchangeGST()" onkeypress="onchangeGST()">
+            <input class=" form-control col-md-2 col-sm-12 gst_left" id="GSTLastPrt" maxlength="3" name="transGstLastPart" placeholder="" type="text" value="" autocomplete="off" onkeyup="upper(this)" onchange="onchangeGST()" onkeypress="onchangeGST()">*@
+                                                    <span id="SpantransportGSTMidPrt" class="error_message"></span>
+                                                    <span id="SpantransportGST" class="error_message"></span>
+                                                    <span id="spanfirstpart" class="error_message"></span>
+                                                    <input type="hidden" id="hdCustmerGst">
+                                                </div>
+                                                <div class="col-md-4 col-sm-12">
+                                                    <label class="col-form-label label-align">@Resource.remarks</label>
+                                                    @*<textarea class="form-control remarksmessage" cols="20" id="" maxlength="200" name="" placeholder="@Resource.remarks" rows="2" onmouseover="OnMouseOver(this)" title=""></textarea>*@
+                                                    @if (Disable)
+                                                    {
+                                                        @Html.TextAreaFor(model => model.Remarks, new { @class = "form-control remarksmessage", @cols = "20", @id = "Trans_Remarks", maxlength = "200", disabled = "true", @onmouseover = "OnMouseOver(this)", @placeholder = Resource.remarks, })
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.TextAreaFor(model => model.Remarks, new { @class = "form-control remarksmessage", @cols = "20", @id = "Trans_Remarks", maxlength = "200", @onmouseover = "OnMouseOver(this)", @placeholder = Resource.remarks, })
+                                                    }
+                                                    @Html.HiddenFor(x => x.TransType, new { @id = "hdntranstype" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                            @*------------------------------------------Attatchment-----------------------------------------*@
+
+
+                            @{
+                                if (Disable)
+                                {
+                                    ViewBag.Disable = true;
+                                }
+                                else
+                                {
+                                    ViewBag.Disable = false;
+                                }
+
+                            }
+                            @Html.Partial("~/Areas/Common/Views/Comn_PartialAttatchmentDetail.cshtml")
+                            @Html.HiddenFor(model => model.attatchmentdetail, new { @id = "hdn_Attatchment_details" })
+                            @Html.HiddenFor(model => model.attatchmentDefaultdetail, new { @id = "hdn_Attatchment_Default_details" })
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}

@@ -1,0 +1,36 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.Inventory_Management.DeliveryNoteDetail_MODELS
+@using EnRepMobileWeb.Resources;
+@{
+    var Disable = true;
+    if (Session["TransType"].ToString() == "Update")
+    {
+        if (Session["Command"].ToString() == "Edit")
+        {
+            Disable = false;
+        }
+        else
+        {
+            Disable = true;
+        }
+    }
+    else
+    {
+        Disable = false;
+    }
+
+}
+<div class="wrap-input100 validate-input sel_bor" data-validate="">
+    @if (Disable)
+    {
+        @Html.HiddenFor(model => model.DocumentId, new { @id = "hdDocumentId" })
+        @Html.DropDownListFor(model => model.src_doc_no, new SelectList(Model.DocumentNumberList, "po_dt", "po_no"), new { @class = "form-control", disabled = "disabled", @id = "ddlDocumentNumber", onchange = "ddlDocumentNumberSelect()" })
+    }
+    else
+    {
+        @Html.HiddenFor(model => model.DocumentId, new { @id = "hdDocumentId" })
+        @Html.DropDownListFor(model => model.src_doc_no, new SelectList(Model.DocumentNumberList, "po_dt", "po_no"), new { @class = "form-control", @id = "ddlDocumentNumber", onchange = "ddlDocumentNumberSelect()" })
+    }
+    @Html.ValidationMessageFor(model => model.src_doc_no, String.Empty, new { @style = "color:red;!important", @id = "vmsrc_doc_no" })
+
+    <span class="field-validation-valid" id="spanLanguage"></span>
+</div>

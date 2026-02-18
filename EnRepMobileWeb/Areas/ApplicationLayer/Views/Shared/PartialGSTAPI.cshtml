@@ -1,0 +1,332 @@
+﻿@using EnRepMobileWeb.Resources;
+@*@{
+        string ValDigit = "0.";
+        var VD = Convert.ToInt32(Session["ValDigit"].ToString());
+        for (var i = 0; i < VD; i++)
+        {
+            ValDigit += "0";
+        }
+        //decimal total = 0;
+    }*@
+@{ 
+    string action = ViewBag.action;
+}
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<table id="datatable-buttons" class="table table-striped width3200 rowhighlighttbl itmfrz" cellspacing="0">
+    <thead>
+        <tr class="sticky-header">
+            @*Code changed by - Sanjay Pant dated- 10-10-2023 reason - to bind checkbox dynamically accoarding to data type *@
+            @*show sale invoice parameters if datatype not selected*@
+            @*Code Modified by Suraj on 02-08-2024 for condition added for "SCI" Scrap Sale Invoice *@
+            @if (string.IsNullOrEmpty(action))
+            {
+                action = "SI";
+            }
+            @if (action == "SI" || action == "SCI" || action == "IBS" || action == "SSI" || action == "SRT")
+            {
+                <th width="3%"><input id="chkAllInv" type="checkbox" class="flat icheckbox_flat-green" name="EInv" onclick="CheckUncheckAllInv(event); EnableDisablePostEinvButton();"><br /> @Resource.EInv</th>
+                if (action == "SI" || action == "SCI" || action == "IBS")
+                {
+                    <th width="3%"><input id="chkAllEwb" type="checkbox" onclick="CheckUncheckAllEWB(event); EnableDisablePostEinvButton();" class="flat icheckbox_flat-green" name="EWB"> <br />@Resource.EWB</th>
+                }
+            }
+            else if (action == "SC" || action == "SSC" || action == "SCC" || action == "IBSC")
+            {
+                <th width="3%"><input id="chkallsingle" type="checkbox" onclick="chkunchkallsingle(event); EnableDisablePostEinvButton();" class="flat icheckbox_flat-green" name="chkall"> <br />@Resource.Select</th>
+            }
+            else
+            {
+
+            }
+            <th width="2%">@Resource.SrNo</th>
+            <th hidden="hidden">@Resource.InvoiceType</th>
+            <th width="6%" class="itmStick">@Resource.Sale <br /> @Resource.Invoice @Resource.Number</th>
+            <th hidden="hidden">@Resource.Invoice  <br /> @Resource.Number </th>
+            <th hidden="hidden">@Resource.Invoice  <br /> @Resource.Date </th>
+            <th hidden="hidden">@Resource.Invoice  <br /> @Resource.Type </th>
+            <th width="4%">@Resource.Invoice  <br /> @Resource.Date </th>
+            @if (action == "SI" || action == "SCI" || action == "IBS" || action == "SC" || action == "SCC" || action == "IBSC" || action == "SR")
+            {
+                <th width="4%">@Resource.Custom @Resource.InvoiceNumber</th>
+                <th width="4%">@Resource.InvoiceType</th>
+            }
+            <th width="8%">@Resource.Customer   <br /> @Resource.Name</th>
+            <th width="5%">@Resource.GST    <br /> @Resource.Number</th>
+
+            @if (action != "SSI")
+            {
+                <th width="4%">@Resource.Sale   <br />@Resource.Type </th>
+            }
+            <th width="7%">@Resource.Destination    <br />@Resource.State</th>
+            <th width="4%">@Resource.Invoice <br /> @Resource.Value</th>
+            @if (action == "SI" || action == "SCI" || action == "IBS" || action == "SSI" || action == "SRT")
+            {
+                <th width="4%">@Resource.EInvoice @Resource.Status</th>
+            }
+            @if (action == "SR")
+            {
+                <th width="4%">@Resource.Post <br /> @Resource.Status</th>
+            }
+            @if (action == "SC" || action == "SSC" || action == "SCC" || action == "IBSC")
+            {
+                <th width="4%">@Resource.EInv @Resource.Cancel <br /> @Resource.Status</th>
+            }
+            @if (action == "SI" || action == "SCI" || action == "IBS")
+            {
+                <th width="4%">@Resource.EWB <br /> @Resource.Status</th>
+            }
+            @if (action != "SC" || action != "SSC" || action != "SCC" || action != "IBSC")
+            {
+                <th class="" style="width:16% !important; min-width:15% !important;">@Resource.IRN <br /> @Resource.Number</th>
+            }
+            @if (action == "SI" || action == "SCI" || action == "IBS")
+            {
+                <th width="6%">@Resource.EWB <br /> @Resource.Number</th>
+            }
+            @if (action == "SI" || action == "SCI" || action == "IBS" || action == "SSI" || action == "SRT")
+            {
+                <th width="4%">@Resource.EInv <br />@Resource.Acknowledge <br /> @Resource.Number</th>
+                <th width="4%">@Resource.EInv <br />@Resource.Acknowledge <br /> @Resource.Date</th>
+                if (action != "SSI" && action != "SRT")
+                {
+                    <th width="4%">@Resource.EWB <br />@Resource.Acknowledge <br /> @Resource.Number</th>
+                    <th width="4%">@Resource.EWB <br />@Resource.Acknowledge <br /> @Resource.Date</th>
+                }
+            }
+            @if (action == "SR")
+            {
+                <th width="4%">@Resource.Post <br />@Resource.Acknowledge <br /> @Resource.Number</th>
+                <th width="4%">@Resource.Post <br />@Resource.Acknowledge <br /> @Resource.Date</th>
+            }
+            @if (action == "SC" || action == "SSC" || action == "SCC" || action == "IBSC")
+            {
+                @*<th width="4%">@Resource.EInv @Resource.Cancel <br />@Resource.Acknowledge <br /> @Resource.Number</th>*@
+                <th width="4%">@Resource.EInv @Resource.Cancel  <br /> @Resource.Date</th>
+            }
+
+        </tr>
+    </thead>
+    <tbody id="">
+        @if (ViewBag.GstApiData != null)
+        {
+            var srno = 1;
+            foreach (System.Data.DataRow dr in ViewBag.GstApiData.Rows)
+            {
+                string gAction = ViewBag.GstApiData.Rows[0]["action"].ToString();
+                <tr>
+
+                    @if (gAction == "SI" || gAction == "SCI" || gAction == "IBS" || gAction == "SSI" || gAction == "SRT")
+                    {
+                        <td class="center ">
+                            @if (@dr["gst_einv_status"].ToString().Trim() == "Success")
+                            {
+                                <input id="chkinv" disabled type="checkbox" class="flat icheckbox_flat-green" name="EInv" onclick="EnableDisablePostEinvButton();" />
+                            }
+                            else
+                            {
+                                <input id="chkinv" type="checkbox" class="flat icheckbox_flat-green" name="EInv" onclick=" EnableDisablePostEinvButton();" />
+                            }
+                        </td>
+                        if (gAction == "SI" || gAction == "SCI" || gAction == "IBS")
+                        {
+                            if (@dr["gst_ewb_status"].ToString().Trim() == "Success" || @dr["gst_einv_status"].ToString().Trim() != "Success")
+                            {
+                                <td class="center "><input id="chkewb" disabled type="checkbox" onclick="CheckInvIfEWBChecked(event); EnableDisablePostEinvButton();" class="flat icheckbox_flat-green" name="EWB" /></td>
+                            }
+                            else
+                            {
+                                <td class="center "><input id="chkewb" type="checkbox" onclick="CheckInvIfEWBChecked(event); EnableDisablePostEinvButton();" class="flat icheckbox_flat-green" name="EWB" /></td>
+                            }
+                        }
+                    }
+                    else if (gAction == "SC" || gAction == "SSC" || gAction == "SCC" || gAction == "IBSC")
+                    {
+                        if (@dr["gst_inv_canc_status"].ToString().Trim() == "Success")
+                        {
+                            <td class="center"><input id="chk1" disabled type="checkbox" onclick="CheckInvIfEWBChecked(event); EnableDisablePostEinvButton();" class="flat icheckbox_flat-green" name="chk1" /></td>
+                        }
+                        else
+                        {
+                            <td class="center"><input id="chk1" type="checkbox" onclick="CheckInvIfEWBChecked(event); EnableDisablePostEinvButton();" class="flat icheckbox_flat-green" name="chk1" /></td>
+                        }
+                    }
+                    else
+                    {
+
+                    }
+
+                    <td>@srno</td>
+                    @if (gAction == "SI" || gAction == "SCI" || gAction == "IBS" || gAction == "SC" || gAction == "SCC" || gAction == "IBSC" || gAction == "SRT")
+                    {
+                        <td id="txtInvType" hidden="hidden">@dr["InvTbl"].ToString()</td>
+                    }
+                    else
+                    {
+                        <td id="txtInvType" hidden="hidden">INV</td>
+                    }
+                    <td class="ItmNameBreak itmStick tditemfrz">
+                        <div class="col-md-10 col-sm-12 no-padding num_right">@dr["app_inv_no"].ToString()</div>
+                        <div class="col-sm-2  i_Icon no-padding">
+                            <button type="button" id="" class="calculator" onclick="ShowEinvoicePreview(event);" data-toggle="modal" data-target="#" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/magnifier_search.png" alt="" title="@Resource.Invoice @Resource.Preview">  </button>
+                        </div>
+                    </td>
+
+                    <td id="txtInv_no" hidden="hidden">@dr["app_inv_no"].ToString()</td>
+                    <td id="txtInv_dt" hidden="hidden">@Convert.ToDateTime(dr["inv_dt1"]).ToString("yyyy-MM-dd")</td>
+                    <td id="inv_dt_1">@dr["inv_dt"].ToString()</td>
+                    @if (gAction == "SI" || gAction == "SCI" || gAction == "IBS" || gAction == "SC" || gAction == "SCC" || gAction == "IBSC" || gAction == "SR")
+                    {
+                        <td id="txtCstInvNo">@dr["custom_inv_no"].ToString()</td>
+                        <td>@dr["InvoiceType"].ToString()</td>
+                    }
+                    <td id="txtDataType" hidden="hidden">@dr["action"].ToString()</td>
+
+                    <td>@dr["cust_name"].ToString()</td>
+                    <td>@dr["cust_gst_no"].ToString()</td>
+                    @if (gAction != "SSI")
+                    {
+                        <td>@dr["saletype"].ToString()</td>
+                    }
+                    <td>@dr["dstnState"].ToString()</td>
+                    <td class="num_right">@dr["net_val_bs"].ToString()</td>
+                    @if (gAction == "SI" || gAction == "SCI" || gAction == "IBS" || gAction == "SSI" || gAction == "SRT")
+                    {
+                        <td>
+                            <div class="col-md-10 col-sm-12 no-padding num_right ">
+                                @dr["gst_einv_status"].ToString()
+                            </div>
+
+                            <div class="col-sm-2  i_Icon no-padding">
+                                @if (dr["gst_einv_status"].ToString().ToUpper() == "FAILED")
+                                {
+                                    <button type="button" id="" class="calculator" onclick="GetApiErrorLogs(event)" data-toggle="modal" data-target="#ErrorDetail" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Error @Resource.Detail">  </button>
+                                }
+                                @*else
+                                    {
+                                        <button type="button" id="" class="calculator" onclick="" data-toggle="modal" data-target="#" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Error @Resource.Detail">  </button>
+                                    }*@
+                            </div>
+                        </td>
+                    }
+                    else if (gAction == "SR")
+                    {
+
+                        <td>
+                            <div class="col-md-10 col-sm-12 no-padding num_right ">
+                                @dr["gst_inv_reg_status"].ToString()
+                            </div>
+                            <div class="col-sm-2  i_Icon no-padding">
+                                @if (dr["gst_inv_reg_status"].ToString().ToUpper() == "FAILED")
+                                {
+                                    <button type="button" id="" class="calculator" onclick="" data-toggle="modal" data-target="#" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="">  </button>
+                                }
+                                @*else
+                                    {
+                                        <button type="button" id="" class="calculator" disabled onclick="" data-toggle="modal" data-target="#" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="">  </button>
+                                    }*@
+                            </div>
+                        </td>
+                    }
+                    else
+                    {
+                        <td>
+                            <div class="col-md-10 col-sm-12 no-padding num_right ">
+                                @dr["gst_inv_canc_status"].ToString()
+                            </div>
+                            <div class="col-sm-2  i_Icon no-padding">
+                                @if (dr["gst_inv_canc_status"].ToString().ToUpper() == "FAILED")
+                                {
+                                    <button type="button" id="" class="calculator" onclick="GetApiErrorLogs(event)" data-toggle="modal" data-target="#ErrorDetail" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="">  </button>
+                                }
+                                @*else
+                                    {
+                                        <button type="button" id="" class="calculator" disabled onclick="" data-toggle="modal" data-target="#" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="">  </button>
+                                    }*@
+                            </div>
+                        </td>
+                    }
+                    @if (gAction == "SI" || gAction == "SCI" || gAction == "IBS")
+                    {
+                        <td>
+                            <div class="col-md-10 col-sm-12 no-padding num_right ">
+                                @dr["gst_ewb_status"].ToString()
+                            </div>
+                            <div class="col-sm-2  i_Icon no-padding">
+                                @if (dr["gst_ewb_status"].ToString().ToUpper() == "FAILED")
+                                {
+                                    <button type="button" id="" class="calculator" onclick="GetApiErrorLogs(event)" data-toggle="modal" data-target="#ErrorDetail" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="">  </button>
+                                }
+                                @*else
+                                    {
+                                        <button type="button" id="" class="calculator" disabled onclick="" data-toggle="modal" data-target="#" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="">  </button>
+                                    }*@
+                            </div>
+                        </td>
+                    }
+                    <td>
+                        <div class="col-md-11 col-sm-12 no-padding num_right ">
+                            @dr["gst_irn_no"].ToString()
+                        </div>
+                        <div class="col-sm-1  i_Icon no-padding">
+                            @if (!string.IsNullOrEmpty(dr["gst_irn_no"].ToString()) && dr["gst_irn_no"].ToString() != "N/A")
+                            {
+                                <button type="button" id="" class="calculator" onclick="" data-toggle="modal" data-target="#" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/pdf.png" alt="" onclick="GetGstApiDocs('EInvoice',event)" title="@Resource.EInvoice @Resource.Detail">  </button>
+                            }
+                            @*else
+                                {
+                                    <button type="button" id="" class="calculator" disabled onclick="" data-toggle="modal" data-target="#" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/pdf.png" alt="" title="@Resource.EInvoice @Resource.Detail">  </button>
+                                }*@
+                        </div>
+                    </td>
+                    @if (gAction == "SI" || gAction == "SCI" || gAction == "IBS")
+                    {
+                        <td>
+                            <div class="col-md-10 col-sm-12 no-padding num_right ">
+                                @dr["gst_ewb_no"].ToString()
+                            </div>
+                            <div class="col-sm-2  i_Icon no-padding">
+                                @if (!string.IsNullOrEmpty(dr["gst_ewb_no"].ToString()) && dr["gst_ewb_no"].ToString() != "N/A")
+                                {
+                                    <button type="button" id="" class="calculator" onclick="" data-toggle="modal" data-target="#" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/pdf.png" alt="" onclick="GetGstApiDocs('EwbSummary',event)" title="@Resource.EWB @Resource.Detail">  </button>
+                                }
+                                @*else
+                                    {
+                                        <button type="button" id="" class="calculator" disabled onclick="" data-toggle="modal" data-target="#" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/pdf.png" alt="" title="@Resource.EWB @Resource.Detail">  </button>
+                                    }*@
+                            </div>
+                        </td>
+                    }
+                    @if (gAction == "SI" || gAction == "SCI" || gAction == "IBS" || gAction == "SSI" || gAction == "SRT")
+                    {
+                        <td>@dr["gst_einv_ack_no"].ToString()</td>
+                        <td>@dr["gst_einv_ack_dt"].ToString()</td>
+                        if (gAction != "SSI" && gAction != "SRT")
+                        {
+                            <td>@dr["gst_ewb_ack_no"].ToString()</td>
+                            <td>@dr["gst_ewb_ack_dt"].ToString()</td>
+                        }
+                    }
+                    @if (gAction == "SR")
+                    {
+                        <td>@dr["gst_inv_reg_ack_no"].ToString()</td>
+                        <td>@dr["gst_inv_reg_ack_dt"].ToString()</td>
+                    }
+                    @if (gAction == "SC" || gAction == "SSC" || gAction == "SCC" || gAction == "IBSC")
+                    {
+                        @*<td>@dr["gst_inv_canc_ack_no"].ToString()</td>*@
+                        <td>@dr["gst_inv_canc_ack_dt"].ToString()</td>
+                    }
+                </tr>
+                srno = srno + 1;
+            }
+        }
+    </tbody>
+</table>
+@if (ViewBag.FILTER != null)
+{
+    if (ViewBag.FILTER == "FILTER")
+    {
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+        @Scripts.Render("~/Content/Scripts/DatatablesJs")
+    }
+}

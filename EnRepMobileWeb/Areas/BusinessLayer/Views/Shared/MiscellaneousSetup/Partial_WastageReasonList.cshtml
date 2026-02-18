@@ -1,0 +1,39 @@
+﻿@using EnRepMobileWeb.Resources;
+
+<table id="datatable-buttons13" class="table table-bordered data_table_full_width rowhighlighttbl">
+    <thead>
+        <tr class="sticky-header">
+            <th width="2%">@Resource.SrNo</th>
+            <th hidden="hidden"> @Resource.WastageReason</th>
+            <th> @Resource.WastageReason</th>
+            <th width="5%"> </th>
+            <th width="5%"> </th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (ViewBag.WastageReason != null)
+        {
+            var i = 0;
+            foreach (System.Data.DataRow dr in ViewBag.WastageReason.Rows)
+            {
+                i = i + 1;
+                <tr role="row" class="odd">
+                    <td class="sorting_1">@i</td>
+                    <td id="wastage_id" style="display:none">@dr["wast_id"].ToString()</td>
+                    <td id="wastage_reason">@dr["wast_reason"].ToString()</td>
+                    <td class="center">
+                        <i type="submit" class="fa fa-edit" onclick="EditWastageReson(event); CheckBranchStatusWhenUpdate('Wastage');" aria-hidden="true" title="@Resource.Edit"></i>
+                    </td>
+                    <td class="center">
+                        <i class="fa fa-trash red" aria-hidden="true" title="@Resource.Delete" onclick="return functionConfirm(event,'Wastage')"></i>
+                    </td>
+                </tr>
+            }
+        }
+
+
+    </tbody>
+</table>
+
+
+

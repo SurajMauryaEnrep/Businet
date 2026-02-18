@@ -1,0 +1,748 @@
+﻿@using EnRepMobileWeb.Resources;
+@*@using System.Data*@
+
+@if (Session["UserId"] == null)
+{
+    Response.Redirect("~/Login");
+}
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+<div class="row">
+    <!-- Forward Information -->
+    <div id="Forward_Pop" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/Common/Views/PartialForward.cshtml")
+        </div>
+    </div>
+    <!-- Workflow Information -->
+    <div id="WorkflowInformation" class="modal fade" role="dialog">
+        <div class="modal-dialog" style="max-width:700px;">
+            <div class="price_item_detail">
+                <!-- Modal content-->
+                @Html.Partial("~/Areas/Common/Views/_WorkFlow.cshtml")
+            </div>
+        </div>
+    </div>
+    <!-- Other Charges Calculator -->
+    <div id="OtherChargesCalculator" class="modal fade" role="dialog">
+        <div class="modal-dialog" style=" max-width:800px;">
+            <div class="TaxCalculatorPop">
+                <!-- Modal content-->
+                @Html.Partial("~/Areas/Common/Views/_OtherCharge.cshtml")
+            </div>
+        </div>
+    </div>
+    <!-- Item Information -->
+    <div id="ItemInfo" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/Common/Views/_ItemInfomation.cshtml")
+        </div>
+    </div>
+    <!-- Supplier Information -->
+    <div id="SupplierInformation" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="price_item_detail">
+                <!-- Modal content-->
+                @Html.Partial("~/Areas/Common/Views/_SupplierInformation.cshtml")
+            </div>
+        </div>
+    </div>
+    <!-- Address Information -->
+    <div id="AddressInfo" class="modal fade" role="dialog">
+        <div id="address" class="modal-dialog" style=" max-width:1100px;">
+            <!-- Modal content-->
+            <input type="hidden" id="hd_bill_id" />
+            <input type="hidden" id="hd_add_type" />
+            <input type="hidden" id="hd_TxtBillingAddr" />
+            <input type="hidden" id="hd_bill_add_id" />
+            <div id="tbodyAddressBodyNew">
+            </div>
+        </div>
+    </div>
+    <!-- ItemCalculate -->
+    <div id="ItemCalculate" class="modal fade" role="dialog">
+        <input type="hidden" id="hd_tax_id" />
+        <div class="modal-dialog" style=" max-width:800px;">
+            <div class="TaxCalculatorPop">
+                <!-- Modal content-->
+                @Html.Partial("~/Areas/Common/Views/_TaxCalculation.cshtml")
+            </div>
+        </div>
+    </div>
+    <!-- Sale Information -->
+    <input type="hidden" id="HiddenFinDt" />
+    <div id="SaleHistory" class="modal fade" role="dialog">
+        <div class="modal-dialog" style="min-width:800px;">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/_SaleHistory.cshtml")
+
+        </div>
+    </div>
+    <!-- Mail Information -->
+    <div id="MailInfo" class="modal fade" role="dialog">
+        <div class="modal-dialog" style="max-width:600px;">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/Common/Views/Cmn_MailInfomation.cshtml")
+        </div>
+    </div>
+    <!-- Multiple Mail Information -->
+    <div id="MultipleMailInfo" class="modal fade" role="dialog">
+        <div class="modal-dialog" style="max-width:800px;">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/Common/Views/Cmn_MultipleMailInfo.cshtml")
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <h2 class="col-md-5 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                <!-- Smart Wizard -->
+                <div id="wizard" class="form_wizard wizard_horizontal col-md-3 col-sm-12 work_flow">
+                    @Html.Partial("~/Areas/Common/Views/_PartialWorkflowBar.cshtml")
+                </div>
+                <input type="hidden" id="DocumentMenuId" value="@ViewBag.DocumentMenuId" />
+                <div id="" class="col-md-4 col-sm-12 work_flow heading_right_padding">
+                    <ul class="margin0 padding0">
+                        <li>
+                            <a class="tooltip-test" href="#" title="Add New"><img src="/Content/Images/addgreen.png" width="28" height="28" alt="Add" onclick="" id="btn_add_new_item" style="filter: grayscale(100%);"></a>
+                        </li>
+                        <li>
+                            <a class="tooltip-test" href="#" title="Edit"><img src="/Content/Images/edit_blue.png" width="28" height="28" onclick="" alt="Edit" id="Btn_Edit" style="filter: grayscale(100%);"></a>
+                        </li>
+                        <li>
+                            <a class="tooltip-test" href="#" title="Delete"><img src="/Content/Images/delete_red1.png" width="28" height="28" onclick="" alt="Delete Record" id="Btn_Delete" style="filter: grayscale(100%);"></a>
+                        </li>
+
+                        <li>
+                            <a class="tooltip-test" href="#" title="Save" id="SaveTitle">
+                                <img src="/Content/Images/save_blue.png" width="28" height="28" onclick="SaveBtnClick()" alt="Add" id="btn_save">
+                            </a>
+                        </li>
+                        <li>
+                            <a class="tooltip-test" href="#" title="Forward"><img src="/Content/Images/forward_orange.png" width="28" height="28" alt="Forward" onclick="ForwardBtnClick()" data-toggle="modal" data-target="#Forward_Pop" data-backdrop="static" data-keyboard="false" title="Forward" id="Btn_Forward" style="filter: grayscale(100%);"></a>
+                        </li>
+
+                        <li>
+                            <a class="tooltip-test" href="#" title="Approve"><img src="/Content/Images/approve_green.png" width="28" height="28" alt="Approve" onclick="" id="Btn_Approve" style="filter: grayscale(100%);"></a>
+                        </li>
+                        <li>
+                            <a class="tooltip-test" href="#" title="Workflow History"><img src="/Content/Images/workflow1.png" width="28" height="28" alt="Add" id="Btn_Workflow" onclick="ForwardHistoryBtnClick();" data-toggle="modal" data-target="#WorkflowInformation" data-backdrop="static" data-keyboard="false"></a>
+                        </li>
+
+
+                        <li>
+                            <a class="tooltip-test" href="#" title="Discard"><img src="/Content/Images/delete_red.png" width="28" height="28" onclick="RefreshBtnClick()" alt="Add" id="btn_close"></a>
+                        </li>
+
+                        <li>
+                            <button class="print" title="Print" onclick="return OnClickPrintBtn();" type="submit" id="btn_print" name="Command" value="Print"></button>
+                        </li>
+
+
+                        <li>
+                            <a class="tooltip-test" title="Email"><img src="/Content/Images/mail.png" width="28" height="28" alt="Add" id="Btn_Mail" data-toggle="modal" data-target="#MailInfo" data-backdrop="static" data-keyboard="false" style="filter: grayscale(100%);"></a>
+                        </li>
+
+
+
+                        <li>
+                            <a class="tooltip-test" href="#" title="Back"><img src="/Content/Images/back1.png" width="28" height="28" alt="Add" onclick="" id="btn_back" style="filter: grayscale(100%);"></a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="x_title pad_mar ">
+                    <div class="col-md-12 col-sm-12 icon_tool ">
+                        <div class="approved_by">
+                            <ul class="margin0 padding0">
+                                <li><span>@Resource.CreatedBy<br><b id="POCreatedBy"></b></span></li>
+                                <li><span>@Resource.Createdon<br><b id="POCreatedDate"></b></span></li>
+                                <li><span>@Resource.ApprovedBy<br><b id="POApproveBy"></b></span></li>
+                                <li><span>@Resource.ApprovedOn<br><b id="POApproveDate"></b></span></li>
+                                <li><span>@Resource.AmendedBy<br><b id="POAmdedBy"></b></span></li>
+                                <li><span>@Resource.AmendedOn<br><b id="POAmdedDate"></b></span></li>
+                                <li><span>@Resource.Status<br /><b id="POStatus"></b></span></li>
+                                <li style="display: none;"><input type="hidden" id="hfStatus" /></li>
+                            </ul>
+                            <input id="ForDisableOCDlt" hidden="hidden" />
+                            <input id="Create_ID" hidden="hidden" />
+                            @*@Html.HiddenFor(model => model.wfdocid, new { @id = "hd_wfdocid" })
+                                @Html.HiddenFor(model => model.wfstatus, new { @id = "hd_wfstatus" })*@
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <article class="panel-group bs-accordion" id="accordion" role="tablist" aria-multiselectable="true">
+                    <!--<section class="panel panel-default">
+                        <div class="panel-heading" role="tab" id="headingOne">
+                            <h4 class="panel-title"><a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne"> @Resource.OrderDetail <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a></h4>
+                        </div>
+                        <div id="collapseOne" class="panel-collapse in collapse show" role="tabpanel" aria-labelledby="headingOne" style="">
+                            <div class="panel-body">
+                                <div class="col-md-12">
+                                    <div class="col-md-9 col-sm-12"> &nbsp;</div>
+                                    <div class="col-md-2 col-sm-12">
+                                        <div class="custom-control custom-switch margin10">
+                                            <input type="checkbox" class="custom-control-input col-md-3 col-sm-12 margin-switch" onchange="CheckedFClose()" id="ForceClosed" disabled="disabled">
+                                            <label class="custom-control-label col-md-9 col-sm-12" for="ForceClosed" style="padding: 3px 0px;"> Force Closed  </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1 col-sm-12">
+                                        <div class="custom-control custom-switch margin10">
+                                            <input type="checkbox" class="custom-control-input col-md-3 col-sm-12 margin-switch" onchange="CheckedCancelled()" id="Cancelled" disabled="disabled">
+                                            <label class="custom-control-label col-md-9 col-sm-12" for="Cancelled" style="padding: 3px 0px;"> Cancelled  </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-55 col-sm-12">
+                                    <label class="col-form-label label-align">
+                                        @Resource.JobOrderNo
+                                    </label>
+                                    <input id="JobOrderNumber" class="form-control optional" maxlength="20" autocomplete="off" name="JobOrderNumber" type="text" placeholder="@Resource.JobOrderNumber" disabled="">
+                                </div>
+                                <div class="col-md-55 col-sm-12">
+                                    <label class="col-form-label label-align">@Resource.OrderDate <span class="required">*</span></label>
+                                    <input type="date" class="form-control" id="po_date" name="date" readonly="readonly">
+                                </div>
+                                <div class="col-md-55 col-sm-12">
+                                    <label class="col-form-label label-align">@Resource.ContractorName</label>
+                                    <select class="form-control" id="ContractorName" onchange="">
+                                        <option value="CN">Contractor Name</option>
+                                        <option value="CN1">Contractor Name 1</option>
+                                        <option value="CN2">Contractor Name 2</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-55 col-sm-12">
+                                    <div class="col-md-11 col-sm-12 no-padding">
+                                        <label class="col-form-label label-align" title="Base Unit Of Measure">
+                                            Address <span class="required" id="Rqrdaddr">*</span>
+                                        </label>
+                                        <textarea id="Address" class="form-control remarksmessage" maxlength="100" name="message" placeholder="Address" readonly="" onmouseover="OnMouseOver(this)" title="gfxdcxv, A.Thirumuruganpoondi-EFRE, Tamil Nadu, Coimbatore, India"></textarea>
+                                        <span id="SpanSuppAddrErrorMsg" class="error_message"></span>
+                                        <input type="hidden" id="bill_add_id" value="103">
+                                    </div>
+                                    <div class="col-sm-1 margin28 i_Icon">
+                                        <button type="button" id="AddInfoBtnIcon" class="calculator" onclick="OnClickbillingAddressIconBtn(event);" data-toggle="modal" data-target="#AddressInfo" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="Address Information">  </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-55 col-sm-12">
+                                    <div class="lpo_form">
+                                        <label class="col-form-label label-align" title="Purchase Unit Of Measure">
+                                            @Resource.ValidUpto <span class="required">*</span>
+                                        </label>
+                                        <input type="date" class="form-control" id="ValidUptoDate" onchange="">
+                                    </div>
+                                </div>
+                                <div class="clear"></div>
+                                <div class="col-md-55 col-sm-12">
+                                    <label class="col-form-label label-align">
+                                        @Resource.JobOrderNumber
+                                    </label>
+                                    <select class="form-control" id="ContractorName" onchange="">
+                                        <option value="CN">Production Order Number</option>
+                                        <option value="CN1">Production Order Number 1</option>
+                                        <option value="CN2">Production Order Number 2</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-55 col-sm-12">
+                                    <label class="col-form-label label-align">@Resource.Production @Resource.OrderDate <span class="required">*</span></label>
+                                    <input type="date" class="form-control" id="po_date" name="date" readonly="readonly">
+                                </div>
+                                <div class="col-md-55 col-sm-12">
+                                    <label class="col-form-label label-align">
+                                        @Resource.OperationName
+                                    </label>
+                                    <input id="OperationName" class="form-control optional" maxlength="20" autocomplete="off" name="OperationName" type="text" placeholder="@Resource.OperationName" disabled="">
+                                </div>
+                                <div class="col-md-55 col-sm-12">
+                                    <label class="col-form-label label-align">
+                                        @Resource.remarks
+                                    </label>
+                                    <textarea id="remarks" class="form-control remarksmessage" maxlength="100" name="message" placeholder="Remarks" onmouseover="OnMouseOver(this)" readonly="" title=""></textarea>
+                                </div>
+                                <div class="card-box table-responsive dy_table">
+                                    <div class="col-md-12">
+                                        <div class="price_item_detail">
+                                            <div class="tableFixHead height30VH">
+                                                <h2>@Resource.ItemDetail</h2>
+                                                <table id="" class="table table-bordered width2000">
+                                                    <thead>
+                                                        <tr class="headings">
+
+                                                            <th width="3%">Sr.No.</th>
+                                                            <th width="20%">
+                                                                <div class="col-md-3 col-sm-12"></div>
+                                                                <div class="col-md-6 col-sm-12">
+                                                                    <span class="item_add">
+                                                                        @Resource.ProductName <span class="required">*</span>
+                                                                    </span>
+                                                                    <a href="#">
+                                                                        <div class="plus_icon1" style="display: none;"> <i class="fa fa-plus" id="BtnAddItem" onclick="AddNewRow()" title="Add New"></i> </div>
+                                                                    </a>
+                                                                </div>
+                                                                <div class="col-md-3 col-sm-12"></div>
+                                                            </th>
+                                                            <th width="5%" title="Unit Of Measure"> UOM</th>
+                                                            <th width="7%">Order <br> Quantity</th>
+                                                            <th width="7%">@Resource.Price</th>
+                                                            <th width="7%">@Resource.Value </th>
+                                                            <th width="7%">@Resource.Taxes</th>
+                                                            <th width="7%">@Resource.OtherCharges</th>
+                                                            <th width="7%">@Resource.Total @Resource.Value</th>
+                                                            <th width="7%">@Resource.Sample @Resource.Issue</th>
+                                                            <th width="7%">@Resource.MRS @Resource.Number</th>
+                                                            <th width="16%">Remarks</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td class="sr_padding">01</td>
+                                                            <td>
+                                                                <div class="col-sm-10 lpo_form no-padding" id="">
+                                                                    <input id="ProductName" class="form-control optional" maxlength="20" autocomplete="off" name="po_no" type="text" placeholder="@Resource.ProductName" disabled="">
+                                                                </div>
+                                                                <div class="col-sm-2 no-padding">
+                                                                    <div class="col-sm-4 i_Icon">
+                                                                        <button type="button" id="ItmInfoBtnIcon" class="calculator" onclick="OnClickIconBtn(event);" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="Item Information"> </button>
+                                                                    </div>
+                                                                    <div class="col-sm-4 i_Icon"><button type="button" id="SupplierInformation" class="calculator" onclick="OnClickSupplierInfoIconBtn(event);" data-toggle="modal" data-target="#SupplierInformation" data-backdrop="static" data-keyboard="false"> <i class="fa fa-user" aria-hidden="true" title="Supplier Information"></i> </button></div>
+                                                                    <div class="col-sm-4 i_Icon"><button type="button" id="SaleHistory" class="calculator" onclick="OnClickHistoryIconBtn(event);" data-toggle="modal" data-target="#SaleHistory" data-backdrop="static" data-keyboard="false"> <i class="fa fa-history" aria-hidden="true" data-toggle="" title="Purchase History"></i> </button></div>
+                                                                </div>
+
+                                                            </td>
+                                                            <td>
+                                                                <input id="UOM1" class="form-control date" autocomplete="off" type="text" name="UOM" placeholder="UOM" disabled="">
+                                                                <input id="UOMID1" type="hidden" value="101">
+                                                            </td>
+                                                            <td>
+                                                                <input id="OrderQuantity" class="form-control num_right" autocomplete="off" type="text" name="OrderQuantity" placeholder="0000.00">
+                                                            </td>
+                                                            <td>
+                                                                <input id="Price" class="form-control num_right" autocomplete="off" type="text" name="Price" placeholder="0000.00">
+                                                            </td>
+                                                            <td>
+                                                                <input id="Value" class="form-control num_right" autocomplete="off" type="text" name="Value" placeholder="0000.00">
+                                                            </td>
+                                                            <td>
+                                                                <input id="Taxes" class="form-control num_right" autocomplete="off" type="text" name="Taxes" placeholder="0000.00">
+                                                            </td>
+                                                            <td>
+                                                                <input id="OtherCharges" class="form-control num_right" autocomplete="off" type="text" name="OtherCharges" placeholder="0000.00">
+                                                            </td>
+                                                            <td>
+                                                                <input id="TotalValue" class="form-control num_right" autocomplete="off" type="text" name="OrderQuantity" placeholder="0000.00">
+                                                            </td>
+                                                            <td>
+                                                                <input id="SampleIssue" class="form-control num_right" autocomplete="off" type="text" name="SampleIssue" placeholder="0000.00">
+                                                            </td>
+
+                                                            <td>
+                                                                <input id="MRSNumber" class="form-control num_right" autocomplete="off" type="text" name="MRSNumber" placeholder="0000.00">
+                                                            </td>
+                                                            <td>
+                                                                <textarea id="remarks" class="form-control remarksmessage" maxlength="100" name="message" placeholder="Remarks" onmouseover="OnMouseOver(this)" readonly="" title=""></textarea>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12 margin10">
+                                                <table class="table table-bordered po_total_th" style="margin-bottom:0px; width:100%;">
+                                                    <thead>
+                                                        <tr class="">
+                                                            <th class="right_aligh text_normal">
+                                                                @Resource.GrossValue
+                                                                <input id="TxtGrossValue" class="form-control tax_cal text_bold" autocomplete="off" type="text" name="TxtGrossValue" placeholder="0000.00" disabled>
+                                                            </th>
+                                                            <th class="right_aligh text_normal">
+                                                                @Resource.AssessableValue
+                                                                <input id="TxtAssessableValue" class="form-control tax_cal text_bold" autocomplete="off" type="text" name="TxtAssessableValue" placeholder="0000.00" disabled>
+                                                            </th>
+                                                            <th class="right_aligh text_normal">
+                                                                @Resource.TaxAmount
+                                                                <input id="TxtTaxAmount" class="form-control tax_cal text_bold" autocomplete="off" type="text" name="TaxAmount" placeholder="0000.00" disabled>
+                                                            </th>
+                                                            <th class="right_aligh text_normal ">
+                                                                @Resource.OtherCharges  <button type="button" class="calculator" data-toggle="modal" id="BtnOC_Amount" onclick="OnClickOtherChargeBtn();" data-target="#OtherChargesCalculator" data-backdrop="static" data-keyboard="false"><i class="fa fa-calculator" aria-hidden="true" title="@Resource.OtherChargesCalculator" data-original-title="@Resource.OtherChargesCalculator"></i>-->@*<img src="~/Content/Images/Calculator.png" width="16" height="16" title="@Resource.OtherChargesCalculator" />*@<!--</button>
+                                                                <input id="PO_OtherCharges" class="form-control tax_cal text_bold" autocomplete="off" type="text" name="PO_OtherCharges" placeholder="0000.00">
+                                                            </th>
+                                                            <th class="right_aligh text_normal">
+                                                                @Resource.NetOrderValue @Resource.InSpecific
+                                                                <input id="NetOrderValueSpe" class="form-control tax_cal text_bold" autocomplete="off" type="text" name="NetOrderValueSpe" placeholder="0000.00">
+                                                            </th>
+                                                            <th class="right_aligh text_normal">
+                                                                @Resource.NetOrderValue @Resource.InBase
+                                                                <input id="NetOrderValueInBase" class="form-control tax_cal text_bold" autocomplete="off" type="text" name="NetOrderValueInBase" placeholder="0000.00">
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    <section class="panel panel-default">
+                        <div class="panel-heading" role="tab" id="headingThree">
+                            <h4 class="panel-title"> <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree"> Delivery Schedule <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a> </h4>
+                        </div>
+                        <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+
+                            <div class="panel-body">
+                                <table width="100%">
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <div class="col-md-4 col-sm-12">
+                                                    <div class="lpo_form">
+                                                        <label class="col-form-label label-align">Item Name </label>
+                                                        <select class="form-control" id="DeliverySchItemDDL" onchange="OnChangeDelSchItm()" disabled="disabled"><option value="0">---Select---</option><option value="ITM0001503" text="ADJUSTING NUT" style="display: none;">ADJUSTING NUT</option><option value="ITM0001502" text="AIR FILTER" style="display: none;">AIR FILTER</option><option value="ITM0001473" text="BAGUE FUSSE" style="display: none;">BAGUE FUSSE</option></select>
+
+                                                        <span id="SpanDelSchItemName" class="error_message"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-2 col-sm-12">
+                                                    <div class="lpo_form">
+                                                        <label class="col-form-label label-align">Delivery Date </label>
+                                                        <input type="date" class="form-control" id="DeliveryDate" name="date" min="2022-09-27" onchange="OnChangeDeliveryDate(this)" readonly="">
+
+                                                        <span id="SpanDeliSchDeliDate" class="error_message"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-2 col-sm-12">
+                                                    <div class="lpo_form">
+                                                        <label class="col-form-label label-align">Quantity </label>
+                                                        <input id="DeliverySchQty" class="form-control date num_right" autocomplete="off" type="text" onchange="OnChangeDeliveryQty()" name="DeliverySchQty" onkeypress="return AmountFloatQty(this,event);" placeholder="0000.00" readonly="">
+
+                                                        <span id="SpanDelSchItemQty" class="error_message"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-2 col-sm-12 margin25">
+                                                    <a href="#">
+                                                        <div class="plus_icon1" style="display: none;"> <i class="fa fa-plus" id="DeliverySchAddBtn" onclick="OnClickAddDeliveryDetail()" title="Add New"></i> </div>
+                                                    </a>
+
+                                                </div>
+                                                <div class="table-responsive margin15">
+                                                    <div class="col-md-12 col-sm-12">
+                                                        <table class="table table-striped jambo_table bulk_action" id="DeliverySchTble">
+                                                            <thead>
+                                                                <tr class="headings">
+                                                                    <th width="2%"> &nbsp;</th>
+                                                                    <th width="2%">Sr.No.</th>
+                                                                    <th style="display:none;"></th>
+                                                                    <th width="25%">Item Name</th>
+                                                                    <th width="10%">Delivery Date </th>
+                                                                    <th width="10%">Quantity</th>
+                                                                    <th style="display:none;"></th>
+
+                                                                    <th>Received Quantity</th>
+                                                                    <th>Pending Quantity</th>
+                                                                    <th>Overdue Days</th>
+
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+
+                                                                <tr id="R1" class="even pointer">
+                                                                    <td class=" red center"> <i class="deleteIcon fa fa-trash" aria-hidden="true" id="DeliveryDelIconBtn" title="Delete" style="display: none;"></i></td>
+                                                                    <td id="cmn_srno">1</td>
+                                                                    <td class="" hidden="hidden" id="Hd_ItemIdFrDS">ITM0001503</td>
+                                                                    <td class="a-center ">ADJUSTING NUT</td>
+                                                                    <td class="">30-09-2022</td>
+                                                                    <td class="num_right" id="delv_qty">2.000</td>
+                                                                    <td style="display:none;" id="sch_date">2022-09-30</td>
+
+
+                                                                    <td id="SRQty" class="num_right">0.000</td>
+                                                                    <td id="PenQty" class="num_right">2.000</td>
+                                                                    <td id="OdDays" class="num_right">0</td>
+
+
+
+                                                                </tr>
+                                                                <tr id="R2" class="even pointer">
+                                                                    <td class=" red center"> <i class="deleteIcon fa fa-trash" aria-hidden="true" id="DeliveryDelIconBtn" title="Delete" style="display: none;"></i></td>
+                                                                    <td id="cmn_srno">2</td>
+                                                                    <td class="" hidden="hidden" id="Hd_ItemIdFrDS">ITM0001502</td>
+                                                                    <td class="a-center ">AIR FILTER</td>
+                                                                    <td class="">30-09-2022</td>
+                                                                    <td class="num_right" id="delv_qty">1.000</td>
+                                                                    <td style="display:none;" id="sch_date">2022-09-30</td>
+
+
+                                                                    <td id="SRQty" class="num_right">0.000</td>
+                                                                    <td id="PenQty" class="num_right">1.000</td>
+                                                                    <td id="OdDays" class="num_right">0</td>
+
+
+
+                                                                </tr>
+                                                                <tr id="R3" class="even pointer">
+                                                                    <td class=" red center"> <i class="deleteIcon fa fa-trash" aria-hidden="true" id="DeliveryDelIconBtn" title="Delete" style="display: none;"></i></td>
+                                                                    <td id="cmn_srno">3</td>
+                                                                    <td class="" hidden="hidden" id="Hd_ItemIdFrDS">ITM0001473</td>
+                                                                    <td class="a-center ">BAGUE FUSSE</td>
+                                                                    <td class="">30-09-2022</td>
+                                                                    <td class="num_right" id="delv_qty">1.000</td>
+                                                                    <td style="display:none;" id="sch_date">2022-09-30</td>
+
+
+                                                                    <td id="SRQty" class="num_right">0.000</td>
+                                                                    <td id="PenQty" class="num_right">1.000</td>
+                                                                    <td id="OdDays" class="num_right">0</td>
+
+
+
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                    </section>
+                    <section class="panel panel-default">
+                        <div class="panel-heading" role="tab" id="headingFour">
+                            <h4 class="panel-title"> <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour"> Tax &amp; Other Charges <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a> </h4>
+                        </div>
+                        <div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
+
+                            <div class="panel-body">
+                                <div class="table-responsive">
+                                    <div id="" class="col-md-6 col-sm-12" style="margin-top:10px;">
+                                        <table class="table table-striped jambo_table bulk_action" id="PO_ItemTaxAmountList">
+                                            <thead>
+                                                <tr class="headings">
+                                                    <th class="column-title">Tax Name</th>
+                                                    <th class="column-title" style="text-align: right;">Amount</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>IGST 15%</td>
+                                                    <td class="num_right">105.00000</td>
+                                                </tr>
+                                            </tbody>
+                                            <tfoot>
+                                                <tr class="total">
+                                                    <td colspan="1"><strong> Total Tax</strong></td>
+                                                    <td align="right"><strong> <span id="PO_ItemTaxAmountTotal">105.00000</span></strong></td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                    <div id="" class="col-md-6 col-sm-12" style="margin-top:10px;">
+                                        <table class="table table-striped jambo_table bulk_action" id="PO_OtherChargeList">
+                                            <thead>
+                                                <tr class="headings">
+                                                    <th class="column-title">Other Charges</th>
+                                                    <th class="column-title no-link last" style="text-align: right;"><span class="nobr">Amount</span> </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                            <tfoot>
+                                                <tr style="background-color: #e4e4e4;">
+                                                    <td><strong>Total Other Charges</strong></td>
+                                                    <td align="right"><strong><span id="PO_OtherChargeTotal"></span></strong></td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </section>
+                    <section class="panel panel-default">
+                        <div class="panel-heading" role="tab" id="headingSix">
+                            <h4 class="panel-title"> <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseSix" aria-expanded="false" aria-controls="collapseSix"> Terms &amp; Conditions<span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a> </h4>
+                        </div>
+                        <div id="collapseSix" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingSix">
+                            <div class="panel-body">
+                                <table width="100%">
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <div class="col-md-6 col-sm-12">
+                                                    <div class="lpo_form">
+                                                        <label class="col-form-label label-align">Terms </label>
+                                                        <input id="TxtTerms_Condition" class="form-control" autocomplete="off" maxlength="100" type="text" onchange="OnKeyPressTerm();" onkeypress="OnKeyPressTerm();" name="TxtTerms_Condition" placeholder="Terms &amp; Conditions" onblur="this.placeholder='Terms &amp; Conditions'" readonly="">
+
+                                                        <span id="SpanTerms_Condition" class="error_message"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-1 col-sm-12 margin25">
+                                                    <a href="#">
+                                                        <div class="plus_icon1" style="display: none;"> <i class="fa fa-plus" id="BtnTermsAndCondition" onclick="OnClickAddTermConditionDetail()" title="Add New"></i> </div>
+                                                    </a>
+
+                                                </div>
+
+                                                <div class="table-responsive margin15">
+
+                                                    <table id="TblTerms_Condition" class="table table-striped jambo_table bulk_action">
+                                                        <thead>
+                                                            <tr class="sticky-header">
+                                                                <th width="1%"> &nbsp;</th>
+                                                                <th>Terms &amp; Conditions</th>
+
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                            </div>
+
+                        </div>
+                    </section>
+                    <section class="panel panel-default">
+                        <div class="panel-heading" role="tab" id="headingFive">
+                            <h4 class="panel-title"> <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive"> Attachment<span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a> </h4>
+                        </div>
+
+                        <div id="collapseFive" class="panel-collapse collapse hide" role="tabpanel" aria-labelledby="headingFive">
+                            <div class="panel-body">
+                                <div id="PartialImageBind">
+                                    <script src="/Content/Scripts/Common/CommonJS1.js"></script>
+
+
+
+                                    <table id="hdn_attatchment_list" style="display:none;">
+                                        <tbody>
+
+                                            <tr>
+                                                <td><input id="attch_Id" value="T/DPO/0000124"></td>
+                                                <td><input id="attch_fileName" value="12TDPO0000124_IMG6.jpg"></td>
+                                                <td><input id="attch_filePath" value="E:\EnReP_New\Application\EnRepMobileWeb\Attachment\PurchaseOrder\12TDPO0000124_IMG6.jpg"></td>
+                                                <td><input id="attch_fileDef" value="Y"></td>
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
+                                    <div class="file-input theme-fa">
+                                        <div class="file-preview">
+                                            <button type="button" class="close fileinput-remove" aria-label="Close">
+                                                <span aria-hidden="true"></span>
+                                            </button>    <div class="">
+                                                <div class="file-preview-thumbnails">
+
+                                                    <div class="file-preview-frame krajee-default  kv-preview-thumb" id="preview-1646392787251_78-0" data-fileindex="0" data-template="image">
+                                                        <div class="kv-file-content">
+
+                                                            <img src="http://192.168.1.13:80/Attachment/PurchaseOrder/12TDPO0000124_IMG6.jpg" class="file-preview-image kv-preview-data rotate-10588 is-portrait-gt4" style="width:auto;height:auto;max-width:100%;max-height:100%;">
+
+                                                        </div>
+                                                        <div class="file-thumbnail-footer">
+                                                            <div class="file-footer-caption" title="12TDPO0000124_IMG6.jpg">
+                                                                <div class="file-caption-info">12TDPO0000124_IMG6.jpg</div>
+
+
+                                                            </div>
+                                                            <div class="file-thumb-progress kv-hidden">
+                                                                <div class="progress">
+                                                                    <div class="progress-bar bg-success progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%;">
+                                                                        Initializing...
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="file-upload-indicator" title="Not uploaded yet"><i class="glyphicon glyphicon-plus-sign text-warning"></i></div>
+                                                            <div class="file-actions">
+                                                                <div class="file-footer-buttons">
+
+                                                                    <button type="button" class="kv-file-upload btn btn-kv btn-default btn-outline-secondary" title="Upload file"><i class="glyphicon glyphicon-upload"></i></button>
+                                                                    <button type="button" class="kv-file-remove btn btn-kv btn-default btn-outline-secondary" id="RemoveAttatchbtn" title="Remove file">
+                                                                        <i class="glyphicon glyphicon-trash"></i>
+                                                                    </button>
+
+
+                                                                    <a href="http://192.168.1.13:80/Attachment/PurchaseOrder/12TDPO0000124_IMG6.jpg" target="_blank" class="kv-file-zoom btn btn-kv btn-default btn-outline-secondary" title="View Details"><i class="glyphicon glyphicon-zoom-in"></i></a>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="clearfix"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+                                            </div>
+                                            <div class="clearfix"></div>    <div class="file-preview-status text-center text-success"></div>
+                                            <div class="kv-fileinput-error file-error-message" style="display: none;"></div>
+                                        </div>
+                                    </div>
+
+
+
+                                </div>
+
+
+                                <div class="form-group" id="FilesUpload" style="display: none;">
+                                    <div class="file-input theme-fa file-input-ajax-new">
+                                        <div class="file-preview ">
+                                            <button type="button" class="close fileinput-remove" aria-label="Close">
+                                                <span aria-hidden="true">×</span>
+                                            </button>    <div class=" file-drop-zone">
+                                                <div class="file-drop-zone-title">Drag &amp; drop files here …</div>
+                                                <div class="file-preview-thumbnails">
+                                                </div>
+                                                <div class="clearfix"></div>    <div class="file-preview-status text-center text-success"></div>
+                                                <div class="kv-fileinput-error file-error-message" style="display: none;"></div>
+                                            </div>
+                                        </div>
+                                        <div class="kv-upload-progress kv-hidden" style="display: none;">
+                                            <div class="progress">
+                                                <div class="progress-bar bg-success progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%;">
+                                                    0%
+                                                </div>
+                                            </div>
+                                        </div><div class="clearfix"></div>
+                                        <div class="input-group file-caption-main">
+                                            <div class="file-caption form-control  kv-fileinput-caption" tabindex="500">
+                                                <span class="file-caption-icon"></span>
+                                                <input class="file-caption-name" onkeydown="return false;" onpaste="return false;" placeholder="Select files...">
+                                            </div>
+                                            <div class="input-group-btn input-group-append">
+                                                <button type="button" tabindex="500" title="Clear selected files" class="btn btn-default btn-secondary fileinput-remove fileinput-remove-button"><i class="glyphicon glyphicon-trash"></i>  <span class="hidden-xs">Remove</span></button>
+                                                <button type="button" tabindex="500" title="Abort ongoing upload" class="btn btn-default btn-secondary kv-hidden fileinput-cancel fileinput-cancel-button"><i class="glyphicon glyphicon-ban-circle"></i>  <span class="hidden-xs">Cancel</span></button>
+                                                <a href="#" tabindex="500" title="Upload selected files" class="btn btn-default btn-secondary fileinput-upload fileinput-upload-button"><i class="glyphicon glyphicon-upload"></i>  <span class="hidden-xs">Upload</span></a>
+                                                <div tabindex="500" class="btn btn-primary btn-file"><i class="glyphicon glyphicon-folder-open"></i>&nbsp;  <span class="hidden-xs">Browse …</span><input id="file-1" type="file" multiple="" class="file" data-overwrite-initial="false" data-min-file-count="1" name="ItemFiles"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </section>-->
+                </article>
+            </div>
+        </div>
+    </div>
+</div>

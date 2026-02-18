@@ -1,0 +1,146 @@
+﻿@using System.Data;
+@{
+
+    string doc_status = "";
+    string BackGroundImgUrl = "";
+    if (ViewBag.DocStatus != null)
+    {
+        doc_status = ViewBag.DocStatus;
+    }
+    if (doc_status == "D" || doc_status == "F")
+    {
+        BackGroundImgUrl = Server.MapPath("~/Content/Images/draft.png");
+    }
+}
+<div style='backgroundposition: center center;'>
+    @Html.Partial("~/Areas/Common/Views/Cmn_PrintHeader.cshtml")
+    <table width='100%' style="vertical-align:top; margin:0px; padding:0px;">
+        <tr>
+            <td>
+                <table style='width:100%;vertical-align:top;'>
+                    <tr>
+                        <td style='width:10px;'></td>
+                        <td style="vertical-align: top;">
+                            <table style='width:100%;border:solid 1px #000000;vertical-align:top;'>
+                                <tr>
+                                    <td style='width:60%;border-right:solid 1px #000000; vertical-align:top;'>
+                                        <table style='font-size:12px;font-weight:normal;padding:0px 0px 0px 5px;'>
+                                            <tr><td><strong> Customer : </strong>@ViewBag.Details.Tables[0].Rows[0]["cust_name"].ToString()</td></tr>
+                                            <tr><td><strong> Address : </strong> @ViewBag.Details.Tables[0].Rows[0]["cust_add"].ToString()</td></tr>
+                                            <tr><td></td></tr>
+                                            <tr><td><strong> State # </strong> @ViewBag.Details.Tables[0].Rows[0]["cust_state"].ToString()</td></tr>
+                                            <tr><td><strong> Country # </strong> @ViewBag.Details.Tables[0].Rows[0]["cust_cntry"].ToString()</td></tr>
+                                            <tr><td><strong> Phone # </strong> @ViewBag.Details.Tables[0].Rows[0]["cont_num"].ToString()</td></tr>
+                                            <tr><td><strong> GSTIN/UIN # </strong> @ViewBag.Details.Tables[0].Rows[0]["cust_gst_no"].ToString()</td></tr>
+                                        </table>
+                                    </td>
+                                    <td style='width:40%; vertical-align:top;'>
+                                        <table style='font-size:12px;font-weight:normal;padding:0px 0px 0px 5px;'>
+                                            <tr>
+                                                <td style='font-size:12px;font-weight:bold;'> Invoice Number </td>
+                                                <td style='font-size:12px;font-weight:normal;'> @ViewBag.Details.Tables[0].Rows[0]["inv_no"].ToString()</td>
+                                            </tr>
+                                            <tr>
+                                                <td style='font-size:12px;font-weight:bold;'> Invoice Date </td>
+                                                <td style='font-size:12px;font-weight:normal;'> @ViewBag.Details.Tables[0].Rows[0]["inv_dt"].ToString()</td>
+                                            </tr>
+                                            <tr>
+                                                <td style='font-size:12px;font-weight:bold;'> Destination </td>
+                                                <td style='font-size:12px;font-weight:normal;'> @ViewBag.Details.Tables[0].Rows[0]["destination"].ToString()</td>
+                                            </tr>
+                                            <tr>
+                                                <td style='font-size:12px;font-weight:bold;'> Currency </td>
+                                                <td style='font-size:12px;font-weight:normal;'> @ViewBag.Details.Tables[0].Rows[0]["curr"].ToString()</td>
+                                            </tr>
+                                            <tr>
+                                                <td style='font-size:12px;font-weight:bold;'> Ex. Rate </td>
+                                                <td style='font-size:12px;font-weight:normal;'> @ViewBag.Details.Tables[0].Rows[0]["conv_rate"].ToString()</td>
+                                            </tr>
+                                            <tr>
+                                                <td style='font-size:12px;font-weight:bold;'> Payment Terms </td>
+                                                <td style='font-size:12px;font-weight:normal;'> @ViewBag.Details.Tables[0].Rows[0]["paymentterms"].ToString()</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td style='width:10px;'></td>
+                    </tr>
+                    <tr>
+                        <td style='width:10px;'></td>
+                        <td>
+                            <table border='1' cellspacing='0' cellpadding='0' style='width:100%;font-size:12px;font-weight:normal;padding:0px 0px;line-height:18px;font-weight:normal;'>
+                                <thead>
+                                    <tr>
+                                        <th width='5%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'>S.No.</th>
+                                        <th width='16%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'>Goods <br /> Description </th>
+                                        <th width='6%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'>UOM </th>
+                                        <th width='10%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'>HSN <br /> Number </th>
+                                        <th width='8%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'> Qty </th>
+                                        <th width='10%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'>Price/Unit </th>
+                                        <th width='10%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'>Value <br />In @ViewBag.Details.Tables[0].Rows[0]["curr"]</th>
+                                        <th width='10%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'>Value <br />In @ViewBag.Details.Tables[0].Rows[0]["bs_curr_nm"]</th>
+                                        <th width='6%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'>Tax % </th>
+                                        <th width='9%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'>Tax <br /> Amount </th>
+                                        <th width='10%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'>Net <br /> Amount </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (ViewBag.Details.Tables[0].Rows != null)
+                                    {
+                                        var i = 1;
+                                        foreach (DataRow dr in ViewBag.Details.Tables[0].Rows)
+                                        {
+                                            <tr>
+                                                <td style='text-align:center; width:5%;'>@i</td>
+                                                <td style='paddingleft:5px;paddingtop:5px;paddingbottom:3px;'>@dr["item_name"].ToString()</td>
+                                                <td style='paddingleft:5px;paddingtop:5px;paddingbottom:3px;'>@dr["uom_id"].ToString()</td>
+                                                <td style='paddingleft:5px;paddingtop:5px;paddingbottom:3px;'>@dr["HSN_code"].ToString()</td>
+                                                <td style='text-align:right; paddingright:5px;paddingtop:5px;paddingbottom:3px;'>@dr["ship_qty"].ToString()</td>
+                                                <td style='text-align:right;paddingright:5px;paddingtop:5px;paddingbottom:3px;'>@dr["item_rate"].ToString()</td>
+                                                @*<td style='text-align:right;paddingright:5px;paddingtop:5px;paddingbottom:3px;'>@dr["item_disc_perc"].ToString()</td>
+                                                <td style='text-align:right;paddingright:5px;paddingtop:5px;paddingbottom:3px;'>@dr["item_disc_amt"].ToString()</td>*@
+                                                <td style='text-align:right;paddingright:5px;paddingtop:5px;paddingbottom:3px;'>@dr["item_gr_val_sp"].ToString()</td>
+                                                <td style='text-align:right;paddingright:5px;paddingtop:5px;paddingbottom:3px;'>@dr["item_gr_val_bs"].ToString()</td>
+                                                <td style='text-align:right;paddingright:5px;paddingtop:5px;paddingbottom:3px;'>@dr["tax_rate"].ToString()</td>
+                                                <td style='text-align:right;paddingright:5px;paddingtop:5px;paddingbottom:3px;'>@dr["tax_val"].ToString()</td>
+                                                <td style='text-align:right;paddingright:5px;paddingtop:5px;paddingbottom:3px;'>@dr["item_inv_amt_bs"].ToString()</td>
+                                            </tr>
+                                            i++;
+                                        }
+                                    }
+
+                                <tr>
+                                    <td colspan='4'>
+                                    </td>
+                                    <td colspan='2' style='paddingleft:5px;border-left:solid 2px #000000;paddingtop:5px;paddingbottom:3px;font-weight:bold;'>Grand Total</td>
+
+                                    <td style='text-align:right;paddingright:5px;paddingtop:5px;paddingbottom:3px;font-weight:bold;'>@ViewBag.Details.Tables[0].Rows[0]["Total_value_sp"].ToString()</td>
+                                    <td style='text-align:right;paddingright:5px;paddingtop:5px;paddingbottom:3px;font-weight:bold;'>@ViewBag.Details.Tables[0].Rows[0]["gr_val"].ToString()</td>
+                                    <td></td>
+                                    <td style='text-align:right;paddingright:5px;paddingtop:5px;paddingbottom:3px;font-weight:bold;'>@ViewBag.Details.Tables[0].Rows[0]["total_tax_amt"].ToString()</td>
+                                    <td style='text-align:right;paddingright:5px;paddingtop:5px;paddingbottom:3px;font-weight:bold;'>@ViewBag.Details.Tables[0].Rows[0]["net_val"].ToString()</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                        <td style='width:10px;'></td>
+                    </tr>
+                    <tr>
+                        <td style='width:10px;'></td>
+                        <td>
+                            <table styl='width:100%;'>
+                                <tr><td style='font-size:12px;font-weight:normal;padding:10px 0px 0px 0px;width:75%;'><strong> Amount in Words:</strong></td></tr>
+                                <tr><td style='font-size:12px;font-weight:normal;padding:0px 0px;width:60%;'>@ViewBag.Details.Tables[0].Rows[0]["net_val_spec_inwords"].ToString()</td></tr>
+
+                            </table>
+                        </td>
+                        <td style='width:10px;'></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+    @Html.Partial("~/Areas/Common/Views/Cmn_PrintFooter.cshtml")
+</div>

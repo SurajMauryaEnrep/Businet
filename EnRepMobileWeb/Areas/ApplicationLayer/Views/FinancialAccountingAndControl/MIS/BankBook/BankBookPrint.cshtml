@@ -1,0 +1,231 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.FinancialAccountingAndControl.MIS.BankBook.BankBookModel
+@{
+    decimal TotalDrAmt = 0;/*Add by Hina sharma on 17-10-2024 for show on print*/
+    decimal TotalCrAmt = 0;
+}
+@* Modified by Suraj Maurya on 20-06-2025 to change column name like Acc_Name to acc_name as per db *@
+<div style="width:100%; background-color:#000000">
+    <div style="width:100%; margin:0 auto; background-color:#ffffff;">
+        <table style="width:100%;">
+            <tr>
+                <td>
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td width="10">&nbsp;</td>
+                            <td>
+                                @Html.Partial("~/Areas/ApplicationLayer/Views/FinancialAccountingAndControl/MIS/GeneralLedger/GLHeaderPrint.cshtml")
+
+                            </td>
+                            <td width="15">&nbsp;</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td width="15">&nbsp;</td>
+                            <td style="padding: 10px 0px 0px 0px; line-height:18px;">
+                                <table cellpadding="0" cellspacing="0" width="100%" style="font-size: 14px;">
+                                    <tr>
+                                        <td width="10%" style="font-weight:bold;"> Bank Account :</td>
+                                        <td width="22%" style="text-align:left;"> @Model.BankAcc_name</td>
+                                        <td width="39%">&nbsp;</td>
+                                        <td width="15%" style="font-weight: bold; text-align: right;">Opening Balance</td>
+                                        <td width="11%" style="text-align:right;">@Model.Opening_Bal</td>
+                                        <td width="3%" style="text-align:right;">@Model.lbl_opbaltype</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td width="15">&nbsp;</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td width="15">&nbsp;</td>
+                            <td style="padding: 10px 0px 0px 0px; line-height:18px;">
+                                <table cellpadding="0" cellspacing="0" width="100%" style="font-size: 14px;">
+                                    <tr>
+                                        <td width="8%"> @Model.FromDate</td>
+                                        <td width="3%" style="font-weight:bold; text-align:left;">To</td>
+                                        <td width="8%" style="text-align:left;">@Model.ToDate</td>
+                                        <td width="52%">&nbsp;</td>
+                                        <td width="15%" style="font-weight: bold; text-align: right;">Closing Balance</td>
+                                        <td width="11%" style="text-align:right;">@Model.Closing_Bal</td>
+                                        <td width="3%" style="text-align:right;">@Model.lbl_clbaltype</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td width="15">&nbsp;</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            @*<tr>
+                    <td style="font-size: 12px; font-weight:normal;padding: 10px 0px 0px 0px; line-height:18px;">
+                        <table cellpadding="0" cellspacing="0" width="100%">
+                            <tr>
+                                <td>
+                                    <strong>
+                                        Bank Account :
+
+                                </td>
+                                <td>
+                                    &nbsp;
+                                </td>
+                                <td>
+                                    @Model.BankAcc_name
+                                </td>
+                                <td width="460">
+                                    &nbsp;
+                                </td>
+                                <td>
+                                    <strong>
+                                        Opening Balance
+
+                                </td>
+                                <td width="10">
+                                    &nbsp;
+                                </td>
+                                <td>
+                                    @Model.Opening_Bal
+                                </td>
+                                <td>
+                                    @Model.lbl_opbaltype
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>*@
+            @*<tr>
+                    <td style="font-size: 12px; font-weight:normal;padding: 0px 0px 10px 0px; line-height:18px;">
+                        <table cellpadding="0" cellspacing="0" width="100%">
+                            <tr>
+                                <td>@Model.FromDate</td>
+                                <td><strong>To</td>
+                                <td width="15">&nbsp;</td>
+                                <td>@Model.ToDate</td>
+                                <td width="400">&nbsp;</td>
+                                <td>
+                                    <strong>
+                                        Closing Balance
+
+                                </td>
+                                <td width="10">
+                                    &nbsp;
+                                </td>
+                                <td>
+                                    @Model.Closing_Bal
+                                </td>
+                                <td>
+                                    @Model.lbl_clbaltype
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>*@
+            <tr>
+                <td>
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td width="15">&nbsp;</td>
+                            <td style="font-size: 11px; font-weight:normal;padding: 10px 0px 0px 0px; line-height:18px;">
+                                <table cellspacing="0" cellpadding="0" style=" width:100%; font-size: 12px; font-weight:normal;padding: 0px 0px; line-height:18px; font-weight:normal; vertical-align:top; border: solid 1px #000000;">
+                                    <thead>
+                                        <tr>
+                                            <th width="4%" style="border-right: solid 1px #000000; paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center; ">S.NO.</th>
+                                            <th width="12%" style="border-right: solid 1px #000000; paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center;">GL Account</th>
+                                            <th width="13%" style="border-right: solid 1px #000000; paddingtop: 5px; paddingbottom: 5px; text-align: center; ">Voucher <br /> Number</th>
+                                            <th width="8%" style="border-right: solid 1px #000000; paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center; ">Voucher <br /> Date</th>
+                                            <th width="8%" style="border-right: solid 1px #000000; paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center; ">Instrument <br /> Type</th>
+                                            <th width="7%" style="border-right: solid 1px #000000; paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center; ">Instrument <br /> Number</th>
+                                            <th width="7%" style="border-right: solid 1px #000000; paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center; ">Reconciled</th>
+                                            <th width="12%" style="border-right: solid 1px #000000; paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center; ">Narration</th>
+                                            <th width="8%" style="border-right: solid 1px #000000; paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center; ">Debit <br /> Amount</th>
+                                            <th width="8%" style="border-right: solid 1px #000000; paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center; ">Credit <br /> Amount</th>
+                                            <th width="8%" style="border-right: solid 1px #000000; paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center; ">Closing <br /> Balance</th>
+                                            <th width="5%" style="font-weight: bold; paddingtop: 5px; paddingbottom: 5px; text-align: center; ">Balance Type</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (ViewBag.PrintBankBook != null)
+                                        {
+                                            var rowno = 1;
+                                            foreach (System.Data.DataRow dr in ViewBag.PrintBankBook.Rows)
+                                            {
+                                                <tr>
+                                                    <td style="text-align:center;vertical-align:top;border-top: solid 1px #000000;border-right: solid 1px #000000;">@rowno</td>
+                                                    <td style="paddingleft:5px;vertical-align:top;border-top: solid 1px #000000;border-right: solid 1px #000000;">@dr["acc_name"]</td>
+                                                    <td style="paddingleft:5px;vertical-align:top;border-top: solid 1px #000000;border-right: solid 1px #000000;">@dr["doc_no"]</td>
+                                                    <td style="paddingleft: 5px; paddingright: 5px; vertical-align: top; border-top: solid 1px #000000; border-right: solid 1px #000000;">@dr["doc_dt"]</td>
+                                                    <td style="paddingleft: 5px; paddingright: 5px; vertical-align: top; border-top: solid 1px #000000; border-right: solid 1px #000000;">@dr["ins_type"]</td>
+                                                    <td style="paddingleft: 5px; paddingright: 5px; vertical-align: top; border-top: solid 1px #000000; border-right: solid 1px #000000;">@dr["ins_no"]</td>
+                                                    <td style="paddingleft: 5px; paddingright: 5px; vertical-align: top; border-top: solid 1px #000000; border-right: solid 1px #000000;">@dr["reconciled"]</td>
+                                                    <td style="paddingleft: 5px; paddingright: 5px; vertical-align: top; border-top: solid 1px #000000; border-right: solid 1px #000000;">@dr["narr"]</td>
+                                                    <td style="text-align:right; paddingright:5px;vertical-align:top;border-top: solid 1px #000000;border-right: solid 1px #000000;">@dr["dr_amt"]</td>
+                                                    <td style="text-align:right; paddingright:5px;vertical-align:top;border-top: solid 1px #000000;border-right: solid 1px #000000;">@dr["cr_amt"]</td>
+                                                    <td style="text-align:right; paddingright:5px;vertical-align:top;border-top: solid 1px #000000;border-right: solid 1px #000000;">@dr["closing_bal"]</td>
+                                                    <td style=" text-align:center; paddingleft:5px;vertical-align:top;border-top: solid 1px #000000;">@dr["closing_bal_type"]</td>
+                                                </tr>
+                                                TotalDrAmt = TotalDrAmt + Convert.ToDecimal(@dr["dr_amt"].ToString().Replace(",",""));/*Add by Hina sharma on 17-10-2024*/
+                                                TotalCrAmt = TotalCrAmt + Convert.ToDecimal(@dr["cr_amt"].ToString().Replace(",", ""));
+                                                rowno = rowno + 1;
+                                            }
+                                        }
+
+                                    </tbody>
+                                    <tfoot>
+                                        @*/*Add by Hina sharma on 17-10-2024*/*@
+                                        <tr>
+                                            <td style="border-top: solid 1px #000000; paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center;"> &nbsp;</td>
+                                            <td style="border-top: solid 1px #000000; paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center;"> &nbsp;</td>
+                                            <td style="border-top: solid 1px #000000; paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center;"> &nbsp;</td>
+                                            <td style="border-top: solid 1px #000000; paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center;"> &nbsp;</td>
+                                            <td style="border-top: solid 1px #000000; paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center;"> &nbsp;</td>
+                                            <td style="border-top: solid 1px #000000; paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center;"> &nbsp;</td>
+                                            <td style="border-top: solid 1px #000000; paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center;"> &nbsp;</td>
+                                            <td style="border-right: solid 1px #000000; border-top: solid 1px #000000; paddingtop: 5px; paddingbottom: 5px; paddingright: 5px; font-weight: bold; text-align: right; "><strong>Total</strong></td>
+                                            <td style="border-right: solid 1px #000000; border-top: solid 1px #000000; paddingtop: 5px; paddingbottom: 5px; paddingright: 5px; font-weight: bold; text-align: right; "><strong> @TotalDrAmt</strong></td>
+                                            <td style="border-right: solid 1px #000000; border-top: solid 1px #000000; paddingtop: 5px; paddingbottom: 5px; paddingright: 5px; font-weight: bold; text-align: right; "><strong>@TotalCrAmt </strong></td>
+                                            <td style="border-right: solid 1px #000000; border-top: solid 1px #000000; paddingtop: 5px; paddingbottom: 5px; font-weight: bold; text-align: center;"> &nbsp;</td>
+                                            <td style="font-weight: bold; border-top: solid 1px #000000; paddingtop: 5px; paddingbottom: 5px; text-align: center; "> &nbsp;</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </td>
+                            <td width="15">&nbsp;</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            @*<tr>
+                    <td style="font-size: 11px; font-weight:normal;padding: 475px 0px 10px 0px; line-height:18px; width:15%; text-align:right; font-style:italic;">
+                        Page 1
+                    </td>
+                </tr>*@
+        </table>
+    </div>
+</div>

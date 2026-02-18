@@ -1,0 +1,314 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.InventoryManagement.MIS.StockDetail.StockDetail_Model
+
+@using EnRepMobileWeb.Resources;
+@{
+    var rowId = 0;
+}
+<style>    
+    #datatable-buttons5_wrapper .btn-group a:nth-child(3) {
+        display: inline-block;
+        position:absolute;
+    }
+</style>
+<table id="datatable-buttons5" class="table table-striped width2400 itmfrz" cellspacing="0" width="100%">
+    <thead>
+        <tr class="sticky-header">
+            @*@if (Session["StockBy"] != null)*@
+            @if (Model.StockBy != null)
+            {
+                //if (Session["StockBy"].ToString() == "Branchwisestock")
+                if (Model.StockBy == "Branchwisestock")
+                {
+                    <th width="3%">@Resource.SrNo</th>
+                    <th width="15%">@Resource.ItemName</th>
+                    <th width="5%">@Resource.HSNCode</th>
+                    <th style="display: none;">ItemNameID</th>
+                    <th width="5%" title="@Resource.UnitOfMeasure"> @Resource.UOM</th>
+                    <th width="8%">@Resource.Branch</th>
+                    <th style="display: none;">BranchID</th>
+                    <th width="7%">@Resource.Opening <br /> @Resource.Stock</th>
+                    <th width="7%">@Resource.Receipts</th>
+                    <th width="7%">@Resource.Issued</th>
+                    <th width="7%">@Resource.Reserved <br />  @Resource.Stock</th>
+                    <th width="7%">@Resource.Rejected <br />  @Resource.Stock</th>
+                    <th width="7%">@Resource.Reworkable <br />  @Resource.Stock</th>
+                    <th width="7%">@Resource.Total <br />  @Resource.Stock</th>
+                    <th width="7%">@Resource.Total <br />  @Resource.Stock @Resource.Value</th>
+                    <th width="7%">@Resource.Available <br />  @Resource.Stock</th>
+                    <th width="7%">@Resource.Available <br />  @Resource.Stock @Resource.Value</th>
+                }
+                //if (Session["StockBy"].ToString() == "Warehousewisestock")
+                if (Model.StockBy == "Warehousewisestock")
+                {
+                    <th width="3%">@Resource.SrNo</th>
+                    <th width="16%">@Resource.ItemName</th>
+                    <th width="5%">@Resource.HSNCode</th>
+                    <th style="display: none;">ItemNameID</th>
+                    <th width="5%" title="@Resource.UnitOfMeasure"> @Resource.UOM</th>
+                    <th width="10%">@Resource.Branch</th>
+                    <th style="display: none;">BranchID</th>
+                    <th width="10%">@Resource.Warehouse</th>
+                    <th style="display: none;">WarehouseID</th>
+                    <th width="6%">@Resource.Opening <br />  @Resource.Stock</th>
+                    <th width="6%">@Resource.Receipts</th>
+                    <th width="6%">@Resource.Issued</th>
+                    <th width="6%">@Resource.Reserved <br />  @Resource.Stock</th>
+                    <th width="6%">@Resource.Rejected <br />  @Resource.Stock</th>
+                    <th width="6%">@Resource.Reworkable <br />  @Resource.Stock</th>
+                    <th width="6%">@Resource.Total <br />  @Resource.Stock</th>
+                    <th width="6%">@Resource.Total <br />  @Resource.Stock @Resource.Value</th>
+                    <th width="7%">@Resource.Available <br />  @Resource.Stock</th>
+                    <th width="7%">@Resource.Available <br />  @Resource.Stock @Resource.Value</th>
+                }
+                //if (Session["StockBy"].ToString() == "LotBatchwisestock")
+                if (Model.StockBy == "LotBatchwisestock")
+                {
+                    <th width="3%">@Resource.SrNo</th>
+                    <th width="10%">@Resource.ItemName</th>
+                    <th width="5%">@Resource.HSNCode</th>
+                    <th style="display: none;">ItemNameID</th>
+                    <th width="4%" title="@Resource.UnitOfMeasure"> @Resource.UOM</th>
+                    <th width="6%">@Resource.Branch</th>
+                    <th style="display: none;">BranchID</th>
+                    <th width="6%">@Resource.Warehouse</th>
+                    <th style="display: none;">WarehouseID</th>
+                    <th width="5%">@Resource.Lot</th>
+                    <th width="6%">@Resource.Batch1</th>
+                    <th width="6%">@Resource.Serial1</th>
+                    <th width="6%">@Resource.Opening <br />  @Resource.Stock</th>
+                    <th width="6%">@Resource.Receipts</th>
+                    <th width="6%">@Resource.Issued</th>
+                    <th width="6%">@Resource.Reserved <br />  @Resource.Stock</th>
+                    <th width="6%">@Resource.Rejected <br />  @Resource.Stock</th>
+                    <th width="6%">@Resource.Reworkable <br />  @Resource.Stock</th>
+                    <th width="6%">@Resource.Total <br />  @Resource.Stock</th>
+                    <th width="6%">@Resource.Total <br />  @Resource.Stock  @Resource.Value</th>
+                    <th width="6%">@Resource.Available <br />  @Resource.Stock</th>
+                    <th width="6%">@Resource.Available <br />  @Resource.Stock @Resource.Value</th>
+                }
+            }
+        </tr>
+    </thead>
+    <tbody id="tbodylotandbatch_list">
+        @if (Model.StockDetailList != null)
+        {
+            foreach (var row in Model.StockDetailList)
+            {
+                string SubItemDisable = "";
+                if (row.SubItem == "Y")
+                {
+                    SubItemDisable = "";
+                }
+                else
+                {
+                    SubItemDisable = "disabled";
+                }
+                rowId++;
+        <tr>
+            @*@if (Session["StockBy"] != null)*@
+            @if (Model.StockBy != null)
+            {
+                //if (Session["StockBy"].ToString() == "Branchwisestock")
+                if (Model.StockBy == "Branchwisestock")
+                {
+                    <td>@rowId</td>
+                    <td id="tditem">
+                        <div class="col-sm-11 no-padding" id='multiWrapper'><span id="ItmNameSpan"> @row.ItemName</span></div>
+                        <div class="col-sm-1 i_Icon">
+                            <button type="button" id="ItmInfoBtnIcon" class="calculator" onclick="OnClickIconBtn(event);" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.ItemInformation"> @*<i class="fa fa-info" aria-hidden="true" title=" @Resource.ItemInformation"></i>*@ </button>
+                        </div>
+                    </td>
+                    <td><span id="ItmHsn">@row.Hsn_Code</span></td>
+                    <td style="display: none;"><input type="hidden" id="hfItemID" value="@row.ItemID" /></td>
+                    <td><span id="ItmuomSpan">@row.UOM</span></td>
+                    <td><span id="ItmBranchSpan">@row.Branch</span></td>
+                    <td style="display: none;"><input type="hidden" id="hfBranchID" value="@row.BranchID" /></td>
+                    <td class="num_right">@row.OpeningStock</td>
+                    <td class="num_right">
+                        <div class="col-sm-11 lpo_form no-padding" id='multiWrapper'>@row.Receipts</div>
+                        <div class="col-sm-1 i_Icon">
+                            <button type="button" id="Receipts" class="calculator" data-toggle="modal" onclick="OnClickReceiptIconBtn(event,'A');" data-target="#Receipts" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Receipts"> @*<i class="fa fa-info" aria-hidden="true" title=" @Resource.Receipts"></i>*@ </button>
+                        </div>
+                    </td>
+                    <td class="num_right">
+                        <div class="col-sm-11 lpo_form no-padding" id='multiWrapper'>@row.Issued</div>
+                        <div class="col-sm-1 i_Icon">
+                            <button type="button" id="ItmInfoBtnIcon" class="calculator" data-toggle="modal" onclick="OnClickReceiptIconBtn(event,'S');" data-target="#Receipts" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Issued"> @*<i class="fa fa-info" aria-hidden="true" title=" @Resource.Issued"></i>*@ </button>
+                        </div>
+                    </td>
+                    <td class="num_right">
+                        <div class="col-sm-11 no-padding">@row.ReservedStock  </div>
+                        <div class="col-sm-1 i_Icon"><button type="button" ReservedDetail" class="calculator" data-toggle="modal" onclick="OnClickReceiptIconBtn(event,'R');" data-target="#Receipts" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.ReservedDetail"> @*<i class="fa fa-info" aria-hidden="true" title=" @Resource.ReservedDetail"></i>*@ </button></div>
+                    </td>
+                    <td class="num_right">
+                        <div class="col-sm-11 no-padding">@row.RejectedStock</div>
+                        <div class="col-sm-1 i_Icon"><button type="button" RejectionDetail" class="calculator" data-toggle="modal" onclick="OnClickReceiptIconBtn(event,'RJ');" data-target="#Receipts" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.RejectionDetail"> @*<i class="fa fa-info" aria-hidden="true" title=" @Resource.RejectionDetail"></i>*@ </button></div>
+                    </td>
+                    <td class="num_right">
+                        <div class="col-sm-11 no-padding">@row.ReworkableStock</div>
+                        <div class="col-sm-1 i_Icon"><button type="button" ReworkableDetail" class="calculator" data-toggle="modal" onclick="OnClickReceiptIconBtn(event,'RW');" data-target="#Receipts" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.ReworkableDetail"> @*<i class="fa fa-info" aria-hidden="true" title=" @Resource.ReworkableDetail"></i>*@ </button></div>
+                    </td>
+                    <td class="num_right"><b>@row.TotalStock</b></td>
+                    <td class="num_right">@row.TotalStockVal</td>
+                    <td class="num_right light_green1_colour">
+                        <div class="col-sm-10 lpo_form no-padding">
+                            <b>@row.AvailableStock</b>
+                        </div>
+                        <div class="col-sm-2 i_Icon">
+                            <button type="button" id="" class="calculator subItmImg" @SubItemDisable data-toggle="modal" onclick="OnClickSubItemStockIconBtn(event);" data-target="#SubItemStockDetail" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Stock @Resource.Detail">  </button>
+                        </div>
+                    </td>
+                    <td class="num_right">@row.StockValue</td>
+                }
+                //if (Session["StockBy"].ToString() == "Warehousewisestock")
+                if (Model.StockBy == "Warehousewisestock")
+                {
+                    <td>@rowId</td>
+                    <td id="tditem">
+                        <div class="col-sm-11 no-padding" id='multiWrapper'><span id="ItmNameSpan"> @row.ItemName</span></div>
+                        <div class="col-sm-1 i_Icon">
+                            <button type="button" id="ItmInfoBtnIcon" class="calculator" onclick="OnClickIconBtn(event);" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.ItemInformation"> @*<i class="fa fa-info" aria-hidden="true" data-toggle="tooltip" title=" @Resource.ItemInformation"></i>*@ </button>
+                        </div>
+                    </td>
+                    <td><span id="ItmHsn">@row.Hsn_Code</span></td>
+                    <td style="display: none;"><input type="hidden" id="hfItemID" value="@row.ItemID" /></td>
+                    <td><span id="ItmuomSpan">@row.UOM</span></td>
+                    <td><span id="ItmBranchSpan">@row.Branch</span></td>
+                    <td style="display: none;"><input type="hidden" id="hfBranchID" value="@row.BranchID" /></td>
+                    <td><span id="ItmwarehouseSpan">@row.Warehouse</span></td>
+                    <td style="display: none;"><input type="hidden" id="hfWarehouseID" value="@row.WarehouseID" /></td>
+                    <td class="num_right">@row.OpeningStock</td>
+                    <td class="num_right">
+                        <div class="col-sm-11 lpo_form no-padding" id='multiWrapper'>@row.Receipts</div>
+                        <div class="col-sm-1 i_Icon">
+                            <button type="button" id="Receipts" class="calculator" data-toggle="modal" onclick="OnClickReceiptIconBtn(event,'A');" data-target="#Receipts" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Receipts"> @*<i class="fa fa-info" aria-hidden="true" data-toggle="tooltip" title=" @Resource.Receipts"></i>*@ </button>
+                        </div>
+                    </td>
+                    <td class="num_right">
+                        <div class="col-sm-11 lpo_form no-padding" id='multiWrapper'>@row.Issued</div>
+                        <div class="col-sm-1 i_Icon">
+                            <button type="button" id="ItmInfoBtnIcon" class="calculator" data-toggle="modal" onclick="OnClickReceiptIconBtn(event,'S');" data-target="#Receipts" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Issued"> @*<i class="fa fa-info" aria-hidden="true" data-toggle="tooltip" title=" @Resource.Issued"></i>*@ </button>
+                        </div>
+                    </td>
+                    <td class="num_right">
+                        <div class="col-sm-11 no-padding">@row.ReservedStock  </div>
+                        <div class="col-sm-1 i_Icon"><button type="button" ReservedDetail" class="calculator" data-toggle="modal" onclick="OnClickReceiptIconBtn(event,'R');" data-target="#Receipts" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.ReservedDetail"> @*<i class="fa fa-info" aria-hidden="true" title=" @Resource.ReservedDetail"></i>*@ </button></div>
+                    </td>
+                    <td class="num_right">
+                        <div class="col-sm-11 no-padding">@row.RejectedStock</div>
+                        <div class="col-sm-1 i_Icon"><button type="button" RejectionDetail" class="calculator" data-toggle="modal" onclick="OnClickReceiptIconBtn(event,'RJ');" data-target="#Receipts" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.RejectionDetail"> @*<i class="fa fa-info" aria-hidden="true" title=" @Resource.RejectionDetail"></i>*@ </button></div>
+                    </td>
+                    <td class="num_right">
+                        <div class="col-sm-11 no-padding">@row.ReworkableStock</div>
+                        <div class="col-sm-1 i_Icon"><button type="button" ReworkableDetail" class="calculator" data-toggle="modal" onclick="OnClickReceiptIconBtn(event,'RW');" data-target="#Receipts" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.ReworkableDetail"> @*<i class="fa fa-info" aria-hidden="true" title=" @Resource.ReworkableDetail"></i>*@ </button></div>
+                    </td>
+                    <td class="num_right"><b>@row.TotalStock</b></td>
+                    <td class="num_right">@row.TotalStockVal</td>
+                    <td class="num_right light_green1_colour">
+                        <div class="col-sm-10 lpo_form no-padding">
+                            <b>@row.AvailableStock</b>
+                        </div>
+                        <div class="col-sm-2 i_Icon">
+                            <button type="button" id="" class="calculator subItmImg" @SubItemDisable data-toggle="modal" onclick="OnClickSubItemStockIconBtn(event);" data-target="#SubItemStockDetail" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Stock @Resource.Detail">  </button>
+                        </div>
+                    </td>
+                    <td class="num_right">@row.StockValue</td>
+                }
+                //if (Session["StockBy"].ToString() == "LotBatchwisestock")
+                if (Model.StockBy == "LotBatchwisestock")
+                {
+                    <td>@rowId</td>
+                    <td id="tditem">
+                        <div class="col-sm-11 no-padding" id='multiWrapper'><span id="ItmNameSpan"> @row.ItemName</span></div>
+                        <div class="col-sm-1 i_Icon">
+                            <button type="button" id="ItmInfoBtnIcon" class="calculator" onclick="OnClickIconBtn(event);" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.ItemInformation"> @*<i class="fa fa-info" aria-hidden="true" data-toggle="tooltip" title=" @Resource.ItemInformation"></i>*@ </button>
+                        </div>
+                    </td>
+                    <td><span id="ItmHsn">@row.Hsn_Code</span></td>
+                    <td style="display: none;"><input type="hidden" id="hfItemID" value="@row.ItemID" /></td>
+                    <td><span id="ItmuomSpan">@row.UOM</span></td>
+                    <td><span id="ItmBranchSpan">@row.Branch</span></td>
+                    <td style="display: none;"><input type="hidden" id="hfBranchID" value="@row.BranchID" /></td>
+                    <td><span id="ItmwarehouseSpan">@row.Warehouse</span></td>
+                    <td style="display: none;"><input type="hidden" id="hfWarehouseID" value="@row.WarehouseID" /></td>
+                    <td><span id="SpanLotNo"> @row.Lot</span></td>
+                    <td><span id="SpanBatchNo"> @row.Batch</span></td>
+                    <td><span id="SpanSerialNo"> @row.Serial</span></td>
+                    <td class="num_right">@row.OpeningStock</td>
+                    <td class="num_right">
+                        <div class="col-sm-11 lpo_form no-padding" id='multiWrapper'>@row.Receipts</div>
+                        <div class="col-sm-1 i_Icon">
+                            <button type="button" id="Receipts" class="calculator" data-toggle="modal" onclick="OnClickReceiptIconBtn(event,'A');" data-target="#Receipts" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Receipts"> @*<i class="fa fa-info" aria-hidden="true" data-toggle="tooltip" title=" @Resource.Receipts"></i>*@ </button>
+                        </div>
+                    </td>
+                    <td class="num_right">
+                        <div class="col-sm-11 lpo_form no-padding"  id='multiWrapper'>@row.Issued</div>
+                        <div class="col-sm-1 i_Icon">
+                            <button type="button" id="ItmInfoBtnIcon" class="calculator" data-toggle="modal" onclick="OnClickReceiptIconBtn(event,'S');" data-target="#Receipts" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Issued"> @*<i class="fa fa-info" aria-hidden="true" data-toggle="tooltip" title=" @Resource.Issued"></i>*@ </button>
+                        </div>
+                    </td>
+                    <td class="num_right">
+                        <div class="col-sm-11 no-padding">@row.ReservedStock  </div>
+                        <div class="col-sm-1 i_Icon"><button type="button" ReservedDetail" class="calculator" data-toggle="modal" onclick="OnClickReceiptIconBtn(event,'R');" data-target="#Receipts" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.ReservedDetail"> @*<i class="fa fa-info" aria-hidden="true" title=" @Resource.ReservedDetail"></i>*@ </button></div>
+                    </td>
+                    <td class="num_right">
+                        <div class="col-sm-11 no-padding">@row.RejectedStock</div>
+                        <div class="col-sm-1 i_Icon"><button type="button" RejectionDetail" class="calculator" data-toggle="modal" onclick="OnClickReceiptIconBtn(event,'RJ');" data-target="#Receipts" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.RejectionDetail"> @*<i class="fa fa-info" aria-hidden="true" title=" @Resource.RejectionDetail"></i>*@ </button></div>
+                    </td>
+                    <td class="num_right">
+                        <div class="col-sm-11 no-padding">@row.ReworkableStock</div>
+                        <div class="col-sm-1 i_Icon"><button type="button" ReworkableDetail" class="calculator" data-toggle="modal" onclick="OnClickReceiptIconBtn(event,'RW');" data-target="#Receipts" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.ReworkableDetail"> @*<i class="fa fa-info" aria-hidden="true" title=" @Resource.ReworkableDetail"></i>*@ </button></div>
+                    </td>
+                    <td class="num_right"><b>@row.TotalStock</b></td>
+                    <td class="num_right">@row.TotalStockVal</td>
+                    <td class="num_right light_green1_colour">
+                        @*<div class="col-sm-11 lpo_form no-padding">*@
+                        <b>@row.AvailableStock</b>
+                        @*</div>
+                    <div class="col-sm-1 i_Icon">
+                        <button type="button" id="" class="calculator" data-toggle="modal" onclick="" data-target="#SubItemStockDetail" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.SubItem @Resource.Stock @Resource.Detail">  </button>
+                    </div>*@
+                    </td>
+                    <td class="num_right">@row.StockValue</td>
+                }
+            }
+        </tr>
+            }
+        }
+    </tbody>
+</table>
+
+@*@if (Session["StockBy"] != null && Session["StockByFilter"] != null)*@
+@if (Model.StockBy != null && Model.StockByFilter != null)
+{
+    <script src="~/Content/Scripts/Common/CommonJS.js"></script>
+    <script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+    if (Model.StockBy == "Branchwisestock" && Model.StockByFilter == "Branchwisestock")
+    {
+
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+        @Scripts.Render("~/Content/Scripts/DatatablesJs")
+
+    }
+    //if (Session["StockBy"].ToString() == "LotBatchwisestock" && Session["StockByFilter"].ToString() == "LotBatchwisestock")
+    if (Model.StockBy == "LotBatchwisestock" && Model.StockByFilter == "LotBatchwisestock")
+    {
+
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+        @Scripts.Render("~/Content/Scripts/DatatablesJs")
+
+    }
+    //if (Session["StockBy"].ToString() == "Warehousewisestock" && Session["StockByFilter"].ToString() == "Warehousewisestock")
+    if (Model.StockBy == "Warehousewisestock" && Model.StockByFilter == "Warehousewisestock")
+    {
+
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+        @Scripts.Render("~/Content/Scripts/DatatablesJs")
+
+    }
+
+    //Session["StockBy"] = null;
+    //Session["StockByFilter"] = null;
+    Model.StockBy = null;
+    Model.StockByFilter = null;
+}

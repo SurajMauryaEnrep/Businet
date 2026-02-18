@@ -1,0 +1,127 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.SubContracting.MIS.JobOrderTracking.JobOrderTracking_Model
+@using EnRepMobileWeb.Resources;
+@{
+    var rowId = 0;
+}
+<style>
+    div.dataTables_wrapper div.dataTables_filter label {
+        margin-left: -3.5em;
+    }
+    #datatable-buttons_wrapper .btn-group a:nth-child(3) {
+        display: inline-block;
+        position: absolute;
+    }
+</style>
+<script src="~/Content/Scripts/Common/CommonJS.js"></script>
+<div id="JobOrdTrackDtList">
+    <table id="datatable-buttons" class="table table-striped width2700 rowhighlighttbl itmfrz" cellspacing="0">
+        <thead>
+            <tr class="sticky-header">
+                <th width="3%">@Resource.SrNo</th>
+                <th width="6%" class="itmStick">@Resource.Job <br /> @Resource.Order @Resource.Number</th>
+                <th width="5%">@Resource.Job <br /> @Resource.Order @Resource.Date</th>
+                <th width="9%">@Resource.SubContractor <br /> @Resource.Name</th>
+                <th width="13%">@Resource.Finished <br /> @Resource.Product</th>
+                <th width="4%">@Resource.UOM</th>
+                <th width="8%">@Resource.Operation <br /> @Resource.Name</th>
+                <th width="13%">@Resource.Operation<br /> @Resource.Output @Resource.Product</th>
+                <th width="4%">@Resource.UOM</th>
+                <th width="5%">@Resource.Order <br /> @Resource.Quantity </th>
+                <th width="5%">@Resource.Dispatch <br /> @Resource.Quantity </th>
+                <th width="5%">@Resource.Received <br /> @Resource.Quantity</th>
+                <th width="5%">@Resource.Accepted <br /> @Resource.Quantity</th>
+                <th width="5%">@Resource.Rejected <br /> @Resource.Quantity</th>
+                <th width="5%">@Resource.Reworkable <br /> @Resource.Quantity</th>
+                <th width="5%">@Resource.Status</th>
+            </tr>
+        </thead>
+        <tbody id="tbodylotandbatch_list">
+            @if (Model.JobOrderTrackList != null)
+            {
+                foreach (var row in Model.JobOrderTrackList)
+                {
+                    rowId++;
+                    <tr>
+                        <td>@rowId</td>
+                        <td id="tblOrdNo" class="ItmNameBreak itmStick tditemfrz">@row.OrderNo</td>
+                        <td id="tblOrddate"><input type="hidden" id="hfOrderDT" value="@row.OrderDt" />@row.OrderDate</td>
+
+                        <td id="tblSuppName"><input type="hidden" id="hfSuppId" value="@row.SupplierId" />@row.SupplierName</td>
+                        <td>
+                            <div class=" col-sm-10 no-padding"><span id="tblFItmNameSpan">@row.FinishProductName</span></div>
+                            <div class="col-sm-2 i_Icon">
+                                @*<button type="button" class="calculator" onclick="OnClickFinishPrdctIconBtn(event);" data-toggle="modal" data-target="#FinishedProduct" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Finished @Resource.Product">   </button>*@
+                                <button type="button" id="ItmInfoBtnIcon" class="calculator" onclick="OnClickFinishPrdctIconBtn(event);" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Finished @Resource.Product"> @*<i class="fa fa-info" aria-hidden="true" title=" @Resource.ItemInformation"></i>*@ </button>
+                                <input type="hidden" id="hdnFPrdctId" value="@row.FinishProductId" />
+                            </div>
+
+                        </td>
+
+                        <td id="tblFItmUom"><input type="hidden" id="hdnFPrdctUomId" value="@row.FinishProducUOMId" />@row.FinishProducUOM</td>
+
+                        <td id="tblOPName"><input type="hidden" id="hdnOpId" value="@row.OperationId" />@row.OperationName</td>
+
+                        <td>
+                            <div class=" col-sm-10 no-padding"><span id="tblOpOutItmNameSpan">@row.OpOutProductName</span></div>
+                            <div class="col-sm-2 i_Icon">
+                                @*<button type="button" class="calculator" onclick="OnClickOpOutPrdctIconBtn(event);" data-toggle="modal" data-target="#OperationOutputProduct" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Operation @Resource.Output @Resource.Product">   </button>*@
+                                <button type="button" id="ItmInfoBtnIcon" class="calculator" onclick="OnClickOpOutPrdctIconBtn(event);" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Operation @Resource.Output @Resource.Product"> @*<i class="fa fa-info" aria-hidden="true" title=" @Resource.ItemInformation"></i>*@ </button>
+                                <input type="hidden" id="hdnOpoutPrcdtId" value="@row.OpOutProductID" />
+                            </div>
+                        </td>
+
+                        <td id="tblOpOutUom"><input type="hidden" id="hdnOpoutUomId" value="@row.OpOutUOMId" /> @row.OpOutUOM</td>
+                        <td class="num_right" id="tblOrdQty">@row.OrderQuantity</td>
+                        <td class="num_right">
+                            <div class=" col-sm-10 no-padding"><span id="tblDispQty">@row.DispatchQuantity</span></div>
+                            <div class="col-sm-2 i_Icon">
+                                <button type="button" class="calculator" onclick="OnClickAllQtyIconBtn(event,'Disp');" data-toggle="modal" data-target="#DispatchQuantity" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Dispatch @Resource.Quantity ">   </button>
+                            </div>
+                        </td>
+                        <td class="num_right">
+                            <div class=" col-sm-10 no-padding"><span id="tblRecvQty">@row.ReceviedQuantity</span></div>
+                            <div class="col-sm-2 i_Icon">
+                                <button type="button" class="calculator" onclick="OnClickAllQtyIconBtn(event,'Recev');" data-toggle="modal" data-target="#ReceivedQuantity" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Received @Resource.Quantity ">   </button>
+                            </div>
+                        </td>
+                        <td class="num_right">
+                            <div class=" col-sm-10 no-padding"><span id="tblAccQty">@row.AcceptedQuantity</span></div>
+                            <div class="col-sm-2 i_Icon">
+                                <button type="button" class="calculator" onclick="OnClickAllQtyIconBtn(event,'GRN');" data-toggle="modal" data-target="#GRNQuantity" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.GRN @Resource.Quantity ">   </button>
+                            </div>
+                        </td>
+                        <td class="num_right">
+                            <div class=" col-sm-10 no-padding"><span id="tblRejQty">@row.RejectedQuantity</span></div>
+                            <div class="col-sm-2 i_Icon">
+                                <button type="button" class="calculator" onclick="OnClickAllQtyIconBtn(event,'GRN');" data-toggle="modal" data-target="#GRNQuantity" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.GRN @Resource.Quantity ">   </button>
+                            </div>
+                        </td>
+                        <td class="num_right">
+                            <div class=" col-sm-10 no-padding"><span id="tblRwkQty">@row.ReworkableQuantity</span></div>
+                            <div class="col-sm-2 i_Icon">
+                                <button type="button" class="calculator" onclick="OnClickAllQtyIconBtn(event,'GRN');" data-toggle="modal" data-target="#GRNQuantity" data-backdrop="static" data-keyboard="false"> <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.GRN @Resource.Quantity ">   </button>
+                            </div>
+                        </td>
+                        <td>@row.Status</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+
+</div>
+@{
+    if (Model.JTFilter != null)
+    {
+        if (Model.JTFilter == "JTFilter")
+        {
+
+           
+            @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+            @Scripts.Render("~/Content/Scripts/DatatablesJs")
+            Model.JTFilter = null;
+            
+        }
+    }
+}
+

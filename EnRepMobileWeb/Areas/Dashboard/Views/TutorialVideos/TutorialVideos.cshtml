@@ -1,0 +1,506 @@
+﻿@using EnRepMobileWeb.Resources;
+@using System.Data
+@*@if (Session["UserId"] == null)
+    {
+        Response.Redirect("~/Login");
+    }*@
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+@*<title>@Model.Title</title>*@
+<div class="row">
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <h2 class="col-md-6 col-sm-12 heading_left_padding ">@Resource.Tutorial @Resource.Videos</h2>
+                <div class="x_title pad_mar ">
+                    <div class="col-md-12 col-sm-12 icon_tool padding_zero">
+                        <div class="col-md-12 col-sm-12 pl-0 pb-2">
+                            <div class="col-md-3 col-sm-12" id="">
+                                <label class="col-form-label label-align">@Resource.Module</label>
+                                <select class="form-control" id="" name="">
+                                    <option value="101">Business Layer  </option>
+                                    <option value="116">Common</option>
+                                    <option value="102">Dashboard</option>
+                                    <option value="103">Factory Settings  </option>
+                                    <option value="104">Favourite</option>
+                                    <option value="105">Financial Accounting</option>
+                                    <option value="106">Fixed Asset Management</option>
+                                    <option value="107">Inventory Management</option>
+                                    <option value="115">Miscellaneous</option>
+                                    <option value="108">Plant Maintenance</option>
+                                    <option value="109">Procurement</option>
+                                    <option value="110">Production &amp; Planning</option>
+                                    <option value="117">Release Deployement</option>
+                                    <option value="111">Sales &amp; Distribution</option>
+                                    <option value="112">Security Layer  </option>
+                                    <option value="113">Sub-Contracting </option>
+                                    <option value="114">TMS</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 col-sm-12 pl-0" id="">
+                                <label class="col-form-label label-align">@Resource.Process</label>
+                                <select class="form-control" id="" name="">
+                                    <option value="201">Account Group Setup</option>
+                                    <option value="202">Address Structure</option>
+                                    <option value="203">Alert Setup  </option>
+                                    <option value="409">Application Deployment</option>
+                                    <option value="282">Assembly Kit</option>
+                                    <option value="276">Asset Allocation  </option>
+                                    <option value="411">Asset Group</option>
+                                    <option value="277">Asset Registration  </option>
+                                    <option value="278">Asset Retirement  </option>
+                                    <option value="339">Asset Sale  </option>
+                                    <option value="279">Asset Transfer  </option>
+                                    <option value="361">Audit Trail</option>
+                                    <option value="265">Bank Reconciliation</option>
+                                    <option value="204">Barcode Setup  </option>
+                                    <option value="266">Batch Payment</option>
+                                    <option value="322">Bill of Material</option>
+                                    <option value="205">BIN Setup  </option>
+                                    <option value="323">Capacity Planning</option>
+                                    <option value="267">Cheque Book Setup  </option>
+                                    <option value="374">Clients</option>
+                                    <option value="391">Common Activities</option>
+                                    <option value="392">Common Activities</option>
+                                    <option value="393">Common Activities</option>
+                                    <option value="394">Common Activities</option>
+                                    <option value="395">Common Activities</option>
+                                    <option value="382">Common Activities</option>
+                                    <option value="383">Common Activities</option>
+                                    <option value="384">Common Activities</option>
+                                    <option value="387">Common Activities</option>
+                                    <option value="252">Common Activities</option>
+                                    <option value="386">Common Activities</option>
+                                    <option value="390">Common Activities</option>
+                                    <option value="388">Common Activities</option>
+                                    <option value="389">Common Activities</option>
+                                    <option value="385">Common Activities</option>
+                                    <option value="259">Configuaration</option>
+                                    <option value="306">Consumable Invoice</option>
+                                    <option value="307">Consumable Purchase Order</option>
+                                    <option value="206">Cost Center Setup  </option>
+                                    <option value="260">Country Setup</option>
+                                    <option value="340">Credit Limit Revision  </option>
+                                    <option value="207">Currency Setup  </option>
+                                    <option value="208">Custom Fileds</option>
+                                    <option value="209">Customer Category  </option>
+                                    <option value="210">Customer Portfolio  </option>
+                                    <option value="211">Customer Price Group &nbsp;</option>
+                                    <option value="341">Customer Price List</option>
+                                    <option value="212">Customer Setup  </option>
+                                    <option value="342">Customer Wise</option>
+                                    <option value="404">Daily Wastage</option>
+                                    <option value="375">Dashboard</option>
+                                    <option value="408">Database Backup</option>
+                                    <option value="213">Department Setup  </option>
+                                    <option value="280">Depreciation Process  </option>
+                                    <option value="397">Direct Purchase Invoice</option>
+                                    <option value="343">Direct Sale Invoice</option>
+                                    <option value="344">Discount Setup  </option>
+                                    <option value="214">Document Approval Setup  </option>
+                                    <option value="362">Document Deletion Access  </option>
+                                    <option value="215">Document Number Setup  </option>
+                                    <option value="216">Document Setup</option>
+                                    <option value="261">Environment Setup</option>
+                                    <option value="298">Equipment Setup</option>
+                                    <option value="345">Export Sales</option>
+                                    <option value="396">Factory Reset</option>
+                                    <option value="264">Favourite </option>
+                                    <option value="268">Finance Budget  </option>
+                                    <option value="272">Financial Accounting MIS</option>
+                                    <option value="217">Financial Year Setup  </option>
+                                    <option value="400">Finished Goods receipts (MIS)</option>
+                                    <option value="281">Fixed Asset Management MIS</option>
+                                    <option value="218">Freight Setup  </option>
+                                    <option value="283">Gate Entry</option>
+                                    <option value="366">Gate Entry (SC)</option>
+                                    <option value="284">Gate Pass - Inward</option>
+                                    <option value="285">Gate Pass - Outward</option>
+                                    <option value="219">General Ledger Setup</option>
+                                    <option value="269">General Ledger Voucher  </option>
+                                    <option value="367">Good Receipt Note (SC)</option>
+                                    <option value="398">Goods Receipt Note</option>
+                                    <option value="253">Graphs</option>
+                                    <option value="270">GST API</option>
+                                    <option value="220">GST Setup</option>
+                                    <option value="405">Health Checkup</option>
+                                    <option value="221">HSN Code</option>
+                                    <option value="308">Import Purchase &nbsp;</option>
+                                    <option value="254">Important Alerts</option>
+                                    <option value="255">Important MIS</option>
+                                    <option value="346">Incentive Process</option>
+                                    <option value="347">Incentive Setup  </option>
+                                    <option value="406">Interbranch Purchase</option>
+                                    <option value="407">Interbranch Sale</option>
+                                    <option value="290">Inventory Management MIS</option>
+                                    <option value="271">IOU Request  </option>
+                                    <option value="222">Item Attribute Setup &nbsp;</option>
+                                    <option value="223">Item Group Setup  </option>
+                                    <option value="225">Item Portfolio</option>
+                                    <option value="226">Item Search</option>
+                                    <option value="227">Item Setup  </option>
+                                    <option value="368">Job Invoice (SC)</option>
+                                    <option value="369">Job Order (SC)</option>
+                                    <option value="262">License Detail</option>
+                                    <option value="299">Maintenance Job Card  </option>
+                                    <option value="300">Maintenance Job Completion  </option>
+                                    <option value="301">Maintenance Requisition  </option>
+                                    <option value="302">Maintenance Schedule  </option>
+                                    <option value="370">Material Dispatch(SC)</option>
+                                    <option value="286">Material Issue</option>
+                                    <option value="287">Material Receipt</option>
+                                    <option value="324">Material Requirement Plan</option>
+                                    <option value="288">Material Requisition Slip</option>
+                                    <option value="371">Material return (SC)</option>
+                                    <option value="289">Material Transfer Requisition</option>
+                                    <option value="256">Menu</option>
+                                    <option value="228">Message Setup</option>
+                                    <option value="229">Miscellaneous Setup  </option>
+                                    <option value="376">Module &amp; Process</option>
+                                    <option value="377">My Task</option>
+                                    <option value="291">NCR</option>
+                                    <option value="401">Notification</option>
+                                    <option value="273">Opening Balance  </option>
+                                    <option value="326">Operation Setup  </option>
+                                    <option value="263">Organization Setup</option>
+                                    <option value="399">Other Activities</option>
+                                    <option value="230">Other Charge Setup</option>
+                                    <option value="327">Overhead Parameters</option>
+                                    <option value="328">Packaging Job Order</option>
+                                    <option value="349">Packing List (D)</option>
+                                    <option value="304">Parameter Setup  </option>
+                                    <option value="410">Payment Advice</option>
+                                    <option value="257">Pending Documents</option>
+                                    <option value="303">Plant Maintenance MIS</option>
+                                    <option value="232">Port Setup</option>
+                                    <option value="310">Procurement Limit Setup  </option>
+                                    <option value="309">Procurement MIS</option>
+                                    <option value="311">Procurement Plan</option>
+                                    <option value="350">Product Catalogue</option>
+                                    <option value="329">Product Costing  </option>
+                                    <option value="325">Production &amp; Planning MIS</option>
+                                    <option value="330">Production Advice</option>
+                                    <option value="331">Production Confirmation</option>
+                                    <option value="332">Production Order</option>
+                                    <option value="333">Production Plan</option>
+                                    <option value="233">Prospect Setup  </option>
+                                    <option value="312">Purchase Invoice </option>
+                                    <option value="313">Purchase Order</option>
+                                    <option value="314">Purchase Quotation</option>
+                                    <option value="315">Purchase Requisition</option>
+                                    <option value="292">Purchase Return</option>
+                                    <option value="305">Quality Check</option>
+                                    <option value="234">Quality Control Setup</option>
+                                    <option value="334">Quality Inspection (PD)</option>
+                                    <option value="293">Quality Inspection (PR)</option>
+                                    <option value="373">Quality Inspection (SC)</option>
+                                    <option value="316">Quotation Analysis  </option>
+                                    <option value="378">Release Setup</option>
+                                    <option value="317">Request for Quotation</option>
+                                    <option value="235">Requirement Area Setup &nbsp;</option>
+                                    <option value="335">Reworkable Job Order</option>
+                                    <option value="348">Sales &amp; Distribution MIS</option>
+                                    <option value="351">Sales Enquiry</option>
+                                    <option value="236">Sales Executive</option>
+                                    <option value="352">Sales Forecast  </option>
+                                    <option value="353">Sales Invoice (D)</option>
+                                    <option value="354">Sales Order (D)</option>
+                                    <option value="355">Sales Quotation (D)</option>
+                                    <option value="237">Sales Region  </option>
+                                    <option value="356">Sales Representative Wise</option>
+                                    <option value="357">Sales Return</option>
+                                    <option value="358">Scheme Setup  </option>
+                                    <option value="363">Security Layer MIS</option>
+                                    <option value="318">Service Purchase Invoice</option>
+                                    <option value="319">Service Purchase Order</option>
+                                    <option value="359">Service Sale Invoice</option>
+                                    <option value="320">Service Verification</option>
+                                    <option value="360">Shipment (D)</option>
+                                    <option value="336">Shop Floor Setup  </option>
+                                    <option value="294">Shopfloor return </option>
+                                    <option value="337">Shopfloor Stock Transfer  </option>
+                                    <option value="295">Stock Reservation</option>
+                                    <option value="296">Stock Swap</option>
+                                    <option value="297">Stock Take  </option>
+                                    <option value="372">Sub-Contracting MIS</option>
+                                    <option value="403">Supplementary Purchase Invoice</option>
+                                    <option value="402">Supplementary Sale Invoice</option>
+                                    <option value="238">Supplier Category</option>
+                                    <option value="239">Supplier Evaluation</option>
+                                    <option value="240">Supplier Portfolio</option>
+                                    <option value="321">Supplier Price Setup  </option>
+                                    <option value="241">Supplier Setup  </option>
+                                    <option value="242">Tax Setup  </option>
+                                    <option value="243">Tax Slab</option>
+                                    <option value="244">Tax Structure</option>
+                                    <option value="245">Tax Template  </option>
+                                    <option value="274">TCS Posting</option>
+                                    <option value="275">TDS Posting</option>
+                                    <option value="246">TDS Slab</option>
+                                    <option value="247">Term &amp; Condition Template</option>
+                                    <option value="258">Tickers</option>
+                                    <option value="248">Transporter Setup  </option>
+                                    <option value="412">Tutorial Video</option>
+                                    <option value="249">Unit Of Measure</option>
+                                    <option value="379">User Role</option>
+                                    <option value="364">User Role Setup  </option>
+                                    <option value="365">User Setup  </option>
+                                    <option value="380">User Setup  </option>
+                                    <option value="381">User Ticket</option>
+                                    <option value="250">Vehicle Setup &nbsp;</option>
+                                    <option value="251">Warehouse Setup  </option>
+                                    <option value="338">Workstation Setup  </option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 col-sm-12 pl-0" id="">
+                                <label class="col-form-label label-align">@Resource.SubProcess</label>
+                                <select class="form-control" id="" name="">
+                                    <option value="370">Account Payable</option>
+                                    <option value="369">Account Receivable</option>
+                                    <option value="394">Audit Trail</option>
+                                    <option value="371">Balance Sheet</option>
+                                    <option value="374">Bank Book</option>
+                                    <option value="357">Bank Payment (BP)</option>
+                                    <option value="355">Bank Receipt (BR)</option>
+                                    <option value="375">Budget Analysis</option>
+                                    <option value="373">Cash Book</option>
+                                    <option value="356">Cash Payment (CP)</option>
+                                    <option value="354">Cash Receipt (CR)</option>
+                                    <option value="344">Commercial Invoice</option>
+                                    <option value="399">Common</option>
+                                    <option value="381">Consumption Analysis</option>
+                                    <option value="358">Contra Voucher (CV)</option>
+                                    <option value="378">Cost Center Analysis</option>
+                                    <option value="365">Cost Center Re-Allocation</option>
+                                    <option value="382">Costing Analysis</option>
+                                    <option value="360">Credit Note (CN)</option>
+                                    <option value="302">Custom Declaration</option>
+                                    <option value="345">Custom Invoice</option>
+                                    <option value="336">Customer Wise</option>
+                                    <option value="385">Daily Production Plan</option>
+                                    <option value="359">Debit Note (DN)</option>
+                                    <option value="314">Direct Material Receipt</option>
+                                    <option value="346">Export Documentation  </option>
+                                    <option value="347">Export Tracking</option>
+                                    <option value="320">External Issue</option>
+                                    <option value="317">External Receipt</option>
+                                    <option value="368">Financial Analysis</option>
+                                    <option value="312">Finished Goods Receipt</option>
+                                    <option value="312">Finished Goods Receipt</option>
+                                    <option value="312">Finished Goods Receipt</option>
+                                    <option value="398">FSN Analysis</option>
+                                    <option value="329">Gate Entry Detail</option>
+                                    <option value="333">Gate Pass Detail</option>
+                                    <option value="367">General Ledger</option>
+                                    <option value="330">Good Receipt Detail</option>
+                                    <option value="311">Goods Receipt Note</option>
+                                    <option value="305">Import Costing</option>
+                                    <option value="306">Import Invoice</option>
+                                    <option value="307">Import Tracking &nbsp;</option>
+                                    <option value="363">Imprest Voucher</option>
+                                    <option value="351">Incentive Detail</option>
+                                    <option value="304">Insurance &nbsp;</option>
+                                    <option value="318">Internal Issue</option>
+                                    <option value="364">Invoice Adjustment</option>
+                                    <option value="337">Item Group Wise</option>
+                                    <option value="390">Item Parameter Setup</option>
+                                    <option value="389">Job Detail</option>
+                                    <option value="387">Job Order Tracking</option>
+                                    <option value="353">Journal (JV)</option>
+                                    <option value="397">Journal Book</option>
+                                    <option value="331">Material Issue Detail</option>
+                                    <option value="388">Material Tracking</option>
+                                    <option value="319">Material Transfer Issue</option>
+                                    <option value="313">Material Transfer Receipt</option>
+                                    <option value="315">Opening Material Receipt</option>
+                                    <option value="309">Order Detail</option>
+                                    <option value="309">Order Detail</option>
+                                    <option value="401">Order Intimation</option>
+                                    <option value="301">Order to Procure</option>
+                                    <option value="342">Packing List (E)</option>
+                                    <option value="391">Parameter Definition</option>
+                                    <option value="396">Pending Advances</option>
+                                    <option value="379">Planning Analysis</option>
+                                    <option value="339">Price List (E)</option>
+                                    <option value="308">Procurement Detail</option>
+                                    <option value="380">Production Analysis</option>
+                                    <option value="372">Profit &amp; Loss Statement</option>
+                                    <option value="310">Purchase Tracking</option>
+                                    <option value="361">Purchase Voucher</option>
+                                    <option value="395">Quality Analysis</option>
+                                    <option value="383">Quality Analysis</option>
+                                    <option value="348">Sales Detail</option>
+                                    <option value="400">Sales Enquiry Detail</option>
+                                    <option value="341">Sales Order&nbsp;(E)</option>
+                                    <option value="340">Sales Quotation (E)</option>
+                                    <option value="338">Sales Representative Wise</option>
+                                    <option value="352">Sales Tracking</option>
+                                    <option value="362">Sales Voucher</option>
+                                    <option value="321">Sample Issue</option>
+                                    <option value="316">Sample Receipt</option>
+                                    <option value="327">Sample Tracking  </option>
+                                    <option value="303">Shipment Advice &nbsp;</option>
+                                    <option value="350">Shipment Detail</option>
+                                    <option value="343">Shipment&nbsp;(E)</option>
+                                    <option value="384">Shopfloor Transfer Detail</option>
+                                    <option value="326">Stock Ageing</option>
+                                    <option value="335">Stock Ageing Detail</option>
+                                    <option value="322">Stock Detail</option>
+                                    <option value="392">Stock Detail - Group wise</option>
+                                    <option value="393">Stock Detail - Group wise</option>
+                                    <option value="324">Stock Detail-Consolidated</option>
+                                    <option value="323">Stock Detail-Shopfloor</option>
+                                    <option value="325">Stock Movement</option>
+                                    <option value="332">Stock Reservation</option>
+                                    <option value="328">Stock Transfer  </option>
+                                    <option value="377">Stock Valuation</option>
+                                    <option value="376">TDS/TCS Detail</option>
+                                    <option value="366">Trial Balance</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-1 col-sm-12 pl-0">
+                                <button type="button" class="btn btn-primary btn-sm margintop20" id="Btn_Search" onclick="BtnSearch();"><i class="fa fa-search" aria-hidden="true"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <div class="card-box table-responsive dy_table">
+                    <div class="sticky-table sticky-ltr-cells sb-container container-example1" id="AllPartials" style="height:63vh;">
+                        <div id="">
+                            <table id="" class="table table-striped rowhighlighttbl itmfrz table-bordered" cellspacing="0" width="100%">
+                                <thead>
+                                    <tr class="sticky-header">
+                                        <th width="3%">@Resource.SrNo</th>
+                                        <th width="20%">@Resource.Module</th>
+                                        <th width="20%">@Resource.Process</th>
+                                        <th width="20%">@Resource.SubProcess</th>
+                                        <th width="37%">@Resource.VideoLink</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="">
+                                    <tr>
+                                        <td>01</td>
+                                        <td>Business Layer</td>
+                                        <td>Item Setup</td>
+                                        <td>Sub Process</td>
+                                       <td class="font-weight-bold"><a href="https://www.google.com/" target="_blank">https://www.google.com/</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td>02</td>
+                                        <td>Business Layer</td>
+                                        <td>Item Setup</td>
+                                        <td>Sub Process</td>
+                                       <td class="font-weight-bold"><a href="https://www.google.com/" target="_blank">https://www.google.com/</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td>03</td>
+                                        <td>Business Layer</td>
+                                        <td>Item Setup</td>
+                                        <td>Sub Process</td>
+                                       <td class="font-weight-bold"><a href="https://www.google.com/" target="_blank">https://www.google.com/</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td>04</td>
+                                        <td>Business Layer</td>
+                                        <td>Item Setup</td>
+                                        <td>Sub Process</td>
+                                       <td class="font-weight-bold"><a href="https://www.google.com/" target="_blank">https://www.google.com/</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td>05</td>
+                                        <td>Business Layer</td>
+                                        <td>Item Setup</td>
+                                        <td>Sub Process</td>
+                                       <td class="font-weight-bold"><a href="https://www.google.com/" target="_blank">https://www.google.com/</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td>06</td>
+                                        <td>Business Layer</td>
+                                        <td>Item Setup</td>
+                                        <td>Sub Process</td>
+                                       <td class="font-weight-bold"><a href="https://www.google.com/" target="_blank">https://www.google.com/</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td>07</td>
+                                        <td>Business Layer</td>
+                                        <td>Item Setup</td>
+                                        <td>Sub Process</td>
+                                       <td class="font-weight-bold"><a href="https://www.google.com/" target="_blank">https://www.google.com/</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td>08</td>
+                                        <td>Business Layer</td>
+                                        <td>Item Setup</td>
+                                        <td>Sub Process</td>
+                                       <td class="font-weight-bold"><a href="https://www.google.com/" target="_blank">https://www.google.com/</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td>09</td>
+                                        <td>Business Layer</td>
+                                        <td>Item Setup</td>
+                                        <td>Sub Process</td>
+                                       <td class="font-weight-bold"><a href="https://www.google.com/" target="_blank">https://www.google.com/</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td>10</td>
+                                        <td>Business Layer</td>
+                                        <td>Item Setup</td>
+                                        <td>Sub Process</td>
+                                       <td class="font-weight-bold"><a href="https://www.google.com/" target="_blank">https://www.google.com/</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td>11</td>
+                                        <td>Business Layer</td>
+                                        <td>Item Setup</td>
+                                        <td>Sub Process</td>
+                                       <td class="font-weight-bold"><a href="https://www.google.com/" target="_blank">https://www.google.com/</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td>12</td>
+                                        <td>Business Layer</td>
+                                        <td>Item Setup</td>
+                                        <td>Sub Process</td>
+                                       <td class="font-weight-bold"><a href="https://www.google.com/" target="_blank">https://www.google.com/</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td>13</td>
+                                        <td>Business Layer</td>
+                                        <td>Item Setup</td>
+                                        <td>Sub Process</td>
+                                       <td class="font-weight-bold"><a href="https://www.google.com/" target="_blank">https://www.google.com/</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td>14</td>
+                                        <td>Business Layer</td>
+                                        <td>Item Setup</td>
+                                        <td>Sub Process</td>
+                                        <td class="font-weight-bold"><a href="https://www.google.com/" target="_blank">https://www.google.com/</a></td>
+                                    <tr>
+                                        <td>15</td>
+                                        <td>Business Layer</td>
+                                        <td>Item Setup</td>
+                                        <td>Sub Process</td>
+                                       <td class="font-weight-bold"><a href="https://www.google.com/" target="_blank">https://www.google.com/</a></td>
+                                    </tr>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                </tfoot>
+                            </table>
+                            @*@Html.Partial("~/Areas/Dashboard/Views/TutorialVideos/PartialTutorialVideosList.cshtml")*@
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

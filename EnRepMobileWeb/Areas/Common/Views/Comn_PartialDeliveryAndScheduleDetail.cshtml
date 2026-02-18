@@ -1,0 +1,243 @@
+﻿@using EnRepMobileWeb.Resources;
+@*<style>
+    table.jambo_table thead th {
+        background: #617892 !important;
+        color: #ECF0F1;
+    }
+</style>*@
+@{ 
+    var DocumentStatus = ViewBag.DocumentStatus!=null? ViewBag.DocumentStatus.Trim():null;
+    if (DocumentStatus == null)
+    {
+        DocumentStatus = Session["DocumentStatus"] != null ? Session["DocumentStatus"].ToString().Trim() : "";
+    }
+    
+}
+<section class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingThree">
+        <h4 class="panel-title"> <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree"> @Resource.DeliverySchedule <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a> </h4>
+    </div>
+    <div id="collapseThree" class="panel-collapse collapse show" role="tabpanel" aria-labelledby="headingThree">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12 col-sm-12">
+                    <div class="col-md-4 col-sm-12">
+                        <div class="lpo_form">
+                            <label class="col-form-label label-align">@Resource.ItemName </label>
+                            @if ((DocumentStatus != "D") || ViewBag.Disable)
+                            {
+                                <select class="form-control" id="DeliverySchItemDDL" disabled onchange="OnChangeDelSchItm()">
+                                    <option value="0">---Select---</option>
+                                </select>
+                            }
+                            else
+                            {
+                                <select class="form-control" id="DeliverySchItemDDL" onchange="OnChangeDelSchItm()">
+                                    <option value="0">---Select---</option>
+                                </select>
+                            }
+
+                            <span id="SpanDelSchItemName" class="error_message"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-12">
+                        <div class="lpo_form">
+                            <label class="col-form-label label-align">@Resource.DeliveryDate </label>
+                            @if ((DocumentStatus != "D") || ViewBag.Disable)
+                            {
+                                <input type="date" disabled class="form-control" id="DeliveryDate" name="date" min="@System.DateTime.Now.ToString("yyyy-MM-dd")" onchange="OnChangeDeliveryDate(this)">
+                            }
+                            else
+                            {
+                                <input type="date" class="form-control" id="DeliveryDate" name="date" min="@System.DateTime.Now.ToString("yyyy-MM-dd")" onchange="OnChangeDeliveryDate(this)">
+                            }
+
+                            <span id="SpanDeliSchDeliDate" class="error_message"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-12">
+                        <div class="lpo_form">
+                            <label class="col-form-label label-align">@Resource.Quantity </label>
+                            @if ((DocumentStatus != "D") || ViewBag.Disable)
+                            {
+                                <input id="DeliverySchQty" disabled class="form-control date num_right" autocomplete="off" type="text" onchange="OnChangeDeliveryQty()" name="DeliverySchQty" onkeypress="return AmountFloatQty(this,event);" placeholder="0000.00">
+                            }
+                            else
+                            {
+                                <input id="DeliverySchQty" class="form-control date num_right" autocomplete="off" type="text" onchange="OnChangeDeliveryQty()" name="DeliverySchQty" onkeypress="return AmountFloatQty(this,event);" placeholder="0000.00">
+                            }
+
+                            <span id="SpanDelSchItemQty" class="error_message"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-12 margin25">
+                        <div class="col-md-2 col-sm-12 mt-2">
+                            @if ((DocumentStatus != "D") || ViewBag.Disable)
+                            {
+                            }
+                            else
+                            {
+                                <a href="#">
+                                    <div class="plus_icon1"> <i class="fa fa-plus" id="DeliverySchAddBtn" onclick="OnClickAddDeliveryDetail()" title="@Resource.AddNew"></i> </div>
+                                </a>
+                            }
+                        </div>
+                        @if (ViewBag.DocID != null)
+                        {
+                            if (ViewBag.DocID == "105108101")
+                            {
+
+                            }
+                            else
+                            {
+                                <div class="col-md-10 col-sm-12">
+                                    @if ((DocumentStatus != "D") || ViewBag.Disable)
+                                    {
+                                        @*<button type="button" class="btn btn-primary btn-sm" id="ReplicateOnAllItemsBtn" onclick="OnClickReplicateDeliveryShdul();" data-dismiss="modal" disabled>@Resource.ReplicateOnAllItems</button>*@
+                                    }
+                                    else
+                                    {
+                                        <button type="button" class="btn btn-primary btn-sm" id="ReplicateOnAllItemsBtn" onclick="OnClickReplicateDeliveryShdul();" data-dismiss="modal">@Resource.ReplicateOnAllItems</button>
+                                    }
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="col-md-10 col-sm-12">
+                                @if ((DocumentStatus != "D") || ViewBag.Disable)
+                                {
+                                    @*<button type="button" class="btn btn-primary btn-sm" id="ReplicateOnAllItemsBtn" onclick="OnClickReplicateDeliveryShdul();" data-dismiss="modal" disabled>@Resource.ReplicateOnAllItems</button>*@
+                                }
+                                else
+                                {
+                                    <button type="button" class="btn btn-primary btn-sm" id="ReplicateOnAllItemsBtn" onclick="OnClickReplicateDeliveryShdul();" data-dismiss="modal">@Resource.ReplicateOnAllItems</button>
+                                }
+                            </div>
+                        }
+
+
+                    </div>
+
+                        <div class="table-responsive margin15">
+                            <div class="col-md-12 col-sm-12">
+                                <div class="tableFixHead height30VH">
+                                    <table class="table table-striped jambo_table bulk_action rowhighlighttbl" id="DeliverySchTble">
+                                        <thead>
+                                            <tr class="headings">
+                                                <th width="2%"> &nbsp;</th>
+                                                <th width="2%">@Resource.SrNo</th>
+                                                <th style="display:none;"></th>
+                                                <th width="25%">@Resource.ItemName</th>
+                                                <th width="10%">@Resource.DeliveryDate </th>
+                                                <th width="10%">@Resource.Quantity</th>
+                                                <th style="display:none;"></th>
+                                                @*<th width="35%">&nbsp;</th>*@
+                                                @if (ViewBag.DocID != null)
+                                                {
+                                                    if (ViewBag.DocID != "105101115" || ViewBag.DocID == "105108101")
+                                                    {
+                                                        if (ViewBag.DocID == "105103125" || ViewBag.DocID == "105103145110")
+                                                        {
+                                                            <th>@Resource.ShippedQuantity</th>
+                                                        }
+                                                        if (ViewBag.DocID == "105101130" || ViewBag.DocID == "105101135" || ViewBag.DocID == "105108101" || ViewBag.DocID == "105101140101"|| ViewBag.DocID == "105101136")
+                                                        {
+                                                            <th>@Resource.ReceivedQuantity</th>
+                                                        }
+
+                                                        <th>@Resource.PendingQuantity</th>
+                                                        <th>@Resource.OverdueDays</th>
+                                                    }
+                                                }
+
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (ViewBag.ItemDelSchdetails != null)
+                                            {
+                                                var i = 0;
+                                                if ((DocumentStatus != "D") || ViewBag.Disable)
+                                                {
+                                                    foreach (System.Data.DataRow dr in ViewBag.ItemDelSchdetails.Rows)
+                                                    {
+                                                        i = i + 1;
+                                                        <tr id="R1" class="even pointer">
+                                                            <td class=" red center"> <i class=" fa fa-trash" style="filter: grayscale(100%)" aria-hidden="true" id="DeliveryDelIconBtn" title="@Resource.Delete"></i></td>
+                                                            <td class="sr_padding" id="cmn_srno">@i</td>
+                                                            <td hidden="hidden" id="Hd_ItemIdFrDS">@dr["item_id"].ToString()</td>
+                                                            <td class="a-center ">@dr["item_name"].ToString()</td>
+                                                            <td>@Convert.ToDateTime(dr["sch_date"].ToString()).ToString("dd-MM-yyyy")</td>
+                                                            <td class="num_right" id="delv_qty">@Convert.ToDecimal(dr["delv_qty"].ToString()).ToString(ViewBag.QtyDigit)</td>
+                                                            <td hidden="hidden" id="sch_date">@Convert.ToDateTime(dr["sch_date"].ToString()).ToString("yyyy-MM-dd")</td>
+
+                                                            @if (ViewBag.DocID != null)
+                                                            {
+                                                                if (ViewBag.DocID == "105103125" || ViewBag.DocID == "105103145110")
+                                                                {
+                                                                    <td class="num_right" id="SRQty">@Convert.ToDecimal(dr["shipped_qty"].ToString()).ToString(ViewBag.QtyDigit)</td>
+                                                                    <td class="num_right" id="PenQty">@Convert.ToDecimal(dr["pending_qty"].ToString()).ToString(ViewBag.QtyDigit)</td>
+                                                                    <td class="num_right" id="OdDays">@dr["overduedays"].ToString()</td>
+                                                                }
+                                                                else if (ViewBag.DocID != "105101115")
+                                                                {
+                                                                    <td class="num_right" id="SRQty">@Convert.ToDecimal(dr["rec_qty"].ToString()).ToString(ViewBag.QtyDigit)</td>
+                                                                    <td class="num_right" id="PenQty">@Convert.ToDecimal(dr["pending_qty"].ToString()).ToString(ViewBag.QtyDigit)</td>
+                                                                    <td class="num_right" id="OdDays">@dr["overduedays"].ToString()</td>
+
+                                                                }
+                                                            }
+
+                                                        </tr>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    foreach (System.Data.DataRow dr in ViewBag.ItemDelSchdetails.Rows)
+                                                    {
+                                                        i = i + 1;
+                                                        <tr id="R1" class="even pointer">
+                                                            <td class=" red center"> <i class="deleteIcon fa fa-trash" aria-hidden="true" id="DeliveryDelIconBtn" title="@Resource.Delete"></i></td>
+                                                            <td class="sr_padding" id="cmn_srno">@i</td>
+                                                            <td hidden="hidden" id="Hd_ItemIdFrDS">@dr["item_id"].ToString()</td>
+                                                            <td class="a-center ">@dr["item_name"].ToString()</td>
+                                                            <td>@Convert.ToDateTime(dr["sch_date"].ToString()).ToString("dd-MM-yyyy")</td>
+                                                            <td class="num_right" id="delv_qty">@Convert.ToDecimal(dr["delv_qty"].ToString()).ToString(ViewBag.QtyDigit)</td>
+                                                            <td hidden="hidden" id="sch_date">@Convert.ToDateTime(dr["sch_date"].ToString()).ToString("yyyy-MM-dd")</td>
+                                                            @if (ViewBag.DocID != null)
+                                                            {
+                                                                if (ViewBag.DocID == "105103125" || ViewBag.DocID == "105103145110")
+                                                                {
+                                                                    <td class="num_right" id="SRQty">@Convert.ToDecimal(dr["shipped_qty"].ToString()).ToString(ViewBag.QtyDigit)</td>
+                                                                    <td class="num_right" id="PenQty">@Convert.ToDecimal(dr["pending_qty"].ToString()).ToString(ViewBag.QtyDigit)</td>
+                                                                    <td class="num_right" id="OdDays">@dr["overduedays"].ToString()</td>
+                                                                }
+                                                                else if (ViewBag.DocID != "105101115")
+                                                                {
+                                                                    <td class="num_right" id="SRQty">@Convert.ToDecimal(dr["rec_qty"].ToString()).ToString(ViewBag.QtyDigit)</td>
+                                                                    <td class="num_right" id="PenQty">@Convert.ToDecimal(dr["pending_qty"].ToString()).ToString(ViewBag.QtyDigit)</td>
+                                                                    <td class="num_right" id="OdDays">@dr["overduedays"].ToString()</td>
+                                                                }
+                                                            }
+
+                                                        </tr>
+
+                                                    }
+                                                }
+                                            }
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+              
+
+            </div>
+
+    </div>
+</section>
+

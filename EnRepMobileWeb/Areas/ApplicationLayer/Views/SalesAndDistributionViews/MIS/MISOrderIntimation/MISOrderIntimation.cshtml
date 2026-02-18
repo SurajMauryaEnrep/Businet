@@ -1,0 +1,162 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.SalesAndDistribution.MIS.MISOrderIntimation.OrderIntimation_Model
+@using EnRepMobileWeb.Resources;
+@using System.Data
+@*@if (Session["UserId"] == null)
+    {
+        Response.Redirect("~/Login");
+    }*@
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+
+<style>
+    .select2-results div.OrderIntimation {
+        width: auto !important;
+        min-width: 330px;
+    }
+
+    .dataTables_length, .DataTable1_filter, .dt-buttons, .buttons-csv, .buttons-pdf {
+        float: left;
+    }
+
+    .dt-buttons {
+        width: 7%;
+        margin-left: 2%;
+    }
+
+    #datatable-buttons_filter {
+        position: absolute;
+        right: 10%;
+        top: 35px;
+    }
+    .select2-dropdown {
+        min-width: 500px;
+        width: auto !important;
+    }
+</style>
+<script src="~/Content/Scripts/ApplicationLayer/SalesAndDistribution/MIS/MISOrderIntimation/OrderIntimationJS.js"></script>
+<title>@Model.Title</title>
+<!-- Item Information -->
+<div id="ItemInfo" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        @Html.Partial("~/Areas/Common/Views/_ItemInfomation.cshtml")
+    </div>
+</div>
+<!-- Sales Invoice Print -->
+<div id="SalesInvoicePrint" class="modal fade" role="dialog">
+    <div class="modal-dialog" style="max-width:700px;">
+        <!-- Modal content-->
+        @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialSalesInvoiceForPrint.cshtml")
+    </div>
+</div>
+@using (Html.BeginForm("OrderIntimationCommand", "MISOrderIntimation", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    {
+        <div class="row">
+            <div class="col-md-12 col-sm-12 ">
+                <div class="x_panel mar_pad1 ">
+                    <div class="x_content mar_pad1">
+                        <h2 class="col-md-6 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                        @Html.HiddenFor(model => model.hdnIntimationList, new { @id = "hdnIntimationList" })
+                        @Html.HiddenFor(model => model.ShowItemName, new { @id = "ShowItemName", @value = "Y" })
+                        @Html.HiddenFor(model => model.ShowUom, new { @id = "ShowUom", @value = "Y" })
+                        @Html.HiddenFor(model => model.ShowRefNumber, new { @id = "ShowRefNumber", @value = "N" })
+                        @Html.HiddenFor(model => model.ShowTechSpec, new { @id = "ShowTechSpec", @value = "N" })
+                        @Html.HiddenFor(model => model.ShowTechDesc, new { @id = "ShowTechDesc", @value = "N" })
+                        @Html.HiddenFor(model => model.ShowWeight, new { @id = "ShowWeight", @value = "N" })
+                        @Html.HiddenFor(model => model.ShowCustName, new { @id = "ShowCustName", @value = "N" })
+                        @Html.HiddenFor(model => model.ShowPrice, new { @id = "ShowPrice", @value = "N" })
+                        @Html.HiddenFor(model => model.ShowCustSpecItemDesc, new { @id = "ShowCustSpecItemDesc", @value = "N" })
+                        @Html.HiddenFor(model => model.ShowBomAvl, new { @id = "ShowBomAvl", @value = "N" })
+                        @Html.HiddenFor(model => model.ShowHSN, new { @id = "ShowHSN", @value = "N" })
+                        @Html.HiddenFor(model => model.ShowPendingAmt, new { @id = "ShowPendingAmt", @value = "N" })
+                        @Html.HiddenFor(model => model.ShowOEMNo, new { @id = "ShowOEMNo", @value = "N" })
+                        @Html.HiddenFor(model => model.ShowRemarks, new { @id = "ShowRemarks", @value = "N" })
+                        @Html.HiddenFor(model => model.ShowOrderedQuantity, new { @id = "ShowOrderedQuantity", @value = "N" })
+
+                        @*@Html.HiddenFor(model => model.hdnCommand, new { @id = "hdnCommand", @value="Print" })*@
+                        @Html.Hidden("hdnCommand", "Print", new { id = "hdnCommand" })
+                    <div class="x_title pad_mar ">
+                        <div class="col-md-12 col-sm-12 icon_tool padding_zero">
+                            <div class="col-md-12 col-sm-12 pl-0 pb-2">
+                                <div class="col-md-3 col-sm-12">
+                                    <label class="col-form-label label-align">@Resource.Product @Resource.Name  </label>
+                                    @Html.DropDownListFor(model => model.ItemId, new SelectList(Model.ItemsList, "ItemId", "ItemName"),
+                                           new { @class = "form-control", @id = "ddlItemsList", @name = "ItemsList"/*, @multiple = "multiple" */})
+                                </div>
+                                <div class="col-md-3 col-sm-12" id="">
+                                    <label class="col-form-label label-align">@Resource.CustomerName </label>
+                                    @Html.DropDownListFor(model => model.cust_id, new SelectList(new List<SelectListItem>
+                                {new SelectListItem {Text="---All---",Value="0" },}, "Value", "Text"),
+                                new { @class = "form-control", @id = "ddl_CustomerName", @name = "CustomerName", onchange = "BindSONumberList()" })
+                                    @*<select class="form-control " id="CustomerName" name="CustomerName" tabindex="-1" aria-hidden="true">
+                <option value="0">---All---</option>
+                <option value="1263">00000040920230</option>
+            </select>*@
+                                </div>
+                                <div class="col-md-6 col-sm-12 pl-0 pr-0" id="">
+                                    <div class="col-md-4 col-sm-12 pl-0">
+                                        <label class="col-form-label label-align">
+                                            @Resource.FromDate
+                                        </label>
+                                        @*<input class="form-control" id="FromDate" max="2025-07-22" name="FromDate" type="date" value="2025-04-01">*@
+                                        @Html.TextBoxFor(model => model.From_dt, new { @class = "form-control", @id = "txtFromdate", @type = "date", @onchange = "OnchangeFromDate()", @max = DateTime.Now.ToString("yyyy-MM-dd") })
+
+                                    </div>
+                                    <div class="col-md-4 col-sm-12 pl-0">
+                                        <label class="col-form-label label-align">
+                                            @Resource.ToDate
+                                        </label>
+                                        @*<input class="form-control" id="ToDate" max="2025-07-22" name="ToDate" placeholder="dd-MM-yyyy" type="date" value="2025-07-22">*@
+                                        @Html.TextBoxFor(model => model.To_dt, new { @class = "form-control", @id = "txtTodate", @placeholder = "dd-MM-yyyy", @type = "date", @onchange = "OnchangeToDate()", @max = DateTime.Now.ToString("yyyy-MM-dd") })
+                                    </div>
+                                    <div class="col-md-4 col-sm-12 pl-0">
+                                        <label class="col-form-label label-align">@Resource.Order @Resource.Type</label>
+                                        <select class="form-control" id="OrderType" name="OrderType" onchange="OnchangeOrderType()">
+                                            <option value="P">Pending Order</option>
+                                            <option value="A">All Orders</option>
+                                        </select>
+                                    </div>
+
+
+
+                                </div>
+                                <div class="clearfix"></div>
+                                <div class="col-md-3 col-sm-12">
+                                    <label class="col-form-label label-align">
+                                        @Resource.SalesPerson
+                                    </label>
+                                    @Html.DropDownListFor(model => model.SalePerson, new SelectList(Model.SalePersonList, "salep_id", "salep_name"), new { @class = "form-control", @id = "sales_person" })
+                                </div>
+                                <div class="col-md-3 col-sm-12" id="OrderNumber">
+                                    <label class="col-form-label label-align">@Resource.OrderNumber</label>
+                                    @Html.DropDownListFor(model => model.ord_no, new SelectList(Model.OrderNumbers, "Order_number", "Order_number"), new { @class = "form-control rtl-select", @id = "ddlOrderNumber" })
+                                </div>
+                                <div class="col-md-1 col-sm-12 pl-0">
+                                    <button type="button" class="btn btn-primary btn-sm margintop20" id="Btn_Search" onclick="OrderIntimationBtnSearch();"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                       
+                    </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 col-sm-12 ">
+                <div class="x_panel mar_pad1 ">
+                    <div class="x_content mar_pad1">
+                        <div class="card-box table-responsive dy_table">
+                            <div class="sticky-table sticky-ltr-cells sb-container container-example1" id="">
+                                <div id="PartialMIS_OrderIntimationList">
+                                    @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialMIS_OrderIntimationList.cshtml")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}

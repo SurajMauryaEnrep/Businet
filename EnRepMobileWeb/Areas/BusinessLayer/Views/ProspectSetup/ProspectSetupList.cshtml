@@ -1,0 +1,78 @@
+﻿@using EnRepMobileWeb.Resources;
+@model EnRepMobileWeb.MODELS.BusinessLayer.ProspectSetup.ProspectSetupMODEL
+@using System.Data
+@if (Session["UserId"] == null)
+{
+    Response.Redirect("~/Login");
+}
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+<script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+<script src="~/Content/Scripts/BusinessLayer/ProspectSetup/ProspectSetup.js"></script>
+<title>@Model.Title</title>
+<div class="row">
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <h2 class="col-md-7 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                @Html.HiddenFor(m=>m.DocumentMenuId,new { @id= "DocumentMenuId" })
+                <div id="" class="col-md-5 col-sm-12 work_flow heading_right_padding">
+                    <ul>
+                        @if (ViewBag.VBRoleList != null)
+                        {
+                            foreach (System.Data.DataRow Row in ViewBag.VBRoleList.Rows)
+                            {
+                                if (Row["feature_id"].ToString() == "103123001")
+                                {
+                                    <li>
+                                        <a class="tooltip-test"
+                                           title=" @Resource.AddNew" href="@Url.Action("AddProspectSetup","ProspectSetup")"><img src="~/Content/Images/addgreen.png" width="32" id="addNewSupplier" height="32" alt="Add"></a>
+                                    </li>
+                                }
+                            }
+                        }
+                    </ul>
+                </div>
+
+                <div class="x_title pad_mar ">
+                    <div class="col-md-12 col-sm-12 icon_tool ">
+                        <form class="available_stock pad_mar" action="" method="post" novalidate>
+                            <div class="col-md-3 col-sm-12">
+                                <label class="col-form-label label-align">
+                                    @Resource.Branch
+                                </label>
+                                @Html.DropDownListFor(model => model.br, new SelectList(Model.BranchList, "br_id", "br_val"),@*"---All---",*@new { @class = "form-control", id = "Fr_branch" })
+                                @Html.ValidationMessageFor(model => model.br, String.Empty, new { @style = "color:red;!important", @id = "vmbranch" })
+                                @Html.HiddenFor(model => model.br, new { @id = "hdBRID" })
+                            </div>
+                            <div class="col-md-1 col-sm-12">
+                                <button type="button" class="btn btn-primary btn-sm margintop20" onclick="FilterListProspect()" id="BtnSearch"><i class="fa fa-search" aria-hidden="true"></i></button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <div class="col-md-12 col-sm-12 heading_left_padding  padding_right ">
+                    <div class="x_panel margin_top_zero">
+                        <div class="x_content">
+                            <div class="row">
+                                <div class="card-box table-responsive dy_table">
+                                    <div id="Wh_tbody" class="sticky-table sticky-ltr-cells sb-container container-example1">
+                                        @Html.Partial("~/Areas/BusinessLayer/Views/Shared/PartialProspectSetupList.cshtml")
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,174 @@
+﻿@using EnRepMobileWeb.Resources;
+@model  EnRepMobileWeb.MODELS.ApplicationLayer.Procurement.MIS.MISOrderDetail.MISOrderDetail_Model
+@using System.Data
+@if (Session["UserId"] == null)
+{
+    Response.Redirect("~/Login");
+}
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+<script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/Procurement/MIS/MISOrderDetail/MISOrderDetailJS.js"></script>
+<script src="~/Content/Scripts/Common/CommonJS.js"></script>
+<title>@Model.Title</title>
+<style>
+    .SourceType {
+        height:28px;
+    }
+</style>
+<div class="row">
+    <!-- Workflow Information -->
+    <div id="WorkflowInformation" class="modal fade" role="dialog">
+        <div class="modal-dialog" style="max-width:700px;">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/Common/Views/_WorkFlow.cshtml")
+        </div>
+    </div>
+    <!-- Item Information -->
+    <div id="ItemInfo" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/Common/Views/_ItemInfomation.cshtml")
+        </div>
+    </div>
+    <!--MIS Order  Number Detail -->
+    <div id="MISOrderNumberDetail" class="modal fade" role="dialog">
+        <div class="modal-dialog" style=" max-width:1000px;">
+            <!-- Modal content-->
+            <div id="">
+                @Html.Partial("~/Areas/Common/Views/Comn_PartialMISOrderNumberDetail.cshtml")
+            </div>
+        </div>
+    </div>
+
+
+    <!--MIS Order Delivery Schedule -->
+    <div id="MISOrderDeliverySchedule" class="modal fade" role="dialog">
+        <div class="modal-dialog" style=" max-width:700px;">
+            <!-- Modal content-->
+            <div id="ddldeliverysch">
+                @Html.Partial("~/Areas/Common/Views/Comn_PartialMISOrderDeliverySchedule.cshtml")
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <h2 class="col-md-6 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                <div class="col-md-1 col-sm-12 text-right">
+                    <label class="col-form-label label-align">@Resource.Branch</label>
+                </div>
+                <div class="col-md-3 col-sm-12 pl-0 multiselectBranch">
+                    <div id="div_ddl_brlist">
+                        @Html.Partial("~/Areas/Common/Views/Comn_PartialBranchList.cshtml")
+                    </div>
+                    <span class="error_message" id="span_br" style="display: none;"></span>
+                    @Html.HiddenFor(model => model.hdbr_id, new { @id = "Hdn_brlist" })
+                </div>
+                <div class="col-md-2 col-sm-12">
+                    Summary<span>&nbsp;</span>
+                    <input checked="checked" class="" id="ProcurementMISOrderSummary" onclick="onchangeShowAs()" name="MISOrderType" type="radio" value="S">
+                    <span>&nbsp;</span> Detail<span>&nbsp;</span>
+                    <input class="" id="ProcurementMISOrderDetail" onclick="onchangeShowAs()" name="MISOrderType" type="radio" value="D">
+                </div>
+                <!-- Smart Wizard -->
+                @*<div id="wizard" class="form_wizard wizard_horizontal col-md-3 col-sm-12 work_flow"> &nbsp;</div>*@
+                <div class="x_title pad_mar  ">
+                    <div class="col-md-12 col-sm-12 icon_tool mb-1 ">
+                        <div class="col-md-2 col-sm-12 pr-0">
+                            <label class="col-form-label label-align">@Resource.SupplierName </label>
+                            @Html.DropDownListFor(model => model.SuppId, new SelectList(Model.SuppliersList, "SuppId", "SuppName"),
+        new { @class = "form-control", @id = "ddlSuppliersList", @name = "SuppliersList", @multiple = "multiple" })
+                            @*@Html.DropDownListFor(model => model.SuppId, new SelectList(new List<SelectListItem>
+                    {new SelectListItem {Text="---Select---",Value="0" },}, "Value", "Text"),
+                    new { @class = "form-control", @id = "ddlSuppliersList", @name = "SuppliersList" })*@
+
+                        </div>
+                        <div class="col-md-2 col-sm-12 pr-0" id="divitemlist" style="display:none">
+                            <label class="col-form-label label-align">@Resource.ItemName </label>
+                            @*@Html.DropDownListFor(model => model.ItemId, new SelectList(Model.ItemsList, "ItemId", "ItemName"),
+                    new { @class = "form-control", @id = "ddlItemsList", @name = "ItemsList" })*@
+
+                            @Html.DropDownListFor(model => model.ItemId, new SelectList(Model.ItemsList, "Item_ID", "Item_Name"),
+      new { @class = "form-control", id = "ddlItemsList", @onchange = "OnchangeItemName()", /*@multiple = "multiple" */})
+
+                            @Html.HiddenFor(Model => Model.ItemId, new { @id = "hf_ItemID" })
+
+                        </div>
+                        <div class="col-md-2 col-sm-12 pr-0">
+                            <label class="col-form-label label-align">@Resource.Currency </label>
+                            @Html.DropDownListFor(model => model.CurrId, new SelectList(Model.Currencylist, "curr_id", "curr_name"),
+                                       new { @class = "form-control", @id = "ddlCurrencylist", @multiple = "multiple" })
+                        </div>
+                        <div class="col-md-2 col-sm-12 pr-0">
+                            <label class="col-form-label label-align">@Resource.FromDate</label>
+                            @Html.TextBoxFor(model => model.FromDate, new { @class = "form-control", @id = "txtFromdate", @type = "date", @max = DateTime.Now.ToString("yyyy-MM-dd") })
+                        </div>
+                        <div class="col-md-2 col-sm-12 pr-0">
+                            <label class="col-form-label label-align">@Resource.ToDate</label>
+                            @Html.TextBoxFor(model => model.ToDate, new { @class = "form-control", @id = "txtTodate", @placeholder = "dd-MM-yyyy", @type = "date", @max = DateTime.Now.ToString("yyyy-MM-dd") })
+                        </div>
+                        <div class="col-md-2 col-sm-12 pr-0" id="SourceType">
+                            <label class="col-form-label label-align">@Resource.SourceType </label>
+                            <select id="ddlSrcType" class="form-control" name="SourceType" multiple>
+                                <option value="D">Direct</option>
+                                <option value="P">Purchase Requisition</option>
+                                <option value="Q">Quotation</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-2 col-sm-12">
+                            <label class="col-form-label label-align">@Resource.Order @Resource.Type </label>
+                            <select id="ddlOrderType" class="form-control" name="OrderType" multiple>
+                                <option value="D">Domestic</option>
+                                <option value="I">Import</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 col-sm-12">
+                            <label class="col-form-label label-align">@Resource.SupplierCategory </label>
+                            @Html.DropDownListFor(model => model.category, new SelectList(Model.categoryLists, "Cat_id", "Cat_val"),
+                           new { @class = "form-control", @id = "SupplierCategory", @name = "SupplierCategory", @multiple = "multiple" })
+                        </div>
+                        <div class="col-md-2 col-sm-12">
+                            <label class="col-form-label label-align">@Resource.SupplierPortfolio </label>
+                            @Html.DropDownListFor(model => model.portFolio, new SelectList(Model.portFolioLists, "Port_id", "Port_val"),
+                           new { @class = "form-control", @id = "SupplierPortfolio", @name = "SupplierPortfolio", @multiple = "multiple" })
+                        </div>
+                        <div class="col-md-2 col-sm-12 pr-0">
+                            <label class="col-form-label label-align">
+                                @Resource.Status
+                            </label>
+                            @Html.DropDownListFor(model => model.Status, new SelectList(Model.StatusList, "StatusCode", "StatusName"),
+                                 new { @class = "form-control", @id = "ddlStatus", @name = "Status", @multiple = "multiple" })
+                        </div>
+                        @*<div class="col-md-2 col-sm-12 pr-0">
+                    <label class="col-form-label label-align">@Resource.ShowAs </label>
+                    <select class="form-control" id="ShowAs" name="ShowAs" onchange="onchangeShowAs()">
+                        <option value="S">Summary</option>
+                        <option value="D">Detailed</option>
+                    </select>
+                </div>*@
+                        <div class="col-md-1 col-sm-12">
+                            <button type="button" class="btn btn-primary btn-sm margintop20" id="BtnSearch" onclick="BindOrderMisReport();"><i class="fa fa-search" aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+                    @Html.HiddenFor(m => m.OrderDateOrderWise, new { @id = "OrderDateOrderWise" })
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12">
+        <div class="x_panel margin_top_zero">
+            <div class="x_content">
+                <div class="card-box table-responsive dy_table">
+                    <div id="" class="sticky-table sticky-ltr-cells sb-container container-example1">
+                        <div id="MISOrderSummary">@Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialMISOrderSummaryDetail.cshtml")</div>
+                        @*<div id="MISOrderDetail"> @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialMISOrderDetail.cshtml")</div>*@
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

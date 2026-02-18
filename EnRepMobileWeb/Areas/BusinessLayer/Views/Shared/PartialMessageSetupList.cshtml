@@ -1,0 +1,59 @@
+﻿@using EnRepMobileWeb.Resources;
+@using System.Data;
+@{
+    var i = 0;
+}
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<script src="~/Content/Scripts/BusinessLayer/AlertSetup/MessageSetup/AlertSetupJS.js"></script>
+<table id="datatable-buttons" class="table table-striped  rowhighlighttbl">
+    <thead>
+        <tr class="sticky-header">
+            <th style="width:35px;"> @Resource.SrNo</th>
+            <th style="display:none;">@Resource.Document @Resource.Name</th>
+            <th width="30%">@Resource.Document @Resource.Name</th>
+            <th style="display:none;">@Resource.Event</th>
+            <th>@Resource.Event</th>
+            <th>@Resource.CreatedBy</th>
+            <th>@Resource.Createdon</th>
+            <th>@Resource.AmendedBy</th>
+            <th>@Resource.AmendedOn</th>
+            @*<th>@Resource.AmendedOn</th>*@
+            <th>@Resource.Alert @Resource.Type</th>
+            <th style="display:none;">@Resource.Alert @Resource.Type</th>
+            @*<th>Msg</th>*@
+        </tr>
+    </thead>
+    <tbody>
+        @if (ViewBag.AlertMsgList != null)
+        {
+            foreach (DataRow dr in ViewBag.AlertMsgList.Rows)
+            {
+                i = i + 1;
+        <tr>
+            <td>@i</td>
+            <td hidden="hidden" id="docId">@dr["doc_id"].ToString().Trim()</td>
+            <td>@dr["doc_Name"].ToString()</td>
+            <td hidden="hidden" id="events">@dr["event"].ToString().Trim()</td>
+            <td>@dr["status_name"].ToString()</td>
+            <td>@dr["user_nm"].ToString()</td>
+            <td>@dr["create_dt"].ToString()</td>
+            <td>@dr["mod_nm"].ToString()</td>
+            <td>@dr["mod_dt"].ToString()</td>
+            <td>@dr["alertType"].ToString()</td>
+            <td hidden="hidden" id="hdAlertType">@dr["alertType"].ToString().Trim()</td>
+            @*<td>@dr["msg"].ToString()</td>*@
+        </tr>
+            }
+        }
+    </tbody>
+</table>
+@if (Model.SearchStatus != null)
+{
+    //if (Session["PRSearch"].ToString() == "PR_Search")
+    if (Model.SearchStatus == "Search")
+    {
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+        @Scripts.Render("~/Content/Scripts/DatatablesJs")
+        Model.SearchStatus = null;
+    }
+}

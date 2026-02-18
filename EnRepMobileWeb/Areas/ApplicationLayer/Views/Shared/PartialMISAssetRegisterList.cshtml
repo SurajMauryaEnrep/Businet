@@ -1,0 +1,92 @@
+﻿@using EnRepMobileWeb.Resources;
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+
+<table id="datatable-buttons" class="table table-striped rowhighlighttbl width2600 itmfrz" cellspacing="0" width="100%">
+    <thead>
+        <tr class="sticky-header">
+            <th width="2%"> @Resource.SrNo</th>
+            <th width="10%" class="ItmNameBreak itmStick tditemfrz">@Resource.Asset @Resource.Description</th>
+            <th width="10%" style="display:none">@Resource.Asset @Resource.Description</th>
+            <th width="6%">@Resource.Asset @Resource.Label</th>
+            <th width="6%">@Resource.Serial   @Resource.Number</th>
+            <th width="7%">@Resource.Group</th>
+            <th width="6%">@Resource.Category</th>
+            <th width="6%">@Resource.Depreciation  @Resource.Frequency</th>
+            <th width="7%">@Resource.Requirement  @Resource.Area</th>
+            <th width="6%">@Resource.Capitalized  @Resource.Value</th>
+            <th width="6%">@Resource.Asset   @Resource.Life <br />@Resource.InMonth</th>
+            <th width="6%">@Resource.Working    @Resource.Date</th>
+            <th width="7%">@Resource.Depreciation @Resource.InPercentage</th>
+            <th width="8%">@Resource.Additional <br /> @Resource.Depreciation @Resource.InPercentage</th>
+            <th width="6%">@Resource.Accumulated <br /> @Resource.Depreciation</th>
+            <th width="6%">@Resource.Current @Resource.Value</th>
+            <th width="5%">@Resource.Working   @Resource.Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (ViewBag.ListDetail != null)
+        {
+            int Srno = 1;
+            foreach (System.Data.DataRow dr in ViewBag.ListDetail.Rows)
+            {
+        <tr role="row" class="odd">
+            <td class="sorting_1">@Srno</td>
+            <td id="AssetDescriptionNo" class="ItmNameBreak itmStick tditemfrz">@dr["AssetDescription"].ToString()</td>
+            <td id="AssetLabel">@dr["AssetLabel"].ToString()</td>
+            <td id="SerialNo">@dr["serial_no"].ToString()</td>
+            <td id="AssetRegId" style="display:none">@dr["AssetRegid"].ToString()</td>
+            <td id="AssetGroup">@dr["AssetGroup"].ToString()</td>
+            <td>@dr["Category"].ToString()</td>
+            <td>@dr["Dep_freq"].ToString()</td>
+            <td>@dr["assign_req_area"].ToString()</td>
+            <td class="num_right" id="ProcuredValue">
+                <div class="col-sm-11 no-padding">
+                    @dr["proc_val"].ToString()
+                </div>
+                <div class="col-sm-1 i_Icon">
+                    <button type="button" class="calculator subItmImg" id="btnProcurementDetail" data-toggle="modal" data-target="#AssetProcrumentDetail" data-backdrop="static" onclick="return AssetProcurementDetail(event)" data-keyboard="false">
+                    <img src="/Content/Images/iIcon1.png" alt="" title=" @Resource.Procurement @Resource.Detail">  </button>
+                </div>
+            </td>
+            <td class="num_right">@dr["assetlife"].ToString()</td>
+            <td>@dr["AssetWorking_dt"].ToString()</td>
+            <td class="num_right">@dr["dep_per"].ToString()</td>
+            <td class="num_right">@dr["add_dep_per"].ToString()</td>
+            <td class="num_right">
+                <div class="col-sm-11 no-padding">
+                    @dr["accumulated_dep"].ToString()
+                </div>
+                <div class="col-sm-1 i_Icon">
+                    <button type="button" id="btnAssetDepreciationHistory" class="calculator" onclick="AssetDepreciationHistory(event);" data-toggle="modal"
+                            data-target="#DepreciationHistory" data-backdrop="static" data-keyboard="false">
+                        <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Depreciation @Resource.History">
+                    </button>
+                </div>
+            </td>
+            <td class="num_right">@dr["curr_val"].ToString()</td>
+            <td>@dr["WorkingStatus"].ToString()</td>
+        </tr>
+                Srno = Srno + 1;
+            }
+        }
+    </tbody>
+</table>
+@if (ViewBag.ListSearch != null)
+{
+    if (ViewBag.ListSearch == "ListSearch")
+    {
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+        @Scripts.Render("~/Content/Scripts/DatatablesJs")
+        ViewBag.ListSearch = null;
+    }
+}
+
+
+
+
+
+
+
+
+
+

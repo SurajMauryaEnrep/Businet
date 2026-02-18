@@ -1,0 +1,161 @@
+﻿@using EnRepMobileWeb.Resources;
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/Procurement/PurchaseRequisition/PurchaseRequisition.js"></script>
+<div class="modal-content">
+    <div class="modal-header">
+        <h2>@Resource.Requisition  @Resource.Tracking @Resource.Detail</h2> <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body pop_top">
+        @*<form id="PurchaseOrderTracking" data-parsley-validate class="form-horizontal form-label-left">*@
+        <div class="row">
+            <div class="col-md-3 col-sm-12 available_right ">
+                <label class="col-form-label label-align" for="">@Resource.RequisitionNumber</label>
+                <input type="text" id="RequisitionNumber" class="form-control" placeholder="@Resource.RequisitionNumber" readonly>
+            </div>
+            <div class="col-md-3 col-sm-12 available_right ">
+                <label class="col-form-label label-align" for="">@Resource.RequisitionDate</label>
+                <input type="date" id="RequisitionDate" class="form-control" readonly>
+            </div>
+            <div class="col-md-3 col-sm-12 available_right ">
+                <label class="col-form-label label-align" for="">@Resource.RequestedBy</label>
+                <input type="text" id="RequestedBy" class="form-control" placeholder="@Resource.RequestedBy" readonly>
+            </div>
+        </div>
+        @*</form>*@
+        <div class="card-box table-responsive dy_table margin10">
+            <div class="sticky-table sticky-ltr-cells sb-container container-example1 pop_csv">
+                <table id="Table_POTracking" class="table table-striped table-bordered width3600 margin5 rowhighlighttbl" style="width:100%;">
+                    <thead>
+                        <tr class="sticky-header">
+                            <th width="2%">&nbsp;</th>
+                            <th width="8%">&nbsp;</th>
+                            <th>&nbsp;</th>
+                            <th>&nbsp;</th>
+                            <th>&nbsp;</th>
+                            <th>&nbsp;</th>
+                            <th class="light_cream_colour">&nbsp;</th>
+                            <th class="light_cream_colour">@Resource.Quotation </br> @Resource.Detail</th>
+                            <th class="light_cream_colour">&nbsp;</th>
+                            <th class="light_blue_colour">&nbsp;</th>
+                            <th class="light_blue_colour">@Resource.Purchase @Resource.Order @Resource.Detail</th>
+                            <th class="light_blue_colour">&nbsp;</th>
+                            <th class="light_blue1_colour">&nbsp;</th>
+                            <th class="light_blue1_colour">@Resource.DeliveryNoteDetail</th>
+                            <th class="light_blue1_colour">&nbsp;</th>
+                            <th class="light_cream1_colour">&nbsp;</th>
+                            <th class="light_cream1_colour">&nbsp;</th>
+                            <th class="light_cream1_colour">&nbsp;</th>
+                            <th class="light_cream1_colour">@Resource.QCDetail</th>
+                            <th class="light_cream1_colour">&nbsp;</th>
+                            <th class="light_cream1_colour">&nbsp;</th>
+                            <th class="light_cream1_colour">&nbsp;</th>
+                            <th class="light_green_colour">&nbsp;</th>
+                            <th class="light_green_colour">@Resource.GoodReceiptDetail</th>
+                            <th class="light_green_colour">&nbsp;</th>
+                            <th class="light_pur_colour">&nbsp;</th>
+                            <th class="light_pur_colour">@Resource.InvoiceDetail</th>
+                            <th class="light_pur_colour">&nbsp;</th>
+                        </tr>
+                        <tr class="sticky-header">
+                            <th width="2%">@Resource.SrNo</th>
+                            <th width="31%">@Resource.ItemName</th>
+                            <th>@Resource.UOM</th>
+                            <th width="3%">@Resource.ItemType</th>
+                            <th>@Resource.Requisition <br />  @Resource.Quantity</th>
+                            <th>@Resource.Order <br />  @Resource.Quantity</th>
+                            <th class="light_cream_colour">@Resource.Quotation <br /> @Resource.Number</th>
+                            <th class="light_cream_colour">@Resource.Quotation  <br /> @Resource.Date</th>
+                            <th class="light_cream_colour">@Resource.Quotation  <br /> @Resource.Quantity</th>
+                            <th class="light_blue_colour">@Resource.Purchase @Resource.Order <br /> @Resource.Number</th>
+                            <th class="light_blue_colour">@Resource.Purchase @Resource.Order <br /> @Resource.Date</th>
+                            <th class="light_blue_colour">@Resource.Purchase @Resource.Order <br /> @Resource.Quantity</th>
+                            <th class="light_blue1_colour">@Resource.DeliveryNote <br /> @Resource.Number</th>
+                            <th class="light_blue1_colour">@Resource.Delivery <br />  @Resource.Date</th>
+                            <th class="light_blue1_colour">@Resource.Delivery <br />  @Resource.Quantity</th>
+                            <th class="light_cream1_colour">@Resource.QC <br />  @Resource.Number</th>
+                            <th class="light_cream1_colour">@Resource.QCDate</th>
+                            <th class="light_cream1_colour">@Resource.Accepted <br />  @Resource.Quantity</th>
+                            <th class="light_cream1_colour">@Resource.Rejected <br />  @Resource.Quantity</th>
+                            <th class="light_cream1_colour">@Resource.Reworkable <br />  @Resource.Quantity</th>
+                            <th class="light_cream1_colour">@Resource.Short <br />  @Resource.Quantity</th>
+                            <th class="light_cream1_colour">@Resource.Sample <br />  @Resource.Quantity</th>
+                            <th class="light_green_colour">@Resource.Receipt <br />  @Resource.Number</th>
+                            <th class="light_green_colour">@Resource.Receipt <br />  @Resource.Date</th>
+                            <th class="light_green_colour">@Resource.Receipt <br />  @Resource.Quantity</th>
+                            <th class="light_pur_colour">@Resource.Invoice <br />  @Resource.Number</th>
+                            <th class="light_pur_colour">@Resource.Invoice <br />  @Resource.Date</th>
+                            <th class="light_pur_colour">@Resource.Invoice <br />  @Resource.Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody id="">
+                        @if (ViewBag.PRTrackingList != null)
+                        {
+                            var rowIdx = 0;
+                            foreach (System.Data.DataRow Row in ViewBag.PRTrackingList.Rows)
+                            {
+                                rowIdx++;
+                                <tr>
+                                    <td>@rowIdx</td>
+                                    <td>@Row["item_name"].ToString()</td>
+                                    <td>@Row["uom_name"].ToString()</td>
+                                    <td>@Row["ItemType"].ToString()</td>
+                                    <td align="right">@Row["pr_qty"].ToString()</td>
+                                    <td align="right">@Row["po_qty"].ToString()</td>
+                                    <td class="light_cream_colour">@Row["qt_no"].ToString()</td>
+                                    <td class="light_cream_colour">@Row["qt_dt"].ToString()</td>
+                                    <td class="light_cream_colour num_right">@Row["qt_qty"].ToString()</td>
+                                    <td class="light_blue_colour">@Row["po_no"].ToString()</td>
+                                    <td class="light_blue_colour">@Row["po_dt"].ToString()</td>
+                                    <td class="light_blue_colour num_right">@Row["po_ord_qty"].ToString()</td>
+                                    <td class="light_blue1_colour">@Row["dn_no"].ToString()</td>
+                                    <td class="light_blue1_colour">@Row["dn_dt"].ToString()</td>
+                                    <td class="light_blue1_colour num_right">@Row["recd_qty"].ToString()</td>
+                                    <td class="light_cream1_colour">@Row["qc_no"].ToString()</td>
+                                    <td class="light_cream1_colour">@Row["qc_dt"].ToString()</td>
+                                    <td class="light_cream1_colour num_right">@Row["accept_qty"].ToString()</td>
+                                    <td class="light_cream1_colour num_right">@Row["reject_qty"].ToString()</td>
+                                    <td class="light_cream1_colour num_right">@Row["rework_qty"].ToString()</td>
+                                    <td class="light_cream1_colour num_right">@Row["short_qty"].ToString()</td>
+                                    <td class="light_cream1_colour num_right">@Row["sample_qty"].ToString()</td>
+                                    <td class="light_green_colour">@Row["mr_no"].ToString()</td>
+                                    <td class="light_green_colour">@Row["mr_dt"].ToString()</td>
+                                    <td class="light_green_colour num_right">@Row["rec_qty"].ToString()</td>
+                                    <td class="light_pur_colour">@Row["inv_no"].ToString()</td>
+                                    <td class="light_pur_colour">@Row["inv_dt"].ToString()</td>
+                                    <td class="light_pur_colour num_right">@Row["inv_qty"].ToString()</td>
+                                </tr>
+                            }
+                        }
+                        @*<tr>
+                                <td>1</td>
+                                <td>1014</td>
+                                <td>Piece</td>
+                                <td align="right">20.000</td>
+                                <td align="right">20.000</td>
+                                <td class="light_green_colour">B1/03/23/DPO0000002</td>
+                                <td class="light_green_colour">03-03-2023</td>
+                                <td class="light_green_colour num_right">20.000</td>
+                                <td class="light_pur_colour">B1/03/23/DPO0000002</td>
+                                <td class="light_pur_colour">03-03-2023</td>
+                                <td class="light_pur_colour num_right">20.000</td>
+                                <td class="light_cream_colour">B1/03/23/DPO0000002</td>
+                                <td class="light_cream_colour">03-03-2023</td>
+                                <td class="light_cream_colour num_right">20.000</td>
+                                <td class="light_blue_colour">B1/03/23/DPO0000002</td>
+                                <td class="light_blue_colour">03-03-2023</td>
+                                <td class="light_blue_colour num_right">20.000</td>
+                                <td class="light_blue_colour num_right">20.000</td>
+                                <td class="light_blue_colour num_right">20.000</td>
+                                <td class="light_blue1_colour">B1/03/23/DPO0000002</td>
+                                <td class="light_blue1_colour">03-03-2023</td>
+                                <td class="light_blue1_colour num_right">20.000</td>
+                                <td class="light_cream1_colour">B1/03/23/DPO0000002</td>
+                                <td class="light_cream1_colour">03-03-2023</td>
+                                <td class="light_cream1_colour num_right">20.000</td>
+                            </tr>*@
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

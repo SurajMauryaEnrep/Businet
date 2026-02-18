@@ -1,0 +1,199 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.FinancialAccountingAndControl.MIS.AccountReceivable.AccountReceivableModel
+
+@using System.Data;
+@{
+    var rowId = 0;
+}
+@{
+    var range1 = Convert.ToInt32(@Model.Range1) + 1;
+    var range2 = Convert.ToInt32(@Model.Range2) + 1;
+    var range3 = Convert.ToInt32(@Model.Range3) + 1;
+    var range4 = Convert.ToInt32(@Model.Range4) + 1;
+    var range5 = Convert.ToInt32(@Model.Range5) + 1;
+}
+<style>
+    .th_con {
+        paddingtop: 5px;
+        paddingbottom: 5px;
+        font-weight: bold;
+        text-align: center;
+        border-top: 1px solid #000000;
+        border-left: 1px solid #000000;
+        font-size: 10px;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .td_con {
+        paddingtop: 5px;
+        paddingbottom: 5px;
+        paddingleft: 5px;
+        paddingright: 5px;
+        font-weight: bold;
+        text-align: center;
+        border-top: solid 1px #000000;
+        border-bottom: solid 1px #000000;
+        border-left: 1px solid #000000;
+        font-size: 9px;
+        font-weight: normal;
+        text-align: left;
+    }
+
+    .num_right {
+        text-align: right;
+    }
+
+    .bor_right {
+        border-right: 1px solid #000000;
+    }
+    .font_bold {
+        font-weight: bold;
+    }
+    .para {
+        paddingtop: 5px;
+        paddingbottom: 5px;
+        paddingleft: 5px;
+        paddingright: 5px;
+        font-weight: bold;
+        text-align: center;
+        border-top: solid 1px #000000;
+        border-bottom: solid 1px #000000;
+        border-left: 1px solid #000000;
+        font-size: 9px;
+        font-weight: normal;
+        text-align: left;
+    }
+</style>
+
+<div style="width:100%;" class="bg">
+    <div style="width:100%; margin:0 auto;" class="bg">
+        <table width="100%">
+            <tr>
+                <td>
+                    @Html.Partial("~/Areas/ApplicationLayer/Views/FinancialAccountingAndControl/MIS/GeneralLedger/GLHeaderPrint.cshtml")
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                        <tr>
+                            <td class="para" width="12%"><strong>Receivable Type</strong></td>
+                            <td class="para" width="15%">@ViewBag.ReceivableTypePrint</td>
+                            <td class="para" width="5%"><strong>Basis</strong></td>
+                            <td class="para" width="15%">@Model.Basis</td>
+                            <td class="para" width="7%"><strong>As on Date</strong></td>
+                            <td class="para bor_right " width="46%">@Model.To_dt</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                        <thead>
+                            <tr>
+                                <th width="4%" class="th_con">SrNo</th>
+                                <th width="20%" class="th_con">CustomerName</th>
+                                @if (@Model.ReportType == "D")
+                                {
+                                    <th width="20%" class="th_con">Invoice No.</th>
+                                    <th width="10%" class="th_con">Invoice Date</th>
+                                }
+                                <th width="8%" class="th_con">Currency</th>
+                                @if (@Model.ReportType == "D")
+                                {
+                                    <th width="20%" class="th_con">Invoice Amount</th>
+                                }
+                                <th width="10%" class="th_con">0-@Model.Range1<br /> Days</th>
+                                <th width="10%" class="th_con">@range1-@Model.Range2  <br />Days </th>
+                                <th width="10%" class="th_con">@range2-@Model.Range3 <br /> Days </th>
+                                <th width="10%" class="th_con">@range3-@Model.Range4 <br /> Days </th>
+                                <th width="10%" class="th_con">@range4-@Model.Range5 <br /> Days </th>
+                                <th width="10%" class="th_con">>@range5 <br /> Days</th>
+                                @if (@Model.ReportType != "D")
+                                {
+                                    <th width="10%" class="th_con">Advance Payment</th>
+                                }
+
+                                <th width="10%" class="th_con bor_right">Total </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.AccountRecivableList != null)
+                            {
+                                foreach (var row in Model.AccountRecivableList)
+                                {
+                                    rowId++;
+                            <tr>
+                                <td class="td_con">@rowId</td>
+                                <td class="td_con">@row.CustName</td>
+                                @if (@Model.ReportType == "D")
+                                {
+                                    <td class="td_con">@row.Inv_no</td>
+                                    <td class="td_con">@row.Inv_dt</td>
+                                }
+                                <td class="td_con">@row.Curr</td>
+                                @if (@Model.ReportType == "D")
+                                {
+                                    <td class="td_con num_right">@row.Invoice_Amt</td>
+                                }
+                                <td class="td_con num_right">@row.AmtRange1</td>
+                                <td class="td_con num_right">@row.AmtRange2</td>
+                                <td class="td_con num_right">@row.AmtRange3</td>
+                                <td class="td_con num_right">@row.AmtRange4</td>
+                                <td class="td_con num_right">@row.AmtRange5</td>
+                                <td class="td_con num_right">@row.AmtRange6</td>
+                                @if (@Model.ReportType != "D")
+                                {
+                                    <td class="td_con num_right">@row.AdvanceAmount</td>
+                                }
+
+                                <td class="td_con num_right bor_right bor_bottom">@row.TotalAmt</td>
+                            </tr>
+                                }
+                            }
+                        </tbody>
+                        <tfoot>
+                            @if (ViewBag.TotalDetails != null)
+                            {
+                                foreach (System.Data.DataRow dr in ViewBag.TotalDetails.Rows)
+                                {
+                            <tr>
+                                @if (@Model.ReportType == "D")
+                                {
+                                    <td class="td_con num_right font_bold" colspan="5">Total</td>
+                                    <td class="td_con num_right font_bold">@dr["totalInv_amt"].ToString()</td>
+                                    <td class="td_con num_right font_bold">@dr["totalR1"].ToString()</td>
+                                    <td class="td_con num_right font_bold">@dr["totalR2"].ToString()</td>
+                                    <td class="td_con num_right font_bold">@dr["totalR3"].ToString()</td>
+                                    <td class="td_con num_right font_bold">@dr["totalR4"].ToString()</td>
+                                    <td class="td_con num_right font_bold">@dr["totalR5"].ToString()</td>
+                                    <td class="td_con num_right font_bold">@dr["totalGTR5"].ToString()</td>
+                                    <td class="td_con num_right bor_right font_bold">@dr["totaltamt"].ToString()</td>
+                                }
+                                else
+                                {
+                                    <td class="td_con num_right font_bold" colspan="3">Total</td>
+                                    <td class="td_con num_right font_bold">@dr["totalR1"].ToString()</td>
+                                    <td class="td_con num_right font_bold">@dr["totalR2"].ToString()</td>
+                                    <td class="td_con num_right font_bold">@dr["totalR3"].ToString()</td>
+                                    <td class="td_con num_right font_bold">@dr["totalR4"].ToString()</td>
+                                    <td class="td_con num_right font_bold">@dr["totalR5"].ToString()</td>
+                                    <td class="td_con num_right font_bold">@dr["totalGTR5"].ToString()</td>
+                                    <td class="td_con num_right font_bold">@dr["totalAdvanceAmount"].ToString()</td>
+                                    <td class="td_con num_right bor_right font_bold">@dr["totaltamt"].ToString()</td>
+                                }
+
+
+                            </tr>
+                                }
+                            }
+                        </tfoot>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+

@@ -1,0 +1,271 @@
+﻿
+@using System.Data;
+<style>
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .main {
+        width: 100%;
+        float: left;
+        margin: 0 auto;
+        /*background-color: #ffffff;*/
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .header {
+        width: 100%;
+        float: left;
+        border: solid 1px #000000;
+        margin-top: 10px;
+        paddingleft: 2%;
+        paddingright: 2%;
+    }
+
+    .invoice {
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 18px;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .cat_info {
+        font-family: Arial, Helvetica, sans-serif;
+        float: left;
+        font-size: 12px;
+        text-align: left;
+        paddingtop: 3px;
+        paddingbottom: 3px;
+    }
+
+    .cat_info_b {
+        font-family: Arial, Helvetica, sans-serif;
+        float: left;
+        font-size: 12px;
+        text-align: left;
+        paddingtop: 3px;
+        paddingbottom: 3px;
+        font-weight: bold;
+    }
+
+    .table_content_first {
+        width: 100%;
+        float: left;
+        margin-top: 10px;
+        marginleft: 2%;
+        marginright: 2%;
+    }
+
+        .table_content_first th {
+            font-family: Arial, Helvetica, sans-serif;
+            float: left;
+            font-size: 12px;
+            text-align: left;
+            paddingtop: 3px;
+            paddingbottom: 3px;
+            font-weight: bold;
+        }
+
+        .table_content_first td {
+            font-family: Arial, Helvetica, sans-serif;
+            float: left;
+            font-size: 12px;
+            text-align: left;
+            paddingtop: 3px;
+            paddingbottom: 3px;
+            font-weight: normal;
+        }
+
+    .table_content_second {
+        width: 100%;
+        float: left;
+        border: solid 1px #000000;
+        margintop: 5px;
+        marginbottom: 25px;
+    }
+
+        .table_content_second th {
+            font-family: Arial, Helvetica, sans-serif;
+            float: left;
+            font-size: 12px;
+            text-align: center;
+            paddingtop: 3px;
+            paddingbottom: 3px;
+            paddingleft: 3px;
+            paddingright: 3px;
+            font-weight: normal;
+            font-weight: bold;
+        }
+
+        .table_content_second td {
+            font-family: Arial, Helvetica, sans-serif;
+            float: left;
+            font-size: 12px;
+            paddingtop: 3px;
+            paddingbottom: 3px;
+            paddingleft: 3px;
+            paddingright: 3px;
+            font-weight: normal;
+        }
+</style>
+<div>
+    <table class="main" width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+            <td>
+                <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                        <td width="10%">
+                            @*<img src="@lpath" alt="Logo" width="150" />*@
+                            <img src="@Server.MapPath("~/Content/Images/logo.png")" alt="Logo" width="150" />
+                            @*<img src="@Server.MapPath("~/Content/Images/draft.png")" alt="Logo" width="150" />*@
+                        </td>
+                        <td class="invoice" width="60%">@ViewBag.Title.ToString()</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <table class="header">
+                    <tr>
+                        <td width="50%">
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td class="cat_info" width="35%"> Analysis Number</td>
+                                    <td class="cat_info_b" width="2%">:</td>
+                                    <td class="cat_info_b" width="63%">@ViewBag.Details.Tables[0].Rows[0]["analy_no"].ToString()</td>
+                                </tr>
+                                <tr>
+                                    <td class="cat_info" width="35%"> RFQ Number </td>
+                                    <td class="cat_info_b" width="2%">:</td>
+                                    <td class="cat_info_b" width="63%">@ViewBag.Details.Tables[0].Rows[0]["rfq_no"].ToString()</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td width="50%">
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td class="cat_info" width="35%"> Analysis Date</td>
+                                    <td class="cat_info_b" width="2%">:</td>
+                                    <td class="cat_info_b" width="63%">@ViewBag.Details.Tables[0].Rows[0]["analy_dt"].ToString()</td>
+                                </tr>
+                                <tr>
+                                    <td class="cat_info" width="35%">RFQ Date</td>
+                                    <td class="cat_info_b" width="2%">:</td>
+                                    <td class="cat_info_b" width="63%">@ViewBag.Details.Tables[0].Rows[0]["rfq_dt"].ToString()</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+
+        @if (ViewBag.Details.Tables[1].Rows != null)
+        {
+            var i = 1;
+            DataView data = new DataView();
+            foreach (DataRow dr in ViewBag.Details.Tables[1].Rows)
+            {
+                <tr>
+                    <td>
+
+                        <table class="table_content_first" cellpadding="0" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th width="5%">Sr.No.</th>
+                                    <th width="24%">Item Name</th>
+                                    <th width="10%" title="Unit Of Measure"> UOM </th>
+                                    <th width="15%">Item  Type</th>
+                                    <th width="15%">RFQ Quantity</th>
+                                    <th width="31%">Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="sr_padding">@i</td>
+                                    <td>@dr["item_name"].ToString()</td>
+                                    <td>@dr["uom_name"].ToString()</td>
+                                    <td>@dr["ItemType"].ToString()</td>
+                                    <td>@dr["rfq_qty"].ToString()</td>
+                                    <td>@dr["it_remarks"].ToString()</td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+
+                    </td>
+
+                </tr>
+                <tr>
+                    <td>
+
+
+                        <table class="table_content_second" cellpadding="0" cellspacing="0" border="1">
+                            <thead>
+                                <tr class="">
+                                    <th width="5%">Sr.No.</th>
+                                    <th width="19%">Supplier  Name</th>
+                                    <th width="20%">Quotation Number And Date </th>
+                                    <th width="7%">Price </th>
+                                    <th width="6%">Discount (in %)</th>
+                                    <th width="10%">Price After Discount</th>
+                                    <th width="8%">Value</th>
+                                    <th width="11%">Payment Terms <br /> (In Days)</th>
+                                    <th width="8%">Delivery Date</th>
+                                    <th width="6%">Selected for Order</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (ViewBag.Details.Tables[2].Rows != null)
+                                {
+                                    var j = 1;
+
+                                    foreach (DataRow drDetails in ViewBag.Details.Tables[2].Rows)
+                                    {
+                                        if (dr["item_id"].ToString() == drDetails["item_id"].ToString())
+                                        {
+                                            <tr>
+                                                <td class="sr_padding">@j</td>
+                                                <td>@drDetails["supp_name"].ToString()</td>
+                                                <td>@drDetails["QuotationDetails"].ToString()</td>
+                                                <td align="right">@drDetails["item_rate"].ToString()</td>
+                                                <td align="right">@drDetails["item_disc_perc"].ToString()</td>
+                                                <td align="right">@drDetails["net_rate"].ToString()</td>
+                                                <td align="right">@drDetails["item_net_val_bs"].ToString()</td>
+                                                <td align="right">@drDetails["paym_term"].ToString()</td>
+                                                <td>@drDetails["DeliveryDate"].ToString()</td>
+                                                <td>@drDetails["IsSelected"].ToString()</td>
+                                            </tr>
+                                            j++;
+                                        }
+                                    }
+
+                                }
+                            </tbody>
+                        </table>
+
+                    </td>
+                </tr>
+            }
+            i++;
+        }
+        <tr>
+            <td>
+                <table class="header" width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                        <td class="cat_info">Created By</td>
+                        <td class="cat_info">Approved By</td>
+                    </tr>
+                    <tr>
+                        <td class="cat_info_b">@ViewBag.Details.Tables[0].Rows[0]["CreateName"].ToString()</td>
+                        <td class="cat_info_b">@ViewBag.Details.Tables[0].Rows[0]["ApproveName"].ToString()</td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>
+

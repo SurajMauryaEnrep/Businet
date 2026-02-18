@@ -1,0 +1,1168 @@
+﻿@using EnRepMobileWeb.Resources;
+@using System.Data
+@*@if (Session["UserId"] == null)
+    {
+        Response.Redirect("~/Login");
+    }*@
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+<style>
+
+    table tfoot tr.total td {
+        position: sticky;
+        bottom: 0;
+        background: #f8f9fa; /* matches .table-secondary */
+        z-index: 110; /* ensure it stays above body rows */
+    }
+</style>
+@*<title>@Model.Title</title>*@
+<div class="row">
+    <div id="SaleHistory" class="modal fade show" aria-modal="true" role="dialog">
+        <div class="modal-dialog ui-draggable ui-draggable-handle" style="min-width:800px;">
+            <!-- Modal content-->
+            <div class="modal-content" id="tbody_ItemHistory">
+                <div class="modal-content" id="tbody_ItemHistory">
+                    <div class="modal-header">
+                        <h2> @Resource.Order @Resource.History</h2>
+                        <button type="button" class="close" data-dismiss="modal">×</button>
+                    </div>
+                    <div class="modal-body pop_top">
+                        <div class="row">
+                            <div class="col-md-4 col-sm-12">
+                                <label class="col-form-label label-align">@Resource.Item @Resource.Name</label>
+                                <input id="HistoryItemName" class="form-control" autocomplete="off" type="text" name="ItemName" placeholder="Item Name" onblur="this.placeholder = 'Item Name'" disabled="">
+                                <input type="hidden" id="hfHistoryItemID" value="ITM0002315">
+                                <input type="hidden" id="hfHistoryItemName" value="1021">
+                            </div>
+
+                            <div class="col-md-55 ">
+                                <label class="col-form-label label-align">@Resource.UOM</label>
+                                <input id="HistoryUOM" class="form-control" autocomplete="off" type="text" name="UOM" placeholder="UOM" onblur="this.placeholder = 'UOM'" disabled="">
+                                <input type="hidden" id="hfHistoryUOM" value="Pcs">
+                            </div>
+                            <div class="col-md-55 ">
+                                <label class="col-form-label label-align">
+                                    @Resource.FromDate
+                                </label>
+
+                                <input type="date" class="form-control" id="HistoryFrom_date" name="HistoryFrom_date">
+
+                            </div>
+                            <div class="col-md-55 ">
+                                <label class="col-form-label label-align">
+                                    @Resource.ToDate
+                                </label>
+
+                                <input type="date" class="form-control" id="HistoryTo_date" value="2025-07-21" name="HistoryTo_date">
+
+                            </div>
+                            <div class="col-md-1 col-sm-12" style="max-width:6%;">
+                                <button type="button" class="btn btn-primary btn-sm margintop20" id="BtnSearch" onclick="OnclickHistorySearchBtn();"><i class="fa fa-search" aria-hidden="true"></i></button>
+                            </div>
+                        </div>
+                        <div class="card-box table-responsive dy_table">
+                            <div id="LSOListTbody" class="sticky-table sticky-ltr-cells sb-container container-example1 OrderHistory height30VH">
+                                <table id="datatable-buttons9" data-order="" class="table table-striped table-bordered rowhighlighttbl itmfrz" style="width:100%">
+                                    <thead>
+                                        <tr class="sticky-header">
+                                            <th width="40%" class="sorting" tabindex="0" aria-controls="datatable-buttons9" rowspan="1" colspan="1" aria-label="Supplier  Name: activate to sort column ascending" style="width: 245.2px;">Supplier <br> Name</th>
+                                            <th width="15%" class="sorting" tabindex="0" aria-controls="datatable-buttons9" rowspan="1" colspan="1" aria-label="Order  Number: activate to sort column ascending" style="width: 117.2px;">Order <br> Number</th>
+                                            <th width="15%" class="sorting" tabindex="0" aria-controls="datatable-buttons9" rowspan="1" colspan="1" aria-label="Date: activate to sort column ascending" style="width: 68.2px;">Date</th>
+                                            <th style="display: none; width: 0px;" class="sorting" tabindex="0" aria-controls="datatable-buttons9" rowspan="1" colspan="1" aria-label="Date: activate to sort column ascending">Date</th>
+                                            <th width="15%" class="sorting" tabindex="0" aria-controls="datatable-buttons9" rowspan="1" colspan="1" aria-label="Quantity: activate to sort column ascending" style="width: 69.2px;">Quantity</th>
+                                            <th width="15%" class="sorting" tabindex="0" aria-controls="datatable-buttons9" rowspan="1" colspan="1" aria-label="Price: activate to sort column ascending" style="width: 64px;">Price</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr role="row" class="odd">
+                                            <td width="40%">	AB Supplier Test</td>
+                                            <td width="15%">B1/07/25/DPO0000018</td>
+                                            <td width="15%">16-07-2025</td>
+                                            <td style="display:none;">16-07-2025</td>
+                                            <td width="15%" class="num_right">100.00</td>
+                                            <td width="15%" class="num_right">100.00</td>
+                                        </tr>
+                                        <tr role="row" class="even">
+                                            <td width="40%">	AB Supplier Test</td>
+                                            <td width="15%">B1/06/25/DPO0000015</td>
+                                            <td width="15%">17-06-2025</td>
+                                            <td style="display:none;">17-06-2025</td>
+                                            <td width="15%" class="num_right">100.00</td>
+                                            <td width="15%" class="num_right">185.00</td>
+                                        </tr>
+                                        <tr role="row" class="odd">
+                                            <td width="40%">SUPP 12 APR 1248</td>
+                                            <td width="15%">B1/05/25/DPO0000008</td>
+                                            <td width="15%">12-05-2025</td>
+                                            <td style="display:none;">12-05-2025</td>
+                                            <td width="15%" class="num_right">1000.00</td>
+                                            <td width="15%" class="num_right">12.00</td>
+                                        </tr>
+                                        <tr role="row" class="even">
+                                            <td width="40%">Apex India Pvt. Ltd.</td>
+                                            <td width="15%">B1/05/25/DPO0000005</td>
+                                            <td width="15%">03-05-2025</td>
+                                            <td style="display:none;">03-05-2025</td>
+                                            <td width="15%" class="num_right">12.00</td>
+                                            <td width="15%" class="num_right">11.00</td>
+                                        </tr>
+                                        <tr role="row" class="odd">
+                                            <td width="40%">Apex India Pvt. Ltd.</td>
+                                            <td width="15%">B1/03/25/DPO0000001</td>
+                                            <td width="15%">21-03-2025</td>
+                                            <td style="display:none;">21-03-2025</td>
+                                            <td width="15%" class="num_right">5000.00</td>
+                                            <td width="15%" class="num_right">1000.00</td>
+                                        </tr>
+                                        <tr role="row" class="even">
+                                            <td width="40%">A.ASWIN1</td>
+                                            <td width="15%">B1/02/25/IPO0000003</td>
+                                            <td width="15%">06-02-2025</td>
+                                            <td style="display:none;">06-02-2025</td>
+                                            <td width="15%" class="num_right">10.00</td>
+                                            <td width="15%" class="num_right">2000.00</td>
+                                        </tr>
+                                        <tr role="row" class="odd">
+                                            <td width="40%">Apex India Pvt. Ltd.</td>
+                                            <td width="15%">B1/12/24/DPO0000001</td>
+                                            <td width="15%">02-12-2024</td>
+                                            <td style="display:none;">02-12-2024</td>
+                                            <td width="15%" class="num_right">12.00</td>
+                                            <td width="15%" class="num_right">11.00</td>
+                                        </tr>
+                                        <tr role="row" class="even">
+                                            <td width="40%">Apex India Pvt. Ltd.</td>
+                                            <td width="15%">B1/11/24/DPO0000002</td>
+                                            <td width="15%">12-11-2024</td>
+                                            <td style="display:none;">12-11-2024</td>
+                                            <td width="15%" class="num_right">500.00</td>
+                                            <td width="15%" class="num_right">20.00</td>
+                                        </tr>
+                                        <tr role="row" class="odd">
+                                            <td width="40%">Apex India Pvt. Ltd.</td>
+                                            <td width="15%">B1/09/24/DPO0000001</td>
+                                            <td width="15%">05-09-2024</td>
+                                            <td style="display:none;">05-09-2024</td>
+                                            <td width="15%" class="num_right">13.00</td>
+                                            <td width="15%" class="num_right">12.00</td>
+                                        </tr>
+                                        <tr role="row" class="even">
+                                            <td width="40%">Apex India Pvt. Ltd.</td>
+                                            <td width="15%">B1/08/24/DPO0000001</td>
+                                            <td width="15%">28-08-2024</td>
+                                            <td style="display:none;">28-08-2024</td>
+                                            <td width="15%" class="num_right">8.00</td>
+                                            <td width="15%" class="num_right">300.00</td>
+                                        </tr>
+                                        <tr role="row" class="odd">
+                                            <td width="40%">Apex India Pvt. Ltd.</td>
+                                            <td width="15%">B1/07/24/DPO0000012</td>
+                                            <td width="15%">29-07-2024</td>
+                                            <td style="display:none;">29-07-2024</td>
+                                            <td width="15%" class="num_right">120.00</td>
+                                            <td width="15%" class="num_right">11.00</td>
+                                        </tr>
+                                        <tr role="row" class="even">
+                                            <td width="40%">Apex India Pvt. Ltd.</td>
+                                            <td width="15%">B1/07/24/DPO0000011</td>
+                                            <td width="15%">29-07-2024</td>
+                                            <td style="display:none;">29-07-2024</td>
+                                            <td width="15%" class="num_right">12.00</td>
+                                            <td width="15%" class="num_right">11.00</td>
+                                        </tr>
+                                        <tr role="row" class="odd">
+                                            <td width="40%">Apex India Pvt. Ltd.</td>
+                                            <td width="15%">B1/07/24/DPO0000002</td>
+                                            <td width="15%">08-07-2024</td>
+                                            <td style="display:none;">08-07-2024</td>
+                                            <td width="15%" class="num_right">100.00</td>
+                                            <td width="15%" class="num_right">500.00</td>
+                                        </tr>
+                                        <tr role="row" class="even">
+                                            <td width="40%">Apex India Pvt. Ltd.</td>
+                                            <td width="15%">B1/05/24/DPO0000006</td>
+                                            <td width="15%">21-05-2024</td>
+                                            <td style="display:none;">21-05-2024</td>
+                                            <td width="15%" class="num_right">20.00</td>
+                                            <td width="15%" class="num_right">22.00</td>
+                                        </tr>
+                                        <tr role="row" class="odd">
+                                            <td width="40%">0000004092023</td>
+                                            <td width="15%">B1/04/24/DPO0000005</td>
+                                            <td width="15%">22-04-2024</td>
+                                            <td style="display:none;">22-04-2024</td>
+                                            <td width="15%" class="num_right">10.00</td>
+                                            <td width="15%" class="num_right">100.00</td>
+                                        </tr>
+                                        <tr role="row" class="even">
+                                            <td width="40%">Apex India Pvt. Ltd.</td>
+                                            <td width="15%">B1/04/24/DPO0000004</td>
+                                            <td width="15%">20-04-2024</td>
+                                            <td style="display:none;">20-04-2024</td>
+                                            <td width="15%" class="num_right">100.00</td>
+                                            <td width="15%" class="num_right">1000.00</td>
+                                        </tr>
+                                        <tr role="row" class="odd">
+                                            <td width="40%">Apex India Pvt. Ltd.</td>
+                                            <td width="15%">B1/04/24/DPO0000003</td>
+                                            <td width="15%">20-04-2024</td>
+                                            <td style="display:none;">20-04-2024</td>
+                                            <td width="15%" class="num_right">100.00</td>
+                                            <td width="15%" class="num_right">1000.00</td>
+                                        </tr>
+                                        <tr role="row" class="even">
+                                            <td width="40%">Apex India Pvt. Ltd.</td>
+                                            <td width="15%">B1/03/24/DPO0000003</td>
+                                            <td width="15%">13-03-2024</td>
+                                            <td style="display:none;">13-03-2024</td>
+                                            <td width="15%" class="num_right">3.00</td>
+                                            <td width="15%" class="num_right">800.00</td>
+                                        </tr>
+                                        <tr role="row" class="odd">
+                                            <td width="40%">Apex India Pvt. Ltd.</td>
+                                            <td width="15%">B1/03/24/DPO0000001</td>
+                                            <td width="15%">01-03-2024</td>
+                                            <td style="display:none;">01-03-2024</td>
+                                            <td width="15%" class="num_right">100.00</td>
+                                            <td width="15%" class="num_right">12.00</td>
+                                        </tr>
+                                        <tr role="row" class="even">
+                                            <td width="40%">Apex India Pvt. Ltd.</td>
+                                            <td width="15%">B1/02/24/DPO0000009</td>
+                                            <td width="15%">19-02-2024</td>
+                                            <td style="display:none;">19-02-2024</td>
+                                            <td width="15%" class="num_right">99.00</td>
+                                            <td width="15%" class="num_right">100.00</td>
+                                        </tr>
+                                        <tr role="row" class="odd">
+                                            <td width="40%">Apex India Pvt. Ltd.</td>
+                                            <td width="15%">B1/02/24/DPO0000007</td>
+                                            <td width="15%">13-02-2024</td>
+                                            <td style="display:none;">13-02-2024</td>
+                                            <td width="15%" class="num_right">10.00</td>
+                                            <td width="15%" class="num_right">100.00</td>
+                                        </tr>
+                                        <tr role="row" class="even">
+                                            <td width="40%">Apex India Pvt. Ltd.</td>
+                                            <td width="15%">B1/02/24/DPO0000005</td>
+                                            <td width="15%">08-02-2024</td>
+                                            <td style="display:none;">08-02-2024</td>
+                                            <td width="15%" class="num_right">6.00</td>
+                                            <td width="15%" class="num_right">400.00</td>
+                                        </tr>
+                                        <tr role="row" class="odd">
+                                            <td width="40%">	AB Supplier Test</td>
+                                            <td width="15%">B1/02/24/DPO0000003</td>
+                                            <td width="15%">07-02-2024</td>
+                                            <td style="display:none;">07-02-2024</td>
+                                            <td width="15%" class="num_right">10.00</td>
+                                            <td width="15%" class="num_right">122.00</td>
+                                        </tr>
+                                        <tr role="row" class="even">
+                                            <td width="40%">Apex India Pvt. Ltd.</td>
+                                            <td width="15%">B1/02/24/DPO0000001</td>
+                                            <td width="15%">03-02-2024</td>
+                                            <td style="display:none;">03-02-2024</td>
+                                            <td width="15%" class="num_right">10.00</td>
+                                            <td width="15%" class="num_right">1500.00</td>
+                                        </tr>
+                                        <tr role="row" class="odd">
+                                            <td width="40%">	AB Supplier Test</td>
+                                            <td width="15%">B1/01/24/DPO0000013</td>
+                                            <td width="15%">23-01-2024</td>
+                                            <td style="display:none;">23-01-2024</td>
+                                            <td width="15%" class="num_right">10.00</td>
+                                            <td width="15%" class="num_right">1549.00</td>
+                                        </tr>
+                                    </tbody>
+                                </table><div class="dataTables_info" id="datatable-buttons9_info" role="status" aria-live="polite">Showing 1 to 25 of 94 entries</div><div class="dataTables_paginate paging_simple_numbers" id="datatable-buttons9_paginate"><ul class="pagination"><li class="paginate_button previous disabled" id="datatable-buttons9_previous"><a href="#" aria-controls="datatable-buttons9" data-dt-idx="0" tabindex="0">Previous</a></li><li class="paginate_button active"><a href="#" aria-controls="datatable-buttons9" data-dt-idx="1" tabindex="0">1</a></li><li class="paginate_button "><a href="#" aria-controls="datatable-buttons9" data-dt-idx="2" tabindex="0">2</a></li><li class="paginate_button "><a href="#" aria-controls="datatable-buttons9" data-dt-idx="3" tabindex="0">3</a></li><li class="paginate_button "><a href="#" aria-controls="datatable-buttons9" data-dt-idx="4" tabindex="0">4</a></li><li class="paginate_button next" id="datatable-buttons9_next"><a href="#" aria-controls="datatable-buttons9" data-dt-idx="5" tabindex="0">Next</a></li></ul></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="ItemInfo" class="modal fade show" role="dialog" aria-modal="true">
+        <div class="modal-dialog ui-draggable ui-draggable-handle">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2><span id="SpanItemDescription">1021</span></h2>
+                    <button type="button" class="close" data-dismiss="modal" id="btnCrossItemInfo">×</button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-bordered" id="ItemDetailsTbl">
+                        <thead>
+                            <tr>
+                                <th width="15%">OEM No.</th>
+                                <td width="35%">
+                                    <input id="Txt_ItmOEMNo" class="form-control" autocomplete="off" type="text" name="Txt_ItmOEMNo" placeholder="OEM No." onblur="this.placeholder='OEM No.'" disabled="">
+                                </td>
+                                <th width="15%">Alias Name</th>
+                                <td width="35%">
+                                    <input id="Txt_ItmSampCode" class="form-control" autocomplete="off" type="text" name="Txt_ItmSampCode" placeholder="Sample Code" onblur="this.placeholder='Sample Code'" disabled="">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th width="15%">Ref. No.</th>
+                                <td width="35%">
+                                    <input id="Txt_ItmRefNo" class="form-control" autocomplete="off" type="text" name="Txt_ItmRefNo" placeholder="Ref No." onblur="this.placeholder='Ref No.'" disabled="">
+                                </td>
+                                <th width="15%">HSN/SAC Code  </th>
+                                <td width="35%">
+                                    <input id="Txt_ItmHSNCode" class="form-control" autocomplete="off" type="text" name="Txt_ItmHSNCode" placeholder="HSN Code" onblur="this.placeholder='HSN Code'" disabled="">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th width="15%">Technical <br> Description</th>
+                                <td width="35%">
+                                    <textarea id="TechnicalDescription" class="form-control remarksmessage" autocomplete="off" type="text" name="TechnicalDescription" maxlength="500" placeholder="Technical Description" disabled="" onmouseover="OnMouseOver(this)" title="STARTER DRIVE"></textarea>
+                                </td>
+                                <th width="15%">Technical <br> Specification  </th>
+                                <td width="35%">
+                                    <textarea id="TechnicalSpecification" class="form-control remarksmessage" autocomplete="off" type="text" name="TechnicalSpecification" maxlength="500" placeholder="Technical Specification" disabled="" onmouseover="OnMouseOver(this)"></textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4" class="no-padding">
+                                    <table width="100%" cellpadding="0" cellspacing="0">
+                                        <tbody>
+                                            <tr>
+                                                <th width="15%">Weight In Kg</th>
+                                                <td><input id="WeightInKgItem" class="form-control num_right" autocomplete="off" type="text" name="WeightInKg" placeholder="0000.00" disabled=""></td>
+                                                <th>Net Weight</th>
+                                                <td><input id="NetWeightItem" class="form-control num_right" autocomplete="off" type="text" name="NetWeight" placeholder="0000.00" disabled=""></td>
+                                                <th>Gross Weight</th>
+                                                <td><input id="GrossWeightItem" class="form-control num_right" autocomplete="off" type="text" name="GrossWeight" placeholder="0000.00" disabled=""></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    <div class="col-sm-12" style="margin-top: 20px; margin-bottom: 30px;" id="DivMyCarousel">
+                                        <div id="myCarousel" class="carousel slide" data-ride="carousel"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" id="btnCloseItemInfo">Close</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- Batch Number -->
+    <div id="BatchNumber" class="modal fade" role="dialog">
+        <div class="modal-dialog" style=" max-width:600px;">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/Common/Views/PartialBatchDetail.cshtml")
+        </div>
+        @*@Html.HiddenFor(model => model.ItemBatchWiseDetail, new { @id = "HDSelectedBatchwise" })*@
+
+        <table id="SaveItemBatchTbl" class="table table-bordered" style="display:none">
+            <thead>
+                <tr>
+                    <th>ItemId</th>
+                    <th>BatchNO</th>
+                    <th>Batch Quantity</th>
+                    <th>expiryDate</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (ViewBag.ItemStockBatchWise != null)
+                {
+                    foreach (System.Data.DataRow Row in ViewBag.ItemStockBatchWise.Rows)
+                    {
+                        <tr>
+                            <td><input type="text" id="shipmentlineBatchItemId" value="@Row["item_id"].ToString()" /></td>
+                            <td><input type="text" id="shipmentlineBatchBatchNo" value="@Row["batch_no"].ToString()" /></td>
+                            <td><input type="text" id="shipmentlineBatchBatchAvlStk" value="@Row["batch_qty"].ToString()" /></td>
+                            <td><input type="text" id="shipmentlineBatchExpiryDate" value="@Row["exp_dt"].ToString()" /></td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+    <!-- Serial Detail -->
+    <div id="SerialDetail" class="modal fade" role="dialog">
+        <div class="modal-dialog" style=" max-width:600px;">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/Common/Views/PartialSerialNoDetail.cshtml")
+        </div>
+        @*@Html.HiddenFor(model => model.ItemSerialWiseDetail, new { @id = "HDSelectedSerialwise" })
+            @Html.HiddenFor(model => model.hdnsaveApprovebtn, new { @id = "hdnsavebtn" })*@
+
+        <table id="SaveItemSerialTbl" class="table table-bordered" style="display:none">
+            <thead>
+                <tr class="headings" disabled="disabled">
+                    <th>ItemId</th>
+                    <th>SerialNO</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (ViewBag.ItemStockSerialWise != null)
+                {
+                    foreach (System.Data.DataRow Row in ViewBag.ItemStockSerialWise.Rows)
+                    {
+                        if (@Row["SerailSelected"].ToString() == "Y")
+                        {
+                            <tr>
+                                <td><input type="text" id="shipmentlineSerialItemId" value="@Row["item_id"].ToString()" /></td>
+                                <td><input type="text" id="shipmentlineBatchSerialNO" value="@Row["serial_no"].ToString()" /></td>
+                            </tr>
+                        }
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <div id="WorkflowInformation" class="modal fade" role="dialog">
+                    <div class="modal-dialog" style="max-width:700px;">
+                        <div class="price_item_detail">
+                            <!-- Modal content-->
+                            @Html.Partial("~/Areas/Common/Views/_WorkFlow.cshtml")
+                        </div>
+                    </div>
+                </div>
+                <h2 class="col-md-6 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                <div id="wizard" class="form_wizard wizard_horizontal col-md-2 col-sm-12 work_flow">
+                    @*@if (ViewBag.AppLevel.Rows.Count > 0)
+                        {*@
+                    @Html.Partial("~/Areas/Common/Views/_PartialWorkflowBar.cshtml")
+                </div>
+                <div id="" class="col-md-4 col-sm-12 work_flow heading_right_padding">
+                    <ul>
+                        <li>
+                            <button class="add" title="@Resource.AddNew" type="submit" id="btn_add" name="Command" value="AddNew"></button>
+                        </li>
+                        <li>
+                            <button class="edit" title="@Resource.Edit" type="submit" id="btn_edit" name="Command" value="Edit"></button>
+                        </li>
+                        <li>
+                            <button class="delete" title="@Resource.Delete" type="submit" id="btn_del" name="Command" value="Delete"></button>
+                        </li>
+                        <li>
+                            <button class="save" title="@Resource.Save" type="submit" onclick="return CheckFormValidation();" id="btn_save" name="Command" value="Save"></button>
+                        </li>
+                        <li>
+                            <button class="forward" title="@Resource.Forward" type="submit" id="btn_forward" name="Command" value="Forward"></button>
+                        </li>
+                        <li>
+                            <button class="approve" title="@Resource.Approve" type="submit" id="btn_approve" name="Command" value="Approve"></button>
+                        </li>
+                        <li>
+                            <button class="workflow" title="@Resource.Workflow" type="submit" id="btn_workflow" name="Command" value="Workflow"></button>
+                        </li>
+                        <li>
+                            <button class="refresh" title="@Resource.Refresh" type="submit" id="btn_refresh" name="Command" value="Refresh" onclick="EnableRefreshBtn()"></button>
+                        </li>
+                        <li>
+                            <button class="print" title="@Resource.Print" type="submit" id="btn_print" name="Command" value="Print"></button>
+                        </li>
+                        <li>
+                            <button class="email_tool" title="@Resource.Email" type="submit" id="Btn_Mail" name="Command" value="Mail"></button>
+                        </li>
+                        <li>
+                            <button class="back" title="@Resource.Back" type="submit" id="btn_back" name="Command" value="BacktoList"></button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="clearfix"></div>
+                <div class="x_title pad_mar ">
+                    <div class="col-md-12 col-sm-12 icon_tool ">
+                        <!--<span>Collapsible / Accordion </span>-->
+                        <div class="approved_by">
+                            <ul>
+                                <li><span>@Resource.CreatedBy<br><b>Suraj</b></span></li>
+                                <li><span>@Resource.Createdon<br><b>08-07-2025 17:36</b></span></li>
+                                <li><span>@Resource.ApprovedBy<br><b>Admin</b></span></li>
+                                <li><span>@Resource.ApprovedOn<br><b>08-07-2025 17:40</b></span></li>
+                                <li><span>@Resource.AmendedBy<br><b>Suraj</b></span></li>
+                                <li><span>@Resource.AmendedOn<br><b>08-07-2025 17:42</b></span></li>
+                                <li><span>@Resource.Status<br><b> Cancelled</b></span></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Search Item Start-->
+    <div id="SearchItem" class="modal fade show" role="dialog" aria-modal="true">
+        <div class="modal-dialog pop_csv" id="" style="min-width:500px;">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/Common/Views/Cmn_PartialSearchItemDetails.cshtml")
+        </div>
+    </div>
+    <!-- Cost Center Detail -->
+    <div id="CostCenterDetail" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class=" height30VH" id="CostCenterDetailPopup">
+            </div>
+            @*@Html.HiddenFor(model => model.CC_DetailList, new { @id = "hdn_CC_DetailList" })
+                @Html.HiddenFor(model => model.GstApplicable, new { @id = "hdnGstApplicable" })*@
+        </div>
+        <div>
+            <table class="table table-striped margin5" hidden="hidden" id="tbladdhdn">
+                <tbody id="tbody_tblhdn">
+                    @if (ViewBag.CostCenterData != null)
+                    {
+                        foreach (System.Data.DataRow Row in ViewBag.CostCenterData.Rows)
+                        {
+                            <tr>
+                                <td id="hdntbl_GlAccountId">@Row["acc_id"].ToString()</td>
+                                <td id="hdntbl_CCtype">@Row["cc_name"].ToString()</td>
+                                <td id="hdntbl_CCtype_Id">@Row["cc_id"].ToString()</td>
+                                <td id="hdntbl_CC_Name">@Row["cc_val_name"].ToString()</td>
+                                <td id="hdntbl_CCName_Id">@Row["cc_val_id"].ToString()</td>
+                                <td id="hdntbl_CstAmt">@Row["cc_amt"].ToString()</td>
+                                <td id="hdntbl_vou_sr_no">@Row["vou_sr_no"].ToString()</td>
+                                <td id="hdntbl_gl_sr_no">@Row["gl_sr_no"].ToString()</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <article class="panel-group bs-accordion" id="accordion" role="tablist" aria-multiselectable="true">
+                    <section class="panel panel-default">
+                        <div class="panel-heading" role="tab" id="headingOne">
+                            <h4 class="panel-title">  <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">@Resource.Invoice  @Resource.Detail<span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span></a></h4>
+                        </div>
+                        <div id="collapseOne" class="panel-collapse in collapse show" role="tabpanel" aria-labelledby="headingOne" style="">
+                            @*<form class="accordian_form_bg" action="" method="post" novalidate>*@
+                            <div class="panel-body">
+                                <div class="col-md-12 col-sm-12 pl-0  " id="">
+                                    <div class="custom-control custom-switch  float-right">
+                                        <input class="custom-control-input col-md-3 col-sm-12 margin-switch" data-val="true" data-val-required="" id="Cancel_PQ" name="Cancelled" type="checkbox" value="true">
+                                        <label class="custom-control-label col-md-9 col-sm-12" for="" style="padding: 3px 0px;">@Resource.Cancelled</label>
+                                    </div>
+                                </div>
+                                <div class="clear"></div>
+                                <div class="col-md-2 col-sm-12">
+                                    <label class="col-form-label label-align">@Resource.Invoice @Resource.Number</label>
+                                    <input class="form-control" disabled="disabled" id="InvoiceNumber" maxlength="20" name="InvoiceNumber" placeholder="@Resource.Invoice @Resource.Number" type="text" value="">
+                                </div>
+                                <div class="col-md-2 col-sm-12 pl-0">
+                                    <label class="col-form-label label-align">@Resource.Invoice  @Resource.Date</label>
+                                    <input class="form-control" disabled="disabled" id="InvoiceDate" maxlength="20" name="InvoiceDate" placeholder="@Resource.Invoice  @Resource.Date" type="text" value="">
+                                </div>
+                                <div class="col-md-2 col-sm-12 pl-0">
+                                    <label class="col-form-label label-align">@Resource.Customer @Resource.Name</label>
+                                    <select class="form-control" id="CustomerName" name="CustomerName">
+                                        <option selected="selected" value="">ABC INTERNATIONAL</option>
+                                        <option value="">ABC COUSTOMER TETSING</option>
+                                        <option value="">AB_TEST CUSTOMER</option>
+                                        <option value="">AB TESTING</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2 col-sm-12 pl-0">
+                                    <label class="col-form-label label-align">@Resource.Reference @Resource.Number</label>
+                                    <input class="form-control" id="ReferenceNumber" maxlength="20" name="ReferenceNumber" placeholder="@Resource.Reference @Resource.Number" type="text" value="">
+                                </div>
+                                <div class="col-md-2 col-sm-12 pl-0">
+                                    <label class="col-form-label label-align">@Resource.Payment @Resource.Mode</label>
+                                    <select class="form-control" id="PaymentMode" name="PaymentMode">
+                                        <option selected="selected" value="">Online</option>
+                                        <option value="">Credit Card</option>
+                                        <option value="">Cash</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2 col-sm-12 pl-0">
+                                    <label class="col-form-label label-align">@Resource.Payment @Resource.Reference @Resource.Number</label>
+                                    <input class="form-control" id="PaymentReferenceNumber" maxlength="20" name="PaymentReferenceNumber" placeholder="@Resource.Payment @Resource.Reference @Resource.Number" type="text" value="">
+                                </div>
+                                <div class="col-md-2 col-sm-12">
+                                    <label class="col-form-label label-align">@Resource.Freebies  @Resource.Scheme</label>
+                                    <select class="form-control" id="FreebiesScheme" name="FreebiesScheme">
+                                        <option selected="selected" value="">Freebies Scheme</option>
+                                        <option value="">Freebies Scheme 1</option>
+                                        <option value="">Freebies Scheme 2</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-2 col-sm-12 pl-0">
+                                    <label class="col-form-label label-align">@Resource.Discount   @Resource.Scheme</label>
+                                    <select class="form-control" id="DiscountScheme" name="DiscountScheme">
+                                        <option selected="selected" value="">Discount Scheme</option>
+                                        <option value="">Discount Scheme 1</option>
+                                        <option value="">Discount Scheme 2</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 col-sm-12 pl-0" id="">
+                                    <label class="col-form-label label-align">@Resource.remarks</label>
+                                    <textarea id="remarks" value="" class="form-control remarksmessage" name="remarks" maxlength="200" onmouseover="OnMouseOver(this)" placeholder="@Resource.remarks" readonly="" title=" This is a remark."> @Resource.remarks</textarea>
+                                </div>
+
+
+                                <div class="card-box table-responsive dy_table">
+                                    <div class=" col-sm-12">
+                                        <div class="price_item_detail">
+                                            <div class="tableFixHead ">
+                                                <h2 class="col-md-9 col-sm-12 no-padding mt-1">@Resource.ItemDetail</h2>
+                                                <div class="col-md-3 col-sm-12 no-padding num_right mt-3 mb-2"><label class="label pt-1 col-md-4 col-sm-12 num_right pr-0" for="SearchItmDetailsTbl">@Resource.Search @Resource.Item : </label><input type="text" class="form-control col-md-7 col-sm-12" id="SearchItmDetailsTbl" onkeyup="FilterItemDetail(event)" /> <a class="pl_excel" href="#" onclick=" return ExportItemsToExcel()"></a></div>
+                                                <div class="height30VH"></div>
+                                                <table id="" class="table table-bordered itmfrz ">
+                                                    <thead>
+                                                        <tr class="headings">
+                                                            <th width="3%">@Resource.SrNo</th>
+                                                            <th width="19%" class="ItmNameBreak itmStick tditemfrz">
+                                                                <div class="col-md-1 col-sm-12"> </div>
+                                                                <div class="col-md-10 col-sm-12">
+                                                                    <span class="item_add"> @Resource.Product @Resource.Description  <span class="required">*</span> </span>
+                                                                    <a href="#">
+                                                                        <div class="plus_icon1">
+                                                                            <i class="fa fa-plus" id="BtnAddItem" title="Add New" onclick="AddNewItem('Output')"></i>
+                                                                        </div>
+                                                                    </a>
+                                                                </div>
+                                                                <div class="col-md-1 col-sm-12"> </div>
+                                                            </th>
+                                                            <th width="6%" title="@Resource.UnitOfMeasure"> @Resource.UOM </th>
+                                                            <th width="7%">@Resource.Available  @Resource.Stock</th>
+                                                            <th width="4%">@Resource.Batch</th>
+                                                            <th width="4%">@Resource.Serial</th>
+                                                            <th width="7%">@Resource.Quantity</th>
+                                                            <th width="7%">@Resource.Price</th>
+                                                            <th width="7%">@Resource.Discount <br /> @Resource.InPercentage</th>
+                                                            <th width="9%">@Resource.Additional @Resource.Discount @Resource.InPercentage</th>
+                                                            <th width="7%">@Resource.Price  @Resource.After @Resource.Discount</th>
+                                                            <th width="7%">@Resource.Value</th>
+                                                            <th width="7%">@Resource.Taxes</th>
+                                                            <th width="7%">@Resource.Value @Resource.After @Resource.Tax</th>
+
+
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td><input id="SrNo" class="form-control" autocomplete="off" type="text" name="SrNo" placeholder="01" readonly="readonly"></td>
+                                                            <td class="ItmNameBreak itmStick tditemfrz">
+                                                                <div class="col-sm-10 no-padding">
+                                                                    <input id="ProductDescription" class="form-control" autocomplete="off" type="text" name="ProductDescription" placeholder="Scan Code Here">
+                                                                </div>
+                                                                <div class="col-sm-2 no-padding">
+                                                                    <div class="col-sm-5 i_Icon">
+                                                                        <button type="button" id="ItmInfoBtnIcon" class="calculator" onclick="OnClickIconBtn(event);" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title=" @Resource.ItemInformation"> </button>
+                                                                    </div>
+                                                                    <div class="col-sm-7 i_Icon pl-0">
+                                                                        <button type="button" id="SearchItem" class="calculator" onclick="Cmn_itemSearchPartial('ItemSearch')" data-toggle="modal" data-target="#SearchItem" data-backdrop="static" data-keyboard="false"><i class="fa fa-search SearchItem" title="@Resource.Search @Resource.Item "></i>   </button>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td><input id="UOM" class="form-control" autocomplete="off" type="text" name="UOM" placeholder="Pcs" readonly="readonly"></td>
+                                                            <td><input id="AvailableStock" class="form-control num_right" autocomplete="off" type="text" name="AvailableStock" placeholder="100.00" readonly="readonly"></td>
+                                                            <td class="center">
+                                                                <button type="button" class="calculator " id="BtnBatchDetail" onclick="OnClickBatchDetailBtn(event)" data-toggle="modal" data-target="#BatchNumber" data-backdrop="static" data-keyboard="false"><i class="fa fa-eye" aria-hidden="true" data-toggle="" title="@Resource.BatchDetail"></i></button>
+                                                            </td>
+                                                            <td class="center">
+                                                                <button type="button" class="calculator " id="BtnSerialDetail" onclick="OnClickSerialDetailBtn(event)" data-toggle="modal" data-target="#SerialDetail" data-backdrop="static" data-keyboard="false">
+                                                                    <i class="fa fa-eye" aria-hidden="true" data-toggle="" title="@Resource.SerialDetail"></i>
+                                                                </button>
+
+
+                                                            </td>
+                                                            <td><input id="Quantity" class="form-control num_right" autocomplete="off" type="text" name="Quantity" placeholder="121.00" readonly="readonly"></td>
+                                                            <td><input id="Price" class="form-control num_right" autocomplete="off" type="text" name="Price" placeholder="12100.00" readonly="readonly"></td>
+                                                            <td><input id="DiscountInPercentage" class="form-control num_right" autocomplete="off" type="text" name="DiscountInPercentage" placeholder="5%" readonly="readonly"></td>
+                                                            <td><input id="AdditionalDiscountInPercentage" class="form-control num_right" autocomplete="off" type="text" name="AdditionalDiscountInPercentage" placeholder="12%" readonly="readonly"></td>
+                                                            <td><input id="PriceAfterDiscount" class="form-control num_right" autocomplete="off" type="text" name="PriceAfterDiscount" placeholder="1452.00" readonly="readonly"></td>
+                                                            <td><input id="Value" class="form-control num_right" autocomplete="off" type="text" name="Value" placeholder="1452.00" readonly="readonly"></td>
+                                                            <td><input id="Taxes" class="form-control num_right" autocomplete="off" type="text" name="Taxes" placeholder="1200.00" readonly="readonly"></td>
+                                                            <td><input id="ValueAfterTax" class="form-control num_right" autocomplete="off" type="text" name="ValueAfterTax" placeholder="3500.00" readonly="readonly"></td>
+                                                            @*<td><input id="DifferenceOtherCharges" class="form-control num_right" autocomplete="off" type="text" name="DifferenceOtherCharges" placeholder="50.00" readonly="readonly"></td>
+            <td><input id="NetValue" class="form-control num_right" autocomplete="off" type="text" name="NetValue" placeholder="13902.00" readonly="readonly"></td>
+            <td><input id="DifferenceNetAmount" class="form-control num_right" autocomplete="off" type="text" name="DifferenceNetAmount" placeholder="162.00" readonly="readonly"></td>*@
+
+                                                        </tr>
+                                                        <tr>
+                                                            <td><input id="SrNo" class="form-control" autocomplete="off" type="text" name="SrNo" placeholder="02" readonly="readonly"></td>
+                                                            <td class="ItmNameBreak itmStick tditemfrz">
+                                                                <div class="col-sm-10 no-padding">
+                                                                    <input id="ProductDescription" class="form-control" autocomplete="off" type="text" name="ProductDescription" placeholder="Scan Code Here">
+                                                                </div>
+                                                                <div class="col-sm-2 no-padding">
+                                                                    <div class="col-sm-5 i_Icon">
+                                                                        <button type="button" id="ItmInfoBtnIcon" class="calculator" onclick="OnClickIconBtn(event);" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title=" @Resource.ItemInformation"> </button>
+                                                                    </div>
+                                                                    <div class="col-sm-7 i_Icon pl-0">
+                                                                        <button type="button" id="SearchItem" class="calculator" onclick="Cmn_itemSearchPartial('ItemSearch')" data-toggle="modal" data-target="#SearchItem" data-backdrop="static" data-keyboard="false"><i class="fa fa-search SearchItem" title="@Resource.Search @Resource.Item "></i>   </button>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td><input id="UOM" class="form-control" autocomplete="off" type="text" name="UOM" placeholder="Pcs" readonly="readonly"></td>
+                                                            <td><input id="AvailableStock" class="form-control num_right" autocomplete="off" type="text" name="AvailableStock" placeholder="100.00" readonly="readonly"></td>
+                                                            <td class="center">
+                                                                <button type="button" class="calculator " id="BtnBatchDetail" onclick="OnClickBatchDetailBtn(event)" data-toggle="modal" data-target="#BatchNumber" data-backdrop="static" data-keyboard="false"><i class="fa fa-eye" aria-hidden="true" data-toggle="" title="@Resource.BatchDetail"></i></button>
+                                                            </td>
+                                                            <td class="center">
+                                                                <button type="button" class="calculator " id="BtnSerialDetail" onclick="OnClickSerialDetailBtn(event)" data-toggle="modal" data-target="#SerialDetail" data-backdrop="static" data-keyboard="false">
+                                                                    <i class="fa fa-eye" aria-hidden="true" data-toggle="" title="@Resource.SerialDetail"></i>
+                                                                </button>
+
+
+                                                            </td>
+                                                            <td><input id="Quantity" class="form-control num_right" autocomplete="off" type="text" name="Quantity" placeholder="121.00" readonly="readonly"></td>
+                                                            <td><input id="Price" class="form-control num_right" autocomplete="off" type="text" name="Price" placeholder="12100.00" readonly="readonly"></td>
+                                                            <td><input id="DiscountInPercentage" class="form-control num_right" autocomplete="off" type="text" name="DiscountInPercentage" placeholder="5%" readonly="readonly"></td>
+                                                            <td><input id="AdditionalDiscountInPercentage" class="form-control num_right" autocomplete="off" type="text" name="AdditionalDiscountInPercentage" placeholder="12%" readonly="readonly"></td>
+                                                            <td><input id="PriceAfterDiscount" class="form-control num_right" autocomplete="off" type="text" name="PriceAfterDiscount" placeholder="1452.00" readonly="readonly"></td>
+                                                            <td><input id="Value" class="form-control num_right" autocomplete="off" type="text" name="Value" placeholder="1452.00" readonly="readonly"></td>
+                                                            <td><input id="Taxes" class="form-control num_right" autocomplete="off" type="text" name="Taxes" placeholder="1200.00" readonly="readonly"></td>
+                                                            <td><input id="ValueAfterTax" class="form-control num_right" autocomplete="off" type="text" name="ValueAfterTax" placeholder="3500.00" readonly="readonly"></td>
+                                                            @*<td><input id="DifferenceOtherCharges" class="form-control num_right" autocomplete="off" type="text" name="DifferenceOtherCharges" placeholder="50.00" readonly="readonly"></td>
+            <td><input id="NetValue" class="form-control num_right" autocomplete="off" type="text" name="NetValue" placeholder="13902.00" readonly="readonly"></td>
+            <td><input id="DifferenceNetAmount" class="form-control num_right" autocomplete="off" type="text" name="DifferenceNetAmount" placeholder="162.00" readonly="readonly"></td>*@
+
+                                                        </tr>
+                                                        <tr>
+                                                            <td><input id="SrNo" class="form-control" autocomplete="off" type="text" name="SrNo" placeholder="03" readonly="readonly"></td>
+                                                            <td class="ItmNameBreak itmStick tditemfrz">
+                                                                <div class="col-sm-10 no-padding">
+                                                                    <input id="ProductDescription" class="form-control" autocomplete="off" type="text" name="ProductDescription" placeholder="Scan Code Here">
+                                                                </div>
+                                                                <div class="col-sm-2 no-padding">
+                                                                    <div class="col-sm-5 i_Icon">
+                                                                        <button type="button" id="ItmInfoBtnIcon" class="calculator" onclick="OnClickIconBtn(event);" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title=" @Resource.ItemInformation"> </button>
+                                                                    </div>
+                                                                    <div class="col-sm-7 i_Icon pl-0">
+                                                                        <button type="button" id="SearchItem" class="calculator" onclick="Cmn_itemSearchPartial('ItemSearch')" data-toggle="modal" data-target="#SearchItem" data-backdrop="static" data-keyboard="false"><i class="fa fa-search SearchItem" title="@Resource.Search @Resource.Item "></i>   </button>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td><input id="UOM" class="form-control" autocomplete="off" type="text" name="UOM" placeholder="Pcs" readonly="readonly"></td>
+                                                            <td><input id="AvailableStock" class="form-control num_right" autocomplete="off" type="text" name="AvailableStock" placeholder="100.00" readonly="readonly"></td>
+                                                            <td class="center">
+                                                                <button type="button" class="calculator " id="BtnBatchDetail" onclick="OnClickBatchDetailBtn(event)" data-toggle="modal" data-target="#BatchNumber" data-backdrop="static" data-keyboard="false"><i class="fa fa-eye" aria-hidden="true" data-toggle="" title="@Resource.BatchDetail"></i></button>
+                                                            </td>
+                                                            <td class="center">
+                                                                <button type="button" class="calculator " id="BtnSerialDetail" onclick="OnClickSerialDetailBtn(event)" data-toggle="modal" data-target="#SerialDetail" data-backdrop="static" data-keyboard="false">
+                                                                    <i class="fa fa-eye" aria-hidden="true" data-toggle="" title="@Resource.SerialDetail"></i>
+                                                                </button>
+
+
+                                                            </td>
+                                                            <td><input id="Quantity" class="form-control num_right" autocomplete="off" type="text" name="Quantity" placeholder="121.00" readonly="readonly"></td>
+                                                            <td><input id="Price" class="form-control num_right" autocomplete="off" type="text" name="Price" placeholder="12100.00" readonly="readonly"></td>
+                                                            <td><input id="DiscountInPercentage" class="form-control num_right" autocomplete="off" type="text" name="DiscountInPercentage" placeholder="5%" readonly="readonly"></td>
+                                                            <td><input id="AdditionalDiscountInPercentage" class="form-control num_right" autocomplete="off" type="text" name="AdditionalDiscountInPercentage" placeholder="12%" readonly="readonly"></td>
+                                                            <td><input id="PriceAfterDiscount" class="form-control num_right" autocomplete="off" type="text" name="PriceAfterDiscount" placeholder="1452.00" readonly="readonly"></td>
+                                                            <td><input id="Value" class="form-control num_right" autocomplete="off" type="text" name="Value" placeholder="1452.00" readonly="readonly"></td>
+                                                            <td><input id="Taxes" class="form-control num_right" autocomplete="off" type="text" name="Taxes" placeholder="1200.00" readonly="readonly"></td>
+                                                            <td><input id="ValueAfterTax" class="form-control num_right" autocomplete="off" type="text" name="ValueAfterTax" placeholder="3500.00" readonly="readonly"></td>
+                                                            @*<td><input id="DifferenceOtherCharges" class="form-control num_right" autocomplete="off" type="text" name="DifferenceOtherCharges" placeholder="50.00" readonly="readonly"></td>
+            <td><input id="NetValue" class="form-control num_right" autocomplete="off" type="text" name="NetValue" placeholder="13902.00" readonly="readonly"></td>
+            <td><input id="DifferenceNetAmount" class="form-control num_right" autocomplete="off" type="text" name="DifferenceNetAmount" placeholder="162.00" readonly="readonly"></td>*@
+
+                                                        </tr>
+                                                        <tr>
+                                                            <td><input id="SrNo" class="form-control" autocomplete="off" type="text" name="SrNo" placeholder="04" readonly="readonly"></td>
+                                                            <td class="ItmNameBreak itmStick tditemfrz">
+                                                                <div class="col-sm-10 no-padding">
+                                                                    <input id="ProductDescription" class="form-control" autocomplete="off" type="text" name="ProductDescription" placeholder="Scan Code Here">
+                                                                </div>
+                                                                <div class="col-sm-2 no-padding">
+                                                                    <div class="col-sm-5 i_Icon">
+                                                                        <button type="button" id="ItmInfoBtnIcon" class="calculator" onclick="OnClickIconBtn(event);" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title=" @Resource.ItemInformation"> </button>
+                                                                    </div>
+                                                                    <div class="col-sm-7 i_Icon pl-0">
+                                                                        <button type="button" id="SearchItem" class="calculator" onclick="Cmn_itemSearchPartial('ItemSearch')" data-toggle="modal" data-target="#SearchItem" data-backdrop="static" data-keyboard="false"><i class="fa fa-search SearchItem" title="@Resource.Search @Resource.Item "></i>   </button>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td><input id="UOM" class="form-control" autocomplete="off" type="text" name="UOM" placeholder="Pcs" readonly="readonly"></td>
+                                                            <td><input id="AvailableStock" class="form-control num_right" autocomplete="off" type="text" name="AvailableStock" placeholder="100.00" readonly="readonly"></td>
+                                                            <td class="center">
+                                                                <button type="button" class="calculator " id="BtnBatchDetail" onclick="OnClickBatchDetailBtn(event)" data-toggle="modal" data-target="#BatchNumber" data-backdrop="static" data-keyboard="false"><i class="fa fa-eye" aria-hidden="true" data-toggle="" title="@Resource.BatchDetail"></i></button>
+                                                            </td>
+                                                            <td class="center">
+                                                                <button type="button" class="calculator " id="BtnSerialDetail" onclick="OnClickSerialDetailBtn(event)" data-toggle="modal" data-target="#SerialDetail" data-backdrop="static" data-keyboard="false">
+                                                                    <i class="fa fa-eye" aria-hidden="true" data-toggle="" title="@Resource.SerialDetail"></i>
+                                                                </button>
+
+
+                                                            </td>
+                                                            <td><input id="Quantity" class="form-control num_right" autocomplete="off" type="text" name="Quantity" placeholder="121.00" readonly="readonly"></td>
+                                                            <td><input id="Price" class="form-control num_right" autocomplete="off" type="text" name="Price" placeholder="12100.00" readonly="readonly"></td>
+                                                            <td><input id="DiscountInPercentage" class="form-control num_right" autocomplete="off" type="text" name="DiscountInPercentage" placeholder="5%" readonly="readonly"></td>
+                                                            <td><input id="AdditionalDiscountInPercentage" class="form-control num_right" autocomplete="off" type="text" name="AdditionalDiscountInPercentage" placeholder="12%" readonly="readonly"></td>
+                                                            <td><input id="PriceAfterDiscount" class="form-control num_right" autocomplete="off" type="text" name="PriceAfterDiscount" placeholder="1452.00" readonly="readonly"></td>
+                                                            <td><input id="Value" class="form-control num_right" autocomplete="off" type="text" name="Value" placeholder="1452.00" readonly="readonly"></td>
+                                                            <td><input id="Taxes" class="form-control num_right" autocomplete="off" type="text" name="Taxes" placeholder="1200.00" readonly="readonly"></td>
+                                                            <td><input id="ValueAfterTax" class="form-control num_right" autocomplete="off" type="text" name="ValueAfterTax" placeholder="3500.00" readonly="readonly"></td>
+                                                            @*<td><input id="DifferenceOtherCharges" class="form-control num_right" autocomplete="off" type="text" name="DifferenceOtherCharges" placeholder="50.00" readonly="readonly"></td>
+            <td><input id="NetValue" class="form-control num_right" autocomplete="off" type="text" name="NetValue" placeholder="13902.00" readonly="readonly"></td>
+            <td><input id="DifferenceNetAmount" class="form-control num_right" autocomplete="off" type="text" name="DifferenceNetAmount" placeholder="162.00" readonly="readonly"></td>*@
+
+                                                        </tr>
+                                                        <tr>
+                                                            <td><input id="SrNo" class="form-control" autocomplete="off" type="text" name="SrNo" placeholder="05" readonly="readonly"></td>
+                                                            <td class="ItmNameBreak itmStick tditemfrz">
+                                                                <div class="col-sm-10 no-padding">
+                                                                    <input id="ProductDescription" class="form-control" autocomplete="off" type="text" name="ProductDescription" placeholder="Scan Code Here">
+                                                                </div>
+                                                                <div class="col-sm-2 no-padding">
+                                                                    <div class="col-sm-5 i_Icon">
+                                                                        <button type="button" id="ItmInfoBtnIcon" class="calculator" onclick="OnClickIconBtn(event);" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title=" @Resource.ItemInformation"> </button>
+                                                                    </div>
+                                                                    <div class="col-sm-7 i_Icon pl-0">
+                                                                        <button type="button" id="SearchItem" class="calculator" onclick="Cmn_itemSearchPartial('ItemSearch')" data-toggle="modal" data-target="#SearchItem" data-backdrop="static" data-keyboard="false"><i class="fa fa-search SearchItem" title="@Resource.Search @Resource.Item "></i>   </button>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td><input id="UOM" class="form-control" autocomplete="off" type="text" name="UOM" placeholder="Pcs" readonly="readonly"></td>
+                                                            <td><input id="AvailableStock" class="form-control num_right" autocomplete="off" type="text" name="AvailableStock" placeholder="100.00" readonly="readonly"></td>
+                                                            <td class="center">
+                                                                <button type="button" class="calculator " id="BtnBatchDetail" onclick="OnClickBatchDetailBtn(event)" data-toggle="modal" data-target="#BatchNumber" data-backdrop="static" data-keyboard="false"><i class="fa fa-eye" aria-hidden="true" data-toggle="" title="@Resource.BatchDetail"></i></button>
+                                                            </td>
+                                                            <td class="center">
+                                                                <button type="button" class="calculator " id="BtnSerialDetail" onclick="OnClickSerialDetailBtn(event)" data-toggle="modal" data-target="#SerialDetail" data-backdrop="static" data-keyboard="false">
+                                                                    <i class="fa fa-eye" aria-hidden="true" data-toggle="" title="@Resource.SerialDetail"></i>
+                                                                </button>
+
+
+                                                            </td>
+                                                            <td><input id="Quantity" class="form-control num_right" autocomplete="off" type="text" name="Quantity" placeholder="121.00" readonly="readonly"></td>
+                                                            <td><input id="Price" class="form-control num_right" autocomplete="off" type="text" name="Price" placeholder="12100.00" readonly="readonly"></td>
+                                                            <td><input id="DiscountInPercentage" class="form-control num_right" autocomplete="off" type="text" name="DiscountInPercentage" placeholder="5%" readonly="readonly"></td>
+                                                            <td><input id="AdditionalDiscountInPercentage" class="form-control num_right" autocomplete="off" type="text" name="AdditionalDiscountInPercentage" placeholder="12%" readonly="readonly"></td>
+                                                            <td><input id="PriceAfterDiscount" class="form-control num_right" autocomplete="off" type="text" name="PriceAfterDiscount" placeholder="1452.00" readonly="readonly"></td>
+                                                            <td><input id="Value" class="form-control num_right" autocomplete="off" type="text" name="Value" placeholder="1452.00" readonly="readonly"></td>
+                                                            <td><input id="Taxes" class="form-control num_right" autocomplete="off" type="text" name="Taxes" placeholder="1200.00" readonly="readonly"></td>
+                                                            <td><input id="ValueAfterTax" class="form-control num_right" autocomplete="off" type="text" name="ValueAfterTax" placeholder="3500.00" readonly="readonly"></td>
+                                                            @*<td><input id="DifferenceOtherCharges" class="form-control num_right" autocomplete="off" type="text" name="DifferenceOtherCharges" placeholder="50.00" readonly="readonly"></td>
+            <td><input id="NetValue" class="form-control num_right" autocomplete="off" type="text" name="NetValue" placeholder="13902.00" readonly="readonly"></td>
+            <td><input id="DifferenceNetAmount" class="form-control num_right" autocomplete="off" type="text" name="DifferenceNetAmount" placeholder="162.00" readonly="readonly"></td>*@
+
+                                                        </tr>
+
+
+
+                                                    </tbody>
+                                                    <tfoot class="table-secondary sticky-bottom">
+
+                                                        <tr class="headings total">
+                                                            <td>&nbsp;</td>
+                                                            <td>&nbsp;</td>
+                                                            <td>&nbsp;</td>
+                                                            <td>&nbsp;</td>
+                                                            <td>&nbsp;</td>
+                                                            <td>&nbsp;</td>
+                                                            <td>&nbsp;</td>
+                                                            <td>&nbsp;</td>
+                                                            <td>&nbsp;</td>
+                                                            <td>&nbsp;</td>
+                                                            <td>&nbsp;</td>
+
+                                                            <td class="num_right">0000.00</td>
+                                                            <td class="num_right">0000.00</td>
+                                                            <td class="num_right">0000.00</td>
+                                                        </tr>
+                                                    </tfoot>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+
+                    </section>
+                    <section class="panel panel-default">
+                        <div class="panel-heading" role="tab" id="headingThree">
+                            <h4 class="panel-title"> <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree"> @Resource.GLAccountDetail <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a> </h4>
+                        </div>
+                        <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+                            <div id="GL_PartialDiv">
+                                <input value="Invoice No. _Inv_no Dated _Inv_dt Created Against Bill Number _bill_no Date _bill_dt" id="hdn_PV_Nurration" name="PV_Nurration" type="hidden">
+                                <input value="Bank Charges Paid Against Invoice No. _Inv_no Invoice Date _Inv_dt By Instrument Number _bill_no Dated _bill_dt" id="hdn_BP_Nurration" name="BP_Nurration" type="hidden">
+                                <input value="Invoice No. _Inv_no Dated _Inv_dt" id="hdn_CN_Nurration" name="CN_Nurration" type="hidden">
+                                <input value="Debit Note for TDS raised Against Invoice No. _Inv_no Invoice Date 2025-07-02 Bill Number _bill_no Bill Date _bill_dt" id="hdn_DN_Narration" name="DN_Narration" type="hidden">
+                                <input value="Debit Note for TCS raised Against Invoice No. _Inv_no Invoice Date 2025-07-02" id="hdn_DN_Narration_Tcs" name="DN_Narration_Tcs" type="hidden">
+                                <div class="card-box table-responsive dy_table">
+                                    <div class="col-md-12 col-sm-12">
+                                        <div id="" class="sticky-table sticky-ltr-cells sb-container container-example1 OrderHistory height60VH">
+                                            <table id="VoucherDetail" data-order="" class="table table-striped table-bordered rowhighlighttbl mt-2 width1400">
+                                                <thead>
+                                                    <tr class="sticky-header">
+                                                        <th width="3%">@Resource.SrNo</th>
+                                                        <th width="3%">@Resource.GL @Resource.SrNo</th>
+                                                        <th width="14%">@Resource.GLAccount</th>
+                                                        <th width="10%">@Resource.DrAmount @Resource.InSpecific</th>
+                                                        <th width="10%">@Resource.DrAmount @Resource.InBase</th>
+                                                        <th width="10%">@Resource.CrAmount @Resource.InSpecific</th>
+                                                        <th width="10%">@Resource.CrAmount @Resource.InBase</th>
+                                                        <th width="10%">@Resource.CostCenter</th>
+                                                        <th width="10%">@Resource.Voucher @Resource.Type</th>
+                                                        <th width="10%">@Resource.Voucher @Resource.Number</th>
+                                                        <th width="10%">@Resource.Voucher @Resource.Date</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td rowspan="4" id="td_SrNo">1</td>
+                                                        <td id="td_GlSrNo">1</td>
+                                                        <td id="td_vou_sr_no" hidden="">1</td>
+                                                        <td id="td_GlAccName" class="no-padding">
+                                                            AAHANAA
+                                                        </td>
+                                                        <td id="tdhdn_GlAccId" hidden="">100109</td>
+                                                        <td class="num_right" id="dramt">5900.00</td>
+                                                        <td class="num_right" id="dramtInBase">5900.00</td>
+                                                        <td class="num_right" id="cramt">0.00</td>
+                                                        <td class="num_right" id="cramtInBase">0.00</td>
+                                                        <td class="center" id="td_CC">
+                                                            <button type="button" disabled="" id="BtnCostCenterDetail" onclick="Onclick_CCbtn('type',event)" class="calculator subItmImg" data-toggle="modal" data-target="#CostCenterDetail" data-backdrop="static" data-keyboard="false"><i class="fa fa-eye" aria-hidden="true" title="Cost Center Detail"></i></button>
+                                                        </td>
+                                                        <td hidden="">
+                                                            <input type="hidden" id="SNohf" value="1">
+                                                            <input type="hidden" id="type" value="Cust">
+                                                            <input type="hidden" id="txthfAccID" value="AAHANAA">
+                                                            <input type="hidden" id="hfAccID" value="100109">
+                                                            <input type="hidden" id="glVouType" value="SV   ">
+                                                            <input type="hidden" id="gl_curr_id" value="1">
+                                                            <input type="hidden" id="gl_conv_rate" value="1">
+                                                            <input type="hidden" id="gl_bill_no" value="">
+                                                            <input type="hidden" id="gl_bill_date" value="1900-01-01">
+                                                            <input type="hidden" id="dramt1" value="5900.00">
+                                                            <input type="hidden" id="dramtInBase1" value="5900.00">
+                                                            <input type="hidden" id="cramt1" value="0.00">
+                                                            <input type="hidden" id="cramtInBase1" value="0.00">
+                                                        </td>
+                                                        <td rowspan="4" id="td_VouType">SV   </td>
+                                                        <td rowspan="4" id="td_VouNo"></td>
+                                                        <td rowspan="4" id="td_VouDate"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td id="td_GlSrNo">2</td>
+                                                        <td id="td_vou_sr_no" hidden="">1</td>
+                                                        <td id="td_GlAccName" class="no-padding">
+                                                            <div class="col-sm-12 lpo_form no-padding">
+                                                                <select class="form-control select2-hidden-accessible" disabled="" id="Acc_name_2" onchange="OnChangeAccountName(2,event)" tabindex="-1" aria-hidden="true"><optgroup class="def-cursor" id="TextAccDdl2" label="GL Account" }'=""><option value="300006">EXPORT - SALES</option><option value="300002">Sales Account - Export</option><option value="300001">Sales Account - Local</option></optgroup></select><span class="select2 select2-container select2-container--default select2-container--disabled" dir="ltr" style="width: 100px;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="-1" aria-labelledby="select2-Acc_name_2-container"><span class="select2-selection__rendered" id="select2-Acc_name_2-container" title="Sales Account - Local">Sales Account - Local</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+                                                            </div>
+                                                        </td>
+                                                        <td id="tdhdn_GlAccId" hidden="">300001</td>
+                                                        <td class="num_right" id="dramt">0.00</td>
+                                                        <td class="num_right" id="dramtInBase">0.00</td>
+                                                        <td class="num_right" id="cramt">4000.00</td>
+                                                        <td class="num_right" id="cramtInBase">4000.00</td>
+                                                        <td class="center" id="td_CC">
+                                                            <button type="button" id="BtnCostCenterDetail" onclick="Onclick_CCbtn('type',event)" class="calculator subItmImg" data-toggle="modal" data-target="#CostCenterDetail" data-backdrop="static" data-keyboard="false"><i class="fa fa-eye" aria-hidden="true" title="Cost Center Detail"></i></button>
+                                                        </td>
+                                                        <td hidden="">
+                                                            <input type="hidden" id="SNohf" value="2">
+                                                            <input type="hidden" id="type" value="Itm">
+                                                            <input type="hidden" id="txthfAccID" value="Sales Account - Local">
+                                                            <input type="hidden" id="hfAccID" value="300001">
+                                                            <input type="hidden" id="glVouType" value="SV   ">
+                                                            <input type="hidden" id="gl_curr_id" value="1">
+                                                            <input type="hidden" id="gl_conv_rate" value="1">
+                                                            <input type="hidden" id="gl_bill_no" value="">
+                                                            <input type="hidden" id="gl_bill_date" value="1900-01-01">
+                                                            <input type="hidden" id="dramt1" value="0.00">
+                                                            <input type="hidden" id="dramtInBase1" value="0.00">
+                                                            <input type="hidden" id="cramt1" value="4000.00">
+                                                            <input type="hidden" id="cramtInBase1" value="4000.00">
+                                                        </td>
+
+                                                    </tr>
+                                                    <tr>
+                                                        <td id="td_GlSrNo">3</td>
+                                                        <td id="td_vou_sr_no" hidden="">1</td>
+                                                        <td id="td_GlAccName" class="no-padding">
+                                                            <div class="col-sm-12 lpo_form no-padding">
+                                                                <select class="form-control select2-hidden-accessible" disabled="" id="Acc_name_3" onchange="OnChangeAccountName(3,event)" tabindex="-1" aria-hidden="true"><optgroup class="def-cursor" id="TextAccDdl3" label="GL Account" }'=""><option value="300006">EXPORT - SALES</option><option value="300002">Sales Account - Export</option><option value="300001">Sales Account - Local</option></optgroup></select><span class="select2 select2-container select2-container--default select2-container--disabled" dir="ltr" style="width: 100px;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="-1" aria-labelledby="select2-Acc_name_3-container"><span class="select2-selection__rendered" id="select2-Acc_name_3-container" title="Sales Account - Export">Sales Account - Export</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+                                                            </div>
+                                                        </td>
+                                                        <td id="tdhdn_GlAccId" hidden="">300002</td>
+                                                        <td class="num_right" id="dramt">0.00</td>
+                                                        <td class="num_right" id="dramtInBase">0.00</td>
+                                                        <td class="num_right" id="cramt">1000.00</td>
+                                                        <td class="num_right" id="cramtInBase">1000.00</td>
+                                                        <td class="center" id="td_CC">
+                                                            <button type="button" id="BtnCostCenterDetail" onclick="Onclick_CCbtn('type',event)" class="calculator subItmImg" data-toggle="modal" data-target="#CostCenterDetail" data-backdrop="static" data-keyboard="false"><i class="fa fa-eye" aria-hidden="true" title="Cost Center Detail"></i></button>
+                                                        </td>
+                                                        <td hidden="">
+                                                            <input type="hidden" id="SNohf" value="3">
+                                                            <input type="hidden" id="type" value="Itm">
+                                                            <input type="hidden" id="txthfAccID" value="Sales Account - Export">
+                                                            <input type="hidden" id="hfAccID" value="300002">
+                                                            <input type="hidden" id="glVouType" value="SV   ">
+                                                            <input type="hidden" id="gl_curr_id" value="1">
+                                                            <input type="hidden" id="gl_conv_rate" value="1">
+                                                            <input type="hidden" id="gl_bill_no" value="">
+                                                            <input type="hidden" id="gl_bill_date" value="1900-01-01">
+                                                            <input type="hidden" id="dramt1" value="0.00">
+                                                            <input type="hidden" id="dramtInBase1" value="0.00">
+                                                            <input type="hidden" id="cramt1" value="1000.00">
+                                                            <input type="hidden" id="cramtInBase1" value="1000.00">
+                                                        </td>
+
+                                                    </tr>
+                                                    <tr>
+                                                        <td id="td_GlSrNo">4</td>
+                                                        <td id="td_vou_sr_no" hidden="">1</td>
+                                                        <td id="td_GlAccName" class="no-padding">
+                                                            IGST - 18%
+                                                        </td>
+                                                        <td id="tdhdn_GlAccId" hidden="">400040</td>
+                                                        <td class="num_right" id="dramt">0.00</td>
+                                                        <td class="num_right" id="dramtInBase">0.00</td>
+                                                        <td class="num_right" id="cramt">900.00</td>
+                                                        <td class="num_right" id="cramtInBase">900.00</td>
+                                                        <td class="center" id="td_CC">
+                                                            <button type="button" id="BtnCostCenterDetail" onclick="Onclick_CCbtn('type',event)" class="calculator subItmImg" data-toggle="modal" data-target="#CostCenterDetail" data-backdrop="static" data-keyboard="false"><i class="fa fa-eye" aria-hidden="true" title="Cost Center Detail"></i></button>
+                                                        </td>
+                                                        <td hidden="">
+                                                            <input type="hidden" id="SNohf" value="4">
+                                                            <input type="hidden" id="type" value="Tax">
+                                                            <input type="hidden" id="txthfAccID" value="IGST - 18%">
+                                                            <input type="hidden" id="hfAccID" value="400040">
+                                                            <input type="hidden" id="glVouType" value="SV   ">
+                                                            <input type="hidden" id="gl_curr_id" value="1">
+                                                            <input type="hidden" id="gl_conv_rate" value="1">
+                                                            <input type="hidden" id="gl_bill_no" value="">
+                                                            <input type="hidden" id="gl_bill_date" value="1900-01-01">
+                                                            <input type="hidden" id="dramt1" value="0.00">
+                                                            <input type="hidden" id="dramtInBase1" value="0.00">
+                                                            <input type="hidden" id="cramt1" value="900.00">
+                                                            <input type="hidden" id="cramtInBase1" value="900.00">
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                                <tfoot>
+                                                    <tr class="total">
+                                                        <td colspan="2"> &nbsp;</td>
+                                                        <td class="num_right"><strong>@Resource.Total</strong></td>
+                                                        <td class="num_right"><strong><span></span></strong></td>
+                                                        <td class="num_right"><strong><span id="DrTotalInBase">5900.00</span></strong></td>
+                                                        <td class="num_right"><strong><span></span></strong></td>
+                                                        <td class="num_right"><strong><span id="CrTotalInBase">5900.00</span></strong></td>
+                                                        <td colspan="4"> &nbsp;</td>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    @*<section class="panel panel-default">
+                            <div class="panel-heading" role="tab" id="headingTwo">
+                                <h4 class="panel-title"><a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" class="collapsed" aria-controls="collapseTwo">  @Resource.TaxAndOtherCharges <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a></h4>
+                            </div>
+                            <div id="collapseTwo" class="panel-collapse in collapse" role="tabpanel" aria-labelledby="headingTwo" style="">
+                                <div class="panel-body">
+                                    <table width="100%">
+                                        <tr>
+                                            <td>
+                                                <div class="table-responsive">
+                                                    <div id="" class="col-md-4 col-sm-12" style="margin-top:10px;">
+                                                        <table class="table table-striped jambo_table bulk_action rowhighlighttbl" id="Tbl_ItemTaxAmountList">
+                                                            <thead>
+                                                                <tr class="headings">
+                                                                    <th class="column-title">@Resource.TaxName</th>
+                                                                    <th class="column-title" style="text-align: right;">@Resource.Amount</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>IGST - 18%</td>
+                                                                    <td id="TotalTaxAmount" class="num_right">900.00</td>
+                                                                    <td hidden="hidden" id="taxID">161</td>
+                                                                    <td hidden="hidden" id="taxAccID">400040</td>
+                                                                </tr>
+
+                                                            </tbody>
+                                                            <tfoot>
+                                                                <tr style="background-color: #e4e4e4;">
+
+                                                                    <td colspan="1"><strong> @Resource.TotalTax</strong></td>
+                                                                    <td align="right"><strong> <span id="_ItemTaxAmountTotal">900.00</span></strong></td>
+                                                                </tr>
+                                                            </tfoot>
+                                                        </table>
+                                                    </div>
+
+                                                    <div id="" class="col-md-8 col-sm-12" style="margin-top:10px;">
+                                                        <table class="table table-striped jambo_table bulk_action rowhighlighttbl" id="Tbl_OtherChargeList">
+                                                            <thead>
+
+                                                                <tr class="headings">
+                                                                    <th class="column-title">@Resource.OtherCharges</th>
+                                                                    <th class="column-title">@Resource.SupplierName</th>
+                                                                    <th class="column-title no-link last" style="text-align: right;"><span class="nobr">Amount</span> </th>
+                                                                    <th>@Resource.TaxAmount</th>
+                                                                    <th>@Resource.Total</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            </tbody>
+                                                            <tfoot>
+                                                                <tr style="background-color: #e4e4e4;">
+                                                                    <td><strong>@Resource.TotalOtherCharges</strong></td>
+                                                                    <td></td>
+                                                                    <td align="right"><strong><span id="_OtherChargeTotal">0.00</span></strong></td>
+                                                                    <td align="right"><strong><span id="_OtherChargeTotalTax">0.00</span></strong></td>
+                                                                    <td align="right"><strong><span id="_OtherChargeTotalAmt">0.00</span></strong></td>
+
+                                                                </tr>
+                                                            </tfoot>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                    </table>
+                                </div>
+
+                            </div>
+                        </section>*@
+                    <section class="panel panel-default">
+                        <div class="panel-heading" role="tab" id="headingFive">
+                            <h4 class="panel-title"> <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive"> Attachment<span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span> </a> </h4>
+                        </div>
+                        <div id="collapseFive" class="panel-collapse collapse hide" role="tabpanel" aria-labelledby="headingFive">
+                            <div class="panel-body">
+                                <div id="PartialImageBind">
+                                    <script src="/Content/Scripts/Common/CommonJS1.js"></script>
+                                    <table id="hdn_attatchment_list" style="display:none;">
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="form-group" id="FilesUpload">
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </article>
+            </div>
+        </div>
+    </div>
+</div>

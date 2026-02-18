@@ -1,0 +1,80 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.SubContracting.JobOrder.JOListModel
+@using EnRepMobileWeb.Resources;
+@{
+    var rowId = 0;
+}
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/SubContracting/JobOrder/JobOrderList.js"></script>
+<table id="datatable-buttons" class="table table-striped table-bordered width2900 rowhighlighttbl itmfrz" style="width:100%;">
+    <thead>
+        <tr class="sticky-header">
+            <th width="2%">@Resource.SrNo</th>
+            <th width="5%" class="itmStick">@Resource.Source <br /> @Resource.Type</th>
+            <th width="5%">@Resource.Order <br /> @Resource.Number</th>
+            <th width="4%">@Resource.Order <br /> @Resource.Date</th>
+            <th style="display:none;">@Resource.Order  <br /> @Resource.Date</th>
+            <th width="8%">@Resource.ContractorName</th>
+            <th width="5%">@Resource.ValidUpto</th>
+            <th width="8%">@Resource.Finished <br /> @Resource.Product</th>
+            <th width="4%">@Resource.UOM</th>
+            <th width="5%">@Resource.OperationName</th>
+            <th width="7%">@Resource.Operation @Resource.Output @Resource.Product</th>
+            <th width="4%">@Resource.UOM</th>
+            <th width="6%">@Resource.Quantity</th>
+            <th width="6%">@Resource.Production @Resource.Order <br /> @Resource.Number</th>
+            <th width="7%">@Resource.Production @Resource.Order <br /> @Resource.Date</th>
+            <th width="5%">@Resource.Status</th>
+            <th width="5%">@Resource.Createdon</th>
+            <th width="5%">@Resource.ApprovedOn</th>
+            <th width="5%">@Resource.AmendedOn</th>
+            <th width="4%">@Resource.JobOrder <br /> @Resource.Tracking </th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.JobOrdList != null)
+        {
+            foreach (var row in Model.JobOrdList)
+            {
+                rowId++;
+        <tr>
+            <td>@rowId</td>
+            <td id="Lstsrctyp" class="ItmNameBreak itmStick tditemfrz">@row.SourceType</td>
+            <td id="OrderNo">@row.OrderNo</td>
+            <td id="OrderDate">@row.OrderDate</td>
+            <td style="display:none;" id="OrderDt">@row.OrderDt</td>
+            <td id="SuppName">@row.SuppName</td>
+            <td>@row.Valid_Upto</td>
+            <td id="LstFgItemName">@row.FgItemName</td>
+            <td id="LstFgUomName">@row.FgUomName</td>
+            <td id="LstOprationName">@row.OprationName</td>
+            <td id="LstOpOutProductName">@row.ProductName</td>
+            <td id="LstOpOutProductUOM">@row.UOM</td>
+            <td id="LstQuantity">@row.Quantity</td>
+            <td>@row.ProductionOrdNo</td>
+            <td>@row.ProductionOrdDate</td>
+            <td id="Doc_Status">@row.JO_Status</td>
+            <td>@row.CreateDate</td>
+            <td>@row.ApproveDate</td>
+            <td>@row.ModifyDate</td>
+            <td class="center">
+                <a class="tooltip-test" id="JobOrderTracking" href="" onclick="OnClickJobOrderTrackingBtn(event);" data-toggle="modal" data-target="#JobOrderTracking" data-backdrop="static" data-keyboard="false" title="@Resource.JobOrder <br /> @Resource.Tracking" style="margin-right:10px;">
+                    <img src="~/Content/Images/PurchaseOrderTracking2.png" title="@Resource.JobOrder @Resource.Tracking " width="28" height="28" />
+                </a>
+            </td>
+        </tr>
+            }
+        }
+    </tbody>
+</table>
+@*@if (Session["JOSearch"] != null)*@
+@if (Model.JOSearch != null)
+{
+    //if (Session["JOSearch"].ToString() == "JO_Search")
+    if (Model.JOSearch == "JO_Search")
+    {
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+        @Scripts.Render("~/Content/Scripts/DatatablesJs")
+        //Session["JOSearch"] = null;
+        Model.JOSearch = null;
+    }
+}

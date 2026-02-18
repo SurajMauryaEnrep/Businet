@@ -1,0 +1,143 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.FinancialAccountingAndControl.MIS.PendingAdvances.PendingAdvancesModel
+@using EnRepMobileWeb.Resources;
+@using System.Data
+@{
+    var rowId = 0;
+}
+@{
+    var range1 = Convert.ToInt32(@Model.Range1) + 1;
+    var range2 = Convert.ToInt32(@Model.Range2) + 1;
+    var range3 = Convert.ToInt32(@Model.Range3) + 1;
+    var range4 = Convert.ToInt32(@Model.Range4) + 1;
+    var range5 = Convert.ToInt32(@Model.Range5) + 1;
+
+}
+<style>
+    #datatable-buttons5_wrapper .btn-group a:nth-child(3) {
+        display: inline-block;
+        position: absolute;
+    }
+
+    .ap {
+        position: absolute !important;
+    }
+</style>
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/FinancialAccountingAndControl/MIS/PendingAdvances/PendingAdvances.js"></script>
+<table id="datatable-buttons5" class="table table-striped table-bordered width1400 itmfrz rowhighlighttbl itmfrz dataTable no-footer" cellspacing="0" width="100%">
+    <thead>
+        <tr class="sticky-header" role="row">
+            <th width="3%">@Resource.SrNo</th>
+            <th width="24%" class="itmStick">@Resource.EntityName</th>
+            <th hidden>@Resource.CustomerID</th>
+            <th hidden>@Resource.AccountID</th>
+            <th width="8%">@Resource.Currency</th>
+            <th hidden>@Resource.Currency</th>
+            @if (ViewBag.ReportType == "D")
+            {
+                <th width="8%">@Resource.Voucher @Resource.Number</th>
+                <th width="8%">@Resource.Voucher @Resource.Date</th>
+            }
+            <th width="9%">0-@Model.Range1 @Resource.Days</th>
+            <th width="9%">@range1-@Model.Range2 @Resource.Days</th>
+            <th width="9%">@range2-@Model.Range3 @Resource.Days</th>
+            <th width="9%">@range3-@Model.Range4 @Resource.Days</th>
+            <th width="9%">@range4-@Model.Range5 @Resource.Days</th>
+            <th width="9%">>@range5 @Resource.Days</th>
+            <th widtyh="11%">@Resource.Total</th>
+        </tr>
+    </thead>
+    <tbody id="tblpa">
+        @if (Model.PendingAdvancesList != null)
+        {
+            foreach (var row in Model.PendingAdvancesList)
+            {
+                if (ViewBag.ReportType == "D")
+                {
+                    rowId++;
+                    <tr role="row" class="odd">
+                        <td>@rowId</td>
+                        <td id="entityname" class="ItmNameBreak itmStick tditemfrz">@row.Entityname</td>
+                        <td id="entityid" hidden="">@row.id</td>
+                        <td id="acc_id" hidden>@row.AccId</td>
+                        <td id="Curr" class="center">@row.Curr</td>
+                        <td id="Vou_no" class="center">@row.voucher_no</td>
+                        <td id="Vou_dt" class="center">@row.voucher_dt</td>
+                        <td id="Curr_id" hidden>@row.CurrId</td>
+                        <td class="num_right">@row.AmtRange1</td>
+                        <td class="num_right">@row.AmtRange2</td>
+                        <td class="num_right">@row.AmtRange3</td>
+                        <td class="num_right">@row.AmtRange4</td>
+                        <td class="num_right">@row.AmtRange5</td>
+                        <td class="num_right">@row.AmtRange6</td>
+                        <td class="num_right">@row.TotalAmt</td>
+                    </tr>
+                }
+                else
+                {
+                    rowId++;
+                    <tr role="row" class="odd">
+                        <td>@rowId</td>
+                        <td id="entityname" class="ItmNameBreak itmStick tditemfrz">@row.Entityname</td>
+                        <td id="entityid" hidden="">@row.id</td>
+                        <td id="acc_id" hidden>@row.AccId</td>
+                        <td id="Curr" class="center">@row.Curr</td>
+                        <td id="Curr_id" hidden>@row.CurrId</td>
+                        <td class="num_right">
+                            <div class="col-sm-11 lpo_form no-padding" id="multiWrapper">@row.AmtRange1</div>
+                            <div class="col-sm-1 i_Icon">
+                                <button type="button" id="" class="calculator" data-toggle="modal" onclick="OnCliekAdvanceAmountIcon(event,'r1')" data-target="#AdvancePaymentDetails" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Advance @Resource.Payment">  </button>
+                                <input type="hidden" id="pahdnr1" value="0,@Model.Range1">
+                            </div>
+                        </td>
+                        <td class="num_right">
+                            <div class="col-sm-11 lpo_form no-padding" id="multiWrapper">@row.AmtRange2</div>
+                            <div class="col-sm-1 i_Icon">
+                                <button type="button" id="" class="calculator" data-toggle="modal" onclick="OnCliekAdvanceAmountIcon(event,'r2')" data-target="#AdvancePaymentDetails" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Advance @Resource.Payment">  </button>
+                                <input type="hidden" id="pahdnr2" value="@range1,@Model.Range2">
+                            </div>
+                        </td>
+                        <td class="num_right">
+                            <div class="col-sm-11 lpo_form no-padding" id="multiWrapper">@row.AmtRange3</div>
+                            <div class="col-sm-1 i_Icon">
+                                <button type="button" id="" class="calculator" data-toggle="modal" onclick="OnCliekAdvanceAmountIcon(event,'r3')" data-target="#AdvancePaymentDetails" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Advance @Resource.Payment">  </button>
+                                <input type="hidden" id="pahdnr3" value="@range2,@Model.Range3">
+                            </div>
+                        </td>
+                        <td class="num_right">
+                            <div class="col-sm-11 lpo_form no-padding" id="multiWrapper">@row.AmtRange4</div>
+                            <div class="col-sm-1 i_Icon">
+                                <button type="button" id="" class="calculator" data-toggle="modal" onclick="OnCliekAdvanceAmountIcon(event,'r4')" data-target="#AdvancePaymentDetails" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Advance @Resource.Payment">  </button>
+                                <input type="hidden" id="pahdnr4" value="@range3,@Model.Range4">
+                            </div>
+                        </td>
+                        <td class="num_right">
+                            <div class="col-sm-11 lpo_form no-padding" id="multiWrapper">@row.AmtRange5</div>
+                            <div class="col-sm-1 i_Icon">
+                                <button type="button" id="" class="calculator" data-toggle="modal" onclick="OnCliekAdvanceAmountIcon(event,'r5')" data-target="#AdvancePaymentDetails" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Advance @Resource.Payment">  </button>
+                                <input type="hidden" id="pahdnr5" value="@range4,@Model.Range5">
+                            </div>
+                        </td>
+                        <td class="num_right">
+                            <div class="col-sm-11 lpo_form no-padding" id="multiWrapper">@row.AmtRange6</div>
+                            <div class="col-sm-1 i_Icon">
+                                <button type="button" id="" class="calculator" data-toggle="modal" onclick="OnCliekAdvanceAmountIcon(event,'r6')" data-target="#AdvancePaymentDetails" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/iIcon1.png" alt="" title="@Resource.Advance @Resource.Payment">  </button>
+                                <input type="hidden" id="pahdnr6" value="@range5">
+                            </div>
+                        </td>
+                        <td class="num_right">@row.TotalAmt</td>
+                    </tr>
+                }
+            }
+        }
+    </tbody>
+</table>
+@if (Model.PAAging != null)
+{
+    if (Model.PAAging == "Search")
+    {
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+        @Scripts.Render("~/Content/Scripts/DatatablesJs")
+        Model.PAAging = null;
+    }
+}

@@ -1,0 +1,239 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.FinancialAccountingAndControl.MIS.AccountPayable.AccountPayableModel
+@using EnRepMobileWeb.Resources;
+@using System.Data
+<script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+<script src="~/Content/Css/build/js/sweetalert.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/FinancialAccountingAndControl/MIS/AccountPayable/AccountPayable.js"></script>
+@if (Session["UserId"] == null)
+{
+    Response.Redirect("~/Login");
+}
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+@{
+    if (Session["Message"] != null)
+    {
+        if (Session["Message"].ToString() == "Save")
+        {
+            <script type="text/javascript">
+                swal("", $("#savemsg").text(), "success");
+            </script>
+        }
+        Session["Message"] = "";
+    }
+}
+<title>@Model.Title</title>
+@*<style>
+        thead tr > :nth-child(2) {
+            z-index: 100 !important;
+            position: sticky;
+            left: 0;
+            top: 0;
+        }
+
+        tbody tr > :nth-child(2) {
+            background: #ffffff;
+            position: sticky;
+            z-index: 1;
+            left: 0;
+        }
+    </style>*@
+@using (Html.BeginForm("UserRangeSave", "AccountPayable", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    {
+
+        <div class="row">
+            <div id="InvoiceDetails" class="modal fade" role="dialog">
+                <div class="modal-dialog" style="max-width:1000px;">
+                    <!-- Modal content-->
+                    <div id="PartialInvDetail">
+                        @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialAccountPayableInvoiceDetails.cshtml")
+                    </div>
+                </div>
+            </div>
+            <!-- Advance Payment Details Start -->
+            <div id="AdvancePaymentDetails" class="modal fade" role="dialog">
+                <div class="modal-dialog" style=" max-width:800px;">
+                    <div id="AdvancePaymentDetailsPopup">
+                        @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialAdvancePaymentDetails.cshtml", Model)
+                    </div>
+                    <!-- Modal content-->
+                </div>
+            </div>
+            <!-- Advance Payment Details End -->
+            <!-- Paid Amount Details Start -->@*/*Add by Hina Sharma on 11-12-2024*/*@
+            <div id="PaidAmountDetails" class="modal fade" role="dialog">
+                <div class="modal-dialog" style=" max-width:800px;">
+                    <div id="PaidAmountDetailsPopup">
+                        @Html.Partial("~/Areas/Common/Views/Cmn_PartialPaidAmountDetails.cshtml")
+                    </div>
+                    <!-- Modal content-->
+                </div>
+            </div>
+            <!-- Paid Amount Details End -->
+            <div class="col-md-12 col-sm-12 ">
+                <div class="x_panel mar_pad1 ">
+                    <div class="x_content mar_pad1">
+                        <h2 class="col-md-5  col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                        <div class="po col-md-4 col-sm-12 no-padding  domestic">
+                            <label class="col-form-label label-align font-weight-bold pr-2">@Resource.Payable @Resource.Type :</label>
+                            @*@if (Session["MenuDocumentId"] != null)*@
+                            @Resource.All
+                            @Html.RadioButtonFor(m => m.PayableType, "A", new { @class = "", @id = "PayableTypeA", onclick = "onclickPayableType()", @checked = "checked", @name = "PayableTypeA" })
+                            @Resource.Overdue
+                            @Html.RadioButtonFor(m => m.PayableType, "O", new { @class = "", @id = "PayableTypeO", onclick = "onclickPayableType()", @name = "PayableTypeO" })
+                            @Resource.Upcoming @Resource.Due
+                            @Html.RadioButtonFor(m => m.PayableType, "U", new { @class = "", @id = "PayableTypeU", onclick = "onclickPayableType()", @name = "PayableTypeU" })
+
+                        </div>
+                        <div class="col-md-3 col-sm-12 pl-3 float-right">
+                            <label class="col-form-label label-align font-weight-bold pr-2">@Resource.ReportType : </label>
+                            Summary<span>&nbsp;</span>
+                            <input checked="checked" class="" id="ProcurementMISOrderSummary" onclick="onchangeShowAs()" name="MISOrderType" type="radio" value="S">
+                            <span>&nbsp;</span> Detail<span>&nbsp;</span>
+                            <input class="" id="ProcurementMISOrderDetail" onclick="onchangeShowAs()" name="MISOrderType" type="radio" value="D">
+                        @Html.HiddenFor(m => m.ReportType, new {@id= "HdnReportType" })
+                        </div>
+                        <!-- Smart Wizard -->
+                        @*<div id="wizard" class="form_wizard wizard_horizontal col-md-3 col-sm-12 work_flow">
+            @Html.Partial("~/Areas/Common/Views/_PartialWorkflowBar.cshtml")
+        </div>*@
+                        <input type="hidden" id="DocumentMenuId" value="@ViewBag.DocumentMenuId" />
+                        <div class="x_title pad_mar ">
+                            <div class="col-md-12 col-sm-12 icon_tool padding_zero">
+                                <div class="col-md-12 col-sm-12 padding_zero margin10">
+                                    <div class="col-md-10 col-sm-12 padding_zero margin5">
+                                        <div class="col-md-1 col-sm-12 text-right">
+                                            <label class="col-form-label label-align">@Resource.Range</label>
+                                        </div>
+                                        <div class="col-md-1 col-sm-12">
+                                            @Html.TextBoxFor(model => model.Range1, new { id = "range1", Type = "text", autocomplete = "off", @class = "form-control num_right", @maxlength = "4", onkeypress = "return numValueOnly(this,event)", @placeholder = "00" })
+                                            @Html.ValidationMessageFor(model => model.Range1, String.Empty, new { @style = "color:red;!important", @id = "vmrange1" })
+                                        </div>
+                                        <div class="col-md-1 col-sm-12">
+                                            @Html.TextBoxFor(model => model.Range2, new { id = "range2", Type = "text", autocomplete = "off", @class = "form-control num_right", @maxlength = "4", onkeypress = "return numValueOnly(this,event)", @placeholder = "00" })
+                                            @Html.ValidationMessageFor(model => model.Range2, String.Empty, new { @style = "color:red;!important", @id = "vmrange2" })
+                                        </div>
+                                        <div class="col-md-1 col-sm-12">
+
+                                            @Html.TextBoxFor(model => model.Range3, new { id = "range3", Type = "text", autocomplete = "off", @class = "form-control num_right", @maxlength = "4", onkeypress = "return numValueOnly(this,event)", @placeholder = "00" })
+                                            @Html.ValidationMessageFor(model => model.Range3, String.Empty, new { @style = "color:red;!important", @id = "vmrange3" })
+                                        </div>
+                                        <div class="col-md-1 col-sm-12">
+
+                                            @Html.TextBoxFor(model => model.Range4, new { id = "range4", Type = "text", autocomplete = "off", @class = "form-control num_right", @maxlength = "4", onkeypress = "return numValueOnly(this,event)", @placeholder = "00" })
+                                            @Html.ValidationMessageFor(model => model.Range4, String.Empty, new { @style = "color:red;!important", @id = "vmrange4" })
+                                        </div>
+                                        <div class="col-md-1 col-sm-12">
+                                            @Html.TextBoxFor(model => model.Range5, new { id = "range5", Type = "text", autocomplete = "off", @class = "form-control num_right", @maxlength = "4", onkeypress = "return numValueOnly(this,event)", @placeholder = "00" })
+                                            @Html.ValidationMessageFor(model => model.Range5, String.Empty, new { @style = "color:red;!important", @id = "vmrange5" })
+                                        </div>
+                                        <div class="col-md-1 col-sm-12">
+                                            <button class="save"
+                                                    title="@Resource.Save" onclick="return  InsertRangeDetail();" type="submit" id="btn_save" name="Command" value="Save"></button>
+                                        </div>
+
+                                        <div class="col-md-1 col-sm-12 text-right">
+                                            <label class="col-form-label label-align">@Resource.Branch</label>
+                                        </div>
+                                        <div class="col-md-3 col-sm-12 pl-0 multiselectBranch">
+                                            <div id="div_ddl_brlist">
+                                                @Html.Partial("~/Areas/Common/Views/Comn_PartialBranchList.cshtml")
+                                            </div>
+                                            <span class="error_message" id="span_br" style="display: none;"></span>
+                                            @Html.HiddenFor(model => model.hdnbr_ids, new { @id = "Hdn_brlist" })
+                                        </div>
+
+                                    </div>
+                                    <div class="clear"></div>
+                                    <div class="col-md-4 col-sm-12">
+                                        <label class="col-form-label label-align">@Resource.Supplier</label>
+                                        @Html.DropDownListFor(model => model.supp_id, new SelectList(new List<SelectListItem>
+        {new SelectListItem {Text="---All---",Value="0" },}, "Value", "Text"), new { @class = "form-control", @id = "ddl_SupplierName", @name = "SupplierName", @multiple = "multiple" })
+                                        @Html.HiddenFor(model => model.Hdnsupp_id, new { @id = "Hdnsupp_id" })
+                                    </div>
+                                    <div class="col-md-2 col-sm-12">
+                                        <label class="col-form-label label-align">@Resource.Category </label>
+                                        @Html.DropDownListFor(model => model.category, new SelectList(Model.categoryLists, "Cat_id", "Cat_val"), new { @class = "form-control", @id = "SuppCategory", @name = "SuppCategory", @multiple = "multiple" })
+                                        @Html.HiddenFor(model => model.Hdncatg_id, new { @id = "Hdncatg_id" })
+                                    </div>
+
+                                    <div class="col-md-2 col-sm-12">
+                                        <label class="col-form-label label-align">@Resource.Portfolio </label>
+                                        @Html.DropDownListFor(model => model.portFolio, new SelectList(Model.portFolioLists, "Portfolio_id", "Portfolio_val"), new { @class = "form-control", @id = "SuppPortfolio", @name = "SuppPortfolio", @multiple = "multiple" })
+                                        @Html.HiddenFor(model => model.Hdnport_id, new { @id = "Hdnport_id" })
+                                    </div>
+                                    <div class="col-md-2 col-sm-12">
+                                        <label class="col-form-label label-align">@Resource.Basis</label>
+                                        @if (Model.PayableType == "O" || Model.PayableType == "U")
+                                        {
+                                            @Html.DropDownListFor(model => model.Basis, new SelectList(new List<Object>
+                                         {
+                                      new { value = "S", text = "Supplier Bill Date" },
+                     new { value = "I", text ="Invoice Date" },
+                    // new { value = "D", text = "Due Date" }
+                    //,
+                                         },
+                                "value",
+                                "text"
+                                ), new { @id = "Basis", @disabled = "disabled", @class = "form-control" })
+                                        }
+                                        else
+                                        {
+                                            @Html.DropDownListFor(model => model.Basis, new SelectList(new List<Object>
+                                                                                     {
+                                                                                  new { value = "S", text = "Supplier Bill Date" },
+                                                                 new { value = "I", text ="Invoice Date" },
+                                                                // new { value = "D", text = "Due Date" }
+                                                                //,
+                                                                                     },
+                                                                            "value",
+                                                                            "text"
+                                                                            ), new { @id = "Basis", @class = "form-control" })
+                                        }
+                                        @Html.HiddenFor(model => model.Basis, new { @id = "Basis" })
+                                    </div>
+                                    <div class="col-md-2 col-sm-12 no-padding">
+                                        <div class="col-md-9 col-sm-12">
+                                            <label class="col-form-label label-align">@Resource.Upto</label>
+                                            @Html.TextBoxFor(model => model.To_dt, new { @class = "form-control", @id = "AsDate", @type = "date", @Value = Model.To_dt, @max = System.DateTime.Now.ToString("yyyy-MM-dd") })
+                                        </div>
+                                        <div class="col-md-3 col-sm-12">
+                                            <button type="button" class="btn btn-primary btn-sm margintop20" id="BtnSearch" onclick="SearchSuppAgingDetail()"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 ">
+                        <div class="x_panel mar_pad1 ">
+                            <div class="x_content mar_pad1">
+                                <div class="card-box table-responsive dy_table">
+                                    <div id="DivSuppAgingtable" class="sticky-table sticky-ltr-cells sb-container container-example1">
+                                        @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialAccountPayable.cshtml")
+                                    </div>
+                                    @Html.HiddenFor(model => model.RangeList, new { @id = "hdnRangeList" })
+                                    @Html.HiddenFor(model => model.PrintPDFData, new { @id = "AccountPayblePrintData" })
+                                    @Html.HiddenFor(model => model.CmdPDFPrint, new { @id = "hdnCmdPDFPrint" })
+                                    @Html.HiddenFor(model => model.hdnBasis, new { @id = "hdnBasis" })
+                                    @Html.HiddenFor(model => model.hdnAsonDate, new { @id = "hdnAsonDate" })
+                                    @Html.HiddenFor(model => model.searchValue, new { @id = "searchValue" })
+                                    @Html.HiddenFor(model => model.hdnCSVPrint, new { @id = "hdnCSVPrint" })
+                                    @Html.HiddenFor(model => model.hdnInsightCSVPrint, new { @id = "hdnInsightCSVPrint" })
+                                    @Html.HiddenFor(model => model.hdnPaidAmtInsightCSVPrint, new { @id = "hdnPaidAmtInsightCSVPrint" })
+                                    @Html.HiddenFor(model => model.hdnAdvAmtInsightCSVPrint, new { @id = "hdnAdvAmtInsightCSVPrint" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- page content end -->
+    }
+}

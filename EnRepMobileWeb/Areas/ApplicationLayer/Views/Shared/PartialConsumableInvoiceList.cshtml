@@ -1,0 +1,73 @@
+﻿@using System.Data;
+@using EnRepMobileWeb.Resources;
+@{
+    var rowId = 0;
+}
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/Procurement/ConsumableInvoice/ConsumableInvoice.js"></script>
+
+<table id="datatable-buttons" class="table table-striped width2500 rowhighlighttbl itmfrz" cellspacing="0">
+    <thead> 
+        <tr class="sticky-header">
+            <th width="3%"> @Resource.SrNo</th>
+            <th  width="7%" class="itmStick">@Resource.Invoice <br /> @Resource.Number</th>
+            <th  width="6%">@Resource.Invoice <br /> @Resource.Date</th>
+            <th style="display:none;">@Resource.Invoice <br /> @Resource.Date</th>
+            <th width="6%">@Resource.SourceType</th>
+            <th width="8%">@Resource.Source <br /> @Resource.DocumentNumber</th>
+            <th width="6%">@Resource.Source <br /> @Resource.DocumentDate</th>
+            <th width="10%">@Resource.Supplier <br /> @Resource.Name</th>
+            <th width="10%">@Resource.BillNumber</th>
+            <th width="5%">@Resource.BillDate</th>
+            <th width="5%">@Resource.Invoice <br /> @Resource.Value</th>
+            <th width="5%">@Resource.Status</th>
+            <th width="5%">@Resource.CreatedBy</th>
+            <th width="5%">@Resource.Createdon</th>
+            <th width="5%">@Resource.ApprovedBy</th>
+            <th width="5%">@Resource.ApprovedOn</th>
+            <th width="5%">@Resource.AmendedBy</th>
+            <th width="5%">@Resource.AmendedOn</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (ViewBag.ConsumableInvoiceList != null)
+        {
+            foreach (System.Data.DataRow dr in ViewBag.ConsumableInvoiceList.Rows)
+            {
+                rowId++;
+        <tr>
+            <td class="sorting_1">@rowId</td>
+            <td id="InvoiceNo" class="ItmNameBreak itmStick tditemfrz">@dr["inv_no"].ToString()</td>
+            <td id="InvDate1">@dr["InvDate"].ToString()</td>
+            <td id="InvDate1">@dr["src_type"].ToString()</td>
+            <td id="InvDate1">@dr["src_doc_no"].ToString()</td>
+            <td id="InvDate1">@dr["src_doc_dt"].ToString()</td>
+            <td style="display: none;" id="InvDate">@dr["InvDt"].ToString()</td>
+            <td>@dr["supp_name"].ToString()</td>
+            <td>@dr["bill_no"].ToString()</td>
+            <td>@dr["bill_dt"].ToString()</td>
+            <td class="num_right">@dr["net_val_bs"].ToString()</td>
+            <td id="Doc_Status">@dr["Status"].ToString()</td>
+            <td>@dr["create_by"].ToString()</td>
+            <td>@dr["CreateDate"].ToString()</td>
+            <td>@dr["app_by"].ToString()</td>
+            <td>@dr["ApproveDate"].ToString()</td>
+            <td>@dr["mod_by"].ToString()</td>
+            <td>@dr["ModifyDate"].ToString()</td>
+        </tr>
+            }
+        }
+        </tbody>
+</table>
+@if (Model.LPISearch != null)
+{
+    if (Model.LPISearch == "LPI_Search")
+    {
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+        @Scripts.Render("~/Content/Scripts/DatatablesJs")
+        //Session["LPISearch"] = null;
+    }
+}
+
+
+

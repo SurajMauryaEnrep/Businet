@@ -1,0 +1,262 @@
+﻿@using EnRepMobileWeb.Resources;
+
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+@{
+    var i = 0;
+}
+@{
+    var DisablePartial = true;
+    if (ViewBag.TransType == "Update")
+    {
+        var v = ViewBag.DocumentStatus;
+        if (v == "D")
+        {
+            if (ViewBag.Command == "Edit")
+            {
+                DisablePartial = false;
+            }
+            else
+            {
+                DisablePartial = true;
+            }
+        }
+    }
+    else
+    {
+        if (ViewBag.Command == "Refresh")
+        {
+            DisablePartial = true;
+        }
+        else
+        {
+            DisablePartial = false;
+        }
+    }
+    if (ViewBag.DocumentStatus == "A")
+    {
+        DisablePartial = true;
+    }
+}
+<div class="card-box table-responsive dy_table">
+    <div class="price_item_detail">
+        <div class=" col-sm-12">
+            <div class="tableFixHead">
+                <h2 class="col-md-9 col-sm-12 no-padding mt-1">@Resource.Quotation @Resource.Detail</h2>
+                <div class="col-md-3 col-sm-12 no-padding num_right mt-3 mb-2"><label class="label pt-1 col-md-4 col-sm-12 num_right pr-0" for="SearchItmDetailsTbl">@Resource.Search @Resource.Item : </label><input type="text" class="form-control col-md-7 col-sm-12" id="SearchItmDetailsTbl" onkeyup="FilterItemDetail(event)" /> <a class="pl_excel" href="#" onclick=" return ExportItemsToExcel()"></a></div>
+                <table id="POInvItmDetailsTbl" class="table table-bordered width2400 mt-3 itmfrz">
+                    <thead>
+                        <tr class="headings">
+                            <th width="2%">@Resource.SrNo</th>
+                            <th width="10%" class="itmStick">@Resource.ItemName</th>
+                            <th width="4%" title="@Resource.UnitOfMeasure"> @Resource.UOM </th>
+                            <th width="6%">@Resource.Item  @Resource.Type</th>
+                            <th width="7%">@Resource.RFQ @Resource.Quantity</th>
+                            <th width="12%">@Resource.remarks</th>
+                            <th width="9%">@Resource.Supplier  @Resource.Name</th>
+                            <th width="4%">@Resource.Supplier  @Resource.Type</th>
+                            <th width="3%">@Resource.Supplier  @Resource.Rating</th>
+                            <th width="10%">@Resource.QuotationNumber @Resource.And @Resource.Date </th>
+                            <th width="5%">@Resource.Price </th>
+                            <th width="3%">@Resource.Discount @Resource.InPercentage</th>
+                            <th width="5%">@Resource.Price @Resource.After @Resource.Discount</th>
+                            <th width="4%">@Resource.Value</th>
+                            <th width="5%">@Resource.PaymentTermsInDays</th>
+                            <th width="6%">@Resource.DeliveryDate</th>
+                            <th width="4%">@Resource.SelectForOrder</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @if (ViewBag.ItemDetailsList != null)
+                        {
+                            int j = 0;
+                            var itemGroups = new Dictionary<string, int>();
+                            var itemRowCounter = new Dictionary<string, int>();
+                            string prevItemId = ""; var subitmDisable = "";
+                            {
+
+                                //var itemGroups = new Dictionary<string, int>();
+                                foreach (System.Data.DataRow row in ViewBag.ItemDetailsList.Rows)
+                                {
+                                    var itemId = row["item_id"].ToString();
+                                    if (!itemGroups.ContainsKey(itemId))
+                                    {
+                                        itemGroups[itemId] = 1;
+                                    }
+                                    else
+                                    {
+                                        itemGroups[itemId]++;
+                                    }
+                                }
+                            }
+
+                            foreach (System.Data.DataRow dr in ViewBag.ItemDetailsList.Rows)
+                            {
+                                j++;
+                                string currentItemId = dr["item_id"].ToString();
+
+                                if (!itemRowCounter.ContainsKey(currentItemId))
+                                {
+                                    itemRowCounter[currentItemId] = 1;
+                                }
+                                else
+                                {
+                                    itemRowCounter[currentItemId]++;
+                                }
+                                bool isFirstRowForItem = (itemRowCounter[currentItemId] == 1);
+                                int rowspan = itemGroups[currentItemId];
+                                if (dr["sub_item"].ToString() != "Y")
+                                {
+                                    subitmDisable = "disabled";
+                                }
+                                <tr>
+
+
+                                    @* Render item details only on the first row of the group *@
+                                    @if (isFirstRowForItem)
+                                    {
+                                    <td id="srno" rowspan="@rowspan" class="sr_padding">@dr["srno"]</td>
+                                        <td style="display: none;">
+                                            <input type="hidden" id="SNohiddenfiled" value="@j" />
+                                        </td>
+                                        <td rowspan="@rowspan" class="itmStick">
+                                            <div class="col-sm-11 no-padding">
+                                                <input id="PPItemName" class="form-control" type="text" name="PPItemName" readonly value="@dr["item_name"]" />
+
+                                            </div>
+                                            <div class="col-sm-1 i_Icon">
+                                                <button type="button" class="calculator subItmImg" data-toggle="modal" data-target="#ItemInfo" data-backdrop="static" onclick="OnClickIconBtn(event);" data-keyboard="false">
+                                                    <img src="/Content/Images/iIcon1.png" alt="" title="@Resource.ItemInformation" />
+                                                </button>
+                                            </div>
+                                        </td>
+
+                                        <td rowspan="@rowspan">
+                                            <input id="UOM" class="form-control" type="text" name="UOM" readonly value="@dr["uom_name"]" />
+
+                                        </td>
+
+                                        <td rowspan="@rowspan">
+                                            <input id="IDItemtype" class="form-control" type="text" name="ItemType" readonly value="@dr["ItemType"]" />
+                                        </td>
+
+                                        <td rowspan="@rowspan">
+                                            <div class="col-sm-10 lpo_form no-padding">
+                                                <input id="QuotedQuantity" class="form-control num_right" type="text" name="QuotedQuantity" readonly value="@dr["rfq_qty"]" />
+                                            </div>
+                                            <div class="col-sm-2 i_Icon  pl-0" id="div_SubItemQTQty">
+                                                <input hidden type="text" id="sub_item" value="@dr["sub_item"]" />
+                                                <button type="button" id="SubItemQTQty" class="calculator subItmImg" @subitmDisable onclick="return SubItemDetailsPopUp('Quantity',event)" data-toggle="modal" data-target="#SubItem" data-backdrop="static" data-keyboard="false"><img src="/Content/Images/subItem.png" alt="" title="@Resource.SubItem @Resource.Detail"> </button>
+                                            </div>
+                                        </td>
+
+                                        <td rowspan="@rowspan">
+                                            <textarea id="remarks" class="form-control" name="remarks" readonly>@dr["it_remarks"]</textarea>
+                                        </td>
+                                    }
+
+                                    <td>
+                                        <div class="col-sm-10 no-padding">
+                                            <input id="SupplierName" class="form-control" name="SupplierName" readonly value="@dr["supp_name"]" />
+                                            <input id="supp_id" type="hidden" value="@dr["supp_id"]" />
+                                            <input type="hidden" id="Hdn_Item_ID" value="@dr["item_id"].ToString()" />
+                                            <input type="hidden" id="UOMID" value="@dr["uom_id"]" />
+                                            <input type="hidden" id="hdnUOMName" value="@dr["uom_name"]" />
+                                            <input type="hidden" id="hdnItemName" value="@dr["item_name"]" />
+                                            <input type="hidden" id="hdnQuotedQuantity" value="@dr["rfq_qty"]" />
+                                            <input type="hidden" id="hdnremarks" value="@dr["it_remarks"]" />
+                                            @if (!isFirstRowForItem)
+                                            {
+                                                <input id="PPItemName" class="form-control" type="hidden" name="PPItemName" readonly value="@dr["item_name"]" />
+                                            }
+                                            </div>
+                                        <div class="col-sm-2 i_Icon">
+                                            <button type="button" id="PurchaseHistory" class="calculator" onclick="OnClickHistoryIconBtn(event)" data-toggle="modal" data-target="#PurchaseHistory" data-backdrop="static" data-keyboard="false">
+                                                <i class="fa fa-history" title="@Resource.OrderHistory"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <input id="SupplierType" class="form-control" readonly value="@dr["supp_type"]" />
+                                        <input id="SupplierTypeId" type="hidden" value="@dr["Supp_typeId"]" />
+                                    </td>
+
+                                    <td>
+                                        <input id="SupplierRating" class="form-control" readonly value="@dr["supp_rating"]" />
+                                    </td>
+
+                                    <td>
+                                        <input id="QuotationNumberAndDate" class="form-control" readonly value="@dr["QuotationDetails"]" />
+                                        <input id="qt_no" type="hidden" value="@dr["qt_no"]" />
+                                        <input id="qt_dt" type="hidden" value="@dr["qt_dt"]" />
+                                    </td>
+
+                                    <td>
+                                        <input id="Price" class="form-control num_right" readonly value="@dr["item_rate"]" />
+                                    </td>
+
+                                    <td>
+                                        <input id="DiscountInPercentage" class="form-control num_right" readonly value="@dr["item_disc_perc"]" />
+                                    </td>
+
+                                    <td>
+                                        <input id="PriceAfterDiscount" class="form-control num_right" readonly value="@dr["net_rate"]" />
+                                    </td>
+
+                                    <td>
+                                        <input id="NetValue" class="form-control num_right" readonly value="@dr["item_net_val_bs"]" />
+                                    </td>
+
+                                    <td>
+                                        <input id="PaymentTermsInDays" class="form-control num_right" readonly value="@dr["paym_term"]" />
+                                    </td>
+
+                                    <td>
+                                        <input id="DeliveryDate" class="form-control" readonly value="@dr["DeliveryDate"]" />
+                                    </td>
+
+                                    <td class="center">
+                                        @*@if (DisablePartial)
+        {
+            <input type="radio" id="OrderFor_@j" name="OrderFor_@currentItemId" value="@dr["OrderFor"]" @(dr["IsSelected"].ToString() == "true" ? "checked" : "") disabled />
+        }
+        else
+        {
+            <input type="radio" id="OrderFor_@j" name="OrderFor_@currentItemId" value="@dr["OrderFor"]" @(dr["IsSelected"].ToString() == "true" ? "checked" : "") />
+        }*@
+                                        @if (dr["Supp_typeId"].ToString() == "S")
+                                        {
+                                            if (DisablePartial)
+                                            {
+                                                <input type="radio" id="OrderFor_@j" name="OrderFor_@currentItemId" value="@(dr["IsSelected"].ToString() == "true" ? "Y" : "N")" @(dr["IsSelected"].ToString() == "true" ? "checked" : "") disabled />
+                                            }
+                                            else
+                                            {
+                                                <input type="radio" id="OrderFor_@j" name="OrderFor_@currentItemId" value="@(dr["IsSelected"].ToString() == "true" ? "Y" : "N")" @(dr["IsSelected"].ToString() == "true" ? "checked" : "") />
+                                            }
+                                        }
+                                        else if (dr["Supp_typeId"].ToString() == "P")
+                                        {
+                                            <input type="radio" id="OrderFor_@j" name="OrderFor_@currentItemId" value="N"  disabled />
+                                        }
+
+                                    </td>
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    $('#POInvItmDetailsTbl input[type="radio"]').on('change', function () {
+        const rowid = $(this).data('rowid');
+        $(this).val('Y');
+    });
+</script>

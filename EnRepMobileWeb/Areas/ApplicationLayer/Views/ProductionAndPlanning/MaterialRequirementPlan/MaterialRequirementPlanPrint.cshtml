@@ -1,0 +1,339 @@
+﻿@using System.Data;
+@using EnRepMobileWeb.Resources;
+<style>
+    .h_content {
+        width: 100%;
+        font-size: 14px;
+        font-weight: bold;
+        padding: 10px;
+        line-height: 18px;
+        font-weight: normal;
+    }
+
+    .table_border {
+        border: 0.5px solid #000000;
+    }
+
+        .table_border > tbody > tr > td, .table_border > thead > tr > th {
+            border: 0.5px solid #000000;
+        }
+
+    .td_border {
+        border: 1px solid #000000;
+    }
+
+    .td_border_top {
+        border-top: 1px solid #000000;
+    }
+
+    .td_border_left {
+        border-left: 1px solid #000000;
+    }
+
+    .td_border_right {
+        border-right: 1px solid #000000;
+    }
+
+    .td_border_rightpoint5 {
+        border-right: 0.5px solid #000000;
+    }
+
+    .td_border_bottom {
+        border-bottom: 1px solid #000000;
+    }
+
+    .td_border_bottom-top {
+        border-bottom: 1px solid #000000;
+        border-top: 1px solid #000000;
+    }
+
+    .suppInfo {
+        font-size: 12px;
+        font-weight: normal;
+        padding: 0px 0px 0px 5px;
+    }
+
+        .suppInfo > tr > td {
+            padding-right: 5px;
+        }
+
+    .td_pading {
+        paddingleft: 5px;
+        paddingtop: 5px;
+        paddingbottom: 3px;
+        paddingright: 5px;
+    }
+
+    .table_css {
+        width: 100%;
+        font-size: 12px;
+        font-weight: normal;
+        padding: 0px 0px;
+        line-height: 18px;
+        font-weight: normal;
+    }
+</style>
+
+<div style='width: 100%;'>
+    @*@Html.Partial("~/Areas/Common/Views/Cmn_PrintHeaderWithoutAddr.cshtml")*@
+    @* ------------------- Header ------------------ *@
+    <table style='width:100%;'>
+        <tr>
+            <td style='width:10px;'></td>
+            <td>
+                @Html.Partial("~/Areas/ApplicationLayer/Views/FinancialAccountingAndControl/MIS/GeneralLedger/GLHeaderPrint.cshtml")
+            </td>
+            <td style='width:10px;'></td>
+        </tr>
+    </table>
+
+
+    @* ------------------- Header ------------------ *@
+    <table width='100%'>
+        <tr>
+            <td>
+                <table style='width:100%;'>
+                    <tr>
+                        <td style='width:10px;'></td>
+                        <td style="vertical-align:top; padding:0px;">
+                            <table class="table_border table_css" cellspacing='0' cellpadding='0' style=''>
+                                <tr>
+                                    <td width="30%" class="td_border_right" style="vertical-align:top;">
+                                        <table class="table_css">
+                                            <tr>
+                                                <td width="35%" style="font-weight:bold;">MRP Number</td>
+                                                <td width="65%">@ViewBag.Details.Tables[0].Rows[0]["mrp_no"]</td>
+                                            </tr>
+                                            <tr>
+                                                <td width="35%" style="font-weight:bold;">FY </td>
+                                                <td width="65%">@ViewBag.Details.Tables[0].Rows[0]["f_fy"]</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td width="15%" class="td_border_right" style="vertical-align:top;">
+                                        <table class="table_css">
+                                            <tr>
+                                                <td width="40%" style="font-weight:bold;">MRP Date</td>
+                                                <td width="60%">@ViewBag.Details.Tables[0].Rows[0]["mrp_dt"]</td>
+                                            </tr>
+                                            <tr>
+                                                <td width="40%" style="font-weight:bold;">Period  </td>
+                                                <td width="60%"> @ViewBag.Details.Tables[0].Rows[0]["f_periodval"]</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td width="25%" class="td_border_right" style="vertical-align:top;">
+                                        <table class="table_css">
+                                            <tr>
+                                                <td width="35%" style="font-weight:bold;">Source  </td>
+                                                <td width="65%"> @ViewBag.Details.Tables[0].Rows[0]["src_type"]</td>
+                                            </tr>
+                                            <tr>
+                                                <td width="35%" style="font-weight:bold;">Date Range </td>
+                                                <td width="65%">@ViewBag.Details.Tables[0].Rows[0]["date_range"]</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td width="30%">
+                                        <table class="table_css">
+                                            <tr>
+                                                <td width="50%" style="font-weight: bold; vertical-align: top; padding: 0; " valign="top">Requirement Area  </td>
+                                                <td width="50%" valign="top" style="vertical-align: top; padding: 0; ">
+                                                    @ViewBag.Details.Tables[0].Rows[0]["date_range"]
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td width="50%" style="font-weight: bold; vertical-align: top; padding: 0; " valign="top">Cancelled  </td>
+                                                <td width="50%" valign="top" style="vertical-align: top; padding: 0; ">
+                                                    @ViewBag.Details.Tables[0].Rows[0]["Cancelled"]
+                                                </td>
+                                            </tr>
+
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td style='width:10px;'></td>
+                    </tr>
+                    <tr>
+                        <td style='width:10px;'></td>
+                        <td>
+                            <div style='font-weight: bold; font-size: 14px; width: 100%; float: left; padding-left: 0px; padding-right: 10px; padding-bottom: 5px; padding-top: 10px; '>Product Detail</div>
+                            <table class="table_border" cellspacing='0' cellpadding='0' style='width:100%;font-size:12px;font-weight:normal;padding:0px 0px; margin:0px; line-height:18px;font-weight:normal;'>
+                                <thead>
+                                    @*<tr>
+                                            <th colspan="6" style='font-weight: bold; paddingtop: 7px; paddingbottom: 7px; paddingleft: 5px; font-size: 14px; '> Product Detail</th>
+                                        </tr>*@
+                                    <tr>
+                                        <th width='5%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'> S.NO.</th>
+                                        <th width='30%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'> Product <br /> Name </th>
+                                        <th width='7%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'> UOM </th>
+                                        <th width='13%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'> Planned <br /> Quantity </th>
+                                        <th width='32%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'> Remarks </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (ViewBag.Details != null)
+                                    {
+                                        DataView data = new DataView();
+                                        var i = 0;
+                                        foreach (System.Data.DataRow dr in ViewBag.Details.Tables[0].Rows)
+                                        {
+                                            <tr>
+                                                <td style='text-align:center; width:5%;'>@(i+1)</td>
+                                                <td class="td_pading">
+                                                    @dr["item_name"]
+                                                    @if (ViewBag.Details.Tables[3].Rows.Count > 0)
+                                                    {
+                                                        data = ViewBag.Details.Tables[3].DefaultView;
+                                                        DataTable NewDT1 = new DataTable();
+                                                        data.RowFilter = "item_id='" + dr["item_id"].ToString() + "'";
+                                                        NewDT1 = data.ToTable();
+                                                        <table width="100%" style="font-size: 11px; paddingtop:3px;">
+                                                            <tr>
+                                                                <td colspan="3"></td>
+                                                            </tr>
+                                                            @foreach (System.Data.DataRow drsubitm in NewDT1.Rows)
+                                                            {
+                                                                if (dr["item_id"].ToString() == drsubitm["item_id"].ToString())
+                                                                {
+                                                                    <tr>
+                                                                        <td width="10%" style="paddingtop: 0px;paddingbottom:0px;"></td>
+                                                                        <td width="45%" style="paddingtop: 0px; paddingbottom: 0px;">@drsubitm["sub_item_name"] </td>
+                                                                        <td width="45%" style="text-align: right; paddingtop: 0px; paddingbottom: 0px; paddingright: 5px;"> @drsubitm["plan_qty"]</td>
+                                                                    </tr>
+                                                                }
+                                                            }
+                                                        </table>
+                                                    }
+                                                </td>
+                                                <td class="td_pading">@dr["uom_alias"]</td>
+                                                <td class="td_pading" style='text-align:right;'>@dr["plan_qty"]</td>
+                                                <td class="td_pading">@dr["remarks"]</td>
+                                            </tr>
+                                            i++;
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </td>
+                        <td style='width:10px;'></td>
+                    </tr>
+                    <tr>
+                        <td style='width:10px;'></td>
+                        <td>
+                            <div style='font-weight: bold; font-size: 14px; width: 100%; float: left; padding-left: 0px; padding-right: 10px; padding-bottom: 5px; padding-top: 10px; '>Semi Finished Material Detail </div>
+                            <table class="table_border" cellspacing='0' cellpadding='0' style='width:100%;font-size:12px;font-weight:normal;padding:0px 0px; margin:0px; line-height:18px;font-weight:normal;'>
+                                <thead>
+                                    <tr>
+                                        <th width='5%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'> S.NO.</th>
+                                        <th width='28%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'>Material <br /> Name </th>
+                                        <th width='7%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'> UOM </th>
+                                        <th width='10%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'>BOM <br /> Quantity</th>
+                                        <th width='10%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'>Required <br /> Quantity</th>
+                                        <th width='10%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'>Order To Procure <br /> Quantity </th>
+                                        <th width='10%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'>Procurement <br /> Completion Date </th>
+                                        <th width='10%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'>Order To  <br />Produce Quantity </th>
+                                        <th width='10%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'>Production <br />Completion Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (ViewBag.Details != null)
+                                    {
+                                        var i = 0;
+                                        foreach (System.Data.DataRow dr in ViewBag.Details.Tables[1].Rows)
+                                        {
+                                            <tr>
+                                                <td style='text-align:center; width:5%;'>@(i+1)</td>
+                                                <td class="td_pading">@dr["item_name"]</td>
+                                                <td class="td_pading">@dr["uom_alias"]</td>
+                                                <td class="td_pading" style='text-align:right;'>@dr["bom_qty"]</td>
+                                                <td class="td_pading" style='text-align:right;'>@dr["req_qty"]</td>
+                                                <td class="td_pading" style='text-align:right;'>@dr["ord_proc_qty"]</td>
+                                                <td class="td_pading">@dr["proc_dt"]</td>
+                                                <td class="td_pading" style='text-align:right;'>@dr["ord_prod_qty"]</td>
+                                                <td class="td_pading">@dr["prod_dt"]</td>
+                                            </tr>
+                                            i++;
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </td>
+                        <td style='width:10px;'></td>
+                    </tr>
+                    <tr>
+                        <td style='width:10px;'></td>
+                        <td>
+                            <div style='font-weight: bold; font-size: 14px; width: 100%; float: left; padding-left: 0px; padding-right: 10px; padding-bottom: 5px; padding-top: 10px; '>Raw Material Detail </div>
+                            <table class="table_border" cellspacing='0' cellpadding='0' style='width:100%;font-size:12px;font-weight:normal;padding:0px 0px; margin:0px; line-height:18px;font-weight:normal;'>
+                                <thead>
+                                    @*<tr>
+                                            <th colspan="6" style='font-weight: bold; paddingtop: 7px; paddingbottom: 7px; paddingleft: 5px; font-size: 14px; '> Product Detail</th>
+                                        </tr>*@
+                                    <tr>
+                                        <th width='5%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'> S.NO.</th>
+                                        <th width='28%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'> Material <br /> Name </th>
+                                        <th width='7%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'> UOM </th>
+                                        <th width='12%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'> BOM <br /> Quantity</th>
+                                        <th width='12%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'>Required <br /> Quantity </th>
+                                        <th width='12%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'>Pending Order <br /> Quantity  </th>
+                                        <th width='12%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'>Order To <br />Procure  Quantity </th>
+                                        <th width='12%' align='center' style='font-weight:bold;paddingtop:5px;paddingbottom:3px;'>Procurement <br />Completion Date </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (ViewBag.Details != null)
+                                    {
+                                        var i = 0;
+                                        foreach (System.Data.DataRow dr in ViewBag.Details.Tables[2].Rows)
+                                        {
+                                            <tr>
+                                                <td style='text-align:center; width:5%;'>@(i+1)</td>
+                                                <td class="td_pading">@dr["item_name"]</td>
+                                                <td class="td_pading">@dr["uom_alias"]</td>
+                                                <td class="td_pading" style='text-align:right;'>@dr["bom_qty"]</td>
+                                                <td class="td_pading" style='text-align:right;'>@dr["req_qty"]</td>
+                                                <td class="td_pading" style='text-align:right;'>@dr["pend_ord_qty"]</td>
+                                                <td class="td_pading" style='text-align:right;'>@dr["pr_qty"]</td>
+                                                <td class="td_pading">@dr["proc_dt"]</td>
+                                            </tr>
+                                            i++;
+                                        }
+                                    }
+
+                                </tbody>
+                            </table>
+                        </td>
+                        <td style='width:10px;'></td>
+                    </tr>
+                    <tr>
+                        <td style='width:10px;'></td>
+                        <td>
+                            <table class="table_border" cellspacing='0' cellpadding='0'
+                                   style='width:100%;font-size:12px;font-weight:normal;padding:0px 0px;line-height:18px;font-weight:normal;'>
+                                <thead>
+                                    <tr>
+                                        <th style='font-weight:bold;text-align:center;paddingleft:5px;paddingtop:5px;paddingbottom:3px;'><strong>Created By</strong></th>
+                                        <th style='font-weight: bold; text-align: center; paddingleft: 5px; paddingtop: 5px; paddingbottom: 3px; '><strong>Approved By</strong></th>
+                                        <th style='font-weight: bold; text-align: center; paddingleft: 5px; paddingtop: 5px; paddingbottom: 3px; '><strong>Amended By</strong></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="td_pading" style="text-align: center;">@ViewBag.Details.Tables[0].Rows[0]["created_by"]</td>
+                                        <td class="td_pading" style="text-align: center;">@ViewBag.Details.Tables[0].Rows[0]["approved_by"]</td>
+                                        <td class="td_pading" style="text-align: center;">@ViewBag.Details.Tables[0].Rows[0]["ammend_by"]</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                        <td style='width:10px;'></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+    @*@Html.Partial("~/Areas/Common/Views/Cmn_PrintFooter.cshtml")*@
+</div>

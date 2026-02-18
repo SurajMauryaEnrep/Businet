@@ -1,0 +1,142 @@
+﻿@model EnRepMobileWeb.MODELS.ApplicationLayer.SalesAndDistribution.MIS.ShipmentDetail.ShipmentMISDetail_Model
+@using EnRepMobileWeb.Resources;
+@using System.Data
+@if (Session["UserId"] == null)
+{
+    Response.Redirect("~/Login");
+}
+@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+<script src="~/Content/Css/jquery/dist/jquery.min.js"></script>
+<script src="~/Content/Scripts/ApplicationLayer/SalesAndDistribution/MIS/ShipmentDetail/ShipmentDetailJS.js"></script>
+<script>
+
+    $(document).ready(function () {
+
+        onchangeShowAs();
+    });
+
+    const onchangeShowAs = () => {
+        const ShowAs = $("#ShowAs").val();
+        if (ShowAs == "S") {
+            $("#ShipmentSummary").css("display", "block");
+            $("#ShipmentDetail").css("display", "none");
+        }
+        else {
+            $("#ShipmentSummary").css("display", "none");
+            $("#ShipmentDetail").css("display", "block");
+        }
+    }
+    //function onchangeShowAs() {
+    //    const ShowAs = $("#ShowAs").val();
+    //    if (ShowAs == "S") {
+    //        $("#ShipmentSummary").css("display", "block");
+    //        $("#ShipmentDetail").css("display", "none");
+    //    }
+    //    else {
+    //        $("#ShipmentSummary").css("display", "none");
+    //        $("#ShipmentDetail").css("display", "block");
+    //    }
+    //}
+</script>
+<title>@Model.Title</title>
+<div class="row">
+    <!-- Workflow Information -->
+    <div id="WorkflowInformation" class="modal fade" role="dialog">
+        <div class="modal-dialog" style="max-width:700px;">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/Common/Views/_WorkFlow.cshtml")
+        </div>
+    </div>
+    <!-- Item Information -->
+    <div id="ItemInfo" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            @Html.Partial("~/Areas/Common/Views/_ItemInfomation.cshtml")
+        </div>
+    </div>
+    <!-- Shipped Quantity Detail -->
+    <div id="ShippedQuantityDetail" class="modal fade" role="dialog">
+        <div class="modal-dialog" style=" max-width:1000px;">
+            <!-- Modal content-->
+            <div id="">
+                @Html.Partial("~/Areas/Common/Views/Comn_PartialShippedQuantityDetail.cshtml")
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel mar_pad1 ">
+            <div class="x_content mar_pad1">
+                <h2 class="col-md-10 col-sm-12 heading_left_padding ">@ViewBag.MenuPageName</h2>
+                <div class="col-md-2 col-sm-12 pl-3">
+                    @Resource.Summary<span>&nbsp;</span>
+                    <input checked="checked" class="" onclick="onchangeShowAs()" id="SalesMISShipmentSummary" name="MISShipmentType" type="radio" value="S">
+                    <span>&nbsp;</span> @Resource.Detail<span>&nbsp;</span>
+                    <input class="" id="SalesMISShipmentDetail" onclick="onchangeShowAs()" name="MISShipmentType" type="radio" value="D">
+                </div>
+                <!-- Smart Wizard -->
+                <div id="wizard" class="form_wizard wizard_horizontal col-md-3 col-sm-12 work_flow"> &nbsp;</div>
+                <div class="x_title pad_mar  ">
+                    <div class="col-md-12 col-sm-12 icon_tool mb-1 ">
+                        <div class="col-md-2 col-sm-12" id="divCustomers" style="display:none">
+                            <label class="col-form-label label-align">@Resource.CustomerName </label>
+                            @Html.DropDownListFor(model => model.CustId, new SelectList(Model.CustomersList, "CustId", "CustName"),
+                                 new { @class = "form-control", @id = "ddlCustId", @name = "CustId", @multiple = "multiple" })
+                        </div>
+                        <div class="col-md-2 col-sm-12">
+                            <label class="col-form-label label-align">@Resource.ItemName </label>
+                            @Html.DropDownListFor(model => model.ItemId, new SelectList(Model.itemsList, "ItemId", "itemName"),
+                                new { @class = "form-control", @id = "ddlItemId", @name = "ItemId" })
+                        </div>
+                        <div class="col-md-2 col-sm-12">
+                            <label class="col-form-label label-align">@Resource.FromDate</label>
+                            @*<input class="form-control" id="" max="2023-08-08" name="txtFromdate" onchange="" type="date" value="2023-08-01">*@
+                            @Html.TextBoxFor(model => model.FromDate, new { @class = "form-control", @id = "txtFromdate", @type = "date", @max = DateTime.Now.ToString("yyyy-MM-dd") })
+                        </div>
+                        <div class="col-md-2 col-sm-12">
+                            <label class="col-form-label label-align">@Resource.ToDate</label>
+                            @Html.TextBoxFor(model => model.ToDate, new { @class = "form-control", @id = "txtTodate", @placeholder = "dd-MM-yyyy", @type = "date", @max = DateTime.Now.ToString("yyyy-MM-dd") })
+                        </div>
+                        <div class="col-md-4 col-sm-12 no-padding">
+                            <div class="col-md-5 col-sm-12" id="divShipmentType" style="display:none">
+                                <label class="col-form-label label-align">@Resource.ShipmentType </label>
+                                <select class="form-control" id="ddlShipmentType" name="ShipType" multiple>
+                                    @*<option value="0">---All---</option>*@
+                                    <option value="D">Domestic</option>
+                                    <option value="E">Export</option>
+                                </select>
+                            </div>
+                            @*<div class="col-md-5 col-sm-12">
+                                    <label class="col-form-label label-align">@Resource.ShowAs </label>
+                                    <select class="form-control" id="ShowAs" name="" onchange="onchangeShowAs(); ShowHideFilters();">
+                                        <option value="S">Summary</option>
+                                        <option value="D">Detailed</option>
+                                    </select>
+                                </div>*@
+                            <div class="col-md-2 col-sm-12">
+                                <button type="button" class="btn btn-primary btn-sm margintop20" id="BtnSearch" onclick="BindShipmentMisDetails();"><i class="fa fa-search" aria-hidden="true"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <input id="hdnValDigit" type="hidden" value="@Request.RequestContext.HttpContext.Session["ValDigit"]" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12">
+        <div class="x_panel margin_top_zero">
+            <div class="x_content">
+                <div class="card-box table-responsive dy_table">
+                    <div id="" class="sticky-table sticky-ltr-cells sb-container container-example1">
+                        <div id="ShipmentSummary">
+                            @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialMISShipmentItemSummary.cshtml")
+                        </div>
+                        @*<div id="ShipmentSummary">@Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialMISShipmentSummary.cshtml")</div>*@
+                        <div id="ShipmentDetail" style="display:none"> @Html.Partial("~/Areas/ApplicationLayer/Views/Shared/PartialMISShipmentDetail.cshtml")</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

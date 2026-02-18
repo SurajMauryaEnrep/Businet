@@ -1,0 +1,58 @@
+﻿@using EnRepMobileWeb.Resources
+<script src="~/Content/Scripts/BusinessLayer/TransporterSetup/TransporterSetupList.js"></script>
+<script src="~/Content/Scripts/Common/CommonPartialJS.js"></script>
+<table id="datatable-buttons" class="table table-striped width1500 rowhighlighttbl" cellspacing="0" width="100%">
+    <thead>
+        <tr class="sticky-header">
+            <th width="5%"> @Resource.SrNo</th>
+            <th width="5%" hidden="hidden"> @Resource.SrNo</th>
+            <th width="14%">@Resource.Transporter @Resource.Name</th>
+            <th width="9%">@Resource.Transporter @Resource.Type</th>
+            <th width="9%">@Resource.TransportMode</th>
+            <th width="9%">@Resource.GST  @Resource.Number</th>
+            <th width="9%">@Resource.City </th>
+            <th width="9%">@Resource.District</th>
+            <th width="9%">@Resource.State</th>
+            <th width="9%">@Resource.Country</th>
+            <th width="9%">@Resource.Createdon</th>
+            <th width="9%">@Resource.AmendedOn</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (ViewBag.TransDetails != null)
+        {
+            var srno = 0;
+            foreach (System.Data.DataRow row in ViewBag.TransDetails.Rows)
+            {
+                srno = srno + 1;
+                <tr>
+                    <td>@srno</td>
+                    <td hidden="hidden" id="transId">@row["trans_id"].ToString()</td>
+                    <td>@row["trans_name"].ToString()</td>
+                    <td>@row["trans_type1"].ToString() </td>
+                    <td>@row["trans_mode1"].ToString()</td>
+                    <td>@row["trans_gst_no"].ToString()</td>
+                    <td>@row["city_name"].ToString()</td>
+                    <td>@row["state_name"].ToString()</td>
+                    <td>@row["district_name"].ToString()</td>
+                    <td>@row["country_name"].ToString()</td>
+                    <td>@row["create_dt"].ToString()</td>
+                    <td>@row["mod_dt"].ToString()</td>
+                </tr>
+               // srno = srno + 1;
+            }
+        }
+    </tbody>
+</table>
+@if (Model.SearchStatus != null)
+{
+    if (Model.SearchStatus == "SEARCH")
+    {
+        @Scripts.Render("~/Content/Scripts/DataTableRefreshJs")
+            @Scripts.Render("~/Content/Scripts/DatatablesJs")
+    }
+}
+
+
+
+

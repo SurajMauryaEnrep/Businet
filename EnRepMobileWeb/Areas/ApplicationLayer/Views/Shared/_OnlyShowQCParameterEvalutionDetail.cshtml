@@ -1,0 +1,201 @@
+﻿@using EnRepMobileWeb.Resources;
+<style>
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 30px;
+        height: 17px;
+    }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #D10;
+        -webkit-transition: .4s;
+        transition: .4s;
+    }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 13px;
+            width: 13px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+
+    input:checked + .slider {
+        background-color: #2aeb5b;
+    }
+
+    input:focus + .slider {
+        box-shadow: 0 0 1px #2aeb5b;
+    }
+
+    input:checked + .slider:before {
+        -webkit-transform: translateX(13px);
+        -ms-transform: translateX(13px);
+        transform: translateX(13px);
+    }
+
+    /* Rounded sliders */
+    .slider.round {
+        border-radius: 17px;
+    }
+
+        .slider.round:before {
+            border-radius: 50%;
+        }
+
+    #QCPrmEvalutionTbl tbody tr td {
+        padding: 0;
+    }
+
+    #ReplicateWithAllSamples .fa-files-o {
+        font-size: 17px;
+    }
+
+    .p_e_auto_width th, .p_e_auto_width td {
+        min-width: 140px !important;
+    }
+</style>
+<div class="modal-content">
+    <div class="modal-header">
+        <h2>@Resource.ParameterEvaluation</h2>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body pop_top">
+        <div class="col-md-4 col-sm-12" style="padding-left:0px;">
+            <label class="col-form-label label-align">
+                @Resource.ItemName
+            </label>
+            <input id="QC_ItemName" class="form-control" autocomplete="off" type="text" name="ItemName" placeholder="ItemName" onfocus="this.placeholder='ItemName'" onblur="this.placeholder='ItemName'" disabled>
+            <input type="hidden" id="ItemCode" />
+        </div>
+        <div class="col-md-2 col-sm-12" style="padding-left:0px;">
+            <label class="col-form-label label-align">
+                @Resource.UOM
+            </label>
+            <input id="UOM" class="form-control " autocomplete="off" type="text" name="UOM" placeholder="UOM" onfocus="this.placeholder='UOM'" onblur="this.placeholder='UOM'" disabled>
+            <input type="hidden" id="hdUOMId" />
+        </div>
+        <div class="col-md-2 col-sm-12" style="padding-left:0px; padding-right:0px;" hidden="hidden">
+            <label class="col-form-label label-align">@Resource.SampleSize</label>
+                <input id="ItmSampSize" class="form-control center" autocomplete="off" type="text" name="ItmSampSize" placeholder="@Resource.SampleSize" disabled>
+           
+            <span id="ItmSampSize_Error" class="field-validation-valid"></span>
+            <input hidden="hidden" id="HdnItemSampleSize" />
+        </div>
+       
+       
+        <div class="clear" style="margin-bottom:10px;"></div>
+        <div class="card-box table-responsive dy_table margin5">
+            <div class="sticky-table sticky-ltr-cells sb-container container-example1">
+                <table class="table table-bordered p_e_auto_width" id="QCPrmEvalutionTbl">
+                    <thead>
+                        @if (ViewBag.ItemDetailsQc != null)
+                        {
+                            var rowIdx = 1;
+                            <tr class="sticky-header">
+                                <th width="5%">@Resource.SrNo</th>
+                                @foreach (System.Data.DataRow Row in ViewBag.ItemDetailsQc.Rows)
+                                {
+                                    <th width="100px" id="th_@rowIdx">
+                                        <div class="lpo_form col-sm-9 no-padding" id="">
+                                            @Row["param_name"]<input hidden="hidden" id="thPId_@rowIdx" value="@Row["param_Id"]" />
+                                        </div>                            
+                                        <input id="ThDeatilSrNo" hidden="hidden" value="@rowIdx" />
+                                    </th>
+                                 
+                                    rowIdx = rowIdx + 1;
+                                }
+                                <th hidden="hidden">
+                                    <input id="TotalTh" hidden="hidden" value="@rowIdx" />
+                                </th>
+
+                            </tr>
+                        }
+                    </thead>
+                    <tbody>
+                        @if (ViewBag.ItemDetailsQc != null)
+                        {
+                            var rowIdx = 1;
+                            <tr>
+                                <td>&nbsp;</td>
+                                @foreach (System.Data.DataRow Row in ViewBag.ItemDetailsQc.Rows)
+                                {
+                                    <td class="center" id="td_@rowIdx">
+                                        @if (Row["param_type"].ToString() == "N")
+                                        {
+                                            <strong>@Row["lower_val"] - @Row["upper_val"] @Row["uom_alias"]</strong>
+                                        }
+                                        else if (Row["param_type"].ToString() == "O")
+                                        {
+                                            <strong>@Resource.Observative</strong>
+                                        }
+                                        else
+                                        {
+                                            <strong>@Resource.ok</strong>
+                                        }
+                                        <input hidden="hidden" id="ParamTypeValue" value="@Row["param_type"]" />
+                                        <input hidden="hidden" id="ParamId" value="@Row["param_Id"]" />
+                                        <input hidden="hidden" id="ParamUomId" value="@Row["uom_Id"]" />
+                                    </td>
+                                    rowIdx = rowIdx + 1;
+                                }
+                            </tr>
+                            rowIdx = 1;
+                        }
+                    </tbody>
+                </table>
+                <table id="hdTblQCItemParamDetail" hidden="hidden">
+                    <tbody>
+                        @if (ViewBag.ItemDetailsQcList != null)
+                        {
+                            foreach (System.Data.DataRow dr in ViewBag.ItemDetailsQcList.Rows)
+                            {
+                                <tr>
+                                    <td id="item_name">@dr["item_name"]</td>
+                                    <td id="item_id">@dr["item_id"]</td>
+                                    <td id="uom_name">@dr["uom_name"]</td>
+                                    <td id="uom_id">@dr["uom_id"]</td>
+                                    <td id="sam_size">@dr["sam_size"]</td>
+                                    <td id="param_Id">@dr["param_Id"]</td>
+                                    <td id="param_uom_Id">@dr["param_uom_Id"]</td>
+                                    <td id="param_name">@dr["param_name"]</td>
+                                    <td id="paramtype">@dr["paramtype"]</td>
+                                    <td id="uom_alias">@dr["uom_alias"]</td>
+                                    <td id="param_type">@dr["param_type"]</td>
+                                    <td id="upper_val">@dr["upper_val"]</td>
+                                    <td id="lower_val">@dr["lower_val"]</td>
+                                    <td id="Result">@dr["Result"]</td>
+                                    <td id="param_action">@dr["param_action"]</td>
+                                    <td id="param_remarks">@dr["param_remarks"]</td>
+                                    <td id="sr_no">@dr["sr_no"]</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+  
+        <input hidden="hidden" id="disablePage" value="disabled" />
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">@Resource.Close</button>
+        </div>
+</div>
