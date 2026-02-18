@@ -23173,3 +23173,27 @@ function Cmn_ApplySearchBtnOnDataTable(tableId) {//Added by Suraj Maurya on 27-0
         }
     });
 }
+function Cmn_ApplySearchBtnOnDataTable_New(tableId) {//Added by Suraj Maurya on 27-01-2026 to apply search btn on datatable search
+    debugger
+    $('#' + tableId + '_filter input').off();
+    $('#' + tableId + '_filter input').css("padding-right", "30px");
+    $('#' + tableId + '_filter input').addClass("dtSearchBox");
+    var searchBox = $('#' + tableId + '_filter input');
+
+    searchBox.after(`
+                <button id="${tableId}dtSearchBtn" type="button" class="dt-search-btn">
+                    <i class="fa fa-search"></i>
+                </button>
+            `);
+    var table = $("#" + tableId).DataTable();
+    $('#' + tableId + 'dtSearchBtn').on('click', function () {
+        table.search(searchBox.val()).draw();
+    });
+
+    searchBox.on('keypress', function (e) {
+        if (e.which === 13) {   // Enter key
+            e.preventDefault();//Added by Suraj Maurya on 10-02-2026 to prevent submit.
+            table.search(this.value).draw();
+        }
+    });
+}
